@@ -44,6 +44,10 @@ let nextConfig = {
         hostname: 'res.cloudinary.com',
         protocol: 'https',
       },
+      {
+        hostname: 'assets.solomon-ai.app',
+        protocol: 'https',
+      },
     ],
     // Cost
     unoptimized: true,

@@ -97,14 +97,18 @@ export default function DocumentSendingPage() {
   if (!isDocumentSendingEnabled) {
     return (
       <PageSkeleton
-        description="Send documents for signature and track their progress."
-        title="Document Sending"
+        description="Generate financial reports and track approval workflows for financial documents."
+        title="Financial Analytics"
         breadcrumbs={[
           { href: '/dashboard', label: 'Dashboard' },
-          { href: '/document-sending', label: 'Document Sending' },
+          { href: '/financial-analytics', label: 'Financial Analytics' },
         ]}
       >
-        <FeatureDevelopment estimatedTime="Expected release: Q3 2023" />
+        <FeatureDevelopment
+          description="We're working hard to bring you the best financial analytics experience. This feature is currently in development."
+          title="Financial Analytics Coming Soon"
+          estimatedTime="Expected release: Q3 2025"
+        />
       </PageSkeleton>
     );
   }
@@ -209,7 +213,7 @@ export default function DocumentSendingPage() {
       actions={actions}
       breadcrumbs={[
         { href: '/dashboard', label: 'Dashboard' },
-        { href: '/document-sending', label: 'Document Sending' },
+        { href: '/financial-analytics', label: 'Financial Analytics' },
       ]}
       headerContent={headerContent}
       tabs={tabs}

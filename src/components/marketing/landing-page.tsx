@@ -1,7 +1,8 @@
-import { Cuboid } from 'lucide-react';
-import { Icons } from '@/components/ui/icons';
-import { LoginForm } from '@/components/auth/login-form';
 import { cn } from '@udecode/cn';
+import { Cuboid } from 'lucide-react';
+
+import { LoginForm } from '@/components/auth/login-form';
+import { Icons } from '@/components/ui/icons';
 
 export function LandingPage() {
   return (
@@ -13,21 +14,22 @@ export function LandingPage() {
         <div className="absolute top-1/4 right-0 h-64 w-64 rounded-full bg-blue-50/70 blur-2xl" />
         {/* Additional subtle blue patterns */}
         <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-blue-200/20 blur-2xl" />
-        <div className="absolute bottom-1/4 right-1/4 h-48 w-48 rounded-full bg-sky-100/30 blur-2xl" />
+        <div className="absolute right-1/4 bottom-1/4 h-48 w-48 rounded-full bg-sky-100/30 blur-2xl" />
         <div className="absolute h-full w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-50/20 via-transparent to-transparent" />
       </div>
 
       <main className="relative container mx-auto px-6 py-16 lg:px-8 lg:py-24">
         <div className="flex flex-col items-center justify-center space-y-12">
           {/* Logo with enhanced glass effect */}
-          <div className="rounded-2xl bg-white/40 p-4 ring-1 ring-blue-100/50 shadow-sm backdrop-blur-sm">
+          <div className="rounded-2xl bg-white/40 p-4 ring-1 shadow-sm ring-blue-100/50 backdrop-blur-sm">
             <Icons.logo className={cn('h-12 w-12 text-blue-600')} />
           </div>
 
           <div className="flex flex-col items-center space-y-8 text-center">
             {/* Welcome badge with enhanced glass effect */}
-            <div className="inline-flex items-center gap-x-2 rounded-full bg-white/50 px-5 py-1.5 text-sm font-medium text-blue-900 ring-1 ring-blue-100/70 shadow-sm backdrop-blur-sm">
-              <span className="text-blue-600 font-medium">Solomon AI</span> Financial Management Platform
+            <div className="inline-flex items-center gap-x-2 rounded-full bg-white/50 px-5 py-1.5 text-sm font-medium text-blue-900 ring-1 shadow-sm ring-blue-100/70 backdrop-blur-sm">
+              <span className="font-medium text-blue-600">Solomon AI</span>{' '}
+              Financial Management Platform
               <Cuboid className="h-3.5 w-3.5 text-blue-600" />
             </div>
 
@@ -41,13 +43,16 @@ export function LandingPage() {
               </h1>
 
               <p className="mx-auto max-w-xl text-base leading-relaxed text-slate-700 sm:text-lg">
-                Take control of your business finances. Get real-time insights, optimize cash flow, and make data-driven decisions with our intelligent financial management platform designed specifically for small businesses and solopreneurs.
+                Take control of your business finances. Get real-time insights,
+                optimize cash flow, and make data-driven decisions with our
+                intelligent financial management platform designed specifically
+                for small businesses and solopreneurs.
               </p>
             </div>
           </div>
 
           {/* Login form with enhanced glass effect */}
-          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white/50 p-8 ring-1 ring-blue-100/50 shadow-md backdrop-blur-md">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white/50 p-8 ring-1 shadow-md ring-blue-100/50 backdrop-blur-md">
             <LoginForm displayLogo={false} displayTitle={false} />
           </div>
 
@@ -55,12 +60,14 @@ export function LandingPage() {
           <div className="flex flex-col items-center gap-y-3">
             <div className="flex items-center gap-x-3">
               <div className="h-px w-12 bg-blue-200/50" />
-              <div className="rounded-full bg-white/40 px-5 py-1.5 text-xs font-medium text-blue-800 ring-1 ring-blue-100/50 shadow-sm backdrop-blur-sm">
+              <div className="rounded-full bg-white/40 px-5 py-1.5 text-xs font-medium text-blue-800 ring-1 shadow-sm ring-blue-100/50 backdrop-blur-sm">
                 Insightful · Actionable · Empowering
               </div>
               <div className="h-px w-12 bg-blue-200/50" />
             </div>
-            <p className="text-xs text-blue-600/80 mt-1 font-medium">Trusted by solopreneurs and small businesses nationwide</p>
+            <p className="mt-1 text-xs font-medium text-blue-600/80">
+              Trusted by solopreneurs and small businesses nationwide
+            </p>
           </div>
         </div>
       </main>

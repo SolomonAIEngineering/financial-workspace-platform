@@ -1,15 +1,16 @@
-import './globals.css';
+import type { Viewport } from 'next';
 
-import { fontHeading, fontMono, fontSans } from '@/lib/fonts';
+import { cn } from '@udecode/cn';
 
 import { GA } from '@/components/analytics/ga';
-import { META_THEME_COLORS } from '@/config';
 import { Providers } from '@/components/providers/providers';
 import { ProvidersServer } from '@/components/providers/providers-server';
 import { Toaster } from '@/components/toaster';
-import type { Viewport } from 'next';
-import { cn } from '@udecode/cn';
+import { META_THEME_COLORS } from '@/config';
+import { fontHeading, fontMono, fontSans } from '@/lib/fonts';
 import { createMetadata } from '@/lib/navigation/createMetadata';
+
+import './globals.css';
 
 export const metadata = createMetadata({
   title: 'Solomon AI Contract Workspace',

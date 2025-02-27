@@ -1,13 +1,16 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState } from 'react';
+
 // Import Hero Icons
 import {
   CalendarIcon,
   ChartBarIcon,
+  ChartBarSquareIcon,
   ChatBubbleLeftRightIcon,
   Cog6ToothIcon,
-  DocumentCheckIcon,
+  CubeIcon,
+  CurrencyDollarIcon,
   DocumentDuplicateIcon,
   DocumentTextIcon,
   HomeIcon,
@@ -15,15 +18,19 @@ import {
   PaperAirplaneIcon,
   QuestionMarkCircleIcon,
   SunIcon,
+  TableCellsIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import React, { useState } from 'react';
+import { cn } from '@udecode/cn';
+import { AnimatePresence, motion } from 'framer-motion';
+import { BarChart2Icon } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
 
 import { Icons } from '../ui/icons';
-import Link from 'next/link';
-import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
-import { cn } from '@udecode/cn';
-import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
 
 interface MiniSidebarItemProps {
   href: string;
@@ -59,12 +66,12 @@ const MiniSidebarItem = ({
           animate={
             active
               ? {
-                boxShadow: [
-                  '0 0 0 rgba(var(--primary) / 0.2)',
-                  '0 0 12px rgba(var(--primary) / 0.3)',
-                  '0 0 0 rgba(var(--primary) / 0.2)',
-                ],
-              }
+                  boxShadow: [
+                    '0 0 0 rgba(var(--primary) / 0.2)',
+                    '0 0 12px rgba(var(--primary) / 0.3)',
+                    '0 0 0 rgba(var(--primary) / 0.2)',
+                  ],
+                }
               : {}
           }
           transition={{
@@ -139,15 +146,15 @@ const demoItems = [
   {
     badge: 3,
     category: 'documents',
-    href: '/document-signing',
-    icon: DocumentCheckIcon,
-    tooltip: 'Document Signing',
+    href: '/financial-overview',
+    icon: BarChart2Icon,
+    tooltip: 'Financial Overview',
   },
   {
     category: 'documents',
-    href: '/document-sending',
+    href: '/financial-analytics',
     icon: PaperAirplaneIcon,
-    tooltip: 'Document Sending',
+    tooltip: 'Financial Analytics',
   },
   {
     category: 'documents',
@@ -191,32 +198,53 @@ export function MiniSidebar() {
 
   const sidebarItems = useDemoItems
     ? demoItems.map((item) => ({
-      ...item,
-      isActive: pathname.includes(item.href),
-    }))
+        ...item,
+        isActive: pathname.includes(item.href),
+      }))
     : [
-      {
-        category: 'main',
-        href: '/dashboard',
-        icon: HomeIcon,
-        isActive: pathname.includes('/dashboard'),
-        tooltip: 'Workspace',
-      },
-      {
-        category: 'documents',
-        href: '/document-signing',
-        icon: DocumentCheckIcon,
-        isActive: pathname.includes('/document-signing'),
-        tooltip: 'Document Signing',
-      },
-      {
-        category: 'documents',
-        href: '/document-sending',
-        icon: PaperAirplaneIcon,
-        isActive: pathname.includes('/document-sending'),
-        tooltip: 'Document Sending',
-      },
-    ];
+        {
+          category: 'main',
+          href: '/dashboard',
+          icon: HomeIcon,
+          isActive: pathname.includes('/dashboard'),
+          tooltip: 'Workspace',
+        },
+        {
+          category: 'documents',
+          href: '/financial-overview',
+          icon: ChartBarSquareIcon,
+          isActive: pathname.includes('/financial-overview'),
+          tooltip: 'Financial Overview',
+        },
+        {
+          category: 'documents',
+          href: '/financial-analytics',
+          icon: CubeIcon,
+          isActive: pathname.includes('/financial-analytics'),
+          tooltip: 'Financial Analytics',
+        },
+        {
+          category: 'documents',
+          href: '/transactions',
+          icon: TableCellsIcon,
+          isActive: pathname.includes('/transactions'),
+          tooltip: 'Transactions',
+        },
+        {
+          category: 'documents',
+          href: '/invoices',
+          icon: CurrencyDollarIcon,
+          isActive: pathname.includes('/invoices'),
+          tooltip: 'invoices',
+        },
+        {
+          category: 'documents',
+          href: '/customers',
+          icon: UserGroupIcon,
+          isActive: pathname.includes('/customers'),
+          tooltip: 'customers',
+        },
+      ];
 
   const container = {
     hidden: { opacity: 0 },
@@ -438,7 +466,7 @@ export function MiniSidebar() {
         initial={{ opacity: 0 }}
         transition={{ delay: 1, duration: 0.6 }}
       >
-        Solomon AI  v1.0
+        Solomon AI v1.0
       </motion.div>
     </motion.div>
   );

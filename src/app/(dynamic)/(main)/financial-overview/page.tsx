@@ -66,16 +66,16 @@ export default function DocumentSigningPage() {
   if (!isDocumentSigningEnabled) {
     return (
       <PageSkeleton
-        description="Sign documents securely and track signature status."
-        title="Document Signing"
+        description="Analyze your financial data and gain valuable insights."
+        title="Financial Overview"
         breadcrumbs={[
           { href: '/dashboard', label: 'Dashboard' },
-          { href: '/document-signing', label: 'Document Signing' },
+          { href: '/financial-overview', label: 'Financial Overview' },
         ]}
       >
         <FeatureDevelopment
-          description="We're building a powerful and secure document signing experience. Stay tuned for updates on this feature."
-          title="Document Signing Coming Soon"
+          description="We're building a comprehensive financial analytics dashboard to help you make data-driven decisions. Stay tuned for updates on this feature."
+          title="Financial Overview Coming Soon"
           estimatedTime="Expected release: Q3 2025"
         />
       </PageSkeleton>
@@ -185,7 +185,7 @@ export default function DocumentSigningPage() {
       }
       breadcrumbs={[
         { href: '/dashboard', label: 'Dashboard' },
-        { href: '/document-signing', label: 'Document Signing' },
+        { href: '/financial-overview', label: 'Financial Overview' },
       ]}
       headerContent={
         <div className="w-full max-w-md">

@@ -41,7 +41,7 @@ export default function WelcomeEmail({
                 className="mx-auto"
                 alt={`${platformConfig.company} logo`}
                 height="140"
-                src="https://pub-d47f0072788247a387ec1ef09379a508.r2.dev/logo.png"
+                src="https://assets.solomon-ai.app/logo.png"
                 width="140"
               />
             </Section>
@@ -65,13 +65,15 @@ export default function WelcomeEmail({
                 About Solomon AI
               </Text>
               <Text className="mt-0 mb-4 text-sm leading-5 text-gray-700">
-                Solomon AI is a sophisticated contract management solution
-                designed specifically for small businesses. We empower
-                organizations to streamline their contract workflows, eliminate
-                paperwork bottlenecks, and gain valuable insights through
-                advanced AI analysis. Our intuitive platform transforms how you
-                create, negotiate, sign, and manage agreements, saving you time
-                and reducing legal risks.
+                Solomon AI is a comprehensive financial management platform
+                designed specifically for small and medium-sized businesses. We
+                empower organizations to gain complete visibility into their
+                financial health, make data-driven decisions, and optimize their
+                cash flow through advanced AI-powered analytics. Our intuitive
+                platform transforms how you track expenses, manage budgets,
+                forecast revenue, and identify growth opportunities, helping you
+                take control of your financial future while reducing compliance
+                risks.
               </Text>
 
               {/* Features section */}
@@ -81,19 +83,19 @@ export default function WelcomeEmail({
               <Section className="my-3 rounded border border-gray-100 bg-gray-50 p-3">
                 <Text className="my-1 flex items-start text-sm leading-5 text-gray-700">
                   <span className="mr-2 font-bold text-green-600">✓</span>{' '}
-                  Create your first document
+                  Connect your financial accounts for real-time insights
                 </Text>
                 <Text className="my-1 flex items-start text-sm leading-5 text-gray-700">
                   <span className="mr-2 font-bold text-green-600">✓</span>{' '}
-                  Explore Our various AI features
+                  Generate custom financial reports and dashboards
                 </Text>
                 <Text className="my-1 flex items-start text-sm leading-5 text-gray-700">
                   <span className="mr-2 font-bold text-green-600">✓</span>{' '}
-                  Customize your workspace to match your workflow
+                  Leverage AI-powered forecasting and cash flow analysis
                 </Text>
                 <Text className="my-1 flex items-start text-sm leading-5 text-gray-700">
                   <span className="mr-2 font-bold text-green-600">✓</span>{' '}
-                  Invite team members to collaborate
+                  Invite your finance team or accountant to collaborate
                 </Text>
               </Section>
 
@@ -152,8 +154,9 @@ export default function WelcomeEmail({
 
               {/* Closing message */}
               <Text className="my-5 border-l-2 border-black pl-3 text-sm leading-5 text-gray-700 italic">
-                We're committed to continuously improving our platform based on
-                user feedback, and your input is invaluable to us.
+                We're committed to helping small and medium-sized businesses
+                achieve financial clarity and growth through intelligent data
+                analysis and actionable insights.
               </Text>
 
               <Text className="mt-4 text-sm leading-5 text-gray-700">
