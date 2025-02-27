@@ -34,5 +34,5 @@ jobs:
         run: pnpm db:deploy
         env:
           # Add your database connection string and other required environment variables
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.SMB_FINANCIAL_MANAGEMENT_DATABASE_URL }}
           # Add any other environment variables needed for database connection
