@@ -23,23 +23,21 @@ export function LandingPage() {
           <div className="flex flex-col items-center space-y-8 text-center">
             {/* Welcome badge with glass effect */}
             <div className="inline-flex items-center gap-x-2 rounded-full bg-white/40 px-5 py-1.5 text-sm font-medium text-zinc-800 ring-1 ring-zinc-100 backdrop-blur-sm">
-              Welcome to Solomon AI Contract Workspace
+              Welcome to Solomon AI Financial Management Platform
               <Cuboid className="h-3.5 w-3.5" />
             </div>
 
             <div className="space-y-4">
               <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl md:text-5xl">
-                Streamline your contracts with
+                Financial oversight with
                 <span className="bg-gradient-to-r from-indigo-500 to-indigo-600 bg-clip-text text-transparent">
                   {' '}
-                  confidence
+                  clarity
                 </span>
               </h1>
 
               <p className="mx-auto max-w-xl text-base leading-relaxed text-zinc-600 sm:text-lg">
-                Experience the future of contract management. Automate
-                workflows, reduce risks, and close deals faster with our
-                intelligent contract workspace designed for small businesses.
+                Take control of your business finances. Get real-time insights, optimize cash flow, and make data-driven decisions with our intelligent financial management platform designed specifically for small businesses and solopreneurs.
               </p>
             </div>
           </div>
@@ -53,7 +51,7 @@ export function LandingPage() {
           <div className="flex items-center gap-x-3">
             <div className="h-px w-8 bg-zinc-200/50" />
             <div className="rounded-full bg-white/30 px-4 py-1 text-xs font-medium text-zinc-600 ring-1 ring-zinc-100 backdrop-blur-sm">
-              Secure · Efficient · Intelligent
+              Insightful · Actionable · Empowering
             </div>
             <div className="h-px w-8 bg-zinc-200/50" />
           </div>
