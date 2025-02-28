@@ -57,7 +57,9 @@ export const AccountStatus = {
     FROZEN: "FROZEN",
     INACTIVE: "INACTIVE",
     PENDING: "PENDING",
-    DISCONNECTED: "DISCONNECTED"
+    DISCONNECTED: "DISCONNECTED",
+    SUSPENDED: "SUSPENDED",
+    ARCHIVED: "ARCHIVED"
 } as const;
 export type AccountStatus = (typeof AccountStatus)[keyof typeof AccountStatus];
 export const VerificationStatus = {

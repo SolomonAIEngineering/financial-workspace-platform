@@ -1,18 +1,12 @@
 import { defineConfig } from "@trigger.dev/sdk/v3";
 
 export default defineConfig({
-    id: "smb-financial-management-platform",
-
-    // The Trigger.dev API URL
-    apiUrl: process.env.TRIGGER_API_URL || "https://api.trigger.dev",
-
-    // Your API key
-    apiKey: process.env.TRIGGER_API_KEY || "",
+    project: process.env.TRIGGER_PROJECT_ID!,
 
     // Runtime configuration
     runtime: "node",
     logLevel: "info",
-    maxDuration: 540, // 9 minutes
+    maxDuration: 900, // 15 minutes
 
     // Retry configuration
     retries: {
@@ -32,5 +26,5 @@ export default defineConfig({
     },
 
     // Directory configuration
-    dirs: ["./src/jobs/examples"],
+    dirs: ["./src/jobs/tasks"],
 }); 

@@ -353,7 +353,9 @@
             "FROZEN",
             "INACTIVE",
             "PENDING",
-            "DISCONNECTED"
+            "DISCONNECTED",
+            "SUSPENDED",
+            "ARCHIVED"
           ]
         },
         "lastLoginAt": {
@@ -1168,7 +1170,9 @@
             "FROZEN",
             "INACTIVE",
             "PENDING",
-            "DISCONNECTED"
+            "DISCONNECTED",
+            "SUSPENDED",
+            "ARCHIVED"
           ]
         },
         "isHidden": {

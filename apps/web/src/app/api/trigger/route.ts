@@ -5,7 +5,13 @@ import { client } from "@/jobs/client";
  * This is the API route that Trigger.dev will call to execute jobs
  */
 export async function POST(req: NextRequest) {
-  return await client.handleRequest(req);
+  const result = await client.handleRequest(req);
+
+  // Convert the result to a proper Response object
+  return new Response(result.body, {
+    status: result.status,
+    headers: result.headers,
+  });
 }
 
 /**

@@ -1,4 +1,5 @@
-import { client } from "../client";
+import { client } from "@/jobs/client";
+import { cronTrigger } from "@trigger.dev/sdk";
 
 /**
  * This job syncs bank transactions daily at midnight
@@ -7,9 +8,9 @@ client.defineJob({
     id: "sync-bank-transactions",
     name: "Sync Bank Transactions",
     version: "0.0.1",
-    trigger: {
-        schedule: "0 0 * * *" // Run at midnight every day
-    },
+    trigger: cronTrigger({
+        cron: "0 0 * * *" // Run at midnight every day
+    }),
     run: async (payload, io, ctx) => {
         await io.logger.info("Starting bank transaction sync", { timestamp: new Date().toISOString() });
 
