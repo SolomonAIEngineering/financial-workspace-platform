@@ -1,9 +1,11 @@
 import { TriggerClient } from '@trigger.dev/sdk';
 
-// Initialize the TriggerClient with your API key and application ID
+/**
+ * This client is used to interact with the Trigger.dev API
+ * You can use it in your application to trigger jobs
+ */
 export const client = new TriggerClient({
-  id: process.env.TRIGGER_API_ID || 'smb-financial-management-platform',
-  apiKey: process.env.TRIGGER_API_KEY || '',
+  id: "smb-financial-management-platform",
+  apiKey: process.env.TRIGGER_API_KEY || "",
   apiUrl: process.env.TRIGGER_API_URL,
-  verbose: process.env.TRIGGER_VERBOSE === 'true',
 });

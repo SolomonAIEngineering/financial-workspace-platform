@@ -19,6 +19,7 @@
     "dev": "run-p dev:*",
     "dev:app": "next dev --turbo",
     "dev:db": "docker-compose up",
+    "dev:trigger": "trigger dev",
     "docker": "docker-compose -f docker-compose.web.yml --env-file .env.local up --build",
     "email:dev": "pnpm with-env email dev --port 3333 --dir src/components/email",
     "postinstall": "pnpm db:generate",
@@ -34,7 +35,11 @@
     "typecheck:watch": "tsc --watch",
     "vendor": "sh tooling/scripts/vendor.sh",
     "with-env": "dotenv -e .env.local --",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "trigger:dev": "trigger dev",
+    "trigger:login": "trigger login",
+    "trigger:deploy": "trigger deploy",
+    "trigger:whoami": "trigger whoami"
   },
   "dependencies": {
     "24": "link:@heroicons/react/24",
@@ -83,7 +88,8 @@
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-query-devtools": "^5.66.0",
     "@team-plain/typescript-sdk": "^5.8.0",
-    "@trigger.dev/sdk": "^2.3.19",
+    "@trigger.dev/express": "^3.3.16",
+    "@trigger.dev/sdk": "^3.3.16",
     "@trpc/client": "11.0.0-rc.648",
     "@trpc/react-query": "11.0.0-rc.648",
     "@trpc/server": "11.0.0-rc.648",
@@ -213,6 +219,7 @@
     "@octokit/types": "13.8.0",
     "@tailwindcss/postcss": "^4.0.4",
     "@tailwindcss/typography": "^0.5.16",
+    "@trigger.dev/cli": "^3.3.16",
     "@types/eslint": "^9.6.1",
     "@types/lodash": "^4.17.15",
     "@types/node": "^22.13.1",
