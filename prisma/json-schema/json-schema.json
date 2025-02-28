@@ -305,6 +305,17 @@
             "null"
           ]
         },
+        "notificationsEnabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "lastTransactionNotificationAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
         "linkedinProfile": {
           "type": [
             "string",
@@ -338,10 +349,11 @@
           "default": "ACTIVE",
           "enum": [
             "ACTIVE",
+            "CLOSED",
+            "FROZEN",
             "INACTIVE",
-            "SUSPENDED",
             "PENDING",
-            "ARCHIVED"
+            "DISCONNECTED"
           ]
         },
         "lastLoginAt": {
@@ -398,6 +410,42 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/DocumentVersion"
+          }
+        },
+        "bankConnections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankConnection"
+          }
+        },
+        "bankAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankAccount"
+          }
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "spendingInsights": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SpendingInsight"
+          }
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserActivity"
+          }
+        },
+        "notifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Notification"
           }
         }
       },
@@ -743,6 +791,921 @@
         "appUrl",
         "type"
       ]
+    },
+    "BankConnection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "institutionId": {
+          "type": "string"
+        },
+        "institutionName": {
+          "type": "string"
+        },
+        "accessToken": {
+          "type": "string"
+        },
+        "itemId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "default": "ACTIVE",
+          "enum": [
+            "ACTIVE",
+            "ERROR",
+            "DISCONNECTED",
+            "PENDING",
+            "REQUIRES_ATTENTION",
+            "LOGIN_REQUIRED",
+            "REQUIRES_REAUTH"
+          ]
+        },
+        "errorCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errorMessage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastStatusChangedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "logo": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "primaryColor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "oauthSupported": {
+          "type": "boolean",
+          "default": false
+        },
+        "mfaSupported": {
+          "type": "boolean",
+          "default": false
+        },
+        "lastSyncedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "nextSyncScheduledAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "syncStatus": {
+          "type": "string",
+          "default": "IDLE",
+          "enum": [
+            "IDLE",
+            "SYNCING",
+            "FAILED",
+            "SCHEDULED"
+          ]
+        },
+        "balanceLastUpdated": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastNotifiedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "notificationCount": {
+          "type": "integer",
+          "default": 0
+        },
+        "webhookUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "consentExpiresAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankAccount"
+          }
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastAlertedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "alertCount": {
+          "type": "integer",
+          "default": 0
+        },
+        "lastCheckedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastAccessedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastExpiryNotifiedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "expiryNotificationCount": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "required": [
+        "userId",
+        "institutionId",
+        "institutionName",
+        "accessToken",
+        "itemId",
+        "updatedAt"
+      ]
+    },
+    "BankAccount": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "bankConnection": {
+          "$ref": "#/definitions/BankConnection"
+        },
+        "plaidAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "officialName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "DEPOSITORY",
+            "CREDIT",
+            "LOAN",
+            "INVESTMENT",
+            "MORTGAGE",
+            "BROKERAGE",
+            "OTHER"
+          ]
+        },
+        "subtype": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "CHECKING",
+            "SAVINGS",
+            "CD",
+            "MONEY_MARKET",
+            "CREDIT_CARD",
+            "PAYPAL",
+            "AUTO_LOAN",
+            "STUDENT_LOAN",
+            "MORTGAGE",
+            "RETIREMENT",
+            "MUTUAL_FUND",
+            "ETF",
+            "STOCK",
+            "CASH_MANAGEMENT",
+            "PREPAID",
+            "HEALTH_SAVINGS",
+            "OTHER"
+          ]
+        },
+        "verificationStatus": {
+          "type": "string",
+          "default": "NONE",
+          "enum": [
+            "NONE",
+            "PENDING_AUTOMATIC_VERIFICATION",
+            "PENDING_MANUAL_VERIFICATION",
+            "MANUALLY_VERIFIED",
+            "AUTOMATICALLY_VERIFIED",
+            "VERIFICATION_FAILED"
+          ]
+        },
+        "mask": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "displayName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accountNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "routingNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "iban": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "swift": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "availableBalance": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "currentBalance": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "limit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "isoCurrencyCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "balanceLastUpdated": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "capabilities": {
+          "type": "array",
+          "enum": [
+            "BALANCE",
+            "OWNERSHIP",
+            "PAYMENT",
+            "TRANSACTIONS",
+            "STATEMENTS",
+            "IDENTITY",
+            "AUTH"
+          ]
+        },
+        "permissionsGranted": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string",
+          "default": "ACTIVE",
+          "enum": [
+            "ACTIVE",
+            "CLOSED",
+            "FROZEN",
+            "INACTIVE",
+            "PENDING",
+            "DISCONNECTED"
+          ]
+        },
+        "isHidden": {
+          "type": "boolean",
+          "default": false
+        },
+        "isPrimary": {
+          "type": "boolean",
+          "default": false
+        },
+        "isFavorite": {
+          "type": "boolean",
+          "default": false
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "monthlySpending": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "monthlyIncome": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "averageBalance": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "budgetCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastSyncedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "errorCount": {
+          "type": "integer",
+          "default": 0
+        },
+        "errorMessage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "bankConnectionId",
+        "plaidAccountId",
+        "name",
+        "type",
+        "capabilities",
+        "updatedAt"
+      ]
+    },
+    "Transaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "bankAccount": {
+          "$ref": "#/definitions/BankAccount"
+        },
+        "bankConnection": {
+          "$ref": "#/definitions/BankConnection"
+        },
+        "plaidTransactionId": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "isoCurrencyCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "name": {
+          "type": "string"
+        },
+        "merchantName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pending": {
+          "type": "boolean",
+          "default": false
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "INCOME",
+            "TRANSFER",
+            "LOAN_PAYMENTS",
+            "BANK_FEES",
+            "ENTERTAINMENT",
+            "FOOD_AND_DRINK",
+            "GENERAL_MERCHANDISE",
+            "HOME_IMPROVEMENT",
+            "MEDICAL",
+            "PERSONAL_CARE",
+            "GENERAL_SERVICES",
+            "GOVERNMENT_AND_NON_PROFIT",
+            "TRANSPORTATION",
+            "TRAVEL",
+            "UTILITIES",
+            "OTHER"
+          ]
+        },
+        "subCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "categoryIconUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "customCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "location": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "paymentChannel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "paymentMethod": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "originalDescription": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "originalCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "originalMerchantName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "excludeFromBudget": {
+          "type": "boolean",
+          "default": false
+        },
+        "isRecurring": {
+          "type": "boolean",
+          "default": false
+        },
+        "recurrenceId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Attachment"
+          }
+        },
+        "parentTransaction": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Transaction"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "splitTransactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "bankAccountId",
+        "bankConnectionId",
+        "plaidTransactionId",
+        "amount",
+        "date",
+        "name",
+        "updatedAt"
+      ]
+    },
+    "Attachment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "transaction": {
+          "$ref": "#/definitions/Transaction"
+        },
+        "name": {
+          "type": "string"
+        },
+        "fileUrl": {
+          "type": "string"
+        },
+        "fileType": {
+          "type": "string"
+        },
+        "fileSize": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "transactionId",
+        "name",
+        "fileUrl",
+        "fileType",
+        "fileSize",
+        "updatedAt"
+      ]
+    },
+    "UserActivity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "required": [
+        "userId",
+        "type",
+        "detail"
+      ]
+    },
+    "Notification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "read": {
+          "type": "boolean",
+          "default": false
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "required": [
+        "userId",
+        "type",
+        "title",
+        "body"
+      ]
+    },
+    "SpendingInsight": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timeframe": {
+          "type": "string",
+          "default": "MONTH",
+          "enum": [
+            "DAY",
+            "WEEK",
+            "MONTH",
+            "QUARTER",
+            "YEAR",
+            "CUSTOM"
+          ]
+        },
+        "year": {
+          "type": "integer"
+        },
+        "month": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "quarter": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "week": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "totalTransactions": {
+          "type": "integer"
+        },
+        "totalSpending": {
+          "type": "number"
+        },
+        "avgTransactionSize": {
+          "type": "number"
+        },
+        "categoryStats": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "merchantStats": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "spendingTrend": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "incomeTotal": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "incomeTrend": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "startDate",
+        "endDate",
+        "year",
+        "totalTransactions",
+        "totalSpending",
+        "avgTransactionSize",
+        "categoryStats",
+        "updatedAt"
+      ]
     }
   },
   "type": "object",
@@ -770,6 +1733,27 @@
     },
     "file": {
       "$ref": "#/definitions/File"
+    },
+    "bankConnection": {
+      "$ref": "#/definitions/BankConnection"
+    },
+    "bankAccount": {
+      "$ref": "#/definitions/BankAccount"
+    },
+    "transaction": {
+      "$ref": "#/definitions/Transaction"
+    },
+    "attachment": {
+      "$ref": "#/definitions/Attachment"
+    },
+    "userActivity": {
+      "$ref": "#/definitions/UserActivity"
+    },
+    "notification": {
+      "$ref": "#/definitions/Notification"
+    },
+    "spendingInsight": {
+      "$ref": "#/definitions/SpendingInsight"
     }
   }
 }

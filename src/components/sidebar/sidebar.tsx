@@ -20,6 +20,7 @@ import {
 import { api, useTRPC } from '@/trpc/react';
 
 import { useAuthGuard } from '../auth/useAuthGuard';
+import { FeedbackForm } from '../editor/feedback-form';
 import { pushModal } from '../modals';
 import { Icons } from '../ui/icons';
 import { DocumentList } from './document-list';
@@ -120,6 +121,15 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
               >
                 <Icons.plus variant="muted" className="size-3.5" />
               </Button>
+            </NavItem>
+            <NavItem
+              className="text-xs transition-colors"
+              onClick={() => {}}
+              label="Feedback"
+              icon={Icons.alertCircle}
+              tooltip="Leave us some feedback"
+            >
+              <FeedbackForm />
             </NavItem>
 
             <DocumentList />

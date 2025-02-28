@@ -71,6 +71,13 @@ export const env = createEnv({
     GOOGLE_CLIENT_ID: z.string().default(''),
     GOOGLE_CLIENT_SECRET: z.string().default(''),
     OPENAI_API_KEY: z.string().default(''),
+    // Plaid environment variables
+    PLAID_CLIENT_ID: z.string().default(''),
+    PLAID_ENV: z
+      .enum(['sandbox', 'development', 'production'])
+      .default('sandbox'),
+    PLAID_SECRET: z.string().default(''),
+    PLAID_WEBHOOK_URL: z.string().url().optional(),
     PLAIN_API_KEY: z.string().default(''),
     PLAIN_FEEDBACK_LABEL_BUG: z
       .string()
@@ -92,6 +99,11 @@ export const env = createEnv({
     STRIPE_API_KEY: z.string().default(''),
     STRIPE_WEBHOOK_SECRET: z.string().default(''),
     SUPERADMIN: z.string().default(''),
+    // Trigger.dev environment variables
+    TRIGGER_API_ID: z.string().default(''),
+    TRIGGER_API_KEY: z.string().default(''),
+    TRIGGER_API_URL: z.string().url().optional(),
+    TRIGGER_VERBOSE: z.enum(['true', 'false']).default('false'),
     UPSTASH_REDIS_REST_TOKEN: z.string().default(''),
     UPSTASH_REDIS_REST_URL: z.string().default(''),
   },

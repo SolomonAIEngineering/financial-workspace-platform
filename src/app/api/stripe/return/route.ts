@@ -10,7 +10,7 @@ import { env } from '@/env';
  *
  * It can process 'success' or 'cancel' status from checkout.
  */
-export async function GET(req: NextRequest) {
+export function GET(req: NextRequest) {
   // Get the URL parameters
   const searchParams = req.nextUrl.searchParams;
   const status = searchParams.get('status') || 'success';

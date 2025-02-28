@@ -2,6 +2,7 @@ import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 import { createCallerFactory, createRouter } from '@/server/api/trpc';
 
+import { bankAccountsRouter } from './routers/bank-accounts';
 import { commentRouter } from './routers/comment';
 import { documentRouter } from './routers/document';
 import { fileRouter } from './routers/file';
@@ -10,6 +11,7 @@ import { userRouter } from './routers/user';
 import { versionRouter } from './routers/version';
 
 export const appRouter = createRouter({
+  bankAccounts: bankAccountsRouter,
   comment: commentRouter,
   document: documentRouter,
   file: fileRouter,

@@ -20,7 +20,7 @@ export const platformConfig = {
   email: {
     from: {
       default: `${env.NEXT_PUBLIC_APP_NAME} <noreply@${process.env.EMAIL_DOMAIN || 'solomon-ai.app'}>`,
-      system: `${env.NEXT_PUBLIC_APP_NAME} <system@${process.env.EMAIL_DOMAIN || 'solomon-ai.app'}>`,
+      system: `${env.NEXT_PUBLIC_APP_NAME} <yoan@${process.env.EMAIL_DOMAIN || 'solomon-ai.app'}>`,
     },
     replyTo: `support@${process.env.EMAIL_DOMAIN || 'solomon-ai.app'}`,
   },
