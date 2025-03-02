@@ -22,13 +22,13 @@ const MAX_SHORT_TEXT_LENGTH = 255;
 
 // Define AccountStatus enum if it doesn't exist in types
 const AccountStatus = {
-  ACTIVE: "ACTIVE",
-  ARCHIVED: "ARCHIVED",
-  INACTIVE: "INACTIVE",
-  PENDING: "PENDING",
-  SUSPENDED: "SUSPENDED",
+  ACTIVE: 'ACTIVE',
+  ARCHIVED: 'ARCHIVED',
+  INACTIVE: 'INACTIVE',
+  PENDING: 'PENDING',
+  SUSPENDED: 'SUSPENDED',
 } as const;
-type AccountStatus = typeof AccountStatus[keyof typeof AccountStatus];
+type AccountStatus = (typeof AccountStatus)[keyof typeof AccountStatus];
 
 // Define a comprehensive schema for professional profile validation
 const professionalProfileSchema = z.object({
@@ -36,17 +36,31 @@ const professionalProfileSchema = z.object({
   addressLine1: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   addressLine2: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   bio: z.string().max(MAX_TEXT_LENGTH, 'Bio is too long').optional().nullable(),
-  businessEmail: z.string().email('Invalid business email').max(MAX_EMAIL_LENGTH).optional().nullable(),
+  businessEmail: z
+    .string()
+    .email('Invalid business email')
+    .max(MAX_EMAIL_LENGTH)
+    .optional()
+    .nullable(),
   businessPhone: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   city: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   country: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   department: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
 
   // Basic profile
-  email: z.string().email().max(MAX_EMAIL_LENGTH, 'Email is too long').optional(),
+  email: z
+    .string()
+    .email()
+    .max(MAX_EMAIL_LENGTH, 'Email is too long')
+    .optional(),
   employeeId: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   firstName: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
-  githubProfile: z.string().url('Invalid URL').max(MAX_URL_LENGTH).optional().nullable(),
+  githubProfile: z
+    .string()
+    .url('Invalid URL')
+    .max(MAX_URL_LENGTH)
+    .optional()
+    .nullable(),
   hireDate: z.string().optional().nullable(), // Changed from z.date() to z.string() for easier handling
 
   // Professional details
@@ -54,9 +68,19 @@ const professionalProfileSchema = z.object({
   language: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   lastName: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   // Social profiles
-  linkedinProfile: z.string().url('Invalid URL').max(MAX_URL_LENGTH).optional().nullable(),
+  linkedinProfile: z
+    .string()
+    .url('Invalid URL')
+    .max(MAX_URL_LENGTH)
+    .optional()
+    .nullable(),
 
-  name: z.string().min(1, 'Name is required').max(MAX_NAME_LENGTH, 'Name is too long').trim().optional(),
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(MAX_NAME_LENGTH, 'Name is too long')
+    .trim()
+    .optional(),
   officeLocation: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   // Organization data
   organizationName: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
@@ -65,12 +89,22 @@ const professionalProfileSchema = z.object({
   // Contact information
   phoneNumber: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   postalCode: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
-  profileImageUrl: z.string().url('Invalid URL').max(MAX_PROFILE_IMAGE_URL_LENGTH, 'Profile image URL is too long').optional().nullable(),
+  profileImageUrl: z
+    .string()
+    .url('Invalid URL')
+    .max(MAX_PROFILE_IMAGE_URL_LENGTH, 'Profile image URL is too long')
+    .optional()
+    .nullable(),
   state: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   teamName: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
 
   timezone: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
-  twitterProfile: z.string().url('Invalid URL').max(MAX_URL_LENGTH).optional().nullable(),
+  twitterProfile: z
+    .string()
+    .url('Invalid URL')
+    .max(MAX_URL_LENGTH)
+    .optional()
+    .nullable(),
   yearsOfExperience: z.number().int().positive().optional().nullable(),
 });
 
@@ -87,7 +121,12 @@ const organizationProfileSchema = z.object({
 const contactInfoSchema = z.object({
   addressLine1: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   addressLine2: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
-  businessEmail: z.string().email('Invalid business email').max(MAX_EMAIL_LENGTH).optional().nullable(),
+  businessEmail: z
+    .string()
+    .email('Invalid business email')
+    .max(MAX_EMAIL_LENGTH)
+    .optional()
+    .nullable(),
   businessPhone: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   city: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
   country: z.string().max(MAX_SHORT_TEXT_LENGTH).optional().nullable(),
@@ -99,34 +138,43 @@ const contactInfoSchema = z.object({
 
 // Schema for preferences
 const userPreferencesSchema = z.object({
-  displayPreferences: z.object({
-    compactMode: z.boolean().optional(),
-    fontSize: z.enum(['small', 'medium', 'large']).optional(),
-    theme: z.enum(['light', 'dark', 'system']).optional(),
-  }).optional().nullable(),
-  documentPreferences: z.object({
-    autoSave: z.boolean().optional(),
-    defaultView: z.enum(['edit', 'preview']).optional(),
-    showComments: z.boolean().optional(),
-  }).optional().nullable(),
-  notificationPreferences: z.object({
-    documentUpdates: z.boolean().optional(),
-    emailNotifications: z.boolean().optional(),
-    pushNotifications: z.boolean().optional(),
-    teamUpdates: z.boolean().optional(),
-  }).optional().nullable(),
+  displayPreferences: z
+    .object({
+      compactMode: z.boolean().optional(),
+      fontSize: z.enum(['small', 'medium', 'large']).optional(),
+      theme: z.enum(['light', 'dark', 'system']).optional(),
+    })
+    .optional()
+    .nullable(),
+  documentPreferences: z
+    .object({
+      autoSave: z.boolean().optional(),
+      defaultView: z.enum(['edit', 'preview']).optional(),
+      showComments: z.boolean().optional(),
+    })
+    .optional()
+    .nullable(),
+  notificationPreferences: z
+    .object({
+      documentUpdates: z.boolean().optional(),
+      emailNotifications: z.boolean().optional(),
+      pushNotifications: z.boolean().optional(),
+      teamUpdates: z.boolean().optional(),
+    })
+    .optional()
+    .nullable(),
 });
 
 export const userRouter = createRouter({
   // NEW SUBSCRIPTION ENDPOINTS
 
-  /**
-   * Create a Stripe Checkout session for subscription
-   */
+  /** Create a Stripe Checkout session for subscription */
   createCheckoutSession: protectedProcedure
-    .input(z.object({
-      priceId: z.string(),
-    }))
+    .input(
+      z.object({
+        priceId: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const { userId } = ctx;
       const { priceId } = input;
@@ -145,7 +193,10 @@ export const userRouter = createRouter({
       }
 
       // Base URL for redirects
-      const baseUrl = env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) || 'http://localhost:3000';
+      const baseUrl =
+        env.NEXT_PUBLIC_SITE_URL ||
+        (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+        'http://localhost:3000';
 
       // Create or retrieve the Stripe customer
       let customerId = user.stripeCustomerId;
@@ -195,37 +246,37 @@ export const userRouter = createRouter({
       return { url: session.url };
     }),
 
-  /**
-   * Create a Stripe Customer Portal session for managing subscriptions
-   */
-  createPortalSession: protectedProcedure
-    .mutation(async ({ ctx }) => {
-      const { userId } = ctx;
+  /** Create a Stripe Customer Portal session for managing subscriptions */
+  createPortalSession: protectedProcedure.mutation(async ({ ctx }) => {
+    const { userId } = ctx;
 
-      // Get the user's Stripe customer ID
-      const user = await prisma.user.findUnique({
-        select: { stripeCustomerId: true },
-        where: { id: userId },
+    // Get the user's Stripe customer ID
+    const user = await prisma.user.findUnique({
+      select: { stripeCustomerId: true },
+      where: { id: userId },
+    });
+
+    if (!user?.stripeCustomerId) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'No Stripe customer found for this user',
       });
+    }
 
-      if (!user?.stripeCustomerId) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'No Stripe customer found for this user',
-        });
-      }
+    // Base URL for redirects
+    const baseUrl =
+      env.NEXT_PUBLIC_SITE_URL ||
+      (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+      'http://localhost:3000';
 
-      // Base URL for redirects
-      const baseUrl = env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) || 'http://localhost:3000';
+    // Create a portal session
+    const session = await stripe.billingPortal.sessions.create({
+      customer: user.stripeCustomerId,
+      return_url: `${baseUrl}/api/stripe/return?source=portal`,
+    });
 
-      // Create a portal session
-      const session = await stripe.billingPortal.sessions.create({
-        customer: user.stripeCustomerId,
-        return_url: `${baseUrl}/api/stripe/return?source=portal`,
-      });
-
-      return { url: session.url };
-    }),
+    return { url: session.url };
+  }),
 
   deleteAccount: protectedProcedure.mutation(async ({ ctx }) => {
     await prisma.user.delete({
@@ -238,70 +289,112 @@ export const userRouter = createRouter({
   // EXISTING ENDPOINTS
 
   // Get enhanced profile completeness with all relevant fields for business profile
-  getBusinessProfileCompleteness: protectedProcedure
-    .query(async ({ ctx }) => {
-      const user = await prisma.user.findUnique({
-        where: { id: ctx.userId },
-      });
+  getBusinessProfileCompleteness: protectedProcedure.query(async ({ ctx }) => {
+    const user = await prisma.user.findUnique({
+      where: { id: ctx.userId },
+    });
 
-      if (!user) {
-        throw new Error('User not found');
-      }
+    if (!user) {
+      throw new Error('User not found');
+    }
 
-      // Calculate profile completeness on all business-relevant fields
-      const businessFields = [
-        user.name,
-        user.firstName,
-        user.lastName,
-        user.profileImageUrl,
-        user.email,
-        user.bio,
-        user.jobTitle,
-        user.department,
-        user.organizationName,
-        user.teamName,
-        user.phoneNumber,
-        user.businessEmail,
-        user.businessPhone,
-        user.officeLocation,
-        user.addressLine1,
-        user.city,
-        user.country
-      ];
+    // Calculate profile completeness on all business-relevant fields
+    const businessFields = [
+      user.name,
+      user.firstName,
+      user.lastName,
+      user.profileImageUrl,
+      user.email,
+      user.bio,
+      user.jobTitle,
+      user.department,
+      user.organizationName,
+      user.teamName,
+      user.phoneNumber,
+      user.businessEmail,
+      user.businessPhone,
+      user.officeLocation,
+      user.addressLine1,
+      user.city,
+      user.country,
+    ];
 
-      const completedFields = businessFields.filter(field => !!field).length;
-      const totalFields = businessFields.length;
-      const completenessPercentage = Math.round((completedFields / totalFields) * 100);
+    const completedFields = businessFields.filter((field) => !!field).length;
+    const totalFields = businessFields.length;
+    const completenessPercentage = Math.round(
+      (completedFields / totalFields) * 100
+    );
 
-      // Create sections with their own completeness
-      const basicInfo = [user.name, user.firstName, user.lastName, user.email, user.profileImageUrl];
-      const basicInfoCompleteness = Math.round((basicInfo.filter(f => !!f).length / basicInfo.length) * 100);
+    // Create sections with their own completeness
+    const basicInfo = [
+      user.name,
+      user.firstName,
+      user.lastName,
+      user.email,
+      user.profileImageUrl,
+    ];
+    const basicInfoCompleteness = Math.round(
+      (basicInfo.filter((f) => !!f).length / basicInfo.length) * 100
+    );
 
-      const professionalInfo = [user.jobTitle, user.department, user.organizationName, user.teamName];
-      const professionalInfoCompleteness = Math.round((professionalInfo.filter(f => !!f).length / professionalInfo.length) * 100);
+    const professionalInfo = [
+      user.jobTitle,
+      user.department,
+      user.organizationName,
+      user.teamName,
+    ];
+    const professionalInfoCompleteness = Math.round(
+      (professionalInfo.filter((f) => !!f).length / professionalInfo.length) *
+        100
+    );
 
-      const contactInfo = [user.phoneNumber, user.businessEmail, user.businessPhone, user.officeLocation, user.addressLine1, user.city, user.country];
-      const contactInfoCompleteness = Math.round((contactInfo.filter(f => !!f).length / contactInfo.length) * 100);
+    const contactInfo = [
+      user.phoneNumber,
+      user.businessEmail,
+      user.businessPhone,
+      user.officeLocation,
+      user.addressLine1,
+      user.city,
+      user.country,
+    ];
+    const contactInfoCompleteness = Math.round(
+      (contactInfo.filter((f) => !!f).length / contactInfo.length) * 100
+    );
 
-      return {
-        nextStepsToComplete: businessFields.map((field, index) => {
+    return {
+      nextStepsToComplete: businessFields
+        .map((field, index) => {
           const fieldNames = [
-            'name', 'firstName', 'lastName', 'profileImageUrl', 'email',
-            'bio', 'jobTitle', 'department', 'organizationName', 'teamName',
-            'phoneNumber', 'businessEmail', 'businessPhone', 'officeLocation',
-            'addressLine1', 'city', 'country'
+            'name',
+            'firstName',
+            'lastName',
+            'profileImageUrl',
+            'email',
+            'bio',
+            'jobTitle',
+            'department',
+            'organizationName',
+            'teamName',
+            'phoneNumber',
+            'businessEmail',
+            'businessPhone',
+            'officeLocation',
+            'addressLine1',
+            'city',
+            'country',
           ];
 
           return field === undefined ? fieldNames[index] : null;
-        }).filter(Boolean),
-        overallCompleteness: completenessPercentage,
-        sections: {
-          basicInfo: { completeness: basicInfoCompleteness },
-          contactInfo: { completeness: contactInfoCompleteness },
-          professionalInfo: { completeness: professionalInfoCompleteness },
-        },
-      };
-    }),
+        })
+        .filter(Boolean),
+      overallCompleteness: completenessPercentage,
+      sections: {
+        basicInfo: { completeness: basicInfoCompleteness },
+        contactInfo: { completeness: contactInfoCompleteness },
+        professionalInfo: { completeness: professionalInfoCompleteness },
+      },
+    };
+  }),
 
   // Get comprehensive profile including all fields
   getFullProfile: protectedProcedure.query(async ({ ctx }) => {
@@ -318,9 +411,11 @@ export const userRouter = createRouter({
 
   // Get organization directory
   getOrganizationDirectory: protectedProcedure
-    .input(z.object({
-      organizationName: z.string().optional(), // If not provided, uses current user's org
-    }))
+    .input(
+      z.object({
+        organizationName: z.string().optional(), // If not provided, uses current user's org
+      })
+    )
     .query(async ({ ctx, input }) => {
       // If organization not specified, get current user's organization
       let organizationName = input.organizationName;
@@ -362,7 +457,7 @@ export const userRouter = createRouter({
       // Group by department and team
       const directory: Record<string, Record<string, any[]>> = {};
 
-      orgUsers.forEach(user => {
+      orgUsers.forEach((user) => {
         const dept = user.department || 'Other';
         const team = user.teamName || 'General';
 
@@ -378,49 +473,52 @@ export const userRouter = createRouter({
 
       return {
         directory,
-        organizationName
+        organizationName,
       };
     }),
 
   // Add an endpoint to get profile completeness
-  getProfileCompleteness: protectedProcedure
-    .query(async ({ ctx }) => {
-      const user = await prisma.user.findUnique({
-        where: { id: ctx.userId },
-      });
+  getProfileCompleteness: protectedProcedure.query(async ({ ctx }) => {
+    const user = await prisma.user.findUnique({
+      where: { id: ctx.userId },
+    });
 
-      if (!user) {
-        throw new Error('User not found');
-      }
+    if (!user) {
+      throw new Error('User not found');
+    }
 
-      // Calculate profile completeness only on fields we know exist
-      const fields = [
-        user.name,
-        user.firstName,
-        user.lastName,
-        user.profileImageUrl,
-        user.email
-      ];
+    // Calculate profile completeness only on fields we know exist
+    const fields = [
+      user.name,
+      user.firstName,
+      user.lastName,
+      user.profileImageUrl,
+      user.email,
+    ];
 
-      const completedFields = fields.filter(field => !!field).length;
-      const totalFields = fields.length;
-      const completenessPercentage = Math.round((completedFields / totalFields) * 100);
+    const completedFields = fields.filter((field) => !!field).length;
+    const totalFields = fields.length;
+    const completenessPercentage = Math.round(
+      (completedFields / totalFields) * 100
+    );
 
-      return {
-        completeness: completenessPercentage,
-        missingFields: fields.map((field, index) => {
+    return {
+      completeness: completenessPercentage,
+      missingFields: fields
+        .map((field, index) => {
           const fieldNames = [
             'name',
             'firstName',
             'lastName',
             'profileImageUrl',
-            'email'
+            'email',
           ];
 
           return field === undefined ? fieldNames[index] : null;
-        }).filter(Boolean),
-      };
-    }),
+        })
+        .filter(Boolean),
+    };
+  }),
 
   getSettings: protectedProcedure.query(async ({ ctx }) => {
     // Get all available fields for the user
@@ -443,36 +541,35 @@ export const userRouter = createRouter({
   // NEW ENDPOINTS
 
   // Get team members (users with the same teamName)
-  getTeamMembers: protectedProcedure
-    .query(async ({ ctx }) => {
-      const currentUser = await prisma.user.findUnique({
-        select: { organizationName: true, teamName: true },
-        where: { id: ctx.userId },
-      });
+  getTeamMembers: protectedProcedure.query(async ({ ctx }) => {
+    const currentUser = await prisma.user.findUnique({
+      select: { organizationName: true, teamName: true },
+      where: { id: ctx.userId },
+    });
 
-      if (!currentUser?.teamName) {
-        return [];
-      }
+    if (!currentUser?.teamName) {
+      return [];
+    }
 
-      const teamMembers = await prisma.user.findMany({
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          jobTitle: true,
-          lastName: true,
-          name: true,
-          profileImageUrl: true,
-        },
-        where: {
-          id: { not: ctx.userId }, // Exclude current user
-          organizationName: currentUser.organizationName,
-          teamName: currentUser.teamName,
-        },
-      });
+    const teamMembers = await prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        jobTitle: true,
+        lastName: true,
+        name: true,
+        profileImageUrl: true,
+      },
+      where: {
+        id: { not: ctx.userId }, // Exclude current user
+        organizationName: currentUser.organizationName,
+        teamName: currentUser.teamName,
+      },
+    });
 
-      return teamMembers;
-    }),
+    return teamMembers;
+  }),
 
   getUser: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -492,20 +589,54 @@ export const userRouter = createRouter({
       return user;
     }),
 
-  /**
-   * Get a user's subscription details
-   */
-  getUserSubscription: protectedProcedure
-    .query(async ({ ctx }) => {
-      const { userId } = ctx;
+  /** Get a user's subscription details */
+  getUserSubscription: protectedProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx;
 
-      // Get the user's Stripe customer ID
-      const user = await prisma.user.findUnique({
-        select: { stripeCustomerId: true },
-        where: { id: userId },
+    // Get the user's Stripe customer ID
+    const user = await prisma.user.findUnique({
+      select: { stripeCustomerId: true },
+      where: { id: userId },
+    });
+
+    if (!user?.stripeCustomerId) {
+      // No subscription found, return null values
+      return {
+        id: null,
+        cancelAtPeriodEnd: false,
+        currentPeriodEnd: null,
+        plan: null,
+        status: null,
+      };
+    }
+
+    try {
+      // Get all subscriptions for this customer
+      // Use simpler expand pattern to avoid Stripe API limitations
+      const subscriptions = await stripe.subscriptions.list({
+        customer: user.stripeCustomerId,
+        expand: ['data.default_payment_method'],
+        status: 'all',
       });
 
-      if (!user?.stripeCustomerId) {
+      // First try to find an active subscription
+      let subscription = subscriptions.data.find(
+        (sub) => sub.status === 'active'
+      );
+
+      // If no active subscription, check for canceled subscription that's still in period
+      if (!subscription) {
+        subscription = subscriptions.data.find(
+          (sub) =>
+            sub.status === 'canceled' &&
+            sub.current_period_end * 1000 > Date.now()
+        );
+      }
+      // If still no subscription, get the most recent one
+      if (!subscription && subscriptions.data.length > 0) {
+        subscription = subscriptions.data[0];
+      }
+      if (!subscription) {
         // No subscription found, return null values
         return {
           id: null,
@@ -516,82 +647,51 @@ export const userRouter = createRouter({
         };
       }
 
-      try {
-        // Get all subscriptions for this customer
-        // Use simpler expand pattern to avoid Stripe API limitations
-        const subscriptions = await stripe.subscriptions.list({
-          customer: user.stripeCustomerId,
-          expand: ['data.default_payment_method'],
-          status: 'all',
-        });
+      // Get the price and product details in separate calls to avoid deep nesting
+      const priceId = subscription.items.data[0].price.id;
 
-        // First try to find an active subscription
-        let subscription = subscriptions.data.find(sub => sub.status === 'active');
+      // Get price with expanded product
+      const price = await stripe.prices.retrieve(priceId, {
+        expand: ['product'],
+      });
 
-        // If no active subscription, check for canceled subscription that's still in period
-        if (!subscription) {
-          subscription = subscriptions.data.find(sub =>
-            sub.status === 'canceled' && sub.current_period_end * 1000 > Date.now()
-          );
-        }
-        // If still no subscription, get the most recent one
-        if (!subscription && subscriptions.data.length > 0) {
-          subscription = subscriptions.data[0];
-        }
-        if (!subscription) {
-          // No subscription found, return null values
-          return {
-            id: null,
-            cancelAtPeriodEnd: false,
-            currentPeriodEnd: null,
-            plan: null,
-            status: null,
-          };
-        }
+      const product = price.product as Stripe.Product;
 
-        // Get the price and product details in separate calls to avoid deep nesting
-        const priceId = subscription.items.data[0].price.id;
+      // Return formatted subscription details
+      return {
+        id: subscription.id,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,
+        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+        plan: {
+          id: priceId,
+          amount: price.unit_amount,
+          interval: price.recurring?.interval || 'month',
+          name: product.name,
+        },
+        status: subscription.status,
+      };
+    } catch (error) {
+      console.error('Error retrieving subscription:', error);
 
-        // Get price with expanded product
-        const price = await stripe.prices.retrieve(priceId, {
-          expand: ['product'],
-        });
-
-        const product = price.product as Stripe.Product;
-
-        // Return formatted subscription details
-        return {
-          id: subscription.id,
-          cancelAtPeriodEnd: subscription.cancel_at_period_end,
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-          plan: {
-            id: priceId,
-            amount: price.unit_amount,
-            interval: price.recurring?.interval || 'month',
-            name: product.name,
-          },
-          status: subscription.status,
-        };
-      } catch (error) {
-        console.error('Error retrieving subscription:', error);
-
-        // Return null values if there's an error
-        return {
-          id: null,
-          cancelAtPeriodEnd: false,
-          currentPeriodEnd: null,
-          plan: null,
-          status: null,
-        };
-      }
-    }),
+      // Return null values if there's an error
+      return {
+        id: null,
+        cancelAtPeriodEnd: false,
+        currentPeriodEnd: null,
+        plan: null,
+        status: null,
+      };
+    }
+  }),
 
   // Search for users by name, org, or team
   searchUsers: protectedProcedure
-    .input(z.object({
-      limit: z.number().min(1).max(50).default(10),
-      query: z.string().min(1).max(100),
-    }))
+    .input(
+      z.object({
+        limit: z.number().min(1).max(50).default(10),
+        query: z.string().min(1).max(100),
+      })
+    )
     .query(async ({ input }) => {
       const users = await prisma.user.findMany({
         select: {
@@ -610,7 +710,9 @@ export const userRouter = createRouter({
             { name: { contains: input.query, mode: 'insensitive' } },
             { firstName: { contains: input.query, mode: 'insensitive' } },
             { lastName: { contains: input.query, mode: 'insensitive' } },
-            { organizationName: { contains: input.query, mode: 'insensitive' } },
+            {
+              organizationName: { contains: input.query, mode: 'insensitive' },
+            },
             { teamName: { contains: input.query, mode: 'insensitive' } },
           ],
         },
@@ -621,9 +723,11 @@ export const userRouter = createRouter({
 
   // Set user language preference
   setLanguage: protectedProcedure
-    .input(z.object({
-      language: z.string().min(2).max(10),
-    }))
+    .input(
+      z.object({
+        language: z.string().min(2).max(10),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const updatedUser = await prisma.user.update({
         data: {
@@ -637,9 +741,11 @@ export const userRouter = createRouter({
 
   // Set user timezone
   setTimezone: protectedProcedure
-    .input(z.object({
-      timezone: z.string().min(1).max(50),
-    }))
+    .input(
+      z.object({
+        timezone: z.string().min(1).max(50),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const updatedUser = await prisma.user.update({
         data: {
@@ -680,9 +786,15 @@ export const userRouter = createRouter({
     .input(userPreferencesSchema)
     .mutation(async ({ ctx, input }) => {
       // Serialize the preferences objects while converting to Prisma-compatible JSON
-      const displayPrefs = input.displayPreferences ? structuredClone(input.displayPreferences) : undefined;
-      const notificationPrefs = input.notificationPreferences ? structuredClone(input.notificationPreferences) : undefined;
-      const documentPrefs = input.documentPreferences ? structuredClone(input.documentPreferences) : undefined;
+      const displayPrefs = input.displayPreferences
+        ? structuredClone(input.displayPreferences)
+        : undefined;
+      const notificationPrefs = input.notificationPreferences
+        ? structuredClone(input.notificationPreferences)
+        : undefined;
+      const documentPrefs = input.documentPreferences
+        ? structuredClone(input.documentPreferences)
+        : undefined;
 
       const updatedUser = await prisma.user.update({
         data: {
@@ -711,23 +823,14 @@ export const userRouter = createRouter({
   updateSettings: protectedProcedure
     .input(
       z.object({
-        bio: z
-          .string()
-          .max(MAX_TEXT_LENGTH, 'Bio is too long')
-          .optional(),
+        bio: z.string().max(MAX_TEXT_LENGTH, 'Bio is too long').optional(),
         email: z
           .string()
           .email()
           .max(MAX_EMAIL_LENGTH, 'Email is too long')
           .optional(),
-        firstName: z
-          .string()
-          .max(MAX_SHORT_TEXT_LENGTH)
-          .optional(),
-        lastName: z
-          .string()
-          .max(MAX_SHORT_TEXT_LENGTH)
-          .optional(),
+        firstName: z.string().max(MAX_SHORT_TEXT_LENGTH).optional(),
+        lastName: z.string().max(MAX_SHORT_TEXT_LENGTH).optional(),
         name: z
           .string()
           .min(1, 'Name is required')
@@ -752,11 +855,28 @@ export const userRouter = createRouter({
 
   // Update social profiles
   updateSocialProfiles: protectedProcedure
-    .input(z.object({
-      githubProfile: z.string().url('Invalid URL').max(MAX_URL_LENGTH).optional().nullable(),
-      linkedinProfile: z.string().url('Invalid URL').max(MAX_URL_LENGTH).optional().nullable(),
-      twitterProfile: z.string().url('Invalid URL').max(MAX_URL_LENGTH).optional().nullable(),
-    }))
+    .input(
+      z.object({
+        githubProfile: z
+          .string()
+          .url('Invalid URL')
+          .max(MAX_URL_LENGTH)
+          .optional()
+          .nullable(),
+        linkedinProfile: z
+          .string()
+          .url('Invalid URL')
+          .max(MAX_URL_LENGTH)
+          .optional()
+          .nullable(),
+        twitterProfile: z
+          .string()
+          .url('Invalid URL')
+          .max(MAX_URL_LENGTH)
+          .optional()
+          .nullable(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const updatedUser = await prisma.user.update({
         data: input,

@@ -57,17 +57,17 @@ Follow these steps to implement a multi-step onboarding process:
    export const findOrCreateUser = async (
      {
        // ... existing params ...
-     }
+     },
    ) => {
      const user = await prisma.user.create({
        data: {
          // ... existing fields ...
-         onboardingStatus: 'PENDING',
+         onboardingStatus: "PENDING",
          onboardingSteps: {
            create: [
-             { step: 'PROFILE' },
-             { step: 'PREFERENCES' },
-             { step: 'WORKSPACE' },
+             { step: "PROFILE" },
+             { step: "PREFERENCES" },
+             { step: "WORKSPACE" },
            ],
          },
        },
@@ -95,9 +95,9 @@ Follow these steps to implement a multi-step onboarding process:
    ```typescript
    // src/components/onboarding/store.ts
    export const useOnboardingStore = create<OnboardingStore>((set) => ({
-     currentStep: 'PROFILE',
+     currentStep: "PROFILE",
      stepData: {},
-     status: 'PENDING',
+     status: "PENDING",
      setStep: (step) => set({ currentStep: step }),
      updateStepData: (step, data) =>
        set((state) => ({
@@ -118,18 +118,18 @@ Follow these steps to implement a multi-step onboarding process:
      return useCallback(
        (callback?: () => Promise<void> | void) => {
          if (!user?.id) {
-           pushModal('Login');
+           pushModal("Login");
            return true;
          }
 
-         if (user.onboardingStatus === 'PENDING') {
-           router.push('/onboarding');
+         if (user.onboardingStatus === "PENDING") {
+           router.push("/onboarding");
            return true;
          }
 
          return callback ? void callback() : false;
        },
-       [user?.id, user?.onboardingStatus]
+       [user?.id, user?.onboardingStatus],
      );
    };
    ```
@@ -159,9 +159,9 @@ Follow these steps to implement a multi-step onboarding process:
    // src/lib/analytics/onboarding.ts
    export const trackOnboardingProgress = (
      step: string,
-     status: StepStatus
+     status: StepStatus,
    ) => {
-     analytics.track('onboarding_step', {
+     analytics.track("onboarding_step", {
        step,
        status,
        timestamp: new Date().toISOString(),
@@ -185,7 +185,7 @@ Follow these steps to implement a multi-step onboarding process:
 
     ```typescript
     // src/lib/validation/onboarding.ts
-    import { z } from 'zod';
+    import { z } from "zod";
 
     export const ProfileSchema = z.object({
       displayName: z.string().min(2).max(50),
@@ -195,7 +195,7 @@ Follow these steps to implement a multi-step onboarding process:
     });
 
     export const PreferencesSchema = z.object({
-      theme: z.enum(['light', 'dark', 'system']),
+      theme: z.enum(["light", "dark", "system"]),
       emailNotifications: z.boolean(),
       // ... other preferences
     });
@@ -214,17 +214,17 @@ Follow these steps to implement a multi-step onboarding process:
 
     ```typescript
     // src/server/middleware/onboarding.ts
-    import { Context, Next } from 'hono';
-    import { OnboardingStatus } from '@prisma/client';
+    import { Context, Next } from "hono";
+    import { OnboardingStatus } from "@prisma/client";
 
-    const ONBOARDING_ROUTES = ['/onboarding', '/api/onboarding'];
+    const ONBOARDING_ROUTES = ["/onboarding", "/api/onboarding"];
 
     export const onboardingMiddleware = async (c: Context, next: Next) => {
-      const user = c.get('user');
+      const user = c.get("user");
       const path = c.req.path;
 
       // Allow authentication routes
-      if (path.startsWith('/api/auth')) {
+      if (path.startsWith("/api/auth")) {
         return next();
       }
 
@@ -233,7 +233,7 @@ Follow these steps to implement a multi-step onboarding process:
         user?.onboardingStatus !== OnboardingStatus.COMPLETED &&
         !ONBOARDING_ROUTES.some((route) => path.startsWith(route))
       ) {
-        return c.redirect('/onboarding');
+        return c.redirect("/onboarding");
       }
 
       return next();
@@ -244,7 +244,7 @@ Follow these steps to implement a multi-step onboarding process:
 
     ```typescript
     // src/lib/onboarding/session.ts
-    export const ONBOARDING_SESSION_KEY = 'onboarding_session';
+    export const ONBOARDING_SESSION_KEY = "onboarding_session";
 
     export interface OnboardingSession {
       lastStep: string;
@@ -255,7 +255,7 @@ Follow these steps to implement a multi-step onboarding process:
     export const saveOnboardingProgress = async (
       userId: string,
       step: string,
-      data: unknown
+      data: unknown,
     ) => {
       await redis.hset(`${ONBOARDING_SESSION_KEY}:${userId}`, {
         lastStep: step,
@@ -265,17 +265,17 @@ Follow these steps to implement a multi-step onboarding process:
     };
 
     export const resumeOnboardingProgress = async (
-      userId: string
+      userId: string,
     ): Promise<OnboardingSession | null> => {
       const session = await redis.hgetall(
-        `${ONBOARDING_SESSION_KEY}:${userId}`
+        `${ONBOARDING_SESSION_KEY}:${userId}`,
       );
 
       if (!session) return null;
 
       return {
         lastStep: session.lastStep,
-        stepData: JSON.parse(session[`stepData:${session.lastStep}`] || '{}'),
+        stepData: JSON.parse(session[`stepData:${session.lastStep}`] || "{}"),
         lastActive: parseInt(session.lastActive, 10),
       };
     };

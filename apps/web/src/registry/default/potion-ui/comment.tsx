@@ -268,7 +268,7 @@ export function Comment(props: {
             variant="comment"
             className={cn(
               'transition-all duration-200',
-              isEditing ? 'ring-1 shadow-sm ring-primary/20' : ''
+              isEditing ? 'shadow-sm ring-1 ring-primary/20' : ''
             )}
           >
             <Editor

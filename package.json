@@ -13,7 +13,8 @@
     "lint:fix": "turbo lint:fix",
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "typecheck": "turbo typecheck"
+    "typecheck": "turbo typecheck",
+    "precommit": "pnpm format"
   },
   "devDependencies": {
     "prettier": "^3.2.5",

@@ -65,7 +65,7 @@ export const DropdownMenuContent = function DropdownMenuContent({
   const content = (
     <DropdownMenuPrimitive.Content
       className={cn(
-        'z-50 max-w-[100vw] min-w-32 overflow-hidden rounded-lg bg-popover p-0 text-sm text-popover-foreground no-focus-ring shadow-floating',
+        'z-50 max-w-[100vw] min-w-32 overflow-hidden rounded-lg bg-popover p-0 text-sm text-popover-foreground shadow-floating no-focus-ring',
         'data-[side=bottom]:origin-top data-[side=left]:origin-right data-[side=right]:origin-left data-[side=top]:origin-bottom data-[state=closed]:hidden data-[state=open]:animate-zoom',
         className
       )}

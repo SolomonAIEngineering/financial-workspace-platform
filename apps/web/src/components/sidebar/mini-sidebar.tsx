@@ -57,7 +57,7 @@ const MiniSidebarItem = ({
           className={cn(
             'group relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-300 ease-in-out hover:bg-primary',
             active
-              ? 'border-[0.5px] border-primary/20 bg-gradient-to-br from-primary/15 to-primary/5 text-black ring-1 shadow-lg ring-primary/20 ring-offset-1 ring-offset-background dark:border-primary/10'
+              ? 'border-[0.5px] border-primary/20 bg-gradient-to-br from-primary/15 to-primary/5 text-black shadow-lg ring-1 ring-primary/20 ring-offset-1 ring-offset-background dark:border-primary/10'
               : 'text-primary hover:shadow-md',
             'focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none'
           )}

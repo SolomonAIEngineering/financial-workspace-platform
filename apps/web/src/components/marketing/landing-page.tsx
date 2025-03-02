@@ -21,13 +21,13 @@ export function LandingPage() {
       <main className="relative container mx-auto px-6 py-16 lg:px-8 lg:py-24">
         <div className="flex flex-col items-center justify-center space-y-12">
           {/* Logo with enhanced glass effect */}
-          <div className="rounded-2xl bg-white/40 p-4 ring-1 shadow-sm ring-blue-100/50 backdrop-blur-sm">
+          <div className="rounded-2xl bg-white/40 p-4 shadow-sm ring-1 ring-blue-100/50 backdrop-blur-sm">
             <Icons.logo className={cn('h-12 w-12 text-blue-600')} />
           </div>
 
           <div className="flex flex-col items-center space-y-8 text-center">
             {/* Welcome badge with enhanced glass effect */}
-            <div className="inline-flex items-center gap-x-2 rounded-full bg-white/50 px-5 py-1.5 text-sm font-medium text-blue-900 ring-1 shadow-sm ring-blue-100/70 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-x-2 rounded-full bg-white/50 px-5 py-1.5 text-sm font-medium text-blue-900 shadow-sm ring-1 ring-blue-100/70 backdrop-blur-sm">
               <span className="font-medium text-blue-600">Solomon AI</span>{' '}
               Financial Management Platform
               <Cuboid className="h-3.5 w-3.5 text-blue-600" />
@@ -52,7 +52,7 @@ export function LandingPage() {
           </div>
 
           {/* Login form with enhanced glass effect */}
-          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white/50 p-8 ring-1 shadow-md ring-blue-100/50 backdrop-blur-md">
+          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white/50 p-8 shadow-md ring-1 ring-blue-100/50 backdrop-blur-md">
             <LoginForm displayLogo={false} displayTitle={false} />
           </div>
 
@@ -60,7 +60,7 @@ export function LandingPage() {
           <div className="flex flex-col items-center gap-y-3">
             <div className="flex items-center gap-x-3">
               <div className="h-px w-12 bg-blue-200/50" />
-              <div className="rounded-full bg-white/40 px-5 py-1.5 text-xs font-medium text-blue-800 ring-1 shadow-sm ring-blue-100/50 backdrop-blur-sm">
+              <div className="rounded-full bg-white/40 px-5 py-1.5 text-xs font-medium text-blue-800 shadow-sm ring-1 ring-blue-100/50 backdrop-blur-sm">
                 Insightful · Actionable · Empowering
               </div>
               <div className="h-px w-12 bg-blue-200/50" />

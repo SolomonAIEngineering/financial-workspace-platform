@@ -35,7 +35,7 @@ const versionMutations = {
       if (!document.contentRich && document.templateId) {
         const template = getTemplateDocument(document.templateId);
 
-        document.contentRich = template.value as any
+        document.contentRich = template.value as any;
       }
 
       return await prisma.documentVersion.create({

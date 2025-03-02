@@ -19,7 +19,7 @@ export function Switch({
     >
       <SwitchPrimitives.Thumb
         className={cn(
-          'pointer-events-none block size-3.5 rounded-full bg-background ring-0 shadow-lg transition-transform data-[state=checked]:translate-x-3 data-[state=unchecked]:translate-x-0'
+          'pointer-events-none block size-3.5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-3 data-[state=unchecked]:translate-x-0'
         )}
       />
     </SwitchPrimitives.Root>

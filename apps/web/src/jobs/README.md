@@ -5,16 +5,19 @@ This directory contains all the Trigger.dev jobs for the SMB Financial Managemen
 ## Getting Started
 
 1. Install the Trigger.dev CLI:
+
    ```bash
    pnpm install
    ```
 
 2. Login to Trigger.dev:
+
    ```bash
    pnpm trigger:login
    ```
 
 3. Start the development server:
+
    ```bash
    pnpm dev
    ```
@@ -39,14 +42,14 @@ This directory contains all the Trigger.dev jobs for the SMB Financial Managemen
 Example:
 
 ```typescript
-import { client } from "../client";
+import { client } from '../client';
 
 client.defineJob({
-  id: "sync-transactions",
-  name: "Sync Transactions",
-  version: "0.0.1",
+  id: 'sync-transactions',
+  name: 'Sync Transactions',
+  version: '0.0.1',
   trigger: client.scheduleTrigger({
-    schedule: "0 0 * * *", // Run at midnight every day
+    schedule: '0 0 * * *', // Run at midnight every day
   }),
   run: async (payload, io, ctx) => {
     // Your job logic here
@@ -74,4 +77,4 @@ Make sure to set these environment variables:
 ## Learn More
 
 - [Trigger.dev Documentation](https://trigger.dev/docs)
-- [Trigger.dev Dashboard](https://app.trigger.dev) 
+- [Trigger.dev Dashboard](https://app.trigger.dev)

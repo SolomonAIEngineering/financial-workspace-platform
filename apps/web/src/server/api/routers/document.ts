@@ -17,8 +17,14 @@ const MAX_TAG_LENGTH = 50;
 const MAX_TAGS = 10;
 
 // Document status constants
-const DOCUMENT_STATUS = ['draft', 'review', 'approved', 'published', 'archived'] as const;
-type DocumentStatus = typeof DOCUMENT_STATUS[number];
+const DOCUMENT_STATUS = [
+  'draft',
+  'review',
+  'approved',
+  'published',
+  'archived',
+] as const;
+type DocumentStatus = (typeof DOCUMENT_STATUS)[number];
 
 export const documentMutations = {
   archive: protectedProcedure
@@ -51,9 +57,9 @@ export const documentMutations = {
     .mutation(async ({ ctx, input }) => {
       const content = input.contentRich
         ? NodeApi.string({
-          children: input.contentRich,
-          type: 'root',
-        })
+            children: input.contentRich,
+            type: 'root',
+          })
         : '';
 
       if (content.length > MAX_CONTENT_LENGTH) {
@@ -203,9 +209,9 @@ export const documentMutations = {
     .mutation(async ({ ctx, input }) => {
       const content = input.contentRich
         ? NodeApi.string({
-          children: input.contentRich,
-          type: 'root',
-        })
+            children: input.contentRich,
+            type: 'root',
+          })
         : undefined;
 
       if (content && content.length > MAX_CONTENT_LENGTH) {
@@ -318,9 +324,9 @@ export const documentRouter = createRouter({
           id: isTemplateDocument(input.id) ? undefined : input.id,
           userId_templateId: isTemplateDocument(input.id)
             ? {
-              templateId: input.id,
-              userId: ctx.userId,
-            }
+                templateId: input.id,
+                userId: ctx.userId,
+              }
             : undefined,
         },
       });

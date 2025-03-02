@@ -66,7 +66,7 @@ export function FileCard({
           <Button
             size="icon"
             variant="outline"
-            className="absolute top-1 right-1 -translate-y-1/2 translate-x-1/2 bg-popover p-1 group-hover:opacity-100 hover:opacity-100 md:opacity-0"
+            className="absolute top-1 right-1 translate-x-1/2 -translate-y-1/2 bg-popover p-1 group-hover:opacity-100 hover:opacity-100 md:opacity-0"
             label="Close"
             icon={<Icons.x />}
           />
