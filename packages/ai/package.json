@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@ai-sdk/openai": "^1.0.7",
-    "@nanostores/react": "github:ai/react",
+    "@nanostores/react": "0.8.4",
     "@repo/env": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@t3-oss/env-nextjs": "^0.12.0",

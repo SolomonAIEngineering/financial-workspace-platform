@@ -1652,8 +1652,8 @@ importers:
         specifier: ^1.0.7
         version: 1.2.1(zod@3.24.2)
       '@nanostores/react':
-        specifier: github:ai/react
-        version: git+https://git@github.com:ai/react.git#34a81026c4aeaa572bc651e3d36b47274de2f890(nanostores@0.11.4)(react@19.0.0)
+        specifier: 0.8.4
+        version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
       '@repo/env':
         specifier: workspace:*
         version: link:../environment
@@ -6141,9 +6141,8 @@ packages:
       '@types/react':
         optional: true
 
-  '@nanostores/react@git+https://git@github.com:ai/react.git#34a81026c4aeaa572bc651e3d36b47274de2f890':
-    resolution: {commit: 34a81026c4aeaa572bc651e3d36b47274de2f890, repo: git@github.com:ai/react.git, type: git}
-    version: 0.8.4
+  '@nanostores/react@0.8.4':
+    resolution: {integrity: sha512-EciHSzDXg7GmGODjegGG1VldPEinbAK+12/Uz5+MAdHmxf082Rl6eXqKFxAAu4pZAcr5dNTpv6wMfEe7XacjkQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
     peerDependencies:
       nanostores: ^0.9.0 || ^0.10.0 || ^0.11.0
@@ -25328,7 +25327,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.0.10
 
-  '@nanostores/react@git+https://git@github.com:ai/react.git#34a81026c4aeaa572bc651e3d36b47274de2f890(nanostores@0.11.4)(react@19.0.0)':
+  '@nanostores/react@0.8.4(nanostores@0.11.4)(react@19.0.0)':
     dependencies:
       nanostores: 0.11.4
       react: 19.0.0
