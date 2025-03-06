@@ -116,8 +116,8 @@ export const registerV1KeysGetVerifications = (app: App) =>
         return {
           key: dbRes,
           api: dbRes.keyAuth.api,
-          permissions: dbRes.permissions.map((p) => p.permission.name),
-          roles: dbRes.roles.map((p) => p.role.name),
+          permissions: dbRes.permissions.map((p: { permission: { name: string } }) => p.permission.name),
+          roles: dbRes.roles.map((p: { role: { name: string } }) => p.role.name),
           identity: dbRes.identity
             ? {
               id: dbRes.identity.id,
