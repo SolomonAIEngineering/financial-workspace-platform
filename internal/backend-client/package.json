@@ -19,7 +19,7 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit",
-    "postinstall": "pnpm run typecheck && pnpm run format"
+    "postinstall": "pnpm run typecheck"
   },
   "jest": {
     "preset": "ts-jest",

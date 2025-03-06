@@ -11,7 +11,7 @@
     "test": "vitest run",
     "format": "biome format --write",
     "typecheck": "tsc --noEmit",
-    "postinstall": "pnpm run typecheck && pnpm run format"
+    "postinstall": "pnpm run typecheck"
   },
   "devDependencies": {
     "@types/node": "22.10.1",

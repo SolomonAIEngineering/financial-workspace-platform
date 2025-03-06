@@ -20,7 +20,7 @@
     "build": "tsc",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
-    "postinstall": "pnpm run typecheck && pnpm run format",
+    "postinstall": "pnpm run typecheck",
     "test": "vitest run"
   },
   "license": "MIT"
