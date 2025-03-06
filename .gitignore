@@ -94,3 +94,5 @@ yarn-error.log*
 .eslintcache
 
 .turbo
+
+*storybook.log
