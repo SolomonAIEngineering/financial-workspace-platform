@@ -8,7 +8,7 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "postinstall": "pnpm run typecheck && pnpm run test"
+    "postinstall": "pnpm run typecheck"
   },
   "devDependencies": {
     "drizzle-kit": "^0.25.0",
