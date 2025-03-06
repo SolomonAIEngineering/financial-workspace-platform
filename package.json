@@ -21,7 +21,8 @@
     "typecheck": "turbo run typecheck",
     "precommit": "pnpm format",
     "preinstall": "npx only-allow pnpm",
-    "release-packages": "turbo run build lint test --filter='./packages/*' && changeset publish"
+    "release-packages": "turbo run build lint test --filter='./packages/*' && changeset publish",
+    "db:deploy": "cd apps/web && pnpm db:deploy"
   },
   "devDependencies": {
     "prettier": "^3.2.5",
