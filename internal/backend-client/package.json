@@ -14,8 +14,8 @@
   ],
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "format": "bunx @biomejs/biome format --write ./src",
-    "lint": "biome check .",
+    "format": "pnpm dlx @biomejs/biome format --write ./src",
+    "lint": "pnpm dlx @biomejs/biome check .",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit",
