@@ -43,7 +43,14 @@ export type Props = {
 export function SubscriptionEnded({ username }: Props) {
   return (
     <Layout>
-      <h1 style={{ fontWeight: 600, textAlign: 'center', fontFamily: 'sans-serif', fontSize: '1.875rem' }}>
+      <h1
+        style={{
+          fontWeight: 600,
+          textAlign: 'center',
+          fontFamily: 'sans-serif',
+          fontSize: '1.875rem',
+        }}
+      >
         Your {CONSTANTS.PLATFORM.NAME} subscription has ended.
       </h1>
       <p>Hey {username},</p>
@@ -53,9 +60,7 @@ export function SubscriptionEnded({ username }: Props) {
       </p>
 
       <div>
-        <p style={{ fontWeight: 600 }}>
-          What this means for your account:
-        </p>
+        <p style={{ fontWeight: 600 }}>What this means for your account:</p>
         <ul>
           <li className="pb-4">
             Your workspace has been downgraded to the free tier
@@ -72,7 +77,15 @@ export function SubscriptionEnded({ username }: Props) {
       <div style={{ padding: '0.75rem 0', textAlign: 'center' }}>
         <a
           href={CONSTANTS.URLS.BILLING}
-          style={{ display: 'inline-block', width: '66.666667%', borderRadius: '0.5rem', backgroundColor: '#111827', padding: '0.75rem', color: '#f9fafb', textDecoration: 'none' }}
+          style={{
+            display: 'inline-block',
+            width: '66.666667%',
+            borderRadius: '0.5rem',
+            backgroundColor: '#111827',
+            padding: '0.75rem',
+            color: '#f9fafb',
+            textDecoration: 'none',
+          }}
         >
           Reactivate subscription
         </a>

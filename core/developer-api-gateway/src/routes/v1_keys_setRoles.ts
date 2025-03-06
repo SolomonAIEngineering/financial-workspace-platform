@@ -1,12 +1,12 @@
+import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
 import type { App, Context } from '@/pkg/hono/app'
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
-import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
 import { and, eq, inArray, schema } from '@repo/db'
 
-import { buildUnkeyQuery } from '@repo/rbac'
 import { insertUnkeyAuditLog } from '@/pkg/audit'
-import { newId } from '@repo/id'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import { newId } from '@repo/id'
+import { buildUnkeyQuery } from '@repo/rbac'
 
 const route = createRoute({
   tags: ['keys'],
@@ -98,14 +98,17 @@ export type V1KeysSetRolesResponse = z.infer<
 >
 
 export const registerV1KeysSetRoles = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
-    const auth = await rootKeyAuth(c)
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
+      const auth = await rootKeyAuth(c)
 
-    const allRoles = await setRoles(c, auth, req.keyId, req.roles)
+      const allRoles = await setRoles(c, auth, req.keyId, req.roles)
 
-    return c.json(allRoles, 200)
-  })
+      return c.json(allRoles, 200)
+    },
+  )
 
 export async function setRoles(
   c: Context,
@@ -142,9 +145,9 @@ export async function setRoles(
               : undefined,
             requestedNames.length > 0
               ? inArray(
-                table.name,
-                requestedNames.map((n) => n.name),
-              )
+                  table.name,
+                  requestedNames.map((n) => n.name),
+                )
               : undefined,
           ),
         ),

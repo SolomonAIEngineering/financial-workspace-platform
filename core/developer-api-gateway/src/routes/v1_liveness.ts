@@ -1,7 +1,7 @@
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
-import type { App } from '@/pkg/hono/app'
 import { openApiErrorResponses } from '@/pkg/errors'
+import type { App } from '@/pkg/hono/app'
 
 const route = createRoute({
   tags: ['liveness'],
@@ -46,16 +46,22 @@ export type V1LivenessResponse = z.infer<
 >
 
 export const registerV1Liveness = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { logger, metrics, rateLimiter, usageLimiter } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { logger, metrics, rateLimiter, usageLimiter } = c.get('services')
 
-    return c.json({
-      status: "we're so back",
-      services: {
-        metrics: metrics.constructor.name,
-        logger: logger.constructor.name,
-        ratelimit: rateLimiter.constructor.name,
-        usagelimit: usageLimiter.constructor.name,
-      },
-    }, 200)
-  })
+      return c.json(
+        {
+          status: "we're so back",
+          services: {
+            metrics: metrics.constructor.name,
+            logger: logger.constructor.name,
+            ratelimit: rateLimiter.constructor.name,
+            usagelimit: usageLimiter.constructor.name,
+          },
+        },
+        200,
+      )
+    },
+  )

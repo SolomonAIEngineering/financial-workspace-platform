@@ -1,5 +1,5 @@
-import { auditLogSchemaV1, unkeyAuditLogEvents } from './auditlog'
 import { describe, expect, it } from 'vitest'
+import { auditLogSchemaV1, unkeyAuditLogEvents } from './auditlog'
 
 describe('Audit Log Schema', () => {
   const validAuditLog = {

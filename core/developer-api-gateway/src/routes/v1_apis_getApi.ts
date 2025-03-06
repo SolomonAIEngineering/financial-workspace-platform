@@ -1,9 +1,9 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
+import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
 import { buildUnkeyQuery } from '@repo/rbac'
-import { rootKeyAuth } from '@/pkg/auth/root_key'
 
 const route = createRoute({
   tags: ['apis'],
@@ -52,44 +52,50 @@ export type V1ApisGetApiResponse = z.infer<
   (typeof route.responses)[200]['content']['application/json']['schema']
 >
 export const registerV1ApisGetApi = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { apiId } = c.req.valid('query')
-    const { cache, db } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { apiId } = c.req.valid('query')
+      const { cache, db } = c.get('services')
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) =>
-        or('*', 'api.*.read_api', `api.${apiId}.read_api`),
-      ),
-    )
-
-    const { val: api, err } = await cache.apiById.swr(apiId, async () => {
-      return (
-        (await db.readonly.query.apis.findFirst({
-          where: (table, { eq, and, isNull }) =>
-            and(eq(table.id, apiId), isNull(table.deletedAt)),
-          with: {
-            keyAuth: true,
-          },
-        })) ?? null
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) =>
+          or('*', 'api.*.read_api', `api.${apiId}.read_api`),
+        ),
       )
-    })
-    if (err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `unable to get api: ${err.message}`,
-      })
-    }
-    if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `api ${apiId} not found`,
-      })
-    }
 
-    return c.json({
-      id: api.id,
-      workspaceId: api.workspaceId,
-      name: api.name,
-    }, 200)
-  })
+      const { val: api, err } = await cache.apiById.swr(apiId, async () => {
+        return (
+          (await db.readonly.query.apis.findFirst({
+            where: (table, { eq, and, isNull }) =>
+              and(eq(table.id, apiId), isNull(table.deletedAt)),
+            with: {
+              keyAuth: true,
+            },
+          })) ?? null
+        )
+      })
+      if (err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `unable to get api: ${err.message}`,
+        })
+      }
+      if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `api ${apiId} not found`,
+        })
+      }
+
+      return c.json(
+        {
+          id: api.id,
+          workspaceId: api.workspaceId,
+          name: api.name,
+        },
+        200,
+      )
+    },
+  )

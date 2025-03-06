@@ -1,10 +1,4 @@
 'use client'
-import { Button } from '@react-email/button'
-import { Heading } from '@react-email/heading'
-import { Hr } from '@react-email/hr'
-import { Link } from '@react-email/link'
-import { Section } from '@react-email/section'
-import { Text } from '@react-email/text'
 // biome-ignore lint/correctness/noUnusedImports: react-email needs this imported
 import * as React from 'react'
 import CONSTANTS from '../constants/constants'
@@ -60,7 +54,14 @@ export type Props = {
 export function TrialEnded({ workspaceName, username }: Props) {
   return (
     <Layout>
-      <h1 style={{ fontWeight: 600, textAlign: 'center', fontFamily: 'sans-serif', fontSize: '1.875rem' }}>
+      <h1
+        style={{
+          fontWeight: 600,
+          textAlign: 'center',
+          fontFamily: 'sans-serif',
+          fontSize: '1.875rem',
+        }}
+      >
         Your workspace <strong>{workspaceName}</strong> has reached the end of
         its trial.
       </h1>
@@ -119,7 +120,15 @@ export function TrialEnded({ workspaceName, username }: Props) {
         <a
           href={CONSTANTS.URLS.BILLING}
           className="w-2/3 rounded-lg bg-gray-900 p-3 text-gray-50"
-          style={{ display: 'inline-block', width: '66.666667%', borderRadius: '0.5rem', backgroundColor: '#111827', padding: '0.75rem', color: '#f9fafb', textDecoration: 'none' }}
+          style={{
+            display: 'inline-block',
+            width: '66.666667%',
+            borderRadius: '0.5rem',
+            backgroundColor: '#111827',
+            padding: '0.75rem',
+            color: '#f9fafb',
+            textDecoration: 'none',
+          }}
         >
           Upgrade now
         </a>

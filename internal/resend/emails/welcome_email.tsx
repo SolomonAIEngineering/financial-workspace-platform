@@ -1,10 +1,4 @@
 'use client'
-import { Button } from '@react-email/button'
-import { Heading } from '@react-email/heading'
-import { Hr } from '@react-email/hr'
-import { Link } from '@react-email/link'
-import { Section } from '@react-email/section'
-import { Text } from '@react-email/text'
 // biome-ignore lint/correctness/noUnusedImports: react-email needs this imported
 import * as React from 'react'
 import CONSTANTS from '../constants/constants'
@@ -61,7 +55,14 @@ export type Props = {
 export function WelcomeEmail() {
   return (
     <Layout>
-      <h1 style={{ textAlign: 'center', fontFamily: 'sans-serif', fontSize: '1.875rem', fontWeight: 600 }}>
+      <h1
+        style={{
+          textAlign: 'center',
+          fontFamily: 'sans-serif',
+          fontSize: '1.875rem',
+          fontWeight: 600,
+        }}
+      >
         Welcome to {CONSTANTS.PLATFORM.NAME}!
       </h1>
       <p>Hi there!</p>
@@ -77,14 +78,14 @@ export function WelcomeEmail() {
         <ul className="pb-4 text-sm">
           <li className="pt-4">
             {' '}
-            <a href={CONSTANTS.URLS.ONBOARDING}>Quickstart Guides</a> -
-            Our complete series of guides will help you integrate{' '}
+            <a href={CONSTANTS.URLS.ONBOARDING}>Quickstart Guides</a> - Our
+            complete series of guides will help you integrate{' '}
             {CONSTANTS.PLATFORM.NAME} step by step.
           </li>
           <li className="pt-4">
-            <a href={CONSTANTS.URLS.API_REFERENCE}> API Documentation</a>{' '}
-            - Our API reference documentation will help you understand and use
-            our API features to their fullest potential.
+            <a href={CONSTANTS.URLS.API_REFERENCE}> API Documentation</a> - Our
+            API reference documentation will help you understand and use our API
+            features to their fullest potential.
           </li>
           <li className="pt-4">
             {' '}
@@ -101,7 +102,15 @@ export function WelcomeEmail() {
         <a
           href={CONSTANTS.URLS.DASHBOARD}
           className="w-2/3 rounded-lg bg-gray-900 p-3 text-gray-50"
-          style={{ display: 'inline-block', width: '66.666667%', borderRadius: '0.5rem', backgroundColor: '#111827', padding: '0.75rem', color: '#f9fafb', textDecoration: 'none' }}
+          style={{
+            display: 'inline-block',
+            width: '66.666667%',
+            borderRadius: '0.5rem',
+            backgroundColor: '#111827',
+            padding: '0.75rem',
+            color: '#f9fafb',
+            textDecoration: 'none',
+          }}
         >
           Go to your dashboard
         </a>

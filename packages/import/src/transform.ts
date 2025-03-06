@@ -1,8 +1,8 @@
 import { formatAmountValue, formatDate } from './utils'
 
-import type { Transaction } from './types'
 import { capitalCase } from 'change-case'
 import { v4 as uuidv4 } from 'uuid'
+import type { Transaction } from './types'
 
 /**
  * Transforms a raw transaction into a standardized format with additional computed properties.

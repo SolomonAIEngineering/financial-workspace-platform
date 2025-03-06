@@ -21,9 +21,9 @@ export const Component = withRef<typeof BaseComponent>(
       <BaseComponent ref={ref} className={cn(className)} {...props}>
         {children}
       </BaseComponent>
-    );
+    )
   },
-);
+)
 ```
 
 After:
@@ -35,9 +35,9 @@ export function Component({
   ...props
 }: React.ComponentProps<typeof BaseComponent>) {
   return (
-    <BaseComponent className={cn("some class", className)} {...props}>
+    <BaseComponent className={cn('some class', className)} {...props}>
       {children}
     </BaseComponent>
-  );
+  )
 }
 ```

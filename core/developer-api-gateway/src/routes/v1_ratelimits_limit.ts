@@ -3,7 +3,7 @@ import { createRoute, RouteConfigToTypedResponse, z } from '@hono/zod-openapi'
 
 import { insertGenericAuditLogs, insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
-import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { openApiErrorResponses, UnkeyApiError } from '@/pkg/errors'
 import { match } from '@/pkg/util/wildcard'
 import { DatabaseError } from '@planetscale/database'
 import { type RatelimitNamespace, schema } from '@repo/db'
@@ -151,252 +151,264 @@ export type V1RatelimitLimitResponse = z.infer<
 >
 
 export const registerV1RatelimitLimit = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
-    const { cache, db, rateLimiter, analytics, rbac, logger } =
-      c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
+      const { cache, db, rateLimiter, analytics, rbac, logger } =
+        c.get('services')
 
-    const rootKey = await rootKeyAuth(c)
+      const rootKey = await rootKeyAuth(c)
 
-    const { val, err } = await cache.ratelimitByIdentifier.swr(
-      [rootKey.authorizedWorkspaceId, req.namespace, req.identifier].join('::'),
-      async () => {
-        const dbRes = await db.readonly.query.ratelimitNamespaces.findFirst({
-          where: (table, { eq, and }) =>
-            and(
-              eq(table.workspaceId, rootKey.authorizedWorkspaceId),
-              eq(table.name, req.namespace),
-            ),
-          columns: {
-            id: true,
-            workspaceId: true,
-          },
-          with: {
-            overrides: {
-              columns: {
-                identifier: true,
-                async: true,
-                limit: true,
-                duration: true,
-                sharding: true,
+      const { val, err } = await cache.ratelimitByIdentifier.swr(
+        [rootKey.authorizedWorkspaceId, req.namespace, req.identifier].join(
+          '::',
+        ),
+        async () => {
+          const dbRes = await db.readonly.query.ratelimitNamespaces.findFirst({
+            where: (table, { eq, and }) =>
+              and(
+                eq(table.workspaceId, rootKey.authorizedWorkspaceId),
+                eq(table.name, req.namespace),
+              ),
+            columns: {
+              id: true,
+              workspaceId: true,
+            },
+            with: {
+              overrides: {
+                columns: {
+                  identifier: true,
+                  async: true,
+                  limit: true,
+                  duration: true,
+                  sharding: true,
+                },
               },
             },
-          },
-        })
-        if (!dbRes) {
-          const canCreateNamespace = rbac.evaluatePermissions(
-            buildUnkeyQuery(({ or }) =>
-              or('*', 'ratelimit.*.create_namespace'),
-            ),
-            rootKey.permissions ?? [],
-          )
-          if (canCreateNamespace.err || !canCreateNamespace.val.valid) {
-            return null
-          }
-          let namespace: RatelimitNamespace = {
-            id: newId('ratelimitNamespace'),
-            createdAt: new Date(),
-            name: req.namespace,
-            deletedAt: null,
-            updatedAt: null,
-            workspaceId: rootKey.authorizedWorkspaceId,
-          }
-          try {
-            await db.primary
-              .insert(schema.ratelimitNamespaces)
-              .values(namespace)
-            await insertUnkeyAuditLog(c, undefined, {
+          })
+          if (!dbRes) {
+            const canCreateNamespace = rbac.evaluatePermissions(
+              buildUnkeyQuery(({ or }) =>
+                or('*', 'ratelimit.*.create_namespace'),
+              ),
+              rootKey.permissions ?? [],
+            )
+            if (canCreateNamespace.err || !canCreateNamespace.val.valid) {
+              return null
+            }
+            let namespace: RatelimitNamespace = {
+              id: newId('ratelimitNamespace'),
+              createdAt: new Date(),
+              name: req.namespace,
+              deletedAt: null,
+              updatedAt: null,
               workspaceId: rootKey.authorizedWorkspaceId,
-              actor: {
-                type: 'key',
-                id: rootKey.key.id,
-              },
-              event: 'ratelimitNamespace.create',
-              description: `Created ${namespace.id}`,
-              resources: [
-                {
-                  type: 'ratelimitNamespace',
-                  id: namespace.id,
+            }
+            try {
+              await db.primary
+                .insert(schema.ratelimitNamespaces)
+                .values(namespace)
+              await insertUnkeyAuditLog(c, undefined, {
+                workspaceId: rootKey.authorizedWorkspaceId,
+                actor: {
+                  type: 'key',
+                  id: rootKey.key.id,
                 },
-              ],
-              context: {
-                location: c.get('location'),
-                userAgent: c.get('userAgent'),
-              },
-            })
-          } catch (e) {
-            if (
-              e instanceof DatabaseError &&
-              e.body.message.includes('desc = Duplicate entry')
-            ) {
-              /**
-               * Looks like it exists already, so let's load it
-               */
-              namespace =
-                (await db.readonly.query.ratelimitNamespaces.findFirst({
-                  where: (table, { eq, and }) =>
-                    and(
-                      eq(table.name, req.namespace),
-                      eq(table.workspaceId, rootKey.authorizedWorkspaceId),
-                    ),
-                }))!
-            } else {
-              throw e
+                event: 'ratelimitNamespace.create',
+                description: `Created ${namespace.id}`,
+                resources: [
+                  {
+                    type: 'ratelimitNamespace',
+                    id: namespace.id,
+                  },
+                ],
+                context: {
+                  location: c.get('location'),
+                  userAgent: c.get('userAgent'),
+                },
+              })
+            } catch (e) {
+              if (
+                e instanceof DatabaseError &&
+                e.body.message.includes('desc = Duplicate entry')
+              ) {
+                /**
+                 * Looks like it exists already, so let's load it
+                 */
+                namespace =
+                  (await db.readonly.query.ratelimitNamespaces.findFirst({
+                    where: (table, { eq, and }) =>
+                      and(
+                        eq(table.name, req.namespace),
+                        eq(table.workspaceId, rootKey.authorizedWorkspaceId),
+                      ),
+                  }))!
+              } else {
+                throw e
+              }
+            }
+
+            return {
+              namespace,
+            }
+          }
+
+          const exactMatch = dbRes.overrides.find(
+            (o) => o.identifier === req.identifier,
+          )
+          if (exactMatch) {
+            return {
+              namespace: dbRes,
+              override: exactMatch,
+            }
+          }
+          const wildcardMatch = dbRes.overrides.find((o) => {
+            if (!o.identifier.includes('*')) {
+              return false
+            }
+            return match(o.identifier, req.identifier)
+          })
+          if (wildcardMatch) {
+            return {
+              namespace: dbRes,
+              override: wildcardMatch,
             }
           }
 
           return {
-            namespace,
-          }
-        }
-
-        const exactMatch = dbRes.overrides.find(
-          (o) => o.identifier === req.identifier,
-        )
-        if (exactMatch) {
-          return {
             namespace: dbRes,
-            override: exactMatch,
+            override: undefined,
           }
-        }
-        const wildcardMatch = dbRes.overrides.find((o) => {
-          if (!o.identifier.includes('*')) {
-            return false
-          }
-          return match(o.identifier, req.identifier)
-        })
-        if (wildcardMatch) {
-          return {
-            namespace: dbRes,
-            override: wildcardMatch,
-          }
-        }
-
-        return {
-          namespace: dbRes,
-          override: undefined,
-        }
-      },
-    )
-    if (err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `unable to load ratelimit: ${err.message}`,
-      })
-    }
-    if (!val || val.namespace.workspaceId !== rootKey.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `namespace ${req.namespace} not found`,
-      })
-    }
-
-    const authResult = rbac.evaluatePermissions(
-      buildUnkeyQuery(({ or }) =>
-        or('*', 'ratelimit.*.limit', `ratelimit.${val.namespace.id}.limit`),
-      ),
-      rootKey.permissions ?? [],
-    )
-    if (authResult.err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: authResult.err.message,
-      })
-    }
-    if (!authResult.val.valid) {
-      throw new UnkeyApiError({
-        code: 'INSUFFICIENT_PERMISSIONS',
-        message: authResult.val.message,
-      })
-    }
-
-    const { override, namespace } = val
-
-    const limit = override?.limit ?? req.limit
-    const duration = override?.duration ?? req.duration
-    const async =
-      typeof override?.async !== 'undefined' ? override.async : req.async
-    const sharding = override?.sharding //?? req.sharding;
-    const shard =
-      sharding === 'edge'
-        ? // @ts-ignore - this is a bug in the types
-        c.req.raw?.cf?.colo
-        : 'global'
-    const { val: ratelimitResponse, err: ratelimitError } =
-      await rateLimiter.limit(c, {
-        name: 'default',
-        workspaceId: rootKey.authorizedWorkspaceId,
-        namespaceId: namespace.id,
-        identifier: [namespace.id, req.identifier, limit, duration, async].join(
-          '::',
-        ),
-        interval: duration,
-        limit,
-        shard: shard as string,
-        cost: req.cost,
-        async: req.async,
-      })
-    if (ratelimitError) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: ratelimitError.message,
-      })
-    }
-    const remaining = Math.max(0, limit - ratelimitResponse.current)
-
-    c.executionCtx.waitUntil(
-      analytics
-        .insertRatelimit({
-          workspace_id: rootKey.authorizedWorkspaceId,
-          namespace_id: namespace.id,
-          request_id: c.get('requestId'),
-          identifier: req.identifier,
-          time: Date.now(),
-          passed: ratelimitResponse.passed,
-        })
-        .then(({ err }) => {
-          if (err) {
-            logger.error('inserting ratelimit event failed', {
-              error: err.message,
-            })
-          }
-        }),
-    )
-
-    if (req.resources && req.resources.length > 0) {
-      c.executionCtx.waitUntil(
-        insertGenericAuditLogs(c, undefined, {
-          auditLogId: newId('auditLog'),
-          workspaceId: rootKey.authorizedWorkspaceId,
-          bucket: namespace.id,
-          actor: {
-            type: 'key',
-            id: rootKey.key.id,
-          },
-          description: 'ratelimit',
-          event: ratelimitResponse.passed
-            ? 'ratelimit.success'
-            : 'ratelimit.denied',
-          meta: {
-            requestId: c.get('requestId'),
-            namespacId: namespace.id,
-            identifier: req.identifier,
-            success: ratelimitResponse.passed,
-          },
-          time: Date.now(),
-          resources: req.resources ?? [],
-          context: {
-            location: c.req.header('True-Client-IP') ?? '',
-            userAgent: c.req.header('User-Agent') ?? '',
-          },
-        }),
+        },
       )
-    }
+      if (err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `unable to load ratelimit: ${err.message}`,
+        })
+      }
+      if (!val || val.namespace.workspaceId !== rootKey.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `namespace ${req.namespace} not found`,
+        })
+      }
 
-    return c.json({
-      limit,
-      remaining,
-      reset: ratelimitResponse.reset,
-      success: ratelimitResponse.passed,
-    }, 200)
-  })
+      const authResult = rbac.evaluatePermissions(
+        buildUnkeyQuery(({ or }) =>
+          or('*', 'ratelimit.*.limit', `ratelimit.${val.namespace.id}.limit`),
+        ),
+        rootKey.permissions ?? [],
+      )
+      if (authResult.err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: authResult.err.message,
+        })
+      }
+      if (!authResult.val.valid) {
+        throw new UnkeyApiError({
+          code: 'INSUFFICIENT_PERMISSIONS',
+          message: authResult.val.message,
+        })
+      }
+
+      const { override, namespace } = val
+
+      const limit = override?.limit ?? req.limit
+      const duration = override?.duration ?? req.duration
+      const async =
+        typeof override?.async !== 'undefined' ? override.async : req.async
+      const sharding = override?.sharding //?? req.sharding;
+      const shard =
+        sharding === 'edge'
+          ? // @ts-ignore - this is a bug in the types
+            c.req.raw?.cf?.colo
+          : 'global'
+      const { val: ratelimitResponse, err: ratelimitError } =
+        await rateLimiter.limit(c, {
+          name: 'default',
+          workspaceId: rootKey.authorizedWorkspaceId,
+          namespaceId: namespace.id,
+          identifier: [
+            namespace.id,
+            req.identifier,
+            limit,
+            duration,
+            async,
+          ].join('::'),
+          interval: duration,
+          limit,
+          shard: shard as string,
+          cost: req.cost,
+          async: req.async,
+        })
+      if (ratelimitError) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: ratelimitError.message,
+        })
+      }
+      const remaining = Math.max(0, limit - ratelimitResponse.current)
+
+      c.executionCtx.waitUntil(
+        analytics
+          .insertRatelimit({
+            workspace_id: rootKey.authorizedWorkspaceId,
+            namespace_id: namespace.id,
+            request_id: c.get('requestId'),
+            identifier: req.identifier,
+            time: Date.now(),
+            passed: ratelimitResponse.passed,
+          })
+          .then(({ err }) => {
+            if (err) {
+              logger.error('inserting ratelimit event failed', {
+                error: err.message,
+              })
+            }
+          }),
+      )
+
+      if (req.resources && req.resources.length > 0) {
+        c.executionCtx.waitUntil(
+          insertGenericAuditLogs(c, undefined, {
+            auditLogId: newId('auditLog'),
+            workspaceId: rootKey.authorizedWorkspaceId,
+            bucket: namespace.id,
+            actor: {
+              type: 'key',
+              id: rootKey.key.id,
+            },
+            description: 'ratelimit',
+            event: ratelimitResponse.passed
+              ? 'ratelimit.success'
+              : 'ratelimit.denied',
+            meta: {
+              requestId: c.get('requestId'),
+              namespacId: namespace.id,
+              identifier: req.identifier,
+              success: ratelimitResponse.passed,
+            },
+            time: Date.now(),
+            resources: req.resources ?? [],
+            context: {
+              location: c.req.header('True-Client-IP') ?? '',
+              userAgent: c.req.header('User-Agent') ?? '',
+            },
+          }),
+        )
+      }
+
+      return c.json(
+        {
+          limit,
+          remaining,
+          reset: ratelimitResponse.reset,
+          success: ratelimitResponse.passed,
+        },
+        200,
+      )
+    },
+  )

@@ -1,3 +1,6 @@
+import { formatISO, subDays } from 'date-fns'
+import type { XiorInstance, XiorRequestConfig } from 'xior'
+import type { GetInstitutionsRequest, ProviderParams } from '../types'
 import type {
   DeleteRequistionResponse,
   GetAccessTokenResponse,
@@ -18,9 +21,6 @@ import type {
   PostRequisitionsRequest,
   PostRequisitionsResponse,
 } from './types'
-import type { GetInstitutionsRequest, ProviderParams } from '../types'
-import type { XiorInstance, XiorRequestConfig } from 'xior'
-import { formatISO, subDays } from 'date-fns'
 import { getAccessValidForDays, getMaxHistoricalDays, isError } from './utils'
 
 import { ProviderError } from '@/utils/error'
@@ -289,10 +289,10 @@ export class GoCardLessApi {
         token,
         latest
           ? {
-            date_from: formatISO(subDays(new Date(), 5), {
-              representation: 'date',
-            }),
-          }
+              date_from: formatISO(subDays(new Date(), 5), {
+                representation: 'date',
+              }),
+            }
           : undefined,
       )
 

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import { fail } from 'node:assert'
-import { validation } from './index'
 import { z } from 'zod'
+import { validation } from './index'
 
 describe('validation schemas', () => {
   describe('identifier', () => {
@@ -99,7 +99,7 @@ describe('validation schemas', () => {
           [],
           new Date(),
           Symbol('test'),
-          () => { },
+          () => {},
         ]
 
         for (const invalid of invalidTypes) {
@@ -387,8 +387,8 @@ describe('validation schemas', () => {
 
       it('should handle type coercion attempts', () => {
         type CoercionAttempt = {
-          value: unknown;
-          expectedToThrow: boolean;
+          value: unknown
+          expectedToThrow: boolean
         }
 
         const coercionAttempts: CoercionAttempt[] = [
@@ -437,7 +437,7 @@ describe('validation schemas', () => {
       for (const { schema, value, expectedError } of testCases) {
         try {
           // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-          ; (validation as any)[schema].parse(value)
+          ;(validation as any)[schema].parse(value)
           fail('Should have thrown an error')
         } catch (error) {
           if (error instanceof z.ZodError) {

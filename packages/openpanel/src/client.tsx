@@ -3,12 +3,12 @@
  * Provides components and utilities for tracking user interactions and events.
  */
 
-import React, { FC } from 'react';
 import {
   OpenPanelComponent,
   type PostEventPayload,
   useOpenPanel,
 } from '@openpanel/nextjs'
+import { FC } from 'react'
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -67,7 +67,7 @@ const track = (options: { event: string } & PostEventPayload['properties']) => {
   const { track: openTrack } = useOpenPanel()
 
   if (!isProd) {
-    console.log('Track', options)
+    console.info('Track', options)
     return
   }
 

@@ -3,18 +3,18 @@
  * with LLM fallback capabilities.
  */
 
-import { extractRootDomain, getCurrency, getDomainFromEmail } from '../../utils'
 import {
   getLongRunningPoller,
   isUnexpected,
 } from '@azure-rest/ai-document-intelligence'
+import { extractRootDomain, getCurrency, getDomainFromEmail } from '../../utils'
 
 import type { AnalyzeOperationOutput } from '@azure-rest/ai-document-intelligence'
+import { capitalCase } from 'change-case'
+import type { Processor } from '../../interface'
+import { client } from '../../provider/azure'
 import type { GetDocumentRequest } from '../../types'
 import { InvoiceLlmProcessor } from '../llm/invoice-llm-processor'
-import type { Processor } from '../../interface'
-import { capitalCase } from 'change-case'
-import { client } from '../../provider/azure'
 
 /**
  * Processes invoice documents using Azure's prebuilt invoice model.

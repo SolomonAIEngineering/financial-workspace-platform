@@ -55,7 +55,7 @@ const [data, { isLoading }] = useQuery({
     // ... input parameters
   }),
   enabled: !!someCondition,
-});
+})
 ```
 
 Remember:

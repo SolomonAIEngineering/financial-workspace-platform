@@ -18,7 +18,9 @@ const ResizablePanelGroup = ({
   />
 )
 
-const ResizablePanel: React.FC<React.ComponentProps<typeof ResizablePrimitive.Panel>> = ResizablePrimitive.Panel
+const ResizablePanel: React.FC<
+  React.ComponentProps<typeof ResizablePrimitive.Panel>
+> = ResizablePrimitive.Panel
 
 const ResizableHandle = ({
   withHandle,

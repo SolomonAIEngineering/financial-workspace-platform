@@ -1,5 +1,5 @@
-import { ComplianceLevel, ServiceTier } from '@/db/schema/preferences'
 import { DatabaseClient, DrizzleDB } from '@/db'
+import { ComplianceLevel, ServiceTier } from '@/db/schema/preferences'
 import {
   TestContext,
   cleanupTestContext,
@@ -16,8 +16,8 @@ import {
 } from 'vitest'
 
 import { PreferencesRepository } from '@/db-repository/preferences-repository'
-import { User } from '@/db/schema/users'
 import { UserRepository } from '@/db-repository/user-repository'
+import { User } from '@/db/schema/users'
 import { env } from 'cloudflare:test'
 
 describe('PreferencesRepository Tests', () => {

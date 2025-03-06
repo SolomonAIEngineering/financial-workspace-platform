@@ -1,5 +1,5 @@
 import type { App } from '@/pkg/hono/app'
-import { createRoute, RouteConfigToTypedResponse, z } from '@hono/zod-openapi'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
 import { type UnkeyAuditLog, insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
@@ -134,276 +134,282 @@ export type V1IdentitiesUpdateIdentityResponse = z.infer<
 >
 
 export const registerV1IdentitiesUpdateIdentity = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('identity.*.update_identity')),
-    )
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('identity.*.update_identity')),
+      )
 
-    const { db, cache } = c.get('services')
+      const { db, cache } = c.get('services')
 
-    if (!req.identityId && !req.externalId) {
-      throw new UnkeyApiError({
-        code: 'BAD_REQUEST',
-        message: 'Provide either identityId or externalId',
-      })
-    }
-
-    if (req.ratelimits) {
-      const uniqueNames = new Set<string>()
-      for (const { name } of req.ratelimits) {
-        if (uniqueNames.has(name)) {
-          throw new UnkeyApiError({
-            code: 'PRECONDITION_FAILED',
-            message: 'ratelimit names must be unique',
-          })
-        }
-        uniqueNames.add(name)
-      }
-    }
-
-    const metaLength = req.meta ? JSON.stringify(req.meta).length : 0
-    if (metaLength > 64_000) {
-      throw new UnkeyApiError({
-        code: 'BAD_REQUEST',
-
-        message: `metadata is too large, it must be less than 64k characters when json encoded, got: ${metaLength}`,
-      })
-    }
-
-    const auditLogs: Array<UnkeyAuditLog> = []
-
-    const identity = await db.primary.transaction(async (tx) => {
-      const identity = await tx.query.identities.findFirst({
-        where: (table, { and, eq }) =>
-          and(
-            eq(table.workspaceId, auth.authorizedWorkspaceId),
-            req.identityId
-              ? eq(table.id, req.identityId)
-              : and(
-                eq(table.externalId, req.externalId!),
-                eq(table.environment, req.environment!),
-              ),
-          ),
-        with: {
-          ratelimits: true,
-          keys: {
-            where: (table, { isNull }) => isNull(table.deletedAt),
-            columns: {
-              id: true,
-              hash: true,
-            },
-          },
-        },
-      })
-      if (!identity) {
+      if (!req.identityId && !req.externalId) {
         throw new UnkeyApiError({
-          code: 'NOT_FOUND',
-          message: `identity ${req.identityId ?? req.externalId} not found`,
+          code: 'BAD_REQUEST',
+          message: 'Provide either identityId or externalId',
         })
       }
 
-      auditLogs.push({
-        workspaceId: auth.authorizedWorkspaceId,
-        event: 'identity.update',
-        actor: {
-          type: 'key',
-          id: auth.key.id,
-        },
-        description: `Updated ${identity.id}`,
-        resources: [
-          {
-            type: 'identity',
-            id: identity.id,
-          },
-        ],
-
-        context: {
-          location: c.get('location'),
-          userAgent: c.get('userAgent'),
-        },
-      })
-
-      if (typeof req.meta !== 'undefined') {
-        await tx
-          .update(schema.identities)
-          .set({
-            meta: req.meta,
-          })
-          .where(eq(schema.identities.id, identity.id))
-      }
-
-      if (typeof req.ratelimits !== 'undefined') {
-        const deleteRatelimits: Ratelimit[] = []
-        const createRatelimits: Required<
-          V1IdentitiesUpdateIdentityRequest['ratelimits']
-        > = []
-        const updateRatelimits: Ratelimit[] = []
-        for (const rl of identity.ratelimits) {
-          const newRl = req.ratelimits.find((r) => r.name === rl.name)
-          if (!newRl) {
-            deleteRatelimits.push(rl)
-          } else {
-            updateRatelimits.push({
-              ...rl,
-              limit: newRl.limit,
-              duration: newRl.duration,
+      if (req.ratelimits) {
+        const uniqueNames = new Set<string>()
+        for (const { name } of req.ratelimits) {
+          if (uniqueNames.has(name)) {
+            throw new UnkeyApiError({
+              code: 'PRECONDITION_FAILED',
+              message: 'ratelimit names must be unique',
             })
           }
+          uniqueNames.add(name)
         }
-        for (const newRl of req.ratelimits) {
-          if (!identity.ratelimits.find((r) => r.name === newRl.name)) {
-            createRatelimits.push(newRl)
-          }
-        }
+      }
 
-        /**
-         * Delete undesired ratelimits
-         */
-        for (const rl of deleteRatelimits) {
-          await tx
-            .delete(schema.ratelimits)
-            .where(eq(schema.ratelimits.id, rl.id))
-          auditLogs.push({
-            workspaceId: auth.authorizedWorkspaceId,
-            event: 'ratelimit.delete' as const,
-            actor: {
-              type: 'key' as const,
-              id: auth.key.id,
-            },
-            description: `Deleted ${rl.id}`,
-            resources: [
-              {
-                type: 'identity' as const,
-                id: identity.id,
+      const metaLength = req.meta ? JSON.stringify(req.meta).length : 0
+      if (metaLength > 64_000) {
+        throw new UnkeyApiError({
+          code: 'BAD_REQUEST',
+
+          message: `metadata is too large, it must be less than 64k characters when json encoded, got: ${metaLength}`,
+        })
+      }
+
+      const auditLogs: Array<UnkeyAuditLog> = []
+
+      const identity = await db.primary.transaction(async (tx) => {
+        const identity = await tx.query.identities.findFirst({
+          where: (table, { and, eq }) =>
+            and(
+              eq(table.workspaceId, auth.authorizedWorkspaceId),
+              req.identityId
+                ? eq(table.id, req.identityId)
+                : and(
+                    eq(table.externalId, req.externalId!),
+                    eq(table.environment, req.environment!),
+                  ),
+            ),
+          with: {
+            ratelimits: true,
+            keys: {
+              where: (table, { isNull }) => isNull(table.deletedAt),
+              columns: {
+                id: true,
+                hash: true,
               },
-              {
-                type: 'ratelimit' as const,
-                id: rl.id,
-                meta: rl as any,
-              },
-            ],
-            context: {
-              location: c.get('location'),
-              userAgent: c.get('userAgent'),
             },
+          },
+        })
+        if (!identity) {
+          throw new UnkeyApiError({
+            code: 'NOT_FOUND',
+            message: `identity ${req.identityId ?? req.externalId} not found`,
           })
         }
 
-        /**
-         * Update existing
-         */
+        auditLogs.push({
+          workspaceId: auth.authorizedWorkspaceId,
+          event: 'identity.update',
+          actor: {
+            type: 'key',
+            id: auth.key.id,
+          },
+          description: `Updated ${identity.id}`,
+          resources: [
+            {
+              type: 'identity',
+              id: identity.id,
+            },
+          ],
 
-        for (const rl of updateRatelimits) {
+          context: {
+            location: c.get('location'),
+            userAgent: c.get('userAgent'),
+          },
+        })
+
+        if (typeof req.meta !== 'undefined') {
           await tx
-            .update(schema.ratelimits)
+            .update(schema.identities)
             .set({
+              meta: req.meta,
+            })
+            .where(eq(schema.identities.id, identity.id))
+        }
+
+        if (typeof req.ratelimits !== 'undefined') {
+          const deleteRatelimits: Ratelimit[] = []
+          const createRatelimits: Required<
+            V1IdentitiesUpdateIdentityRequest['ratelimits']
+          > = []
+          const updateRatelimits: Ratelimit[] = []
+          for (const rl of identity.ratelimits) {
+            const newRl = req.ratelimits.find((r) => r.name === rl.name)
+            if (!newRl) {
+              deleteRatelimits.push(rl)
+            } else {
+              updateRatelimits.push({
+                ...rl,
+                limit: newRl.limit,
+                duration: newRl.duration,
+              })
+            }
+          }
+          for (const newRl of req.ratelimits) {
+            if (!identity.ratelimits.find((r) => r.name === newRl.name)) {
+              createRatelimits.push(newRl)
+            }
+          }
+
+          /**
+           * Delete undesired ratelimits
+           */
+          for (const rl of deleteRatelimits) {
+            await tx
+              .delete(schema.ratelimits)
+              .where(eq(schema.ratelimits.id, rl.id))
+            auditLogs.push({
+              workspaceId: auth.authorizedWorkspaceId,
+              event: 'ratelimit.delete' as const,
+              actor: {
+                type: 'key' as const,
+                id: auth.key.id,
+              },
+              description: `Deleted ${rl.id}`,
+              resources: [
+                {
+                  type: 'identity' as const,
+                  id: identity.id,
+                },
+                {
+                  type: 'ratelimit' as const,
+                  id: rl.id,
+                  meta: rl as any,
+                },
+              ],
+              context: {
+                location: c.get('location'),
+                userAgent: c.get('userAgent'),
+              },
+            })
+          }
+
+          /**
+           * Update existing
+           */
+
+          for (const rl of updateRatelimits) {
+            await tx
+              .update(schema.ratelimits)
+              .set({
+                name: rl.name,
+                limit: rl.limit,
+                duration: rl.duration,
+              })
+              .where(eq(schema.ratelimits.id, rl.id))
+            auditLogs.push({
+              workspaceId: auth.authorizedWorkspaceId,
+              event: 'ratelimit.update' as const,
+              actor: {
+                type: 'key' as const,
+                id: auth.key.id,
+              },
+              description: `Updated ${rl.id}`,
+              resources: [
+                {
+                  type: 'identity' as const,
+                  id: identity.id,
+                },
+                {
+                  type: 'ratelimit' as const,
+                  id: rl.id,
+                  meta: rl as any,
+                },
+              ],
+              context: {
+                location: c.get('location'),
+                userAgent: c.get('userAgent'),
+              },
+            })
+          }
+
+          /**
+           * Create new
+           */
+
+          for (const rl of createRatelimits) {
+            const ratelimitId = newId('ratelimit')
+            await tx.insert(schema.ratelimits).values({
+              id: ratelimitId,
+              workspaceId: identity.workspaceId,
+              identityId: identity.id,
               name: rl.name,
               limit: rl.limit,
               duration: rl.duration,
             })
-            .where(eq(schema.ratelimits.id, rl.id))
-          auditLogs.push({
-            workspaceId: auth.authorizedWorkspaceId,
-            event: 'ratelimit.update' as const,
-            actor: {
-              type: 'key' as const,
-              id: auth.key.id,
-            },
-            description: `Updated ${rl.id}`,
-            resources: [
-              {
-                type: 'identity' as const,
-                id: identity.id,
+            auditLogs.push({
+              workspaceId: auth.authorizedWorkspaceId,
+              event: 'ratelimit.create' as const,
+              actor: {
+                type: 'key' as const,
+                id: auth.key.id,
               },
-              {
-                type: 'ratelimit' as const,
-                id: rl.id,
-                meta: rl as any,
+
+              description: `Created ${ratelimitId}`,
+              resources: [
+                {
+                  type: 'identity' as const,
+                  id: identity.id,
+                },
+                {
+                  type: 'ratelimit' as const,
+                  id: ratelimitId,
+                  meta: rl,
+                },
+              ],
+              context: {
+                location: c.get('location'),
+                userAgent: c.get('userAgent'),
               },
-            ],
-            context: {
-              location: c.get('location'),
-              userAgent: c.get('userAgent'),
-            },
-          })
+            })
+          }
         }
+        const identityAfterUpdate = await tx.query.identities.findFirst({
+          where: (table, { eq }) => eq(table.id, identity.id),
+          with: {
+            ratelimits: true,
+          },
+        })
 
         /**
-         * Create new
+         * We currently run into "too many subrequests" errors on cloudflare when purging many keys at once
+         * so we only purge the keys if there are less than 10 keys to purge and rely on the cache eviction policy
+         * to remove the keys from the cache
          */
+        if (identity.keys.length < 10) {
+          c.executionCtx.waitUntil(
+            Promise.all([
+              cache.keyById.remove(identity.keys.map(({ id }) => id)),
+              cache.keyByHash.remove(identity.keys.map(({ hash }) => hash)),
+            ]),
+          )
+        }
+        return identityAfterUpdate!
+      })
 
-        for (const rl of createRatelimits) {
-          const ratelimitId = newId('ratelimit')
-          await tx.insert(schema.ratelimits).values({
-            id: ratelimitId,
-            workspaceId: identity.workspaceId,
-            identityId: identity.id,
+      await insertUnkeyAuditLog(c, undefined, auditLogs)
+
+      return c.json(
+        {
+          id: identity.id,
+          externalId: identity.externalId,
+          meta: identity.meta ?? {},
+          ratelimits: identity.ratelimits.map((rl) => ({
             name: rl.name,
             limit: rl.limit,
             duration: rl.duration,
-          })
-          auditLogs.push({
-            workspaceId: auth.authorizedWorkspaceId,
-            event: 'ratelimit.create' as const,
-            actor: {
-              type: 'key' as const,
-              id: auth.key.id,
-            },
-
-            description: `Created ${ratelimitId}`,
-            resources: [
-              {
-                type: 'identity' as const,
-                id: identity.id,
-              },
-              {
-                type: 'ratelimit' as const,
-                id: ratelimitId,
-                meta: rl,
-              },
-            ],
-            context: {
-              location: c.get('location'),
-              userAgent: c.get('userAgent'),
-            },
-          })
-        }
-      }
-      const identityAfterUpdate = await tx.query.identities.findFirst({
-        where: (table, { eq }) => eq(table.id, identity.id),
-        with: {
-          ratelimits: true,
+          })),
         },
-      })
-
-      /**
-       * We currently run into "too many subrequests" errors on cloudflare when purging many keys at once
-       * so we only purge the keys if there are less than 10 keys to purge and rely on the cache eviction policy
-       * to remove the keys from the cache
-       */
-      if (identity.keys.length < 10) {
-        c.executionCtx.waitUntil(
-          Promise.all([
-            cache.keyById.remove(identity.keys.map(({ id }) => id)),
-            cache.keyByHash.remove(identity.keys.map(({ hash }) => hash)),
-          ]),
-        )
-      }
-      return identityAfterUpdate!
-    })
-
-    await insertUnkeyAuditLog(c, undefined, auditLogs)
-
-    return c.json({
-      id: identity.id,
-      externalId: identity.externalId,
-      meta: identity.meta ?? {},
-      ratelimits: identity.ratelimits.map((rl) => ({
-        name: rl.name,
-        limit: rl.limit,
-        duration: rl.duration,
-      })),
-    }, 200)
-  })
+        200,
+      )
+    },
+  )

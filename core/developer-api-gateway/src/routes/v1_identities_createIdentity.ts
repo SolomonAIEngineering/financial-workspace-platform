@@ -1,13 +1,13 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
+import { insertUnkeyAuditLog } from '@/pkg/audit'
+import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
 import { DatabaseError } from '@planetscale/database'
-import { buildUnkeyQuery } from '@repo/rbac'
-import { insertUnkeyAuditLog } from '@/pkg/audit'
-import { newId } from '@repo/id'
-import { rootKeyAuth } from '@/pkg/auth/root_key'
 import { schema } from '@repo/db'
+import { newId } from '@repo/id'
+import { buildUnkeyQuery } from '@repo/rbac'
 
 const route = createRoute({
   tags: ['identities'],
@@ -102,125 +102,131 @@ export type V1IdentitiesCreateIdentityResponse = z.infer<
 >
 
 export const registerV1IdentitiesCreateIdentity = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { db } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { db } = c.get('services')
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('*', 'identity.*.create_identity')),
-    )
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('*', 'identity.*.create_identity')),
+      )
 
-    const req = c.req.valid('json')
+      const req = c.req.valid('json')
 
-    const authorizedWorkspaceId = auth.authorizedWorkspaceId
-    const rootKeyId = auth.key.id
+      const authorizedWorkspaceId = auth.authorizedWorkspaceId
+      const rootKeyId = auth.key.id
 
-    const metaLength = req.meta ? JSON.stringify(req.meta).length : 0
-    if (metaLength > 64_000) {
-      throw new UnkeyApiError({
-        code: 'BAD_REQUEST',
-
-        message: `metadata is too large, it must be less than 64k characters when json encoded, got: ${metaLength}`,
-      })
-    }
-
-    const identity = {
-      id: newId('identity'),
-      externalId: req.externalId,
-      workspaceId: auth.authorizedWorkspaceId,
-      environment: 'default',
-      meta: req.meta,
-    }
-    await db.primary
-      .transaction(async (tx) => {
-        await tx
-          .insert(schema.identities)
-          .values(identity)
-          .catch((e) => {
-            if (
-              e instanceof DatabaseError &&
-              e.body.message.includes('Duplicate entry')
-            ) {
-              throw new UnkeyApiError({
-                code: 'PRECONDITION_FAILED',
-                message: 'Duplicate identity',
-              })
-            }
-          })
-
-        const ratelimits = req.ratelimits
-          ? req.ratelimits.map((r) => ({
-            id: newId('ratelimit'),
-            identityId: identity.id,
-            workspaceId: auth.authorizedWorkspaceId,
-            name: r.name,
-            limit: r.limit,
-            duration: r.duration,
-          }))
-          : []
-
-        if (ratelimits.length > 0) {
-          await tx.insert(schema.ratelimits).values(ratelimits)
-        }
-
-        await insertUnkeyAuditLog(c, tx, [
-          {
-            workspaceId: authorizedWorkspaceId,
-            event: 'identity.create',
-            actor: {
-              type: 'key',
-              id: rootKeyId,
-            },
-            description: `Created ${identity.id}`,
-            resources: [
-              {
-                type: 'identity',
-                id: identity.id,
-              },
-            ],
-
-            context: {
-              location: c.get('location'),
-              userAgent: c.get('userAgent'),
-            },
-          },
-          ...ratelimits.map((r) => ({
-            workspaceId: authorizedWorkspaceId,
-            event: 'ratelimit.create' as const,
-            actor: {
-              type: 'key' as const,
-              id: rootKeyId,
-            },
-            description: `Created ${r.id}`,
-            resources: [
-              {
-                type: 'identity' as const,
-                id: identity.id,
-              },
-              {
-                type: 'ratelimit' as const,
-                id: r.id,
-              },
-            ],
-
-            context: {
-              location: c.get('location'),
-              userAgent: c.get('userAgent'),
-            },
-          })),
-        ])
-      })
-      .catch((e) => {
-        if (e instanceof UnkeyApiError) {
-          throw e
-        }
-
+      const metaLength = req.meta ? JSON.stringify(req.meta).length : 0
+      if (metaLength > 64_000) {
         throw new UnkeyApiError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'unable to store identity and ratelimits in the database',
+          code: 'BAD_REQUEST',
+
+          message: `metadata is too large, it must be less than 64k characters when json encoded, got: ${metaLength}`,
         })
-      })
-    return c.json({
-      identityId: identity.id,
-    }, 200)
-  })
+      }
+
+      const identity = {
+        id: newId('identity'),
+        externalId: req.externalId,
+        workspaceId: auth.authorizedWorkspaceId,
+        environment: 'default',
+        meta: req.meta,
+      }
+      await db.primary
+        .transaction(async (tx) => {
+          await tx
+            .insert(schema.identities)
+            .values(identity)
+            .catch((e) => {
+              if (
+                e instanceof DatabaseError &&
+                e.body.message.includes('Duplicate entry')
+              ) {
+                throw new UnkeyApiError({
+                  code: 'PRECONDITION_FAILED',
+                  message: 'Duplicate identity',
+                })
+              }
+            })
+
+          const ratelimits = req.ratelimits
+            ? req.ratelimits.map((r) => ({
+                id: newId('ratelimit'),
+                identityId: identity.id,
+                workspaceId: auth.authorizedWorkspaceId,
+                name: r.name,
+                limit: r.limit,
+                duration: r.duration,
+              }))
+            : []
+
+          if (ratelimits.length > 0) {
+            await tx.insert(schema.ratelimits).values(ratelimits)
+          }
+
+          await insertUnkeyAuditLog(c, tx, [
+            {
+              workspaceId: authorizedWorkspaceId,
+              event: 'identity.create',
+              actor: {
+                type: 'key',
+                id: rootKeyId,
+              },
+              description: `Created ${identity.id}`,
+              resources: [
+                {
+                  type: 'identity',
+                  id: identity.id,
+                },
+              ],
+
+              context: {
+                location: c.get('location'),
+                userAgent: c.get('userAgent'),
+              },
+            },
+            ...ratelimits.map((r) => ({
+              workspaceId: authorizedWorkspaceId,
+              event: 'ratelimit.create' as const,
+              actor: {
+                type: 'key' as const,
+                id: rootKeyId,
+              },
+              description: `Created ${r.id}`,
+              resources: [
+                {
+                  type: 'identity' as const,
+                  id: identity.id,
+                },
+                {
+                  type: 'ratelimit' as const,
+                  id: r.id,
+                },
+              ],
+
+              context: {
+                location: c.get('location'),
+                userAgent: c.get('userAgent'),
+              },
+            })),
+          ])
+        })
+        .catch((e) => {
+          if (e instanceof UnkeyApiError) {
+            throw e
+          }
+
+          throw new UnkeyApiError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'unable to store identity and ratelimits in the database',
+          })
+        })
+      return c.json(
+        {
+          identityId: identity.id,
+        },
+        200,
+      )
+    },
+  )

@@ -1,11 +1,11 @@
 import type { ContentfulStatusCode, StatusCode } from 'hono/utils/http-status'
 
-import type { Context } from 'hono'
-import { HTTPException } from 'hono/http-exception'
-import type { HonoEnv } from '../hono/env'
-import type { ZodError } from 'zod'
 import { parseZodErrorMessage } from '@/utils/zod-error'
 import { z } from '@hono/zod-openapi'
+import type { Context } from 'hono'
+import { HTTPException } from 'hono/http-exception'
+import type { ZodError } from 'zod'
+import type { HonoEnv } from '../hono/env'
 
 /**
  * Enum representing various error codes used in the application.
@@ -267,13 +267,13 @@ export class BadRequestError extends ServiceApiError {
 export function handleZodError(
   result:
     | {
-      success: true
-      data: any
-    }
+        success: true
+        data: any
+      }
     | {
-      success: false
-      error: ZodError
-    },
+        success: false
+        error: ZodError
+      },
   c: Context,
 ) {
   if (!result.success) {

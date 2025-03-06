@@ -1,11 +1,11 @@
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { and, eq, gt, sql } from '@repo/db'
 
-import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
-import { openApiErrorResponses } from '@/pkg/errors'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import { openApiErrorResponses } from '@/pkg/errors'
+import type { App } from '@/pkg/hono/app'
 import { schema } from '@repo/db'
+import { buildUnkeyQuery } from '@repo/rbac'
 
 const route = createRoute({
   tags: ['identities'],
@@ -116,60 +116,66 @@ export type V1IdentitiesListIdentitiesResponse = z.infer<
 >
 
 export const registerV1IdentitiesListIdentities = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('query')
-    const { db } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('query')
+      const { db } = c.get('services')
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) =>
-        or(
-          '*',
-          'identity.*.read_identity',
-          `identity.${req.environment}.read_identity`,
-        ),
-      ),
-    )
-
-    const [identities, total] = await Promise.all([
-      db.readonly.query.identities.findMany({
-        where: and(
-          ...[
-            eq(schema.identities.workspaceId, auth.authorizedWorkspaceId),
-            eq(schema.identities.environment, req.environment),
-            req.cursor ? gt(schema.keys.id, req.cursor) : undefined,
-          ].filter(Boolean),
-        ),
-        with: {
-          ratelimits: true,
-        },
-        limit: req.limit,
-        orderBy: schema.identities.id,
-      }),
-
-      db.readonly
-        .select({ count: sql<string>`count(*)` })
-        .from(schema.identities)
-        .where(
-          and(
-            eq(schema.identities.workspaceId, auth.authorizedWorkspaceId),
-            eq(schema.identities.environment, req.environment),
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) =>
+          or(
+            '*',
+            'identity.*.read_identity',
+            `identity.${req.environment}.read_identity`,
           ),
-        )
-        .then((rows) => Number(rows.at(0)?.count ?? 0)),
-    ])
+        ),
+      )
 
-    return c.json({
-      identities: identities.map((i) => ({
-        id: i.id,
-        externalId: i.externalId,
-        ratelimits: i.ratelimits.map((r) => ({
-          name: r.name,
-          limit: r.limit,
-          duration: r.duration,
-        })),
-      })),
-      total,
-      cursor: identities.at(-1)?.id ?? undefined,
-    }, 200)
-  })
+      const [identities, total] = await Promise.all([
+        db.readonly.query.identities.findMany({
+          where: and(
+            ...[
+              eq(schema.identities.workspaceId, auth.authorizedWorkspaceId),
+              eq(schema.identities.environment, req.environment),
+              req.cursor ? gt(schema.keys.id, req.cursor) : undefined,
+            ].filter(Boolean),
+          ),
+          with: {
+            ratelimits: true,
+          },
+          limit: req.limit,
+          orderBy: schema.identities.id,
+        }),
+
+        db.readonly
+          .select({ count: sql<string>`count(*)` })
+          .from(schema.identities)
+          .where(
+            and(
+              eq(schema.identities.workspaceId, auth.authorizedWorkspaceId),
+              eq(schema.identities.environment, req.environment),
+            ),
+          )
+          .then((rows) => Number(rows.at(0)?.count ?? 0)),
+      ])
+
+      return c.json(
+        {
+          identities: identities.map((i) => ({
+            id: i.id,
+            externalId: i.externalId,
+            ratelimits: i.ratelimits.map((r) => ({
+              name: r.name,
+              limit: r.limit,
+              duration: r.duration,
+            })),
+          })),
+          total,
+          cursor: identities.at(-1)?.id ?? undefined,
+        },
+        200,
+      )
+    },
+  )

@@ -1,13 +1,13 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
+import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
+import { retry } from '@/pkg/util/retry'
 import type { Identity } from '@repo/db'
+import { schema } from '@repo/db'
 import { buildUnkeyQuery } from '@repo/rbac'
 import { keySchema } from './schema'
-import { retry } from '@/pkg/util/retry'
-import { rootKeyAuth } from '@/pkg/auth/root_key'
-import { schema } from '@repo/db'
 
 const route = createRoute({
   tags: ['apis'],
@@ -92,286 +92,292 @@ export type V1ApisListKeysResponse = z.infer<
 >
 
 export const registerV1ApisListKeys = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const {
-      apiId,
-      revalidateKeysCache,
-      limit,
-      cursor,
-      externalId,
-      ownerId,
-      decrypt,
-    } = c.req.valid('query')
-    const { cache, db, rbac, vault } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const {
+        apiId,
+        revalidateKeysCache,
+        limit,
+        cursor,
+        externalId,
+        ownerId,
+        decrypt,
+      } = c.req.valid('query')
+      const { cache, db, rbac, vault } = c.get('services')
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or, and }) =>
-        or(
-          '*',
-          and(
-            or('api.*.read_key', `api.${apiId}.read_key`),
-            or('api.*.read_api', `api.${apiId}.read_api`),
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or, and }) =>
+          or(
+            '*',
+            and(
+              or('api.*.read_key', `api.${apiId}.read_key`),
+              or('api.*.read_api', `api.${apiId}.read_api`),
+            ),
           ),
         ),
-      ),
-    )
-
-    const { val: api, err } = await cache.apiById.swr(apiId, async () => {
-      return (
-        (await db.readonly.query.apis.findFirst({
-          where: (table, { eq, and, isNull }) =>
-            and(eq(table.id, apiId), isNull(table.deletedAt)),
-          with: {
-            keyAuth: true,
-          },
-        })) ?? null
       )
-    })
 
-    if (err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `unable to lod api: ${err.message}`,
+      const { val: api, err } = await cache.apiById.swr(apiId, async () => {
+        return (
+          (await db.readonly.query.apis.findFirst({
+            where: (table, { eq, and, isNull }) =>
+              and(eq(table.id, apiId), isNull(table.deletedAt)),
+            with: {
+              keyAuth: true,
+            },
+          })) ?? null
+        )
       })
-    }
 
-    if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `api ${apiId} not found`,
-      })
-    }
-
-    if (!api.keyAuthId) {
-      throw new UnkeyApiError({
-        code: 'PRECONDITION_FAILED',
-        message: `api ${apiId} is not setup to handle keys`,
-      })
-    }
-
-    let identity: Identity | undefined = undefined
-    if (externalId) {
-      const { val, err } = await cache.identityByExternalId.swr(
-        externalId,
-        async () => {
-          return db.readonly.query.identities.findFirst({
-            where: (table, { and, eq }) =>
-              and(
-                eq(table.externalId, externalId),
-                eq(table.workspaceId, auth.authorizedWorkspaceId),
-              ),
-          })
-        },
-      )
       if (err) {
         throw new UnkeyApiError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: err.message,
+          message: `unable to lod api: ${err.message}`,
         })
       }
-      if (val) {
-        identity = val
+
+      if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `api ${apiId} not found`,
+        })
       }
 
-      if (!identity) {
-        return c.json({ keys: [], cursor: undefined, total: 0 }, 200)
+      if (!api.keyAuthId) {
+        throw new UnkeyApiError({
+          code: 'PRECONDITION_FAILED',
+          message: `api ${apiId} is not setup to handle keys`,
+        })
       }
-    }
 
-    async function loadKeys() {
-      const keySpace = await db.readonly.query.keyAuth.findFirst({
-        where: (table, { and, eq, isNull }) =>
-          and(eq(table.id, api!.keyAuthId!), isNull(schema.keys.deletedAt)),
+      let identity: Identity | undefined = undefined
+      if (externalId) {
+        const { val, err } = await cache.identityByExternalId.swr(
+          externalId,
+          async () => {
+            return db.readonly.query.identities.findFirst({
+              where: (table, { and, eq }) =>
+                and(
+                  eq(table.externalId, externalId),
+                  eq(table.workspaceId, auth.authorizedWorkspaceId),
+                ),
+            })
+          },
+        )
+        if (err) {
+          throw new UnkeyApiError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: err.message,
+          })
+        }
+        if (val) {
+          identity = val
+        }
 
-        with: {
-          keys: {
-            where: (table, { and, isNull, gt, eq }) =>
-              and(
-                ...[
-                  isNull(table.deletedAt),
-                  cursor ? gt(table.id, cursor) : undefined,
-                  identity
-                    ? eq(table.identityId, identity.id)
-                    : ownerId
-                      ? eq(table.ownerId, ownerId)
-                      : undefined,
-                ].filter(Boolean),
-              ),
-            with: {
-              identity: true,
-              encrypted: true,
-              roles: {
-                with: {
-                  role: {
-                    with: {
-                      permissions: {
-                        with: {
-                          permission: true,
+        if (!identity) {
+          return c.json({ keys: [], cursor: undefined, total: 0 }, 200)
+        }
+      }
+
+      async function loadKeys() {
+        const keySpace = await db.readonly.query.keyAuth.findFirst({
+          where: (table, { and, eq, isNull }) =>
+            and(eq(table.id, api!.keyAuthId!), isNull(schema.keys.deletedAt)),
+
+          with: {
+            keys: {
+              where: (table, { and, isNull, gt, eq }) =>
+                and(
+                  ...[
+                    isNull(table.deletedAt),
+                    cursor ? gt(table.id, cursor) : undefined,
+                    identity
+                      ? eq(table.identityId, identity.id)
+                      : ownerId
+                        ? eq(table.ownerId, ownerId)
+                        : undefined,
+                  ].filter(Boolean),
+                ),
+              with: {
+                identity: true,
+                encrypted: true,
+                roles: {
+                  with: {
+                    role: {
+                      with: {
+                        permissions: {
+                          with: {
+                            permission: true,
+                          },
                         },
                       },
                     },
                   },
                 },
-              },
-              permissions: {
-                with: {
-                  permission: true,
+                permissions: {
+                  with: {
+                    permission: true,
+                  },
                 },
               },
+              limit: limit,
+              orderBy: schema.keys.id,
             },
-            limit: limit,
-            orderBy: schema.keys.id,
           },
-        },
-      })
-
-      if (!keySpace) {
-        throw new UnkeyApiError({
-          code: 'NOT_FOUND',
-          message: 'keyspace not found',
         })
-      }
 
-      /**
-       * Creates a unique set of all permissions, whether they're attached directly or connected
-       * through a role.
-       */
-
-      return {
-        keys: keySpace.keys.map((k) => {
-          const permissions = new Set<string>([
-            ...k.permissions.map((p) => p.permission.name),
-            ...k.roles.flatMap((r) =>
-              r.role.permissions.map((p) => p.permission.name),
-            ),
-          ])
-          return {
-            ...k,
-            identity: k.identity
-              ? {
-                id: k.identity.id,
-                externalId: k.identity.externalId,
-                meta: k.identity.meta ?? {},
-              }
-              : null,
-            permissions: Array.from(permissions.values()),
-            roles: k.roles.map((r) => r.role.name),
-          }
-        }),
-        total: keySpace.sizeApprox,
-      }
-    }
-
-    const cacheKey = [api.keyAuthId, cursor, externalId, ownerId, limit].join(
-      '_',
-    )
-
-    const data = revalidateKeysCache
-      ? await loadKeys().then((res) => {
-        c.executionCtx.waitUntil(cache.keysByApiId.set(cacheKey, res))
-        return res
-      })
-      : await cache.keysByApiId.swr(cacheKey, loadKeys).then((cached) => {
-        if (cached.err) {
+        if (!keySpace) {
           throw new UnkeyApiError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: cached.err.message,
+            code: 'NOT_FOUND',
+            message: 'keyspace not found',
           })
         }
-        return cached.val!
-      })
 
-    // keyId->key
-    const plaintext: Record<string, string> = {}
+        /**
+         * Creates a unique set of all permissions, whether they're attached directly or connected
+         * through a role.
+         */
 
-    if (decrypt) {
-      const { val, err } = rbac.evaluatePermissions(
-        buildUnkeyQuery(({ or }) =>
-          or('*', 'api.*.decrypt_key', `api.${api.id}.decrypt_key`),
-        ),
-        auth.permissions,
-      )
-      if (err) {
-        throw new UnkeyApiError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'unable to evaluate permission',
-        })
-      }
-      if (!val.valid) {
-        throw new UnkeyApiError({
-          code: 'UNAUTHORIZED',
-          message: "you're not allowed to decrypt this key",
-        })
-      }
-
-      await Promise.all(
-        data.keys.map(async ({ id, workspaceId, encrypted }) => {
-          if (!encrypted) {
-            return
-          }
-
-          const decryptedRes = await retry(3, () =>
-            vault.decrypt(c, {
-              keyring: workspaceId,
-              encrypted: encrypted.encrypted,
-            }),
-          )
-          plaintext[id] = decryptedRes.plaintext
-        }),
-      )
-    }
-    return c.json({
-      keys: data.keys.map((k) => ({
-        id: k.id,
-        start: k.start,
-        apiId: api.id,
-        workspaceId: k.workspaceId,
-        name: k.name ?? undefined,
-        ownerId: k.ownerId ?? undefined,
-        meta: k.meta ? JSON.parse(k.meta) : undefined,
-        createdAt: k.createdAt.getTime() ?? undefined,
-        updatedAt: k.updatedAtM ?? undefined,
-        expires: k.expires?.getTime() ?? undefined,
-        ratelimit:
-          k.ratelimitAsync !== null &&
-            k.ratelimitLimit !== null &&
-            k.ratelimitDuration !== null
-            ? {
-              async: k.ratelimitAsync,
-              type: k.ratelimitAsync ? 'fast' : ('consistent' as any),
-              limit: k.ratelimitLimit,
-              duration: k.ratelimitDuration,
-              refillRate: k.ratelimitLimit,
-              refillInterval: k.ratelimitDuration,
+        return {
+          keys: keySpace.keys.map((k) => {
+            const permissions = new Set<string>([
+              ...k.permissions.map((p) => p.permission.name),
+              ...k.roles.flatMap((r) =>
+                r.role.permissions.map((p) => p.permission.name),
+              ),
+            ])
+            return {
+              ...k,
+              identity: k.identity
+                ? {
+                    id: k.identity.id,
+                    externalId: k.identity.externalId,
+                    meta: k.identity.meta ?? {},
+                  }
+                : null,
+              permissions: Array.from(permissions.values()),
+              roles: k.roles.map((r) => r.role.name),
             }
-            : undefined,
-        remaining: k.remaining ?? undefined,
-        refill:
-          k.refillInterval && k.refillAmount && k.lastRefillAt
-            ? {
-              interval: k.refillInterval,
-              amount: k.refillAmount,
-              refillDay:
-                k.refillInterval === 'monthly' && k.refillDay
-                  ? k.refillDay
-                  : null,
-              lastRefillAt: k.lastRefillAt?.getTime(),
+          }),
+          total: keySpace.sizeApprox,
+        }
+      }
+
+      const cacheKey = [api.keyAuthId, cursor, externalId, ownerId, limit].join(
+        '_',
+      )
+
+      const data = revalidateKeysCache
+        ? await loadKeys().then((res) => {
+            c.executionCtx.waitUntil(cache.keysByApiId.set(cacheKey, res))
+            return res
+          })
+        : await cache.keysByApiId.swr(cacheKey, loadKeys).then((cached) => {
+            if (cached.err) {
+              throw new UnkeyApiError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: cached.err.message,
+              })
             }
-            : undefined,
-        environment: k.environment ?? undefined,
-        plaintext: plaintext[k.id] ?? undefined,
-        roles: k.roles,
-        permissions: k.permissions,
-        identity: k.identity
-          ? {
-            id: k.identity.id,
-            externalId: k.identity.externalId,
-            meta: k.identity.meta ?? undefined,
-          }
-          : undefined,
-      })),
-      total: data.total,
-      cursor: data.keys.at(-1)?.id ?? undefined,
-    }, 200)
-  })
+            return cached.val!
+          })
+
+      // keyId->key
+      const plaintext: Record<string, string> = {}
+
+      if (decrypt) {
+        const { val, err } = rbac.evaluatePermissions(
+          buildUnkeyQuery(({ or }) =>
+            or('*', 'api.*.decrypt_key', `api.${api.id}.decrypt_key`),
+          ),
+          auth.permissions,
+        )
+        if (err) {
+          throw new UnkeyApiError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'unable to evaluate permission',
+          })
+        }
+        if (!val.valid) {
+          throw new UnkeyApiError({
+            code: 'UNAUTHORIZED',
+            message: "you're not allowed to decrypt this key",
+          })
+        }
+
+        await Promise.all(
+          data.keys.map(async ({ id, workspaceId, encrypted }) => {
+            if (!encrypted) {
+              return
+            }
+
+            const decryptedRes = await retry(3, () =>
+              vault.decrypt(c, {
+                keyring: workspaceId,
+                encrypted: encrypted.encrypted,
+              }),
+            )
+            plaintext[id] = decryptedRes.plaintext
+          }),
+        )
+      }
+      return c.json(
+        {
+          keys: data.keys.map((k) => ({
+            id: k.id,
+            start: k.start,
+            apiId: api.id,
+            workspaceId: k.workspaceId,
+            name: k.name ?? undefined,
+            ownerId: k.ownerId ?? undefined,
+            meta: k.meta ? JSON.parse(k.meta) : undefined,
+            createdAt: k.createdAt.getTime() ?? undefined,
+            updatedAt: k.updatedAtM ?? undefined,
+            expires: k.expires?.getTime() ?? undefined,
+            ratelimit:
+              k.ratelimitAsync !== null &&
+              k.ratelimitLimit !== null &&
+              k.ratelimitDuration !== null
+                ? {
+                    async: k.ratelimitAsync,
+                    type: k.ratelimitAsync ? 'fast' : ('consistent' as any),
+                    limit: k.ratelimitLimit,
+                    duration: k.ratelimitDuration,
+                    refillRate: k.ratelimitLimit,
+                    refillInterval: k.ratelimitDuration,
+                  }
+                : undefined,
+            remaining: k.remaining ?? undefined,
+            refill:
+              k.refillInterval && k.refillAmount && k.lastRefillAt
+                ? {
+                    interval: k.refillInterval,
+                    amount: k.refillAmount,
+                    refillDay:
+                      k.refillInterval === 'monthly' && k.refillDay
+                        ? k.refillDay
+                        : null,
+                    lastRefillAt: k.lastRefillAt?.getTime(),
+                  }
+                : undefined,
+            environment: k.environment ?? undefined,
+            plaintext: plaintext[k.id] ?? undefined,
+            roles: k.roles,
+            permissions: k.permissions,
+            identity: k.identity
+              ? {
+                  id: k.identity.id,
+                  externalId: k.identity.externalId,
+                  meta: k.identity.meta ?? undefined,
+                }
+              : undefined,
+          })),
+          total: data.total,
+          cursor: data.keys.at(-1)?.id ?? undefined,
+        },
+        200,
+      )
+    },
+  )

@@ -27,7 +27,7 @@ import { client } from '../../provider/azure'
  * const tables = await processor.getDocument({ content: base64Content });
  * if (tables) {
  *   tables.forEach(table => {
- *     console.log(`Row ${table.rowIndex}:`, table.cells);
+ *     console.info(`Row ${table.rowIndex}:`, table.cells);
  *   });
  * }
  * ```

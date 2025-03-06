@@ -1,10 +1,10 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { and, eq, gt, isNull, schema, sql } from '@repo/db'
 
+import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
 import { buildUnkeyQuery } from '@repo/rbac'
-import { rootKeyAuth } from '@/pkg/auth/root_key'
 
 const route = createRoute({
   tags: ['ratelimit'],
@@ -81,78 +81,84 @@ export type V1RatelimitListOverridesRequest = z.infer<
   (typeof route.request)['query']
 >
 export const registerV1RatelimitListOverrides = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { namespaceId, namespaceName, limit, cursor } = c.req.valid('query')
-    const { db } = c.get('services')
-    if (!namespaceId && !namespaceName) {
-      throw new UnkeyApiError({
-        code: 'BAD_REQUEST',
-        message: 'You must provide a namespaceId or a namespaceName',
-      })
-    }
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('*', 'ratelimit.*.read_override')),
-    )
-    const authorizedWorkspaceId = auth.authorizedWorkspaceId
-    if (!authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'UNAUTHORIZED',
-        message: 'Missing required permission: ratelimit.*.read_override',
-      })
-    }
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { namespaceId, namespaceName, limit, cursor } = c.req.valid('query')
+      const { db } = c.get('services')
+      if (!namespaceId && !namespaceName) {
+        throw new UnkeyApiError({
+          code: 'BAD_REQUEST',
+          message: 'You must provide a namespaceId or a namespaceName',
+        })
+      }
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('*', 'ratelimit.*.read_override')),
+      )
+      const authorizedWorkspaceId = auth.authorizedWorkspaceId
+      if (!authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'UNAUTHORIZED',
+          message: 'Missing required permission: ratelimit.*.read_override',
+        })
+      }
 
-    const namespace = await db.readonly.query.ratelimitNamespaces.findFirst({
-      where: (table, { and, eq }) =>
-        and(
-          eq(table.workspaceId, authorizedWorkspaceId),
-          namespaceId
-            ? eq(table.id, namespaceId)
-            : eq(table.name, namespaceName!),
-        ),
-    })
-    if (!namespace) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `Namespace ${namespaceId ? namespaceId : namespaceName} not found`,
-      })
-    }
-
-    const [overrides, total] = await Promise.all([
-      db.readonly.query.ratelimitOverrides.findMany({
+      const namespace = await db.readonly.query.ratelimitNamespaces.findFirst({
         where: (table, { and, eq }) =>
           and(
-            ...[
-              isNull(schema.ratelimitOverrides.deletedAt),
-              eq(table.workspaceId, authorizedWorkspaceId),
-              eq(table.namespaceId, namespace.id),
-              cursor ? gt(schema.ratelimitOverrides.id, cursor) : undefined,
-            ].filter(Boolean),
+            eq(table.workspaceId, authorizedWorkspaceId),
+            namespaceId
+              ? eq(table.id, namespaceId)
+              : eq(table.name, namespaceName!),
           ),
-        limit: limit,
-        orderBy: schema.ratelimitOverrides.id,
-      }),
+      })
+      if (!namespace) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `Namespace ${namespaceId ? namespaceId : namespaceName} not found`,
+        })
+      }
 
-      db.readonly
-        .select({ count: sql<string>`count(*)` })
-        .from(schema.ratelimitOverrides)
-        .where(
-          and(
-            eq(schema.ratelimitOverrides.namespaceId, namespace?.id),
-            isNull(schema.ratelimitOverrides.deletedAt),
+      const [overrides, total] = await Promise.all([
+        db.readonly.query.ratelimitOverrides.findMany({
+          where: (table, { and, eq }) =>
+            and(
+              ...[
+                isNull(schema.ratelimitOverrides.deletedAt),
+                eq(table.workspaceId, authorizedWorkspaceId),
+                eq(table.namespaceId, namespace.id),
+                cursor ? gt(schema.ratelimitOverrides.id, cursor) : undefined,
+              ].filter(Boolean),
+            ),
+          limit: limit,
+          orderBy: schema.ratelimitOverrides.id,
+        }),
+
+        db.readonly
+          .select({ count: sql<string>`count(*)` })
+          .from(schema.ratelimitOverrides)
+          .where(
+            and(
+              eq(schema.ratelimitOverrides.namespaceId, namespace?.id),
+              isNull(schema.ratelimitOverrides.deletedAt),
+            ),
           ),
-        ),
-    ])
-    return c.json({
-      overrides:
-        overrides.map((k) => ({
-          id: k.id,
-          identifier: k.identifier,
-          limit: k.limit,
-          duration: k.duration,
-          async: k.async ?? undefined,
-        })) ?? [],
-      total: Number(total.at(0)?.count ?? 0),
-      cursor: overrides.at(-1)?.id ?? undefined,
-    }, 200)
-  })
+      ])
+      return c.json(
+        {
+          overrides:
+            overrides.map((k) => ({
+              id: k.id,
+              identifier: k.identifier,
+              limit: k.limit,
+              duration: k.duration,
+              async: k.async ?? undefined,
+            })) ?? [],
+          total: Number(total.at(0)?.count ?? 0),
+          cursor: overrides.at(-1)?.id ?? undefined,
+        },
+        200,
+      )
+    },
+  )

@@ -1,5 +1,5 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
 import type { App } from '@/pkg/hono/app'
 
@@ -154,38 +154,47 @@ export type LegacyKeysVerifyKeyResponse = z.infer<
 >
 
 export const registerLegacyKeysVerifyKey = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { apiId, key } = c.req.valid('json')
-    const { keyService } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { apiId, key } = c.req.valid('json')
+      const { keyService } = c.get('services')
 
-    const { val, err } = await keyService.verifyKey(c, { key, apiId })
-    if (err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: err.message,
-      })
-    }
-
-    if (!val.valid) {
-      if (val.code === 'NOT_FOUND' || val.code === 'EXPIRED') {
-        c.status(404)
+      const { val, err } = await keyService.verifyKey(c, { key, apiId })
+      if (err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: err.message,
+        })
       }
 
-      return c.json({
-        valid: false,
-        code: val.code,
-        ratelimit: val.ratelimit,
-        remaining: val.remaining,
-      }, 200)
-    }
+      if (!val.valid) {
+        if (val.code === 'NOT_FOUND' || val.code === 'EXPIRED') {
+          c.status(404)
+        }
 
-    return c.json({
-      keyId: val.key.id,
-      valid: true,
-      ownerId: val.key.ownerId ?? undefined,
-      meta: val.key.meta ? JSON.parse(val.key.meta) : undefined,
-      expires: val.key.expires?.getTime(),
-      remaining: val.remaining ?? undefined,
-      ratelimit: val.ratelimit ?? undefined,
-    }, 200)
-  })
+        return c.json(
+          {
+            valid: false,
+            code: val.code,
+            ratelimit: val.ratelimit,
+            remaining: val.remaining,
+          },
+          200,
+        )
+      }
+
+      return c.json(
+        {
+          keyId: val.key.id,
+          valid: true,
+          ownerId: val.key.ownerId ?? undefined,
+          meta: val.key.meta ? JSON.parse(val.key.meta) : undefined,
+          expires: val.key.expires?.getTime(),
+          remaining: val.remaining ?? undefined,
+          ratelimit: val.ratelimit ?? undefined,
+        },
+        200,
+      )
+    },
+  )

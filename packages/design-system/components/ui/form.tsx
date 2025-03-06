@@ -12,8 +12,8 @@ import {
   useFormContext,
 } from 'react-hook-form'
 
-import { Label } from '@repo/design-system/components/ui/label'
 import { Slot } from '@radix-ui/react-slot'
+import { Label } from '@repo/design-system/components/ui/label'
 import { cn } from '@repo/design-system/lib/utils'
 
 const Form = FormProvider as React.FC<React.ComponentProps<typeof FormProvider>>

@@ -62,19 +62,19 @@ Follow these steps to implement a multi-step onboarding process:
      const user = await prisma.user.create({
        data: {
          // ... existing fields ...
-         onboardingStatus: "PENDING",
+         onboardingStatus: 'PENDING',
          onboardingSteps: {
            create: [
-             { step: "PROFILE" },
-             { step: "PREFERENCES" },
-             { step: "WORKSPACE" },
+             { step: 'PROFILE' },
+             { step: 'PREFERENCES' },
+             { step: 'WORKSPACE' },
            ],
          },
        },
-     });
+     })
 
-     return user;
-   };
+     return user
+   }
    ```
 
 4. Create Frontend Components
@@ -95,16 +95,16 @@ Follow these steps to implement a multi-step onboarding process:
    ```typescript
    // src/components/onboarding/store.ts
    export const useOnboardingStore = create<OnboardingStore>((set) => ({
-     currentStep: "PROFILE",
+     currentStep: 'PROFILE',
      stepData: {},
-     status: "PENDING",
+     status: 'PENDING',
      setStep: (step) => set({ currentStep: step }),
      updateStepData: (step, data) =>
        set((state) => ({
          stepData: { ...state.stepData, [step]: data },
        })),
      // ... other actions
-   }));
+   }))
    ```
 
 6. Update Route Protection
@@ -112,26 +112,26 @@ Follow these steps to implement a multi-step onboarding process:
    ```typescript
    // src/components/auth/useAuthGuard.ts
    export const useAuthGuard = () => {
-     const user = useAuthUser();
-     const router = useRouter();
+     const user = useAuthUser()
+     const router = useRouter()
 
      return useCallback(
        (callback?: () => Promise<void> | void) => {
          if (!user?.id) {
-           pushModal("Login");
-           return true;
+           pushModal('Login')
+           return true
          }
 
-         if (user.onboardingStatus === "PENDING") {
-           router.push("/onboarding");
-           return true;
+         if (user.onboardingStatus === 'PENDING') {
+           router.push('/onboarding')
+           return true
          }
 
-         return callback ? void callback() : false;
+         return callback ? void callback() : false
        },
        [user?.id, user?.onboardingStatus],
-     );
-   };
+     )
+   }
    ```
 
 7. Create Onboarding Routes
@@ -161,12 +161,12 @@ Follow these steps to implement a multi-step onboarding process:
      step: string,
      status: StepStatus,
    ) => {
-     analytics.track("onboarding_step", {
+     analytics.track('onboarding_step', {
        step,
        status,
        timestamp: new Date().toISOString(),
-     });
-   };
+     })
+   }
    ```
 
 9. Add Error Handling
@@ -185,47 +185,47 @@ Follow these steps to implement a multi-step onboarding process:
 
     ```typescript
     // src/lib/validation/onboarding.ts
-    import { z } from "zod";
+    import { z } from 'zod'
 
     export const ProfileSchema = z.object({
       displayName: z.string().min(2).max(50),
       bio: z.string().max(160).optional(),
       avatarUrl: z.string().url().optional(),
       timezone: z.string(),
-    });
+    })
 
     export const PreferencesSchema = z.object({
-      theme: z.enum(["light", "dark", "system"]),
+      theme: z.enum(['light', 'dark', 'system']),
       emailNotifications: z.boolean(),
       // ... other preferences
-    });
+    })
 
     export const WorkspaceSchema = z.object({
       name: z.string().min(3).max(50),
       // ... other workspace settings
-    });
+    })
 
-    export type ProfileData = z.infer<typeof ProfileSchema>;
-    export type PreferencesData = z.infer<typeof PreferencesSchema>;
-    export type WorkspaceData = z.infer<typeof WorkspaceSchema>;
+    export type ProfileData = z.infer<typeof ProfileSchema>
+    export type PreferencesData = z.infer<typeof PreferencesSchema>
+    export type WorkspaceData = z.infer<typeof WorkspaceSchema>
     ```
 
 11. Implement Middleware
 
     ```typescript
     // src/server/middleware/onboarding.ts
-    import { Context, Next } from "hono";
-    import { OnboardingStatus } from "@prisma/client";
+    import { Context, Next } from 'hono'
+    import { OnboardingStatus } from '@prisma/client'
 
-    const ONBOARDING_ROUTES = ["/onboarding", "/api/onboarding"];
+    const ONBOARDING_ROUTES = ['/onboarding', '/api/onboarding']
 
     export const onboardingMiddleware = async (c: Context, next: Next) => {
-      const user = c.get("user");
-      const path = c.req.path;
+      const user = c.get('user')
+      const path = c.req.path
 
       // Allow authentication routes
-      if (path.startsWith("/api/auth")) {
-        return next();
+      if (path.startsWith('/api/auth')) {
+        return next()
       }
 
       // Check if user needs onboarding
@@ -233,23 +233,23 @@ Follow these steps to implement a multi-step onboarding process:
         user?.onboardingStatus !== OnboardingStatus.COMPLETED &&
         !ONBOARDING_ROUTES.some((route) => path.startsWith(route))
       ) {
-        return c.redirect("/onboarding");
+        return c.redirect('/onboarding')
       }
 
-      return next();
-    };
+      return next()
+    }
     ```
 
 12. Session Management
 
     ```typescript
     // src/lib/onboarding/session.ts
-    export const ONBOARDING_SESSION_KEY = "onboarding_session";
+    export const ONBOARDING_SESSION_KEY = 'onboarding_session'
 
     export interface OnboardingSession {
-      lastStep: string;
-      stepData: Record<string, unknown>;
-      lastActive: number;
+      lastStep: string
+      stepData: Record<string, unknown>
+      lastActive: number
     }
 
     export const saveOnboardingProgress = async (
@@ -261,24 +261,22 @@ Follow these steps to implement a multi-step onboarding process:
         lastStep: step,
         [`stepData:${step}`]: JSON.stringify(data),
         lastActive: Date.now(),
-      });
-    };
+      })
+    }
 
     export const resumeOnboardingProgress = async (
       userId: string,
     ): Promise<OnboardingSession | null> => {
-      const session = await redis.hgetall(
-        `${ONBOARDING_SESSION_KEY}:${userId}`,
-      );
+      const session = await redis.hgetall(`${ONBOARDING_SESSION_KEY}:${userId}`)
 
-      if (!session) return null;
+      if (!session) return null
 
       return {
         lastStep: session.lastStep,
-        stepData: JSON.parse(session[`stepData:${session.lastStep}`] || "{}"),
+        stepData: JSON.parse(session[`stepData:${session.lastStep}`] || '{}'),
         lastActive: parseInt(session.lastActive, 10),
-      };
-    };
+      }
+    }
     ```
 
 13. Database Migrations

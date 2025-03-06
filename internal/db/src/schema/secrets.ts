@@ -1,8 +1,8 @@
 import { mysqlTable, uniqueIndex, varchar } from 'drizzle-orm/mysql-core'
 
+import { relations } from 'drizzle-orm'
 import { embeddedEncrypted } from './util/embedded_encrypted'
 import { lifecycleDates } from './util/lifecycle_dates'
-import { relations } from 'drizzle-orm'
 import { workspaces } from './workspaces'
 
 export const secrets = mysqlTable(

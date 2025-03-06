@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import type { Transaction } from './types'
 import { transform } from './transform'
+import type { Transaction } from './types'
 
 // Mock uuid module
 vi.mock('uuid', () => ({

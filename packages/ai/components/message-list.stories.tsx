@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { MessageList } from './message-list'
 import { type Message } from 'ai'
+import { MessageList } from './message-list'
 
 const meta = {
   title: 'Chat/MessageList',

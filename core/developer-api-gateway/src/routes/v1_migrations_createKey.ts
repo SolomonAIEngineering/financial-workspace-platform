@@ -3,7 +3,7 @@ import { createRoute, RouteConfigToTypedResponse, z } from '@hono/zod-openapi'
 
 import { insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
-import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { openApiErrorResponses, UnkeyApiError } from '@/pkg/errors'
 import { retry } from '@/pkg/util/retry'
 import { DatabaseError } from '@planetscale/database'
 import {
@@ -261,326 +261,332 @@ export type V1MigrationsCreateKeysResponse = z.infer<
 >
 
 export const registerV1MigrationsCreateKeys = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
 
-    const { cache, db, rbac, vault, logger } = c.get('services')
+      const { cache, db, rbac, vault, logger } = c.get('services')
 
-    const auth = await rootKeyAuth(c)
-    const authorizedWorkspaceId = auth.authorizedWorkspaceId
+      const auth = await rootKeyAuth(c)
+      const authorizedWorkspaceId = auth.authorizedWorkspaceId
 
-    const roleNames = req
-      .filter((k) => k.roles)
-      .flatMap((k) => k.roles) as string[]
-    // name -> id
-    const roles: Record<string, string> = {}
+      const roleNames = req
+        .filter((k) => k.roles)
+        .flatMap((k) => k.roles) as string[]
+      // name -> id
+      const roles: Record<string, string> = {}
 
-    if (roleNames.length > 0) {
-      const found = await db.primary.query.roles.findMany({
-        where: (table, { inArray, and, eq }) =>
-          and(
-            eq(table.workspaceId, authorizedWorkspaceId),
-            inArray(table.name, roleNames),
-          ),
-      })
-      const missingRoles = roleNames.filter(
-        (name) => !found.some((role) => role.name === name),
-      )
-      if (missingRoles.length > 0) {
-        throw new UnkeyApiError({
-          code: 'PRECONDITION_FAILED',
-          message: `Roles ${JSON.stringify(missingRoles)} are missing, please create them first`,
-        })
-      }
-      for (const role of found) {
-        roles[role.name] = role.id
-      }
-    }
-
-    const permissionNames = req
-      .filter((k) => k.permissions)
-      .flatMap((k) => k.permissions) as string[]
-    // name -> id
-    const permissions: Record<string, string> = {}
-
-    if (permissionNames.length > 0) {
-      const found = await db.primary.query.permissions.findMany({
-        where: (table, { inArray, and, eq }) =>
-          and(
-            eq(table.workspaceId, authorizedWorkspaceId),
-            inArray(table.name, permissionNames),
-          ),
-      })
-      const missingPermissions = permissionNames.filter(
-        (name) => !found.some((permission) => permission.name === name),
-      )
-      if (missingPermissions.length > 0) {
-        throw new UnkeyApiError({
-          code: 'PRECONDITION_FAILED',
-          message: `Permissions ${JSON.stringify(
-            missingPermissions,
-          )} are missing, please create them first`,
-        })
-      }
-      for (const permission of found) {
-        permissions[permission.name] = permission.id
-      }
-    }
-
-    const keys: Array<Key> = []
-    const encryptedKeys: Array<EncryptedKey> = []
-    const roleConnections: Array<KeyRole> = []
-    const permissionConnections: Array<KeyPermission> = []
-
-    const requestWithKeyIds = req.map((r) => ({
-      ...r,
-      keyId: newId('key'),
-    }))
-
-    /**
-     * Encrypt keys
-     */
-
-    await Promise.all(
-      requestWithKeyIds.map(async (key) => {
-        const perm = rbac.evaluatePermissions(
-          buildUnkeyQuery(({ or }) =>
-            or(
-              '*',
-              'api.*.create_key',
-              `api.${key.apiId}.create_key`,
-              key.plaintext ? 'api.*.encrypt_key' : undefined,
-              key.plaintext ? `api.${key.apiId}.encrypt_key` : undefined,
+      if (roleNames.length > 0) {
+        const found = await db.primary.query.roles.findMany({
+          where: (table, { inArray, and, eq }) =>
+            and(
+              eq(table.workspaceId, authorizedWorkspaceId),
+              inArray(table.name, roleNames),
             ),
-          ),
-          auth.permissions,
+        })
+        const missingRoles = roleNames.filter(
+          (name) => !found.some((role) => role.name === name),
         )
-        if (perm.err) {
-          throw new UnkeyApiError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: perm.err.message,
-          })
-        }
-
-        if (!perm.val.valid) {
-          throw new UnkeyApiError({
-            code: 'INSUFFICIENT_PERMISSIONS',
-            message: 'unauthorized',
-          })
-        }
-
-        const { val: api, err } = await cache.apiById.swr(
-          key.apiId,
-          async () => {
-            return (
-              (await db.readonly.query.apis.findFirst({
-                where: (table, { eq, and, isNull }) =>
-                  and(eq(table.id, key.apiId), isNull(table.deletedAt)),
-                with: {
-                  keyAuth: true,
-                },
-              })) ?? null
-            )
-          },
-        )
-        if (err) {
-          throw new UnkeyApiError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `unable to load api: ${err.message}`,
-          })
-        }
-
-        if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
-          throw new UnkeyApiError({
-            code: 'NOT_FOUND',
-            message: `api ${key.apiId} not found`,
-          })
-        }
-
-        if (!api.keyAuthId) {
+        if (missingRoles.length > 0) {
           throw new UnkeyApiError({
             code: 'PRECONDITION_FAILED',
-            message: `api ${key.apiId} is not setup to handle keys`,
+            message: `Roles ${JSON.stringify(missingRoles)} are missing, please create them first`,
           })
         }
-
-        if (
-          (key.remaining === null || key.remaining === undefined) &&
-          key.refill?.interval
-        ) {
-          throw new UnkeyApiError({
-            code: 'BAD_REQUEST',
-            message: 'remaining must be set if you are using refill.',
-          })
+        for (const role of found) {
+          roles[role.name] = role.id
         }
+      }
 
-        if (!key.hash && !key.plaintext) {
-          throw new UnkeyApiError({
-            code: 'BAD_REQUEST',
-            message: 'provide either `hash` or `plaintext`',
-          })
-        }
-        if (key.refill?.refillDay && key.refill.interval === 'daily') {
-          throw new UnkeyApiError({
-            code: 'BAD_REQUEST',
-            message:
-              "when interval is set to 'daily', 'refillDay' must be null.",
-          })
-        }
-        /**
-         * Set up an api for production
-         */
+      const permissionNames = req
+        .filter((k) => k.permissions)
+        .flatMap((k) => k.permissions) as string[]
+      // name -> id
+      const permissions: Record<string, string> = {}
 
-        const hash = key.plaintext
-          ? await sha256(key.plaintext)
-          : key.hash!.value
-
-        keys.push({
-          id: key.keyId,
-          keyAuthId: api.keyAuthId!,
-          name: key.name ?? null,
-          hash: hash,
-          start: key.start ?? key.plaintext?.slice(0, 4) ?? '',
-          ownerId: key.ownerId ?? null,
-          identityId: null,
-          meta: key.meta ? JSON.stringify(key.meta) : null,
-          workspaceId: authorizedWorkspaceId,
-          forWorkspaceId: null,
-          expires: key.expires ? new Date(key.expires) : null,
-          createdAt: new Date(),
-          ratelimitAsync:
-            key.ratelimit?.async ?? key.ratelimit?.type === 'fast',
-          ratelimitLimit:
-            key.ratelimit?.limit ?? key.ratelimit?.refillRate ?? null,
-          ratelimitDuration:
-            key.ratelimit?.refillInterval ??
-            key.ratelimit?.refillInterval ??
-            null,
-          remaining: key.remaining ?? null,
-          refillInterval: key.refill?.interval ?? null,
-          refillDay:
-            key.refill?.interval === 'daily'
-              ? null
-              : (key?.refill?.refillDay ?? 1),
-          refillAmount: key.refill?.amount ?? null,
-          deletedAt: null,
-          enabled: key.enabled ?? true,
-          environment: key.environment ?? null,
-          createdAtM: Date.now(),
-          updatedAtM: null,
-          deletedAtM: null,
-          lastRefillAt: null,
+      if (permissionNames.length > 0) {
+        const found = await db.primary.query.permissions.findMany({
+          where: (table, { inArray, and, eq }) =>
+            and(
+              eq(table.workspaceId, authorizedWorkspaceId),
+              inArray(table.name, permissionNames),
+            ),
         })
-
-        for (const role of key.roles ?? []) {
-          const roleId = roles[role]
-          roleConnections.push({
-            keyId: key.keyId,
-            createdAt: new Date(),
-            roleId,
-            updatedAt: null,
-            workspaceId: authorizedWorkspaceId,
+        const missingPermissions = permissionNames.filter(
+          (name) => !found.some((permission) => permission.name === name),
+        )
+        if (missingPermissions.length > 0) {
+          throw new UnkeyApiError({
+            code: 'PRECONDITION_FAILED',
+            message: `Permissions ${JSON.stringify(
+              missingPermissions,
+            )} are missing, please create them first`,
           })
         }
-        for (const permission of key.permissions ?? []) {
-          const permissionId = permissions[permission]
-          permissionConnections.push({
-            keyId: key.keyId,
-            createdAt: new Date(),
-            permissionId,
-            tempId: 0,
-            updatedAt: null,
-            workspaceId: authorizedWorkspaceId,
-          })
+        for (const permission of found) {
+          permissions[permission.name] = permission.id
         }
+      }
 
-        if (key.plaintext) {
-          const encryptionResponse = await retry(
-            3,
-            () =>
-              vault.encrypt(c, {
-                keyring: authorizedWorkspaceId,
-                data: key.plaintext!,
-              }),
-            (attempt, err) =>
-              logger.warn('vault.encrypt failed', {
-                attempt,
-                err: err.message,
-              }),
+      const keys: Array<Key> = []
+      const encryptedKeys: Array<EncryptedKey> = []
+      const roleConnections: Array<KeyRole> = []
+      const permissionConnections: Array<KeyPermission> = []
+
+      const requestWithKeyIds = req.map((r) => ({
+        ...r,
+        keyId: newId('key'),
+      }))
+
+      /**
+       * Encrypt keys
+       */
+
+      await Promise.all(
+        requestWithKeyIds.map(async (key) => {
+          const perm = rbac.evaluatePermissions(
+            buildUnkeyQuery(({ or }) =>
+              or(
+                '*',
+                'api.*.create_key',
+                `api.${key.apiId}.create_key`,
+                key.plaintext ? 'api.*.encrypt_key' : undefined,
+                key.plaintext ? `api.${key.apiId}.encrypt_key` : undefined,
+              ),
+            ),
+            auth.permissions,
           )
-          encryptedKeys.push({
+          if (perm.err) {
+            throw new UnkeyApiError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message: perm.err.message,
+            })
+          }
+
+          if (!perm.val.valid) {
+            throw new UnkeyApiError({
+              code: 'INSUFFICIENT_PERMISSIONS',
+              message: 'unauthorized',
+            })
+          }
+
+          const { val: api, err } = await cache.apiById.swr(
+            key.apiId,
+            async () => {
+              return (
+                (await db.readonly.query.apis.findFirst({
+                  where: (table, { eq, and, isNull }) =>
+                    and(eq(table.id, key.apiId), isNull(table.deletedAt)),
+                  with: {
+                    keyAuth: true,
+                  },
+                })) ?? null
+              )
+            },
+          )
+          if (err) {
+            throw new UnkeyApiError({
+              code: 'INTERNAL_SERVER_ERROR',
+              message: `unable to load api: ${err.message}`,
+            })
+          }
+
+          if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
+            throw new UnkeyApiError({
+              code: 'NOT_FOUND',
+              message: `api ${key.apiId} not found`,
+            })
+          }
+
+          if (!api.keyAuthId) {
+            throw new UnkeyApiError({
+              code: 'PRECONDITION_FAILED',
+              message: `api ${key.apiId} is not setup to handle keys`,
+            })
+          }
+
+          if (
+            (key.remaining === null || key.remaining === undefined) &&
+            key.refill?.interval
+          ) {
+            throw new UnkeyApiError({
+              code: 'BAD_REQUEST',
+              message: 'remaining must be set if you are using refill.',
+            })
+          }
+
+          if (!key.hash && !key.plaintext) {
+            throw new UnkeyApiError({
+              code: 'BAD_REQUEST',
+              message: 'provide either `hash` or `plaintext`',
+            })
+          }
+          if (key.refill?.refillDay && key.refill.interval === 'daily') {
+            throw new UnkeyApiError({
+              code: 'BAD_REQUEST',
+              message:
+                "when interval is set to 'daily', 'refillDay' must be null.",
+            })
+          }
+          /**
+           * Set up an api for production
+           */
+
+          const hash = key.plaintext
+            ? await sha256(key.plaintext)
+            : key.hash!.value
+
+          keys.push({
+            id: key.keyId,
+            keyAuthId: api.keyAuthId!,
+            name: key.name ?? null,
+            hash: hash,
+            start: key.start ?? key.plaintext?.slice(0, 4) ?? '',
+            ownerId: key.ownerId ?? null,
+            identityId: null,
+            meta: key.meta ? JSON.stringify(key.meta) : null,
             workspaceId: authorizedWorkspaceId,
-            keyId: key.keyId,
-            encrypted: encryptionResponse.encrypted,
-            encryptionKeyId: encryptionResponse.keyId,
+            forWorkspaceId: null,
+            expires: key.expires ? new Date(key.expires) : null,
+            createdAt: new Date(),
+            ratelimitAsync:
+              key.ratelimit?.async ?? key.ratelimit?.type === 'fast',
+            ratelimitLimit:
+              key.ratelimit?.limit ?? key.ratelimit?.refillRate ?? null,
+            ratelimitDuration:
+              key.ratelimit?.refillInterval ??
+              key.ratelimit?.refillInterval ??
+              null,
+            remaining: key.remaining ?? null,
+            refillInterval: key.refill?.interval ?? null,
+            refillDay:
+              key.refill?.interval === 'daily'
+                ? null
+                : (key?.refill?.refillDay ?? 1),
+            refillAmount: key.refill?.amount ?? null,
+            deletedAt: null,
+            enabled: key.enabled ?? true,
+            environment: key.environment ?? null,
+            createdAtM: Date.now(),
+            updatedAtM: null,
+            deletedAtM: null,
+            lastRefillAt: null,
           })
-        }
-      }),
-    )
 
-    await db.primary.transaction(async (tx) => {
-      if (keys.length > 0) {
-        await tx
-          .insert(schema.keys)
-          .values(keys)
-          .catch((e) => {
-            if (
-              e instanceof DatabaseError &&
-              e.body.message.includes('Duplicate entry')
-            ) {
-              logger.warn('migrating duplicate key', {
-                error: e.body.message,
-                workspaceId: authorizedWorkspaceId,
-              })
-              throw new UnkeyApiError({
-                code: 'NOT_UNIQUE',
-                message: e.body.message,
-              })
-            }
-            throw e
-          })
-      }
-      if (encryptedKeys.length > 0) {
-        await tx.insert(schema.encryptedKeys).values(encryptedKeys)
-      }
-      if (roleConnections.length > 0) {
-        await tx.insert(schema.keysRoles).values(roleConnections)
-      }
-      if (permissionConnections.length > 0) {
-        await tx.insert(schema.keysPermissions).values(permissionConnections)
-      }
+          for (const role of key.roles ?? []) {
+            const roleId = roles[role]
+            roleConnections.push({
+              keyId: key.keyId,
+              createdAt: new Date(),
+              roleId,
+              updatedAt: null,
+              workspaceId: authorizedWorkspaceId,
+            })
+          }
+          for (const permission of key.permissions ?? []) {
+            const permissionId = permissions[permission]
+            permissionConnections.push({
+              keyId: key.keyId,
+              createdAt: new Date(),
+              permissionId,
+              tempId: 0,
+              updatedAt: null,
+              workspaceId: authorizedWorkspaceId,
+            })
+          }
 
-      await insertUnkeyAuditLog(
-        c,
-        tx,
-        keys.map((k) => ({
-          workspaceId: authorizedWorkspaceId,
-          event: 'key.create',
-          actor: {
-            type: 'key',
-            id: auth.key.id,
-          },
-          description: `Created ${k.id} in ${k.keyAuthId}`,
-          resources: [
-            {
-              type: 'key',
-              id: k.id,
-            },
-            {
-              type: 'keyAuth',
-              id: k.keyAuthId!,
-            },
-          ],
-
-          context: {
-            location: c.get('location'),
-            userAgent: c.get('userAgent'),
-          },
-        })),
+          if (key.plaintext) {
+            const encryptionResponse = await retry(
+              3,
+              () =>
+                vault.encrypt(c, {
+                  keyring: authorizedWorkspaceId,
+                  data: key.plaintext!,
+                }),
+              (attempt, err) =>
+                logger.warn('vault.encrypt failed', {
+                  attempt,
+                  err: err.message,
+                }),
+            )
+            encryptedKeys.push({
+              workspaceId: authorizedWorkspaceId,
+              keyId: key.keyId,
+              encrypted: encryptionResponse.encrypted,
+              encryptionKeyId: encryptionResponse.keyId,
+            })
+          }
+        }),
       )
-    })
 
-    return c.json({
-      keyIds: requestWithKeyIds.map((k) => k.keyId),
-    }, 200)
-  })
+      await db.primary.transaction(async (tx) => {
+        if (keys.length > 0) {
+          await tx
+            .insert(schema.keys)
+            .values(keys)
+            .catch((e) => {
+              if (
+                e instanceof DatabaseError &&
+                e.body.message.includes('Duplicate entry')
+              ) {
+                logger.warn('migrating duplicate key', {
+                  error: e.body.message,
+                  workspaceId: authorizedWorkspaceId,
+                })
+                throw new UnkeyApiError({
+                  code: 'NOT_UNIQUE',
+                  message: e.body.message,
+                })
+              }
+              throw e
+            })
+        }
+        if (encryptedKeys.length > 0) {
+          await tx.insert(schema.encryptedKeys).values(encryptedKeys)
+        }
+        if (roleConnections.length > 0) {
+          await tx.insert(schema.keysRoles).values(roleConnections)
+        }
+        if (permissionConnections.length > 0) {
+          await tx.insert(schema.keysPermissions).values(permissionConnections)
+        }
+
+        await insertUnkeyAuditLog(
+          c,
+          tx,
+          keys.map((k) => ({
+            workspaceId: authorizedWorkspaceId,
+            event: 'key.create',
+            actor: {
+              type: 'key',
+              id: auth.key.id,
+            },
+            description: `Created ${k.id} in ${k.keyAuthId}`,
+            resources: [
+              {
+                type: 'key',
+                id: k.id,
+              },
+              {
+                type: 'keyAuth',
+                id: k.keyAuthId!,
+              },
+            ],
+
+            context: {
+              location: c.get('location'),
+              userAgent: c.get('userAgent'),
+            },
+          })),
+        )
+      })
+
+      return c.json(
+        {
+          keyIds: requestWithKeyIds.map((k) => k.keyId),
+        },
+        200,
+      )
+    },
+  )

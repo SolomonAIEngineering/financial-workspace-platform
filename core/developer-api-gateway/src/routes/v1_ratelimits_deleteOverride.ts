@@ -1,11 +1,11 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { eq, schema } from '@repo/db'
 
-import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
 import { insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import type { App } from '@/pkg/hono/app'
+import { buildUnkeyQuery } from '@repo/rbac'
 
 const route = createRoute({
   tags: ['ratelimits'],
@@ -61,75 +61,81 @@ export type V1RatelimitDeleteOverrideResponse = z.infer<
 >
 
 export const registerV1RatelimitDeleteOverride = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { namespaceId, namespaceName, identifier } = c.req.valid('json')
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('*', 'ratelimit.*.delete_override')),
-    )
-    if (!namespaceId && !namespaceName) {
-      throw new UnkeyApiError({
-        code: 'BAD_REQUEST',
-        message: 'You must provide a namespaceId or a namespaceName',
-      })
-    }
-    const { db } = c.get('services')
-
-    const authorizedWorkspaceId = auth.authorizedWorkspaceId
-
-    await db.primary.transaction(async (tx) => {
-      const namespace = await db.primary.query.ratelimitNamespaces.findFirst({
-        where: (table, { eq, and }) =>
-          and(
-            eq(table.workspaceId, authorizedWorkspaceId),
-            namespaceId
-              ? eq(table.id, namespaceId)
-              : eq(table.name, namespaceName!),
-          ),
-        with: {
-          overrides: {
-            where: (table, { eq, and, isNull }) =>
-              and(isNull(table.deletedAt), eq(table.identifier, identifier)),
-          },
-        },
-      })
-
-      if (!namespace) {
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { namespaceId, namespaceName, identifier } = c.req.valid('json')
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('*', 'ratelimit.*.delete_override')),
+      )
+      if (!namespaceId && !namespaceName) {
         throw new UnkeyApiError({
-          code: 'NOT_FOUND',
-          message: `Namespace ${namespaceId ? namespaceId : namespaceName} not found`,
+          code: 'BAD_REQUEST',
+          message: 'You must provide a namespaceId or a namespaceName',
         })
       }
-      const override = namespace.overrides.at(0)
+      const { db } = c.get('services')
 
-      if (!override) {
-        throw new UnkeyApiError({
-          code: 'NOT_FOUND',
-          message: `Override with ${identifier} identifier not found`,
-        })
-      }
-      await tx
-        .update(schema.ratelimitOverrides)
-        .set({ deletedAt: new Date() })
-        .where(eq(schema.ratelimitOverrides.id, override.id))
+      const authorizedWorkspaceId = auth.authorizedWorkspaceId
 
-      await insertUnkeyAuditLog(c, tx, {
-        workspaceId: auth.authorizedWorkspaceId,
-        event: 'ratelimit.delete_override',
-        actor: {
-          type: 'key',
-          id: auth.key.id,
-        },
-        description: `Deleted ratelimit override ${override.id}`,
-        resources: [
-          {
-            type: 'ratelimitOverride',
-            id: override.id,
+      await db.primary.transaction(async (tx) => {
+        const namespace = await db.primary.query.ratelimitNamespaces.findFirst({
+          where: (table, { eq, and }) =>
+            and(
+              eq(table.workspaceId, authorizedWorkspaceId),
+              namespaceId
+                ? eq(table.id, namespaceId)
+                : eq(table.name, namespaceName!),
+            ),
+          with: {
+            overrides: {
+              where: (table, { eq, and, isNull }) =>
+                and(isNull(table.deletedAt), eq(table.identifier, identifier)),
+            },
           },
-        ],
-        context: { location: c.get('location'), userAgent: c.get('userAgent') },
-      })
-    })
+        })
 
-    return c.json({}, 200)
-  })
+        if (!namespace) {
+          throw new UnkeyApiError({
+            code: 'NOT_FOUND',
+            message: `Namespace ${namespaceId ? namespaceId : namespaceName} not found`,
+          })
+        }
+        const override = namespace.overrides.at(0)
+
+        if (!override) {
+          throw new UnkeyApiError({
+            code: 'NOT_FOUND',
+            message: `Override with ${identifier} identifier not found`,
+          })
+        }
+        await tx
+          .update(schema.ratelimitOverrides)
+          .set({ deletedAt: new Date() })
+          .where(eq(schema.ratelimitOverrides.id, override.id))
+
+        await insertUnkeyAuditLog(c, tx, {
+          workspaceId: auth.authorizedWorkspaceId,
+          event: 'ratelimit.delete_override',
+          actor: {
+            type: 'key',
+            id: auth.key.id,
+          },
+          description: `Deleted ratelimit override ${override.id}`,
+          resources: [
+            {
+              type: 'ratelimitOverride',
+              id: override.id,
+            },
+          ],
+          context: {
+            location: c.get('location'),
+            userAgent: c.get('userAgent'),
+          },
+        })
+      })
+
+      return c.json({}, 200)
+    },
+  )

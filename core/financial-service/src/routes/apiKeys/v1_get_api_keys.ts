@@ -1,8 +1,8 @@
-import { APIKeysQuerySchema, APIKeysSchema } from './schema'
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
+import { APIKeysQuerySchema, APIKeysSchema } from './schema'
 
-import { App } from '@/hono/app'
 import { openApiErrorResponses as ErrorResponses } from '@/errors'
+import { App } from '@/hono/app'
 import { Routes } from '@/route-definitions/routes'
 
 /**
@@ -56,46 +56,52 @@ export type V1GetApiKeysResponse = z.infer<
  * registerV1GetApiKeys(app);
  */
 export const registerV1GetApiKeys = (app: App) => {
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    /**
-     * Extract the userId from the validated query parameters.
-     * @type {string}
-     */
-    const query = c.req.valid('query')
-    const { userId } = query
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      /**
+       * Extract the userId from the validated query parameters.
+       * @type {string}
+       */
+      const query = c.req.valid('query')
+      const { userId } = query
 
-    // convert id to number
-    const id = parseInt(userId, 10)
-    /**
-     * Retrieve the API key repository from the context.
-     * @type {APIKeyRepository}
-     */
-    const repository = c.get('repo')
+      // convert id to number
+      const id = parseInt(userId, 10)
+      /**
+       * Retrieve the API key repository from the context.
+       * @type {APIKeyRepository}
+       */
+      const repository = c.get('repo')
 
-    /**
-     * Fetch API keys associated with the userId.
-     * @type {Array<APIKey>}
-     */
-    const apiKeys = await repository.apiKey.getByUserId(id)
+      /**
+       * Fetch API keys associated with the userId.
+       * @type {Array<APIKey>}
+       */
+      const apiKeys = await repository.apiKey.getByUserId(id)
 
-    /**
-     * @todo Implement caching for API keys in Redis.
-     * Specifically, cache the active, non-revoked keys for improved performance.
-     *
-     * Example implementation:
-     * const redisClient = c.get('redis');
-     * await redisClient.set(`user:${userId}:apiKeys`, JSON.stringify(apiKeys));
-     */
+      /**
+       * @todo Implement caching for API keys in Redis.
+       * Specifically, cache the active, non-revoked keys for improved performance.
+       *
+       * Example implementation:
+       * const redisClient = c.get('redis');
+       * await redisClient.set(`user:${userId}:apiKeys`, JSON.stringify(apiKeys));
+       */
 
-    return c.json({
-      data: apiKeys.map(key => ({
-        userId: key.userId,
-        name: key.name,
-        id: key.id,
-        key: key.key,
-        createdAt: key.createdAt?.toISOString() || null,
-        expiresAt: key.expiresAt?.toISOString() || '',
-      }))
-    }, 200)
-  })
+      return c.json(
+        {
+          data: apiKeys.map((key) => ({
+            userId: key.userId,
+            name: key.name,
+            id: key.id,
+            key: key.key,
+            createdAt: key.createdAt?.toISOString() || null,
+            expiresAt: key.expiresAt?.toISOString() || '',
+          })),
+        },
+        200,
+      )
+    },
+  )
 }

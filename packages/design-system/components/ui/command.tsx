@@ -8,33 +8,46 @@ import { Command as CommandPrimitive } from 'cmdk'
 import * as React from 'react'
 
 // Helper type for all forwardRef components
-type ForwardRefComponent<T, P> = React.ForwardRefExoticComponent<P & React.RefAttributes<T>>
+type ForwardRefComponent<T, P> = React.ForwardRefExoticComponent<
+  P & React.RefAttributes<T>
+>
 
 // Component types
 type CommandProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive>
-type CommandInputProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
-type CommandListProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
-type CommandEmptyProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
-type CommandGroupProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group>
-type CommandSeparatorProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>
-type CommandItemProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
+type CommandInputProps = React.ComponentPropsWithoutRef<
+  typeof CommandPrimitive.Input
+>
+type CommandListProps = React.ComponentPropsWithoutRef<
+  typeof CommandPrimitive.List
+>
+type CommandEmptyProps = React.ComponentPropsWithoutRef<
+  typeof CommandPrimitive.Empty
+>
+type CommandGroupProps = React.ComponentPropsWithoutRef<
+  typeof CommandPrimitive.Group
+>
+type CommandSeparatorProps = React.ComponentPropsWithoutRef<
+  typeof CommandPrimitive.Separator
+>
+type CommandItemProps = React.ComponentPropsWithoutRef<
+  typeof CommandPrimitive.Item
+>
 
 const Command: ForwardRefComponent<
   React.ElementRef<typeof CommandPrimitive>,
   CommandProps
-> = React.forwardRef<
-  React.ElementRef<typeof CommandPrimitive>,
-  CommandProps
->(({ className, ...props }, ref) => (
-  <CommandPrimitive
-    ref={ref}
-    className={cn(
-      'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md',
-      className,
-    )}
-    {...props}
-  />
-))
+> = React.forwardRef<React.ElementRef<typeof CommandPrimitive>, CommandProps>(
+  ({ className, ...props }, ref) => (
+    <CommandPrimitive
+      ref={ref}
+      className={cn(
+        'bg-popover text-popover-foreground flex h-full w-full flex-col overflow-hidden rounded-md',
+        className,
+      )}
+      {...props}
+    />
+  ),
+)
 Command.displayName = CommandPrimitive.displayName
 
 const CommandDialog = ({ children, ...props }: DialogProps) => {

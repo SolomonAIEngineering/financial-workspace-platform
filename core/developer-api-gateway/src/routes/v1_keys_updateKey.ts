@@ -1,5 +1,5 @@
 import type { App } from '@/pkg/hono/app'
-import { createRoute, RouteConfigToTypedResponse, z } from '@hono/zod-openapi'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
 import { insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
@@ -278,187 +278,191 @@ export type V1KeysUpdateKeyResponse = z.infer<
 >
 
 export const registerV1KeysUpdate = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
-    const { cache, db, usageLimiter, rbac } = c.get('services')
-    const auth = await rootKeyAuth(c)
-    const key = await db.primary.query.keys.findFirst({
-      where: (table, { eq }) => eq(table.id, req.keyId),
-      with: {
-        keyAuth: {
-          with: {
-            api: true,
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
+      const { cache, db, usageLimiter, rbac } = c.get('services')
+      const auth = await rootKeyAuth(c)
+      const key = await db.primary.query.keys.findFirst({
+        where: (table, { eq }) => eq(table.id, req.keyId),
+        with: {
+          keyAuth: {
+            with: {
+              api: true,
+            },
           },
         },
-      },
-    })
+      })
 
-    if (!key) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `key ${req.keyId} not found`,
-      })
-    }
-
-    if (key.workspaceId !== auth.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `key ${req.keyId} not found`,
-      })
-    }
-
-    const rbacRes = rbac.evaluatePermissions(
-      buildUnkeyQuery(({ or }) =>
-        or('*', 'api.*.update_key', `api.${key.keyAuth.api.id}.update_key`),
-      ),
-      auth.permissions,
-    )
-    if (rbacRes.err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'unable to evaluate permissions',
-      })
-    }
-    if (!rbacRes.val.valid) {
-      throw new UnkeyApiError({
-        code: 'INSUFFICIENT_PERMISSIONS',
-        message: rbacRes.val.message,
-      })
-    }
-
-    if (req.remaining === null && req.refill) {
-      throw new UnkeyApiError({
-        code: 'BAD_REQUEST',
-        message: 'Cannot set refill on a key with unlimited requests',
-      })
-    }
-    if (req.refill?.interval === 'daily' && req.refill.refillDay) {
-      throw new UnkeyApiError({
-        code: 'BAD_REQUEST',
-        message: "Cannot set 'refillDay' if 'interval' is 'daily'",
-      })
-    }
-    const authorizedWorkspaceId = auth.authorizedWorkspaceId
-    const rootKeyId = auth.key.id
-
-    const changes: Partial<Key> = {}
-    if (typeof req.name !== 'undefined') {
-      changes.name = req.name
-    }
-    if (typeof req.meta !== 'undefined') {
-      changes.meta = req.meta === null ? null : JSON.stringify(req.meta)
-    }
-    if (typeof req.externalId !== 'undefined') {
-      if (req.externalId === null) {
-        changes.identityId = null
-        changes.ownerId = null
-      } else {
-        const identity = await upsertIdentity(
-          db.primary,
-          authorizedWorkspaceId,
-          req.externalId,
-        )
-        changes.identityId = identity.id
-        changes.ownerId = req.externalId
+      if (!key) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `key ${req.keyId} not found`,
+        })
       }
-    } else if (typeof req.ownerId !== 'undefined') {
-      if (req.ownerId === null) {
-        changes.identityId = null
-        changes.ownerId = null
-      } else {
-        const identity = await upsertIdentity(
-          db.primary,
-          authorizedWorkspaceId,
-          req.ownerId,
-        )
-        changes.identityId = identity.id
-        changes.ownerId = req.ownerId
-      }
-    }
-    if (typeof req.expires !== 'undefined') {
-      changes.expires = req.expires === null ? null : new Date(req.expires)
-    }
-    if (typeof req.remaining !== 'undefined') {
-      changes.remaining = req.remaining
-    }
-    if (typeof req.ratelimit !== 'undefined') {
-      if (req.ratelimit === null) {
-        changes.ratelimitAsync = null
-        changes.ratelimitLimit = null
-        changes.ratelimitDuration = null
-      } else {
-        changes.ratelimitAsync =
-          typeof req.ratelimit.async === 'boolean'
-            ? req.ratelimit.async
-            : req.ratelimit.type === 'fast'
-        changes.ratelimitLimit = req.ratelimit.limit ?? req.ratelimit.refillRate
-        changes.ratelimitDuration =
-          req.ratelimit.duration ?? req.ratelimit.refillInterval
-      }
-    }
 
-    if (typeof req.refill !== 'undefined') {
-      if (req.refill === null) {
-        changes.refillInterval = null
-        changes.refillAmount = null
-        changes.refillDay = null
-        changes.lastRefillAt = null
-      } else {
-        changes.refillInterval = req.refill.interval
-        changes.refillAmount = req.refill.amount
-        changes.refillDay = req.refill.refillDay ?? 1
+      if (key.workspaceId !== auth.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `key ${req.keyId} not found`,
+        })
       }
-    }
-    if (typeof req.enabled !== 'undefined') {
-      changes.enabled = req.enabled
-    }
-    if (Object.keys(changes).length > 0) {
-      await db.primary
-        .update(schema.keys)
-        .set(changes)
-        .where(eq(schema.keys.id, key.id))
-    }
-    await insertUnkeyAuditLog(c, undefined, {
-      workspaceId: authorizedWorkspaceId,
-      event: 'key.update',
-      actor: {
-        type: 'key',
-        id: rootKeyId,
-      },
-      description: `Updated key ${key.id}`,
-      resources: [
-        {
+
+      const rbacRes = rbac.evaluatePermissions(
+        buildUnkeyQuery(({ or }) =>
+          or('*', 'api.*.update_key', `api.${key.keyAuth.api.id}.update_key`),
+        ),
+        auth.permissions,
+      )
+      if (rbacRes.err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'unable to evaluate permissions',
+        })
+      }
+      if (!rbacRes.val.valid) {
+        throw new UnkeyApiError({
+          code: 'INSUFFICIENT_PERMISSIONS',
+          message: rbacRes.val.message,
+        })
+      }
+
+      if (req.remaining === null && req.refill) {
+        throw new UnkeyApiError({
+          code: 'BAD_REQUEST',
+          message: 'Cannot set refill on a key with unlimited requests',
+        })
+      }
+      if (req.refill?.interval === 'daily' && req.refill.refillDay) {
+        throw new UnkeyApiError({
+          code: 'BAD_REQUEST',
+          message: "Cannot set 'refillDay' if 'interval' is 'daily'",
+        })
+      }
+      const authorizedWorkspaceId = auth.authorizedWorkspaceId
+      const rootKeyId = auth.key.id
+
+      const changes: Partial<Key> = {}
+      if (typeof req.name !== 'undefined') {
+        changes.name = req.name
+      }
+      if (typeof req.meta !== 'undefined') {
+        changes.meta = req.meta === null ? null : JSON.stringify(req.meta)
+      }
+      if (typeof req.externalId !== 'undefined') {
+        if (req.externalId === null) {
+          changes.identityId = null
+          changes.ownerId = null
+        } else {
+          const identity = await upsertIdentity(
+            db.primary,
+            authorizedWorkspaceId,
+            req.externalId,
+          )
+          changes.identityId = identity.id
+          changes.ownerId = req.externalId
+        }
+      } else if (typeof req.ownerId !== 'undefined') {
+        if (req.ownerId === null) {
+          changes.identityId = null
+          changes.ownerId = null
+        } else {
+          const identity = await upsertIdentity(
+            db.primary,
+            authorizedWorkspaceId,
+            req.ownerId,
+          )
+          changes.identityId = identity.id
+          changes.ownerId = req.ownerId
+        }
+      }
+      if (typeof req.expires !== 'undefined') {
+        changes.expires = req.expires === null ? null : new Date(req.expires)
+      }
+      if (typeof req.remaining !== 'undefined') {
+        changes.remaining = req.remaining
+      }
+      if (typeof req.ratelimit !== 'undefined') {
+        if (req.ratelimit === null) {
+          changes.ratelimitAsync = null
+          changes.ratelimitLimit = null
+          changes.ratelimitDuration = null
+        } else {
+          changes.ratelimitAsync =
+            typeof req.ratelimit.async === 'boolean'
+              ? req.ratelimit.async
+              : req.ratelimit.type === 'fast'
+          changes.ratelimitLimit =
+            req.ratelimit.limit ?? req.ratelimit.refillRate
+          changes.ratelimitDuration =
+            req.ratelimit.duration ?? req.ratelimit.refillInterval
+        }
+      }
+
+      if (typeof req.refill !== 'undefined') {
+        if (req.refill === null) {
+          changes.refillInterval = null
+          changes.refillAmount = null
+          changes.refillDay = null
+          changes.lastRefillAt = null
+        } else {
+          changes.refillInterval = req.refill.interval
+          changes.refillAmount = req.refill.amount
+          changes.refillDay = req.refill.refillDay ?? 1
+        }
+      }
+      if (typeof req.enabled !== 'undefined') {
+        changes.enabled = req.enabled
+      }
+      if (Object.keys(changes).length > 0) {
+        await db.primary
+          .update(schema.keys)
+          .set(changes)
+          .where(eq(schema.keys.id, key.id))
+      }
+      await insertUnkeyAuditLog(c, undefined, {
+        workspaceId: authorizedWorkspaceId,
+        event: 'key.update',
+        actor: {
           type: 'key',
-          id: key.id,
-          meta: Object.entries(req)
-            .filter(([_key, value]) => typeof value !== 'undefined')
-            .reduce(
-              (obj, [key, value]) => {
-                obj[key] = JSON.stringify(value)
-
-                return obj
-              },
-              {} as Record<string, string>,
-            ),
+          id: rootKeyId,
         },
-      ],
-      context: {
-        location: c.get('location'),
-        userAgent: c.get('userAgent'),
-      },
-    })
-    c.executionCtx.waitUntil(usageLimiter.revalidate({ keyId: key.id }))
-    c.executionCtx.waitUntil(cache.keyByHash.remove(key.hash))
-    c.executionCtx.waitUntil(cache.keyById.remove(key.id))
+        description: `Updated key ${key.id}`,
+        resources: [
+          {
+            type: 'key',
+            id: key.id,
+            meta: Object.entries(req)
+              .filter(([_key, value]) => typeof value !== 'undefined')
+              .reduce(
+                (obj, [key, value]) => {
+                  obj[key] = JSON.stringify(value)
 
-    await Promise.all([
-      typeof req.roles !== 'undefined'
-        ? setRoles(c, auth, req.keyId, req.roles)
-        : Promise.resolve(),
-      typeof req.permissions !== 'undefined'
-        ? setPermissions(c, auth, req.keyId, req.permissions)
-        : Promise.resolve(),
-    ])
+                  return obj
+                },
+                {} as Record<string, string>,
+              ),
+          },
+        ],
+        context: {
+          location: c.get('location'),
+          userAgent: c.get('userAgent'),
+        },
+      })
+      c.executionCtx.waitUntil(usageLimiter.revalidate({ keyId: key.id }))
+      c.executionCtx.waitUntil(cache.keyByHash.remove(key.hash))
+      c.executionCtx.waitUntil(cache.keyById.remove(key.id))
 
-    return c.json({}, 200)
-  })
+      await Promise.all([
+        typeof req.roles !== 'undefined'
+          ? setRoles(c, auth, req.keyId, req.roles)
+          : Promise.resolve(),
+        typeof req.permissions !== 'undefined'
+          ? setPermissions(c, auth, req.keyId, req.permissions)
+          : Promise.resolve(),
+      ])
+
+      return c.json({}, 200)
+    },
+  )

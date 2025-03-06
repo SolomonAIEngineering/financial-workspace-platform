@@ -1,9 +1,9 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
+import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
 import { buildUnkeyQuery } from '@repo/rbac'
-import { rootKeyAuth } from '@/pkg/auth/root_key'
 
 const route = createRoute({
   tags: ['ratelimit'],
@@ -58,63 +58,69 @@ export type V1RatelimitGetOverrideRequest = z.infer<
   (typeof route.request)['query']
 >
 export const registerV1RatelimitGetOverride = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { namespaceId, namespaceName, identifier } = c.req.valid('query')
-    const { db } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { namespaceId, namespaceName, identifier } = c.req.valid('query')
+      const { db } = c.get('services')
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('ratelimit.*.read_override')),
-    )
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('ratelimit.*.read_override')),
+      )
 
-    const authorizedWorkspaceId = auth.authorizedWorkspaceId
-    if (!authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'UNAUTHORIZED',
-        message: 'Missing required permission: ratelimit.*.read_override',
-      })
-    }
-    if (!namespaceId && !namespaceName) {
-      throw new UnkeyApiError({
-        code: 'BAD_REQUEST',
-        message: 'You must provide a namespaceId or a namespaceName',
-      })
-    }
-    const namespace = await db.primary.query.ratelimitNamespaces.findFirst({
-      where: (table, { eq, and }) =>
-        and(
-          eq(table.workspaceId, authorizedWorkspaceId),
-          namespaceId
-            ? eq(table.id, namespaceId)
-            : eq(table.name, namespaceName!),
-        ),
-      with: {
-        overrides: {
-          where: (table, { eq, and, isNull }) =>
-            and(isNull(table.deletedAt), eq(table.identifier, identifier)),
+      const authorizedWorkspaceId = auth.authorizedWorkspaceId
+      if (!authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'UNAUTHORIZED',
+          message: 'Missing required permission: ratelimit.*.read_override',
+        })
+      }
+      if (!namespaceId && !namespaceName) {
+        throw new UnkeyApiError({
+          code: 'BAD_REQUEST',
+          message: 'You must provide a namespaceId or a namespaceName',
+        })
+      }
+      const namespace = await db.primary.query.ratelimitNamespaces.findFirst({
+        where: (table, { eq, and }) =>
+          and(
+            eq(table.workspaceId, authorizedWorkspaceId),
+            namespaceId
+              ? eq(table.id, namespaceId)
+              : eq(table.name, namespaceName!),
+          ),
+        with: {
+          overrides: {
+            where: (table, { eq, and, isNull }) =>
+              and(isNull(table.deletedAt), eq(table.identifier, identifier)),
+          },
         },
-      },
-    })
-
-    if (!namespace) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: 'Namespace not found',
       })
-    }
 
-    const override = namespace.overrides.at(0)
-    if (!override) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: 'Override not found',
-      })
-    }
-    return c.json({
-      id: override.id,
-      identifier: override.identifier,
-      limit: override.limit,
-      duration: override.duration,
-      async: override.async,
-    }, 200)
-  })
+      if (!namespace) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: 'Namespace not found',
+        })
+      }
+
+      const override = namespace.overrides.at(0)
+      if (!override) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: 'Override not found',
+        })
+      }
+      return c.json(
+        {
+          id: override.id,
+          identifier: override.identifier,
+          limit: override.limit,
+          duration: override.duration,
+          async: override.async,
+        },
+        200,
+      )
+    },
+  )

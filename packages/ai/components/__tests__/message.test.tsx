@@ -1,11 +1,10 @@
-import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 
+import type { Message as MessageType } from 'ai'
 import { ComponentPropsWithoutRef } from 'react'
 import Markdown from 'react-markdown'
 import { Message } from '../message'
-import type { Message as MessageType } from 'ai'
-import { ReactNode } from 'react'
 
 describe('Message', () => {
   const userMessage: MessageType = {
@@ -77,7 +76,7 @@ describe('Message', () => {
       components: {
         p: function CustomParagraph(props) {
           return <p className="custom-paragraph">{props.children}</p>
-        }
+        },
       },
     }
 

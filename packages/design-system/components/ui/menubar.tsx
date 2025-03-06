@@ -11,15 +11,25 @@ import {
 
 import { cn } from '@repo/design-system/lib/utils'
 
-const MenubarMenu: React.ComponentType<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Menu>> = MenubarPrimitive.Menu
+const MenubarMenu: React.ComponentType<
+  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Menu>
+> = MenubarPrimitive.Menu
 
-const MenubarGroup: React.ComponentType<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Group>> = MenubarPrimitive.Group
+const MenubarGroup: React.ComponentType<
+  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Group>
+> = MenubarPrimitive.Group
 
-const MenubarPortal: React.ComponentType<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Portal>> = MenubarPrimitive.Portal
+const MenubarPortal: React.ComponentType<
+  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Portal>
+> = MenubarPrimitive.Portal
 
-const MenubarSub: React.ComponentType<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Sub>> = MenubarPrimitive.Sub
+const MenubarSub: React.ComponentType<
+  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Sub>
+> = MenubarPrimitive.Sub
 
-const MenubarRadioGroup: React.ComponentType<React.ComponentPropsWithoutRef<typeof MenubarPrimitive.RadioGroup>> = MenubarPrimitive.RadioGroup
+const MenubarRadioGroup: React.ComponentType<
+  React.ComponentPropsWithoutRef<typeof MenubarPrimitive.RadioGroup>
+> = MenubarPrimitive.RadioGroup
 
 const Menubar = React.forwardRef<
   React.ElementRef<typeof MenubarPrimitive.Root>,

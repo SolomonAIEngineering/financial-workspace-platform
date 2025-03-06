@@ -1,11 +1,11 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { and, eq, inArray, schema } from '@repo/db'
 
-import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
 import { insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import type { App } from '@/pkg/hono/app'
+import { buildUnkeyQuery } from '@repo/rbac'
 
 const route = createRoute({
   tags: ['keys'],
@@ -74,97 +74,100 @@ export type V1KeysRemoveRolesResponse = z.infer<
 >
 
 export const registerV1KeysRemoveRoles = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('*', 'rbac.*.remove_role_from_key')),
-    )
-
-    const { db } = c.get('services')
-
-    const [key, connectedRoles] = await Promise.all([
-      db.primary.query.keys.findFirst({
-        where: (table, { and, eq }) =>
-          and(
-            eq(table.workspaceId, auth.authorizedWorkspaceId),
-            eq(table.id, req.keyId),
-          ),
-      }),
-
-      await db.primary.query.keysRoles.findMany({
-        where: (table, { eq, and }) =>
-          and(
-            eq(table.workspaceId, auth.authorizedWorkspaceId),
-            eq(table.keyId, req.keyId),
-          ),
-        with: {
-          role: true,
-        },
-      }),
-    ])
-    if (!key) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `key ${req.keyId} not found`,
-      })
-    }
-
-    const deleteRoles = connectedRoles.filter((cr) => {
-      for (const deleteRequest of req.roles) {
-        if ('id' in deleteRequest) {
-          return cr.roleId === deleteRequest.id
-        }
-        if ('name' in deleteRequest) {
-          return cr.role.name === deleteRequest.name
-        }
-      }
-    })
-
-    if (deleteRoles.length === 0) {
-      // We have nothing to do
-      return c.json({}, 200)
-    }
-    await db.primary.transaction(async (tx) => {
-      await tx.delete(schema.keysRoles).where(
-        and(
-          eq(schema.keysRoles.workspaceId, auth.authorizedWorkspaceId),
-          eq(schema.keysRoles.keyId, key.id),
-          inArray(
-            schema.keysRoles.roleId,
-            deleteRoles.map((r) => r.roleId),
-          ),
-        ),
-      )
-      await insertUnkeyAuditLog(
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
+      const auth = await rootKeyAuth(
         c,
-        tx,
-        deleteRoles.map((r) => ({
-          workspaceId: auth.authorizedWorkspaceId,
-          event: 'authorization.disconnect_role_and_key' as const,
-          actor: {
-            type: 'key' as const,
-            id: auth.key.id,
-          },
-          description: `Disonnected ${r.roleId} and ${req.keyId}`,
-          resources: [
-            {
-              type: 'role' as const,
-              id: r.roleId,
-            },
-            {
-              type: 'key' as const,
-              id: req.keyId,
-            },
-          ],
-
-          context: {
-            location: c.get('location'),
-            userAgent: c.get('userAgent'),
-          },
-        })),
+        buildUnkeyQuery(({ or }) => or('*', 'rbac.*.remove_role_from_key')),
       )
-    })
 
-    return c.json({}, 200)
-  })
+      const { db } = c.get('services')
+
+      const [key, connectedRoles] = await Promise.all([
+        db.primary.query.keys.findFirst({
+          where: (table, { and, eq }) =>
+            and(
+              eq(table.workspaceId, auth.authorizedWorkspaceId),
+              eq(table.id, req.keyId),
+            ),
+        }),
+
+        await db.primary.query.keysRoles.findMany({
+          where: (table, { eq, and }) =>
+            and(
+              eq(table.workspaceId, auth.authorizedWorkspaceId),
+              eq(table.keyId, req.keyId),
+            ),
+          with: {
+            role: true,
+          },
+        }),
+      ])
+      if (!key) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `key ${req.keyId} not found`,
+        })
+      }
+
+      const deleteRoles = connectedRoles.filter((cr) => {
+        for (const deleteRequest of req.roles) {
+          if ('id' in deleteRequest) {
+            return cr.roleId === deleteRequest.id
+          }
+          if ('name' in deleteRequest) {
+            return cr.role.name === deleteRequest.name
+          }
+        }
+      })
+
+      if (deleteRoles.length === 0) {
+        // We have nothing to do
+        return c.json({}, 200)
+      }
+      await db.primary.transaction(async (tx) => {
+        await tx.delete(schema.keysRoles).where(
+          and(
+            eq(schema.keysRoles.workspaceId, auth.authorizedWorkspaceId),
+            eq(schema.keysRoles.keyId, key.id),
+            inArray(
+              schema.keysRoles.roleId,
+              deleteRoles.map((r) => r.roleId),
+            ),
+          ),
+        )
+        await insertUnkeyAuditLog(
+          c,
+          tx,
+          deleteRoles.map((r) => ({
+            workspaceId: auth.authorizedWorkspaceId,
+            event: 'authorization.disconnect_role_and_key' as const,
+            actor: {
+              type: 'key' as const,
+              id: auth.key.id,
+            },
+            description: `Disonnected ${r.roleId} and ${req.keyId}`,
+            resources: [
+              {
+                type: 'role' as const,
+                id: r.roleId,
+              },
+              {
+                type: 'key' as const,
+                id: req.keyId,
+              },
+            ],
+
+            context: {
+              location: c.get('location'),
+              userAgent: c.get('userAgent'),
+            },
+          })),
+        )
+      })
+
+      return c.json({}, 200)
+    },
+  )

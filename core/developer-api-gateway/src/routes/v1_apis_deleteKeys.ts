@@ -1,11 +1,11 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { and, eq, isNull, sql } from '@repo/db'
 
-import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import type { App } from '@/pkg/hono/app'
 import { schema } from '@repo/db'
+import { buildUnkeyQuery } from '@repo/rbac'
 
 const route = createRoute({
   tags: ['apis'],
@@ -58,79 +58,82 @@ export type V1ApisDeleteKeysResponse = z.infer<
 >
 
 export const registerV1ApisDeleteKeys = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { apiId, permanent } = c.req.valid('json')
-    const { cache, db } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { apiId, permanent } = c.req.valid('json')
+      const { cache, db } = c.get('services')
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) =>
-        or('*', 'api.*.delete_key', `api.${apiId}.delete_key`),
-      ),
-    )
-
-    const { val: api, err } = await cache.apiById.swr(apiId, async () => {
-      return (
-        (await db.readonly.query.apis.findFirst({
-          where: (table, { eq, and, isNull }) =>
-            and(eq(table.id, apiId), isNull(table.deletedAt)),
-          with: {
-            keyAuth: true,
-          },
-        })) ?? null
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) =>
+          or('*', 'api.*.delete_key', `api.${apiId}.delete_key`),
+        ),
       )
-    })
 
-    if (err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `unable to load api: ${err.message}`,
+      const { val: api, err } = await cache.apiById.swr(apiId, async () => {
+        return (
+          (await db.readonly.query.apis.findFirst({
+            where: (table, { eq, and, isNull }) =>
+              and(eq(table.id, apiId), isNull(table.deletedAt)),
+            with: {
+              keyAuth: true,
+            },
+          })) ?? null
+        )
       })
-    }
 
-    if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `api ${apiId} not found`,
-      })
-    }
+      if (err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `unable to load api: ${err.message}`,
+        })
+      }
 
-    if (!api.keyAuthId) {
-      throw new UnkeyApiError({
-        code: 'PRECONDITION_FAILED',
-        message: `api ${apiId} is not setup to handle keys`,
-      })
-    }
+      if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `api ${apiId} not found`,
+        })
+      }
 
-    let deletedKeys = 0
-    if (permanent) {
-      const where = eq(schema.keys.keyAuthId, api.keyAuthId)
-      await db.primary.transaction(async (tx) => {
-        const keys = await tx
-          .select({ count: sql<string>`count(*)` })
-          .from(schema.keys)
-          .where(where)
-        await tx.delete(schema.keys).where(where).execute()
-        deletedKeys = Number.parseInt(keys.at(0)?.count ?? '0')
-      })
-    } else {
-      const where = and(
-        eq(schema.keys.keyAuthId, api.keyAuthId),
-        isNull(schema.keys.deletedAt),
-      )
-      await db.primary.transaction(async (tx) => {
-        const keys = await tx
-          .select({ count: sql<string>`count(*)` })
-          .from(schema.keys)
-          .where(where)
-        await tx
-          .update(schema.keys)
-          .set({ deletedAt: new Date() })
-          .where(where)
-          .execute()
-        deletedKeys = Number.parseInt(keys.at(0)?.count ?? '0')
-      })
-    }
+      if (!api.keyAuthId) {
+        throw new UnkeyApiError({
+          code: 'PRECONDITION_FAILED',
+          message: `api ${apiId} is not setup to handle keys`,
+        })
+      }
 
-    return c.json({ deletedKeys }, 200)
-  })
+      let deletedKeys = 0
+      if (permanent) {
+        const where = eq(schema.keys.keyAuthId, api.keyAuthId)
+        await db.primary.transaction(async (tx) => {
+          const keys = await tx
+            .select({ count: sql<string>`count(*)` })
+            .from(schema.keys)
+            .where(where)
+          await tx.delete(schema.keys).where(where).execute()
+          deletedKeys = Number.parseInt(keys.at(0)?.count ?? '0')
+        })
+      } else {
+        const where = and(
+          eq(schema.keys.keyAuthId, api.keyAuthId),
+          isNull(schema.keys.deletedAt),
+        )
+        await db.primary.transaction(async (tx) => {
+          const keys = await tx
+            .select({ count: sql<string>`count(*)` })
+            .from(schema.keys)
+            .where(where)
+          await tx
+            .update(schema.keys)
+            .set({ deletedAt: new Date() })
+            .where(where)
+            .execute()
+          deletedKeys = Number.parseInt(keys.at(0)?.count ?? '0')
+        })
+      }
+
+      return c.json({ deletedKeys }, 200)
+    },
+  )

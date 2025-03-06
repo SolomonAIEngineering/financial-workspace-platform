@@ -2,17 +2,27 @@
 
 import * as React from 'react'
 
-import { Drawer as DrawerPrimitive } from 'vaul'
 import { cn } from '@repo/design-system/lib/utils'
+import { Drawer as DrawerPrimitive } from 'vaul'
 
 // Helper type for forwardRef components
-type ForwardRefComponent<T, P> = React.ForwardRefExoticComponent<P & React.RefAttributes<T>>
+type ForwardRefComponent<T, P> = React.ForwardRefExoticComponent<
+  P & React.RefAttributes<T>
+>
 
 // Component types
-type DrawerOverlayProps = React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
-type DrawerContentProps = React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
-type DrawerTitleProps = React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Title>
-type DrawerDescriptionProps = React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Description>
+type DrawerOverlayProps = React.ComponentPropsWithoutRef<
+  typeof DrawerPrimitive.Overlay
+>
+type DrawerContentProps = React.ComponentPropsWithoutRef<
+  typeof DrawerPrimitive.Content
+>
+type DrawerTitleProps = React.ComponentPropsWithoutRef<
+  typeof DrawerPrimitive.Title
+>
+type DrawerDescriptionProps = React.ComponentPropsWithoutRef<
+  typeof DrawerPrimitive.Description
+>
 
 const Drawer = ({
   shouldScaleBackground = true,
@@ -25,11 +35,15 @@ const Drawer = ({
 )
 Drawer.displayName = 'Drawer'
 
-const DrawerTrigger = DrawerPrimitive.Trigger as React.FC<React.ComponentProps<typeof DrawerPrimitive.Trigger>>
+const DrawerTrigger = DrawerPrimitive.Trigger as React.FC<
+  React.ComponentProps<typeof DrawerPrimitive.Trigger>
+>
 
 const DrawerPortal = DrawerPrimitive.Portal
 
-const DrawerClose = DrawerPrimitive.Close as React.FC<React.ComponentProps<typeof DrawerPrimitive.Close>>
+const DrawerClose = DrawerPrimitive.Close as React.FC<
+  React.ComponentProps<typeof DrawerPrimitive.Close>
+>
 
 const DrawerOverlay: ForwardRefComponent<
   React.ElementRef<typeof DrawerPrimitive.Overlay>,

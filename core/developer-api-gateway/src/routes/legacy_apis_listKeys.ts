@@ -1,11 +1,11 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { and, eq, isNull, sql } from '@repo/db'
 
-import type { App } from '@/pkg/hono/app'
-import { keySchema } from './schema'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import type { App } from '@/pkg/hono/app'
 import { schema } from '@repo/db'
+import { keySchema } from './schema'
 
 const route = createRoute({
   operationId: 'deprecated.listKeys',
@@ -75,103 +75,109 @@ export type LegacyApisListKeysResponse = z.infer<
 >
 
 export const registerLegacyApisListKeys = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { db, cache, metrics } = c.get('services')
-    const auth = await rootKeyAuth(c)
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { db, cache, metrics } = c.get('services')
+      const auth = await rootKeyAuth(c)
 
-    const apiId = c.req.param('apiId')
-    const { limit, offset, ownerId } = c.req.valid('query')
+      const apiId = c.req.param('apiId')
+      const { limit, offset, ownerId } = c.req.valid('query')
 
-    const { val: api, err } = await cache.apiById.swr(apiId, async () => {
-      return (
-        (await db.readonly.query.apis.findFirst({
-          where: (table, { eq, and, isNull }) =>
-            and(eq(table.id, apiId), isNull(table.deletedAt)),
-          with: {
-            keyAuth: true,
-          },
-        })) ?? null
+      const { val: api, err } = await cache.apiById.swr(apiId, async () => {
+        return (
+          (await db.readonly.query.apis.findFirst({
+            where: (table, { eq, and, isNull }) =>
+              and(eq(table.id, apiId), isNull(table.deletedAt)),
+            with: {
+              keyAuth: true,
+            },
+          })) ?? null
+        )
+      })
+
+      if (err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `unable to load api: ${err.message}`,
+        })
+      }
+      if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `api ${apiId} not found`,
+        })
+      }
+
+      if (!api.keyAuthId) {
+        throw new UnkeyApiError({
+          code: 'PRECONDITION_FAILED',
+          message: `api ${apiId} is not setup to handle keys`,
+        })
+      }
+      const keysWhere: Parameters<typeof and> = [
+        isNull(schema.keys.deletedAt),
+        eq(schema.keys.keyAuthId, api.keyAuthId),
+      ]
+      if (ownerId) {
+        keysWhere.push(eq(schema.keys.ownerId, ownerId))
+      }
+
+      const dbStart = performance.now()
+      const keys = await db.readonly.query.keys.findMany({
+        where: and(...keysWhere),
+        limit: limit,
+        orderBy: schema.keys.id,
+        offset: offset ? offset : undefined,
+      })
+      metrics.emit({
+        metric: 'metric.db.read',
+        query: 'getKeysByKeyAuthId',
+        latency: performance.now() - dbStart,
+      })
+
+      const total = await db.readonly
+        .select({ count: sql<string>`count(*)` })
+        .from(schema.keys)
+        .where(
+          and(
+            eq(schema.keys.keyAuthId, api.keyAuthId),
+            isNull(schema.keys.deletedAt),
+          ),
+        )
+
+      return c.json(
+        {
+          keys: keys.map((k) => ({
+            id: k.id,
+            start: k.start,
+            apiId: api.id,
+            workspaceId: k.workspaceId,
+            name: k.name ?? undefined,
+            ownerId: k.ownerId ?? undefined,
+            meta: k.meta ? JSON.parse(k.meta) : undefined,
+            createdAt: k.createdAt.getTime() ?? undefined,
+            expires: k.expires?.getTime() ?? undefined,
+            ratelimit:
+              k.ratelimitAsync !== null &&
+              k.ratelimitLimit !== null &&
+              k.ratelimitDuration !== null
+                ? {
+                    async: k.ratelimitAsync,
+                    type: k.ratelimitAsync ? 'fast' : ('consistent' as any),
+                    limit: k.ratelimitLimit,
+                    duration: k.ratelimitDuration,
+                    refillRate: k.ratelimitLimit,
+                    refillInterval: k.ratelimitDuration,
+                  }
+                : undefined,
+            remaining: k.remaining ?? undefined,
+          })),
+          // @ts-ignore, mysql sucks
+          total: Number.parseInt(total.at(0)?.count ?? '0'),
+          cursor: keys.at(-1)?.id ?? undefined,
+        },
+        200,
       )
-    })
-
-    if (err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `unable to load api: ${err.message}`,
-      })
-    }
-    if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `api ${apiId} not found`,
-      })
-    }
-
-    if (!api.keyAuthId) {
-      throw new UnkeyApiError({
-        code: 'PRECONDITION_FAILED',
-        message: `api ${apiId} is not setup to handle keys`,
-      })
-    }
-    const keysWhere: Parameters<typeof and> = [
-      isNull(schema.keys.deletedAt),
-      eq(schema.keys.keyAuthId, api.keyAuthId),
-    ]
-    if (ownerId) {
-      keysWhere.push(eq(schema.keys.ownerId, ownerId))
-    }
-
-    const dbStart = performance.now()
-    const keys = await db.readonly.query.keys.findMany({
-      where: and(...keysWhere),
-      limit: limit,
-      orderBy: schema.keys.id,
-      offset: offset ? offset : undefined,
-    })
-    metrics.emit({
-      metric: 'metric.db.read',
-      query: 'getKeysByKeyAuthId',
-      latency: performance.now() - dbStart,
-    })
-
-    const total = await db.readonly
-      .select({ count: sql<string>`count(*)` })
-      .from(schema.keys)
-      .where(
-        and(
-          eq(schema.keys.keyAuthId, api.keyAuthId),
-          isNull(schema.keys.deletedAt),
-        ),
-      )
-
-    return c.json({
-      keys: keys.map((k) => ({
-        id: k.id,
-        start: k.start,
-        apiId: api.id,
-        workspaceId: k.workspaceId,
-        name: k.name ?? undefined,
-        ownerId: k.ownerId ?? undefined,
-        meta: k.meta ? JSON.parse(k.meta) : undefined,
-        createdAt: k.createdAt.getTime() ?? undefined,
-        expires: k.expires?.getTime() ?? undefined,
-        ratelimit:
-          k.ratelimitAsync !== null &&
-            k.ratelimitLimit !== null &&
-            k.ratelimitDuration !== null
-            ? {
-              async: k.ratelimitAsync,
-              type: k.ratelimitAsync ? 'fast' : ('consistent' as any),
-              limit: k.ratelimitLimit,
-              duration: k.ratelimitDuration,
-              refillRate: k.ratelimitLimit,
-              refillInterval: k.ratelimitDuration,
-            }
-            : undefined,
-        remaining: k.remaining ?? undefined,
-      })),
-      // @ts-ignore, mysql sucks
-      total: Number.parseInt(total.at(0)?.count ?? '0'),
-      cursor: keys.at(-1)?.id ?? undefined,
-    }, 200)
-  })
+    },
+  )

@@ -1,5 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest'
 import { Fields, Logger } from '../interface'
-import { beforeEach, describe, expect, it } from 'vitest';
 
 // Mock implementation of Logger for testing
 class TestLogger implements Logger {

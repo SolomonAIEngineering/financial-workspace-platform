@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { type Message } from 'ai'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { MessageList } from '../message-list'
 

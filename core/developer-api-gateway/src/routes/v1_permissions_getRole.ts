@@ -1,9 +1,9 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
+import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
 import { buildUnkeyQuery } from '@repo/rbac'
-import { rootKeyAuth } from '@/pkg/auth/root_key'
 
 const route = createRoute({
   tags: ['permissions'],
@@ -52,32 +52,38 @@ export type V1PermissionsGetRoleResponse = z.infer<
   (typeof route.responses)[200]['content']['application/json']['schema']
 >
 export const registerV1PermissionsGetRole = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { roleId } = c.req.valid('query')
-    const { db } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { roleId } = c.req.valid('query')
+      const { db } = c.get('services')
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('*', 'rbac.*.read_role')),
-    )
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('*', 'rbac.*.read_role')),
+      )
 
-    const role = await db.readonly.query.roles.findFirst({
-      where: (table, { eq, and }) =>
-        and(
-          eq(table.workspaceId, auth.authorizedWorkspaceId),
-          eq(table.id, roleId),
-        ),
-    })
-    if (!role) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `role ${roleId} not found`,
+      const role = await db.readonly.query.roles.findFirst({
+        where: (table, { eq, and }) =>
+          and(
+            eq(table.workspaceId, auth.authorizedWorkspaceId),
+            eq(table.id, roleId),
+          ),
       })
-    }
+      if (!role) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `role ${roleId} not found`,
+        })
+      }
 
-    return c.json({
-      id: role.id,
-      name: role.name,
-      description: role.description ?? undefined,
-    }, 200)
-  })
+      return c.json(
+        {
+          id: role.id,
+          name: role.name,
+          description: role.description ?? undefined,
+        },
+        200,
+      )
+    },
+  )

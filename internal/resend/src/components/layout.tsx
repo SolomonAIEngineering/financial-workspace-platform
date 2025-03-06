@@ -45,12 +45,31 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => (
   <html>
     <head />
-    <body style={{ backgroundColor: 'white', fontFamily: 'sans-serif', color: '#27272a' }}>
+    <body
+      style={{
+        backgroundColor: 'white',
+        fontFamily: 'sans-serif',
+        color: '#27272a',
+      }}
+    >
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '1.5rem' }}>
-        <div style={{ margin: '0 auto', backgroundColor: '#f9fafb', padding: '1.5rem' }}>
+        <div
+          style={{
+            margin: '0 auto',
+            backgroundColor: '#f9fafb',
+            padding: '1.5rem',
+          }}
+        >
           {children}
         </div>
-        <div style={{ margin: '0 auto', padding: '1.5rem', textAlign: 'center', fontWeight: 600 }}>
+        <div
+          style={{
+            margin: '0 auto',
+            padding: '1.5rem',
+            textAlign: 'center',
+            fontWeight: 600,
+          }}
+        >
           <p>
             Connect with us on social media!
             <br />

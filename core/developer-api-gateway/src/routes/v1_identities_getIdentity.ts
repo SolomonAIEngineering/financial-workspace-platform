@@ -1,9 +1,9 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
+import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
 import { buildUnkeyQuery } from '@repo/rbac'
-import { rootKeyAuth } from '@/pkg/auth/root_key'
 
 const route = createRoute({
   tags: ['identities'],
@@ -78,52 +78,61 @@ export type V1IdentitiesGetIdentityResponse = z.infer<
   (typeof route.responses)[200]['content']['application/json']['schema']
 >
 export const registerV1IdentitiesGetIdentity = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { identityId, externalId } = c.req.valid('query')
-    const { db } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { identityId, externalId } = c.req.valid('query')
+      const { db } = c.get('services')
 
-    if (!identityId && !externalId) {
-      throw new UnkeyApiError({
-        code: 'BAD_REQUEST',
-        message: 'Provide either identityId or externalId',
-      })
-    }
+      if (!identityId && !externalId) {
+        throw new UnkeyApiError({
+          code: 'BAD_REQUEST',
+          message: 'Provide either identityId or externalId',
+        })
+      }
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) =>
-        or('identity.*.read_identity', `identity.${identityId}.read_identity`),
-      ),
-    )
-
-    const identity = await db.readonly.query.identities.findFirst({
-      where: (table, { eq, and }) =>
-        and(
-          eq(table.workspaceId, auth.authorizedWorkspaceId),
-          identityId
-            ? eq(table.id, identityId)
-            : eq(table.externalId, externalId!),
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) =>
+          or(
+            'identity.*.read_identity',
+            `identity.${identityId}.read_identity`,
+          ),
         ),
-      with: {
-        ratelimits: true,
-      },
-    })
+      )
 
-    if (!identity || identity.workspaceId !== auth.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `identity ${identityId} not found`,
+      const identity = await db.readonly.query.identities.findFirst({
+        where: (table, { eq, and }) =>
+          and(
+            eq(table.workspaceId, auth.authorizedWorkspaceId),
+            identityId
+              ? eq(table.id, identityId)
+              : eq(table.externalId, externalId!),
+          ),
+        with: {
+          ratelimits: true,
+        },
       })
-    }
 
-    return c.json({
-      id: identity.id,
-      externalId: identity.externalId,
-      meta: identity.meta ?? {},
-      ratelimits: identity.ratelimits.map((r) => ({
-        name: r.name,
-        limit: r.limit,
-        duration: r.duration,
-      })),
-    }, 200)
-  })
+      if (!identity || identity.workspaceId !== auth.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `identity ${identityId} not found`,
+        })
+      }
+
+      return c.json(
+        {
+          id: identity.id,
+          externalId: identity.externalId,
+          meta: identity.meta ?? {},
+          ratelimits: identity.ratelimits.map((r) => ({
+            name: r.name,
+            limit: r.limit,
+            duration: r.duration,
+          })),
+        },
+        200,
+      )
+    },
+  )

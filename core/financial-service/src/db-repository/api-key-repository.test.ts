@@ -6,9 +6,9 @@ import {
 } from '@/test-util/test-context'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
+import { APIKeyRepository } from '@/db-repository/api-key-repository'
 import { APIKey } from '@/db/schema/api-keys'
 import { APIKeyGenerator } from '@/test-util/utils/api-key-generator'
-import { APIKeyRepository } from '@/db-repository/api-key-repository'
 import { env } from 'cloudflare:test'
 
 describe('APIKeyRepository Integration Tests', () => {

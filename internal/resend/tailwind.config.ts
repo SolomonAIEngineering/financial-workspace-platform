@@ -74,5 +74,5 @@ export default {
   separator: ':',
   safelist: [],
   experimental: {},
-  corePlugins: {}
+  corePlugins: {},
 } satisfies TailwindConfig

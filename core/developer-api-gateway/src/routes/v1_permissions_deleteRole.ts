@@ -1,11 +1,11 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { and, eq, schema } from '@repo/db'
 
-import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
 import { insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import type { App } from '@/pkg/hono/app'
+import { buildUnkeyQuery } from '@repo/rbac'
 
 const route = createRoute({
   tags: ['permissions'],
@@ -50,57 +50,63 @@ export type V1PermissionsDeleteRoleResponse = z.infer<
 >
 
 export const registerV1PermissionsDeleteRole = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('*', 'rbac.*.delete_role')),
-    )
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('*', 'rbac.*.delete_role')),
+      )
 
-    const { db } = c.get('services')
+      const { db } = c.get('services')
 
-    const role = await db.primary.query.roles.findFirst({
-      where: (table, { eq, and }) =>
-        and(
-          eq(table.workspaceId, auth.authorizedWorkspaceId),
-          eq(table.id, req.roleId),
-        ),
-    })
-    if (!role) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `Role ${req.roleId} not found`,
-      })
-    }
-
-    await db.primary.transaction(async (tx) => {
-      await tx
-        .delete(schema.roles)
-        .where(
+      const role = await db.primary.query.roles.findFirst({
+        where: (table, { eq, and }) =>
           and(
-            eq(schema.roles.workspaceId, auth.authorizedWorkspaceId),
-            eq(schema.roles.id, req.roleId),
+            eq(table.workspaceId, auth.authorizedWorkspaceId),
+            eq(table.id, req.roleId),
           ),
-        )
-
-      await insertUnkeyAuditLog(c, tx, {
-        workspaceId: auth.authorizedWorkspaceId,
-        event: 'role.delete',
-        actor: {
-          type: 'key',
-          id: auth.key.id,
-        },
-        description: `Deleted ${role.id}`,
-        resources: [
-          {
-            type: 'role',
-            id: role.id,
-          },
-        ],
-
-        context: { location: c.get('location'), userAgent: c.get('userAgent') },
       })
-    })
+      if (!role) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `Role ${req.roleId} not found`,
+        })
+      }
 
-    return c.json({}, 200)
-  })
+      await db.primary.transaction(async (tx) => {
+        await tx
+          .delete(schema.roles)
+          .where(
+            and(
+              eq(schema.roles.workspaceId, auth.authorizedWorkspaceId),
+              eq(schema.roles.id, req.roleId),
+            ),
+          )
+
+        await insertUnkeyAuditLog(c, tx, {
+          workspaceId: auth.authorizedWorkspaceId,
+          event: 'role.delete',
+          actor: {
+            type: 'key',
+            id: auth.key.id,
+          },
+          description: `Deleted ${role.id}`,
+          resources: [
+            {
+              type: 'role',
+              id: role.id,
+            },
+          ],
+
+          context: {
+            location: c.get('location'),
+            userAgent: c.get('userAgent'),
+          },
+        })
+      })
+
+      return c.json({}, 200)
+    },
+  )

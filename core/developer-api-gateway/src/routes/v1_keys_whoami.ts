@@ -1,10 +1,10 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
-import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import type { App } from '@/pkg/hono/app'
 import { sha256 } from '@repo/hash'
+import { buildUnkeyQuery } from '@repo/rbac'
 
 const route = createRoute({
   tags: ['keys'],
@@ -99,81 +99,87 @@ export type V1KeysWhoAmIResponse = z.infer<
 >
 
 export const registerV1KeysWhoAmI = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { key: secret } = c.req.valid('json')
-    const { cache, db } = c.get('services')
-    const hash = await sha256(secret)
-    const { val: data, err } = await cache.keyByHash.swr(hash, async () => {
-      const dbRes = await db.readonly.query.keys.findFirst({
-        where: (table, { eq, and, isNull }) =>
-          and(eq(table.hash, hash), isNull(table.deletedAt)),
-        with: {
-          keyAuth: {
-            with: {
-              api: true,
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { key: secret } = c.req.valid('json')
+      const { cache, db } = c.get('services')
+      const hash = await sha256(secret)
+      const { val: data, err } = await cache.keyByHash.swr(hash, async () => {
+        const dbRes = await db.readonly.query.keys.findFirst({
+          where: (table, { eq, and, isNull }) =>
+            and(eq(table.hash, hash), isNull(table.deletedAt)),
+          with: {
+            keyAuth: {
+              with: {
+                api: true,
+              },
             },
+            identity: true,
           },
-          identity: true,
-        },
+        })
+
+        if (!dbRes) {
+          return null
+        }
+
+        return {
+          key: {
+            ...dbRes,
+          },
+          api: dbRes.keyAuth.api,
+          identity: dbRes.identity,
+        } as any // this was necessary so that we don't need to return the workspace and other types defined in keyByHash
       })
 
-      if (!dbRes) {
-        return null
+      if (err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `unable to load key: ${err.message}`,
+        })
+      }
+      if (!data) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: 'Key not found',
+        })
+      }
+      const { api, key } = data
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) =>
+          or('*', 'api.*.read_key', `api.${api.id}.read_key`),
+        ),
+      )
+
+      if (key.workspaceId !== auth.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: 'Key not found',
+        })
+      }
+      let meta = key.meta ? JSON.parse(key.meta) : undefined
+      if (!meta || Object.keys(meta).length === 0) {
+        meta = undefined
       }
 
-      return {
-        key: {
-          ...dbRes,
+      return c.json(
+        {
+          id: key.id,
+          name: key.name ?? undefined,
+          remaining: key.remaining ?? undefined,
+          identity: data.identity
+            ? {
+                id: data.identity.id,
+                externalId: data.identity.externalId,
+              }
+            : undefined,
+          meta: meta,
+          createdAt: key.createdAt.getTime(),
+          enabled: key.enabled,
+          environment: key.environment ?? undefined,
         },
-        api: dbRes.keyAuth.api,
-        identity: dbRes.identity,
-      } as any // this was necessary so that we don't need to return the workspace and other types defined in keyByHash
-    })
-
-    if (err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `unable to load key: ${err.message}`,
-      })
-    }
-    if (!data) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: 'Key not found',
-      })
-    }
-    const { api, key } = data
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) =>
-        or('*', 'api.*.read_key', `api.${api.id}.read_key`),
-      ),
-    )
-
-    if (key.workspaceId !== auth.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: 'Key not found',
-      })
-    }
-    let meta = key.meta ? JSON.parse(key.meta) : undefined
-    if (!meta || Object.keys(meta).length === 0) {
-      meta = undefined
-    }
-
-    return c.json({
-      id: key.id,
-      name: key.name ?? undefined,
-      remaining: key.remaining ?? undefined,
-      identity: data.identity
-        ? {
-          id: data.identity.id,
-          externalId: data.identity.externalId,
-        }
-        : undefined,
-      meta: meta,
-      createdAt: key.createdAt.getTime(),
-      enabled: key.enabled,
-      environment: key.environment ?? undefined,
-    }, 200)
-  })
+        200,
+      )
+    },
+  )

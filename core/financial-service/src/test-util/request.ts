@@ -51,8 +51,8 @@ export type StepResponse<TBody = unknown> = {
  *   headers: { "Content-Type": "application/json" },
  *   body: { key: "value" },
  * });
- * console.log(response.status); // 200
- * console.log(response.body); // Parsed JSON response
+ * console.info(response.status); // 200
+ * console.info(response.body); // Parsed JSON response
  * ```
  */
 export async function step<TRequestBody = unknown, TResponseBody = unknown>(
@@ -95,8 +95,8 @@ export async function step<TRequestBody = unknown, TResponseBody = unknown>(
  *   url: "/api/resource",
  *   method: "GET",
  * });
- * console.log(response.status); // 200
- * console.log(response.body); // Parsed JSON response
+ * console.info(response.status); // 200
+ * console.info(response.body); // Parsed JSON response
  * ```
  */
 export async function fetchRoute<
@@ -148,7 +148,7 @@ export async function fetchRoute<
  * const headers = new Headers();
  * headers.append("Content-Type", "application/json");
  * const headerRecord = headersToRecord(headers);
- * console.log(headerRecord); // { "Content-Type": "application/json" }
+ * console.info(headerRecord); // { "Content-Type": "application/json" }
  * ```
  */
 export function headersToRecord(headers: Headers): Record<string, string> {

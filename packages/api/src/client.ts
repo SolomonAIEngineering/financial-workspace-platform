@@ -32,26 +32,26 @@ import { type Telemetry, getTelemetry } from './telemetry'
  */
 export type SolomonAIOptions = (
   | {
-    token?: never
+      token?: never
 
-    /**
-     * The root key from solomon-ai.dev.
-     * Required for authentication with the API.
-     *
-     * You can create/manage your root keys here:
-     * https://solomon-ai.dev/app/settings/root-keys
-     */
-    rootKey: string
-  }
+      /**
+       * The root key from solomon-ai.dev.
+       * Required for authentication with the API.
+       *
+       * You can create/manage your root keys here:
+       * https://solomon-ai.dev/app/settings/root-keys
+       */
+      rootKey: string
+    }
   | {
-    /**
-     * The workspace key from solomon-ai.dev
-     *
-     * @deprecated Use `rootKey` instead for better security and features
-     */
-    token: string
-    rootKey?: never
-  }
+      /**
+       * The workspace key from solomon-ai.dev
+       *
+       * @deprecated Use `rootKey` instead for better security and features
+       */
+      token: string
+      rootKey?: never
+    }
 ) & {
   /**
    * The base URL for the Solomon AI API.
@@ -112,17 +112,17 @@ export type SolomonAIOptions = (
 type ApiRequest = {
   path: string[]
 } & (
-    | {
+  | {
       method: 'GET'
       body?: never
       query?: Record<string, string | number | boolean | null>
     }
-    | {
+  | {
       method: 'POST'
       body?: unknown
       query?: never
     }
-  )
+)
 
 /**
  * Generic type for API response handling.
@@ -133,18 +133,18 @@ type ApiRequest = {
  */
 type Result<R> =
   | {
-    result: R
-    error?: never
-  }
-  | {
-    result?: never
-    error: {
-      code: ErrorResponse['error']['code']
-      message: ErrorResponse['error']['message']
-      docs: ErrorResponse['error']['docs']
-      requestId: string
+      result: R
+      error?: never
     }
-  }
+  | {
+      result?: never
+      error: {
+        code: ErrorResponse['error']['code']
+        message: ErrorResponse['error']['message']
+        docs: ErrorResponse['error']['docs']
+        requestId: string
+      }
+    }
 
 /**
  * The main SolomonAI client class for interacting with the Solomon AI API.

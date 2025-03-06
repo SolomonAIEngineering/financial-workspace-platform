@@ -1,13 +1,13 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
-import type { App } from '@/pkg/hono/app'
-import { KeyV1 } from '@repo/keys'
 import { insertUnkeyAuditLog } from '@/pkg/audit'
-import { newId } from '@repo/id'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import type { App } from '@/pkg/hono/app'
 import { schema } from '@repo/db'
 import { sha256 } from '@repo/hash'
+import { newId } from '@repo/id'
+import { KeyV1 } from '@repo/keys'
 
 const route = createRoute({
   operationId: 'deprecated.createKey',
@@ -167,101 +167,107 @@ export type LegacyKeysCreateKeyResponse = z.infer<
 >
 
 export const registerLegacyKeysCreate = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { cache, db } = c.get('services')
-    const auth = await rootKeyAuth(c)
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { cache, db } = c.get('services')
+      const auth = await rootKeyAuth(c)
 
-    const req = c.req.valid('json')
+      const req = c.req.valid('json')
 
-    const { val: api, err } = await cache.apiById.swr(req.apiId, async () => {
-      return (
-        (await db.readonly.query.apis.findFirst({
-          where: (table, { eq, and, isNull }) =>
-            and(eq(table.id, req.apiId), isNull(table.deletedAt)),
-          with: {
-            keyAuth: true,
+      const { val: api, err } = await cache.apiById.swr(req.apiId, async () => {
+        return (
+          (await db.readonly.query.apis.findFirst({
+            where: (table, { eq, and, isNull }) =>
+              and(eq(table.id, req.apiId), isNull(table.deletedAt)),
+            with: {
+              keyAuth: true,
+            },
+          })) ?? null
+        )
+      })
+
+      if (err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `unable to load api: ${err.message}`,
+        })
+      }
+      if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `api ${req.apiId} not found`,
+        })
+      }
+
+      if (!api.keyAuthId) {
+        throw new UnkeyApiError({
+          code: 'PRECONDITION_FAILED',
+          message: `api ${req.apiId} is not setup to handle keys`,
+        })
+      }
+
+      /**
+       * Set up an api for production
+       */
+      const key = new KeyV1({
+        byteLength: req.byteLength,
+        prefix: req.prefix,
+      }).toString()
+      const start = key.slice(0, (req.prefix?.length ?? 0) + 5)
+      const keyId = newId('key')
+      const hash = await sha256(key.toString())
+
+      const authorizedWorkspaceId = auth.authorizedWorkspaceId
+      const rootKeyId = auth.key.id
+      await db.primary.transaction(async (tx) => {
+        await tx.insert(schema.keys).values({
+          id: keyId,
+          keyAuthId: api.keyAuthId!,
+          name: req.name,
+          hash,
+          start,
+          ownerId: req.ownerId,
+          meta: req.meta ? JSON.stringify(req.meta) : null,
+          workspaceId: authorizedWorkspaceId,
+          forWorkspaceId: null,
+          expires: req.expires ? new Date(req.expires) : null,
+          createdAt: new Date(),
+          ratelimitLimit: req.ratelimit?.limit,
+          ratelimitDuration: req.ratelimit?.refillRate,
+          ratelimitAsync: req.ratelimit?.type === 'fast',
+          remaining: req.remaining,
+          deletedAt: null,
+        })
+        await insertUnkeyAuditLog(c, tx, {
+          workspaceId: authorizedWorkspaceId,
+          actor: { type: 'key', id: rootKeyId },
+          event: 'key.create',
+          description: `Created ${keyId}`,
+          resources: [
+            {
+              type: 'key',
+              id: keyId,
+            },
+            {
+              type: 'keyAuth',
+              id: api.keyAuthId!,
+            },
+            { type: 'api', id: api.id },
+          ],
+          context: {
+            location: c.get('location'),
+            userAgent: c.get('userAgent'),
           },
-        })) ?? null
-      )
-    })
-
-    if (err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `unable to load api: ${err.message}`,
+        })
       })
-    }
-    if (!api || api.workspaceId !== auth.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `api ${req.apiId} not found`,
-      })
-    }
 
-    if (!api.keyAuthId) {
-      throw new UnkeyApiError({
-        code: 'PRECONDITION_FAILED',
-        message: `api ${req.apiId} is not setup to handle keys`,
-      })
-    }
-
-    /**
-     * Set up an api for production
-     */
-    const key = new KeyV1({
-      byteLength: req.byteLength,
-      prefix: req.prefix,
-    }).toString()
-    const start = key.slice(0, (req.prefix?.length ?? 0) + 5)
-    const keyId = newId('key')
-    const hash = await sha256(key.toString())
-
-    const authorizedWorkspaceId = auth.authorizedWorkspaceId
-    const rootKeyId = auth.key.id
-    await db.primary.transaction(async (tx) => {
-      await tx.insert(schema.keys).values({
-        id: keyId,
-        keyAuthId: api.keyAuthId!,
-        name: req.name,
-        hash,
-        start,
-        ownerId: req.ownerId,
-        meta: req.meta ? JSON.stringify(req.meta) : null,
-        workspaceId: authorizedWorkspaceId,
-        forWorkspaceId: null,
-        expires: req.expires ? new Date(req.expires) : null,
-        createdAt: new Date(),
-        ratelimitLimit: req.ratelimit?.limit,
-        ratelimitDuration: req.ratelimit?.refillRate,
-        ratelimitAsync: req.ratelimit?.type === 'fast',
-        remaining: req.remaining,
-        deletedAt: null,
-      })
-      await insertUnkeyAuditLog(c, tx, {
-        workspaceId: authorizedWorkspaceId,
-        actor: { type: 'key', id: rootKeyId },
-        event: 'key.create',
-        description: `Created ${keyId}`,
-        resources: [
-          {
-            type: 'key',
-            id: keyId,
-          },
-          {
-            type: 'keyAuth',
-            id: api.keyAuthId!,
-          },
-          { type: 'api', id: api.id },
-        ],
-        context: {
-          location: c.get('location'),
-          userAgent: c.get('userAgent'),
+      return c.json(
+        {
+          keyId,
+          key,
         },
-      })
-    })
-
-    return c.json({
-      keyId,
-      key,
-    }, 200)
-  })
+        200,
+      )
+    },
+  )

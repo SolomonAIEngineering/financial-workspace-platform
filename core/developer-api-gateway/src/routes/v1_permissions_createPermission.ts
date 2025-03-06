@@ -1,12 +1,12 @@
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
-import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
 import { insertUnkeyAuditLog } from '@/pkg/audit'
-import { newId } from '@repo/id'
-import { openApiErrorResponses } from '@/pkg/errors'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import { openApiErrorResponses } from '@/pkg/errors'
+import type { App } from '@/pkg/hono/app'
 import { schema } from '@repo/db'
+import { newId } from '@repo/id'
+import { buildUnkeyQuery } from '@repo/rbac'
 import { validation } from '@repo/validation'
 
 const route = createRoute({
@@ -63,55 +63,64 @@ export type V1PermissionsCreatePermissionResponse = z.infer<
 >
 
 export const registerV1PermissionsCreatePermission = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('*', 'rbac.*.create_permission')),
-    )
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('*', 'rbac.*.create_permission')),
+      )
 
-    const { db } = c.get('services')
+      const { db } = c.get('services')
 
-    const permission = {
-      id: newId('permission'),
-      workspaceId: auth.authorizedWorkspaceId,
-      name: req.name,
-      description: req.description,
-    }
-    await db.primary.transaction(async (tx) => {
-      await tx
-        .insert(schema.permissions)
-        .values(permission)
-        .onDuplicateKeyUpdate({
-          set: {
-            name: req.name,
-            description: req.description,
+      const permission = {
+        id: newId('permission'),
+        workspaceId: auth.authorizedWorkspaceId,
+        name: req.name,
+        description: req.description,
+      }
+      await db.primary.transaction(async (tx) => {
+        await tx
+          .insert(schema.permissions)
+          .values(permission)
+          .onDuplicateKeyUpdate({
+            set: {
+              name: req.name,
+              description: req.description,
+            },
+          })
+
+        await insertUnkeyAuditLog(c, tx, {
+          workspaceId: auth.authorizedWorkspaceId,
+          event: 'permission.create',
+          actor: {
+            type: 'key',
+            id: auth.key.id,
+          },
+          description: `Created ${permission.id}`,
+          resources: [
+            {
+              type: 'permission',
+              id: permission.id,
+              meta: {
+                name: permission.name,
+                description: permission.description,
+              },
+            },
+          ],
+
+          context: {
+            location: c.get('location'),
+            userAgent: c.get('userAgent'),
           },
         })
-
-      await insertUnkeyAuditLog(c, tx, {
-        workspaceId: auth.authorizedWorkspaceId,
-        event: 'permission.create',
-        actor: {
-          type: 'key',
-          id: auth.key.id,
-        },
-        description: `Created ${permission.id}`,
-        resources: [
-          {
-            type: 'permission',
-            id: permission.id,
-            meta: {
-              name: permission.name,
-              description: permission.description,
-            },
-          },
-        ],
-
-        context: { location: c.get('location'), userAgent: c.get('userAgent') },
       })
-    })
-    return c.json({
-      permissionId: permission.id,
-    }, 200)
-  })
+      return c.json(
+        {
+          permissionId: permission.id,
+        },
+        200,
+      )
+    },
+  )

@@ -1,9 +1,9 @@
+import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
 import {
   DisabledWorkspaceError,
   MissingRatelimitError,
 } from '@/pkg/keys/service'
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
-import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
 
 import type { App } from '@/pkg/hono/app'
 import { SchemaError } from '@polar/error'
@@ -311,90 +311,97 @@ export type V1KeysVerifyKeyResponse = z.infer<
 >
 
 export const registerV1KeysVerifyKey = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
-    const { keyService, analytics, logger } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
+      const { keyService, analytics, logger } = c.get('services')
 
-    const { val, err } = await keyService.verifyKey(c, {
-      key: req.key,
-      apiId: req.apiId,
-      permissionQuery: req.authorization?.permissions,
-      ratelimit: req.ratelimit,
-      ratelimits: req.ratelimits,
-    })
-
-    if (err) {
-      switch (true) {
-        case err instanceof SchemaError || err instanceof MissingRatelimitError:
-          throw new UnkeyApiError({
-            code: 'BAD_REQUEST',
-            message: err.message,
-          })
-        case err instanceof DisabledWorkspaceError:
-          throw new UnkeyApiError({
-            code: 'FORBIDDEN',
-            message: 'workspace is disabled',
-          })
-      }
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: err.message,
+      const { val, err } = await keyService.verifyKey(c, {
+        key: req.key,
+        apiId: req.apiId,
+        permissionQuery: req.authorization?.permissions,
+        ratelimit: req.ratelimit,
+        ratelimits: req.ratelimits,
       })
-    }
 
-    c.set('metricsContext', {
-      ...c.get('metricsContext'),
-      keyId: val.key?.id,
-    })
-
-    if (val.code === 'NOT_FOUND') {
-      return c.json({
-        valid: false,
-        code: val.code,
-      }, 200)
-    }
-
-    const responseBody = {
-      keyId: val.key?.id,
-      valid: val.valid,
-      name: val.key?.name ?? undefined,
-      ownerId: val.key?.ownerId ?? undefined,
-      meta: val.key?.meta ? JSON.parse(val.key?.meta) : undefined,
-      expires: val.key?.expires?.getTime(),
-      remaining: val.remaining ?? undefined,
-      ratelimit: val.ratelimit ?? undefined,
-      enabled: val.key?.enabled,
-      permissions: val.permissions,
-      environment: val.key?.environment ?? undefined,
-      code: val.valid ? ('VALID' as const) : val.code,
-      identity: val.identity
-        ? {
-          id: val.identity.id,
-          externalId: val.identity.externalId,
-          meta: val.identity.meta ?? {},
+      if (err) {
+        switch (true) {
+          case err instanceof SchemaError ||
+            err instanceof MissingRatelimitError:
+            throw new UnkeyApiError({
+              code: 'BAD_REQUEST',
+              message: err.message,
+            })
+          case err instanceof DisabledWorkspaceError:
+            throw new UnkeyApiError({
+              code: 'FORBIDDEN',
+              message: 'workspace is disabled',
+            })
         }
-        : undefined,
-    }
-    c.executionCtx.waitUntil(
-      analytics
-        .insertKeyVerification({
-          request_id: c.get('requestId'),
-          time: Date.now(),
-          workspace_id: val.key.workspaceId,
-          key_space_id: val.key.keyAuthId,
-          key_id: val.key.id,
-          // @ts-expect-error
-          region: c.req.raw.cf.colo ?? '',
-          outcome: val.code,
-          identity_id: val.identity?.id,
-          tags: req.tags ?? [],
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: err.message,
         })
-        .catch((err) => {
-          logger.error('unable to insert key verification', {
-            error: err.message ?? err,
-          })
-        }),
-    )
+      }
 
-    return c.json(responseBody, 200)
-  })
+      c.set('metricsContext', {
+        ...c.get('metricsContext'),
+        keyId: val.key?.id,
+      })
+
+      if (val.code === 'NOT_FOUND') {
+        return c.json(
+          {
+            valid: false,
+            code: val.code,
+          },
+          200,
+        )
+      }
+
+      const responseBody = {
+        keyId: val.key?.id,
+        valid: val.valid,
+        name: val.key?.name ?? undefined,
+        ownerId: val.key?.ownerId ?? undefined,
+        meta: val.key?.meta ? JSON.parse(val.key?.meta) : undefined,
+        expires: val.key?.expires?.getTime(),
+        remaining: val.remaining ?? undefined,
+        ratelimit: val.ratelimit ?? undefined,
+        enabled: val.key?.enabled,
+        permissions: val.permissions,
+        environment: val.key?.environment ?? undefined,
+        code: val.valid ? ('VALID' as const) : val.code,
+        identity: val.identity
+          ? {
+              id: val.identity.id,
+              externalId: val.identity.externalId,
+              meta: val.identity.meta ?? {},
+            }
+          : undefined,
+      }
+      c.executionCtx.waitUntil(
+        analytics
+          .insertKeyVerification({
+            request_id: c.get('requestId'),
+            time: Date.now(),
+            workspace_id: val.key.workspaceId,
+            key_space_id: val.key.keyAuthId,
+            key_id: val.key.id,
+            // @ts-expect-error
+            region: c.req.raw.cf.colo ?? '',
+            outcome: val.code,
+            identity_id: val.identity?.id,
+            tags: req.tags ?? [],
+          })
+          .catch((err) => {
+            logger.error('unable to insert key verification', {
+              error: err.message ?? err,
+            })
+          }),
+      )
+
+      return c.json(responseBody, 200)
+    },
+  )

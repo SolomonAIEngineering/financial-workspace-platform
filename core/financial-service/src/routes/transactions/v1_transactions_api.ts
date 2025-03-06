@@ -1,11 +1,11 @@
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { TransactionsParamsSchema, TransactionsSchema } from './schema'
 
-import { AccountType } from '@/utils/account'
-import { App } from '@/hono/app'
 import { openApiErrorResponses as ErrorResponses } from '@/errors'
+import { App } from '@/hono/app'
 import { Provider } from '@/providers'
 import { Routes } from '@/route-definitions/routes'
+import { AccountType } from '@/utils/account'
 import { createErrorResponse } from '@/utils/error'
 import { env } from 'hono/adapter'
 
@@ -45,47 +45,50 @@ export type GetTransactionsApiResponse = z.infer<
  * @returns A JSON response with transaction data or an error.
  */
 export const registerRegularTransactionsApi = (app: App) => {
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const envs = env(c)
-    const { provider, accountId, accountType, latest, accessToken } =
-      c.req.valid('query')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const envs = env(c)
+      const { provider, accountId, accountType, latest, accessToken } =
+        c.req.valid('query')
 
-    const api = new Provider({
-      provider,
-      fetcher: c.env.TELLER_CERT,
-      kv: c.env.KV,
-      envs,
-      r2: c.env.BANK_STATEMENTS,
-    })
-
-    try {
-      const data = await api.getTransactions({
-        accountId,
-        accessToken,
-        accountType: accountType as AccountType,
-        latest,
+      const api = new Provider({
+        provider,
+        fetcher: c.env.TELLER_CERT,
+        kv: c.env.KV,
+        envs,
+        r2: c.env.BANK_STATEMENTS,
       })
 
-      return c.json(
-        {
-          data: data.data,
-          cursor: data.cursor
-        },
-        200,
-      )
-    } catch (error) {
-      const { message, code } = createErrorResponse(error, c.get('requestId'))
-      return c.json(
-        {
-          error: {
-            message,
-            docs: 'https://engineering-docs.solomon-ai.app/errors',
-            requestId: c.get('requestId'),
-            code,
+      try {
+        const data = await api.getTransactions({
+          accountId,
+          accessToken,
+          accountType: accountType as AccountType,
+          latest,
+        })
+
+        return c.json(
+          {
+            data: data.data,
+            cursor: data.cursor,
           },
-        },
-        400,
-      )
-    }
-  })
+          200,
+        )
+      } catch (error) {
+        const { message, code } = createErrorResponse(error, c.get('requestId'))
+        return c.json(
+          {
+            error: {
+              message,
+              docs: 'https://engineering-docs.solomon-ai.app/errors',
+              requestId: c.get('requestId'),
+              code,
+            },
+          },
+          400,
+        )
+      }
+    },
+  )
 }

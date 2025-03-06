@@ -1,12 +1,11 @@
-import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
+import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
-import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
-import { eq } from '@repo/db'
 import { insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
-import { schema } from '@repo/db'
+import type { App } from '@/pkg/hono/app'
+import { eq, schema } from '@repo/db'
+import { buildUnkeyQuery } from '@repo/rbac'
 
 const route = createRoute({
   tags: ['keys'],
@@ -52,112 +51,118 @@ export type V1KeysDeleteKeyResponse = z.infer<
 >
 
 export const registerV1KeysDeleteKey = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { keyId } = c.req.valid('json')
-    const { cache, db } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { keyId } = c.req.valid('json')
+      const { cache, db } = c.get('services')
 
-    const data = await cache.keyById.swr(keyId, async () => {
-      const dbRes = await db.readonly.query.keys.findFirst({
-        where: (table, { eq, and, isNull }) =>
-          and(eq(table.id, keyId), isNull(table.deletedAt)),
-        with: {
-          identity: true,
-          encrypted: true,
-          permissions: {
-            with: {
-              permission: true,
+      const data = await cache.keyById.swr(keyId, async () => {
+        const dbRes = await db.readonly.query.keys.findFirst({
+          where: (table, { eq, and, isNull }) =>
+            and(eq(table.id, keyId), isNull(table.deletedAt)),
+          with: {
+            identity: true,
+            encrypted: true,
+            permissions: {
+              with: {
+                permission: true,
+              },
+            },
+            roles: {
+              with: {
+                role: true,
+              },
+            },
+            keyAuth: {
+              with: {
+                api: true,
+              },
             },
           },
-          roles: {
-            with: {
-              role: true,
-            },
-          },
-          keyAuth: {
-            with: {
-              api: true,
-            },
-          },
-        },
+        })
+        if (!dbRes) {
+          return null
+        }
+        return {
+          key: dbRes,
+          api: dbRes.keyAuth.api,
+          permissions: dbRes.permissions.map((p) => p.permission.name),
+          roles: dbRes.roles.map((r) => r.role.name),
+          identity: dbRes.identity
+            ? {
+                id: dbRes.identity.id,
+                externalId: dbRes.identity.externalId,
+                meta: dbRes.identity.meta,
+              }
+            : null,
+        }
       })
-      if (!dbRes) {
-        return null
+
+      if (data.err) {
+        throw new UnkeyApiError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: `unable to load key: ${data.err.message}`,
+        })
       }
-      return {
-        key: dbRes,
-        api: dbRes.keyAuth.api,
-        permissions: dbRes.permissions.map((p) => p.permission.name),
-        roles: dbRes.roles.map((r) => r.role.name),
-        identity: dbRes.identity
-          ? {
-            id: dbRes.identity.id,
-            externalId: dbRes.identity.externalId,
-            meta: dbRes.identity.meta,
-          }
-          : null,
+      if (!data.val) {
+        throw new UnkeyApiError({
+          code: 'NOT_FOUND',
+          message: `key ${keyId} not found`,
+        })
       }
-    })
+      const { key, api } = data.val
 
-    if (data.err) {
-      throw new UnkeyApiError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: `unable to load key: ${data.err.message}`,
-      })
-    }
-    if (!data.val) {
-      throw new UnkeyApiError({
-        code: 'NOT_FOUND',
-        message: `key ${keyId} not found`,
-      })
-    }
-    const { key, api } = data.val
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) =>
+          or('*', 'api.*.delete_key', `api.${api.id}.delete_key`),
+        ),
+      )
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) =>
-        or('*', 'api.*.delete_key', `api.${api.id}.delete_key`),
-      ),
-    )
+      if (key.workspaceId !== auth.authorizedWorkspaceId) {
+        throw new UnkeyApiError({
+          code: 'UNAUTHORIZED',
+          message: 'you are not allowed to do this',
+        })
+      }
 
-    if (key.workspaceId !== auth.authorizedWorkspaceId) {
-      throw new UnkeyApiError({
-        code: 'UNAUTHORIZED',
-        message: 'you are not allowed to do this',
-      })
-    }
+      const authorizedWorkspaceId = auth.authorizedWorkspaceId
+      const rootKeyId = auth.key.id
 
-    const authorizedWorkspaceId = auth.authorizedWorkspaceId
-    const rootKeyId = auth.key.id
+      await db.primary.transaction(async (tx) => {
+        await tx
+          .update(schema.keys)
+          .set({ deletedAt: new Date() })
+          .where(eq(schema.keys.id, key.id))
 
-    await db.primary.transaction(async (tx) => {
-      await tx
-        .update(schema.keys)
-        .set({ deletedAt: new Date() })
-        .where(eq(schema.keys.id, key.id))
-
-      await insertUnkeyAuditLog(c, tx, {
-        workspaceId: authorizedWorkspaceId,
-        event: 'key.delete',
-        actor: {
-          type: 'key',
-          id: rootKeyId,
-        },
-        description: `Deleted ${key.id}`,
-        resources: [
-          {
+        await insertUnkeyAuditLog(c, tx, {
+          workspaceId: authorizedWorkspaceId,
+          event: 'key.delete',
+          actor: {
             type: 'key',
-            id: key.id,
+            id: rootKeyId,
           },
-        ],
+          description: `Deleted ${key.id}`,
+          resources: [
+            {
+              type: 'key',
+              id: key.id,
+            },
+          ],
 
-        context: { location: c.get('location'), userAgent: c.get('userAgent') },
+          context: {
+            location: c.get('location'),
+            userAgent: c.get('userAgent'),
+          },
+        })
       })
-    })
 
-    await Promise.all([
-      cache.keyByHash.remove(key.hash),
-      cache.keyById.remove(key.id),
-    ])
+      await Promise.all([
+        cache.keyByHash.remove(key.hash),
+        cache.keyById.remove(key.id),
+      ])
 
-    return c.json({}, 200)
-  })
+      return c.json({}, 200)
+    },
+  )

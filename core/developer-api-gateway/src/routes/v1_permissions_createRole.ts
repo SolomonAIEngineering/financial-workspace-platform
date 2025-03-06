@@ -1,12 +1,12 @@
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
-import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
 import { insertUnkeyAuditLog } from '@/pkg/audit'
-import { newId } from '@repo/id'
-import { openApiErrorResponses } from '@/pkg/errors'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
+import { openApiErrorResponses } from '@/pkg/errors'
+import type { App } from '@/pkg/hono/app'
 import { schema } from '@repo/db'
+import { newId } from '@repo/id'
+import { buildUnkeyQuery } from '@repo/rbac'
 import { validation } from '@repo/validation'
 
 const route = createRoute({
@@ -63,56 +63,65 @@ export type V1PermissionsCreateRoleResponse = z.infer<
 >
 
 export const registerV1PermissionsCreateRole = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const req = c.req.valid('json')
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('*', 'rbac.*.create_role')),
-    )
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const req = c.req.valid('json')
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('*', 'rbac.*.create_role')),
+      )
 
-    const { db } = c.get('services')
+      const { db } = c.get('services')
 
-    const role = {
-      id: newId('test'),
-      workspaceId: auth.authorizedWorkspaceId,
-      name: req.name,
-      description: req.description,
-    }
+      const role = {
+        id: newId('test'),
+        workspaceId: auth.authorizedWorkspaceId,
+        name: req.name,
+        description: req.description,
+      }
 
-    await db.primary.transaction(async (tx) => {
-      await tx
-        .insert(schema.roles)
-        .values(role)
-        .onDuplicateKeyUpdate({
-          set: {
-            name: req.name,
-            description: req.description,
+      await db.primary.transaction(async (tx) => {
+        await tx
+          .insert(schema.roles)
+          .values(role)
+          .onDuplicateKeyUpdate({
+            set: {
+              name: req.name,
+              description: req.description,
+            },
+          })
+        await insertUnkeyAuditLog(c, tx, {
+          workspaceId: auth.authorizedWorkspaceId,
+          event: 'role.create',
+          actor: {
+            type: 'key',
+            id: auth.key.id,
+          },
+          description: `Created ${role.id}`,
+          resources: [
+            {
+              type: 'role',
+              id: role.id,
+              meta: {
+                name: role.name,
+                description: role.description,
+              },
+            },
+          ],
+
+          context: {
+            location: c.get('location'),
+            userAgent: c.get('userAgent'),
           },
         })
-      await insertUnkeyAuditLog(c, tx, {
-        workspaceId: auth.authorizedWorkspaceId,
-        event: 'role.create',
-        actor: {
-          type: 'key',
-          id: auth.key.id,
-        },
-        description: `Created ${role.id}`,
-        resources: [
-          {
-            type: 'role',
-            id: role.id,
-            meta: {
-              name: role.name,
-              description: role.description,
-            },
-          },
-        ],
-
-        context: { location: c.get('location'), userAgent: c.get('userAgent') },
       })
-    })
 
-    return c.json({
-      roleId: role.id,
-    }, 200)
-  })
+      return c.json(
+        {
+          roleId: role.id,
+        },
+        200,
+      )
+    },
+  )

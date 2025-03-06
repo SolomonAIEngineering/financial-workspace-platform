@@ -53,11 +53,11 @@ export async function getCountryInfo() {
     countryInfo?.currencies && Object.keys(countryInfo.currencies)[0]
   const currency =
     currencyCode &&
-      countryInfo?.currencies &&
-      currencyCode in countryInfo.currencies
+    countryInfo?.currencies &&
+    currencyCode in countryInfo.currencies
       ? countryInfo.currencies[
-      currencyCode as keyof typeof countryInfo.currencies
-      ]
+          currencyCode as keyof typeof countryInfo.currencies
+        ]
       : undefined
   const languages =
     countryInfo && Object.values(countryInfo.languages).join(', ')

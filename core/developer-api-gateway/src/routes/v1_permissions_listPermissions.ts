@@ -1,9 +1,9 @@
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
+import { rootKeyAuth } from '@/pkg/auth/root_key'
+import { openApiErrorResponses } from '@/pkg/errors'
 import type { App } from '@/pkg/hono/app'
 import { buildUnkeyQuery } from '@repo/rbac'
-import { openApiErrorResponses } from '@/pkg/errors'
-import { rootKeyAuth } from '@/pkg/auth/root_key'
 
 const route = createRoute({
   tags: ['permissions'],
@@ -46,25 +46,28 @@ export type V1PermissionsListPermissionsResponse = z.infer<
   (typeof route.responses)[200]['content']['application/json']['schema']
 >
 export const registerV1PermissionsListPermissions = (app: App) =>
-  app.openapi(route, async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
-    const { db } = c.get('services')
+  app.openapi(
+    route,
+    async (c): Promise<RouteConfigToTypedResponse<typeof route>> => {
+      const { db } = c.get('services')
 
-    const auth = await rootKeyAuth(
-      c,
-      buildUnkeyQuery(({ or }) => or('*', 'rbac.*.read_permission')),
-    )
+      const auth = await rootKeyAuth(
+        c,
+        buildUnkeyQuery(({ or }) => or('*', 'rbac.*.read_permission')),
+      )
 
-    const permissions = await db.readonly.query.permissions.findMany({
-      where: (table, { eq }) =>
-        eq(table.workspaceId, auth.authorizedWorkspaceId),
-    })
+      const permissions = await db.readonly.query.permissions.findMany({
+        where: (table, { eq }) =>
+          eq(table.workspaceId, auth.authorizedWorkspaceId),
+      })
 
-    return c.json(
-      permissions.map((p) => ({
-        id: p.id,
-        name: p.name,
-        description: p.description ?? undefined,
-      })),
-      200,
-    )
-  })
+      return c.json(
+        permissions.map((p) => ({
+          id: p.id,
+          name: p.name,
+          description: p.description ?? undefined,
+        })),
+        200,
+      )
+    },
+  )
