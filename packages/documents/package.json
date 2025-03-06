@@ -1,0 +1,31 @@
+{
+  "name": "@repo/documents",
+  "version": "2.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "format": "biome format --write .",
+    "lint": "biome check .",
+    "test": "bun test src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^1.0.7",
+    "@azure-rest/ai-document-intelligence": "^1.0.0",
+    "@azure/core-lro": "^3.1.0",
+    "ai": "^4.0.13",
+    "base64-arraybuffer": "^1.0.2",
+    "change-case": "^5.4.4",
+    "heic-convert": "1.2.4",
+    "sharp": "^0.33.5",
+    "tsconfig": "workspace:*",
+    "zod": "^3.23.5"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.9",
+    "@types/heic-convert": "1.2.3",
+    "request": "^2.88.2",
+    "typescript": "^5.7.2"
+  }
+}

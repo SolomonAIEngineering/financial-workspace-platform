@@ -1,28 +1,27 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/opacity.css';
 
-import type { TImageElement } from '@udecode/plate-media';
-
-import { cn } from '@udecode/cn';
-import { useDraggable } from '@udecode/plate-dnd';
+import { Caption, CaptionTextarea } from './caption';
 import {
   PlaceholderPlugin,
   useImage,
   useMediaState,
 } from '@udecode/plate-media/react';
-import { ResizableProvider, useResizableValue } from '@udecode/plate-resizable';
 import { PlateElement, useEditorPlugin, withHOC } from '@udecode/plate/react';
-
-import { blockSelectionVariants } from './block-selection';
-import { Caption, CaptionTextarea } from './caption';
-import { MediaToolbar } from './media-toolbar';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
-  mediaResizeHandleVariants,
   Resizable,
   ResizeHandle,
+  mediaResizeHandleVariants,
 } from './resizable';
+import { ResizableProvider, useResizableValue } from '@udecode/plate-resizable';
+
+import { MediaToolbar } from './media-toolbar';
+import type { TImageElement } from '@udecode/plate-media';
+import { blockSelectionVariants } from './block-selection';
+import { cn } from '@udecode/cn';
+import { useDraggable } from '@udecode/plate-dnd';
 
 export const ImageElement = withHOC(
   ResizableProvider,
@@ -112,7 +111,7 @@ export const ImageElement = withHOC(
                     {...nodeProps}
                   />
                 ) : (
-                  <LazyLoadImage
+                  <img
                     className={cn(
                       'h-full rounded-xs opacity-100',
                       loading && 'opacity-0',
@@ -125,15 +124,9 @@ export const ImageElement = withHOC(
                           props.element.fromPlaceholderId as string
                         );
                     }}
-                    effect="opacity"
                     height="auto"
                     width="100%"
-                    wrapperProps={
-                      {
-                        className: cn('block h-full', loading && 'absolute'),
-                        ref: handleRef,
-                      } as any
-                    }
+                    ref={handleRef}
                     {...imageProps}
                     {...nodeProps}
                   />

@@ -1,0 +1,16 @@
+{
+  "name": "@repo/webhooks",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@repo/auth": "workspace:*",
+    "@repo/env": "workspace:*",
+    "svix": "^1.43.0"
+  },
+  "devDependencies": {
+    "tsconfig": "workspace:*",
+    "typescript": "^5.7.2"
+  },
+  "author": "Yoan Yomba",
+  "license": "MIT"
+}

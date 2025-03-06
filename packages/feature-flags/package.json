@@ -1,0 +1,24 @@
+{
+  "name": "@repo/feature-flags",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@repo/analytics": "workspace:*",
+    "@repo/auth": "workspace:*",
+    "@repo/design-system": "workspace:*",
+    "@vercel/flags": "^2.6.3"
+  },
+  "peerDependencies": {
+    "next": "15.0.4"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsconfig": "workspace:*",
+    "next": "15.0.4",
+    "typescript": "^5.7.2"
+  },
+  "author": "Yoan Yomba",
+  "license": "MIT"
+}
