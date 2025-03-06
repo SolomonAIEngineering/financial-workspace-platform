@@ -1,0 +1,25 @@
+{
+  "name": "@repo/id",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "keywords": [],
+  "author": "Yoan Yomba",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "postinstall": "pnpm run typecheck && pnpm run test"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.1",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.7.2",
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "base-x": "^4.0.0",
+    "typecheck": "^0.1.2"
+  },
+  "license": "MIT"
+}

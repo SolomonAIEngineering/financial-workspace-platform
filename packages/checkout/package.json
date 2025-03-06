@@ -1,0 +1,28 @@
+{
+  "name": "@polar-sh/checkout",
+  "description": "Polar Checkout SDK",
+  "author": "Polar",
+  "license": "Apache-2.0",
+  "type": "module",
+  "version": "0.1.8",
+  "scripts": {
+    "dev": "tsup --watch",
+    "build": "tsup --minify terser --sourcemap",
+    "typecheck": "tsc --noEmit"
+  },
+  "exports": {
+    "./embed": {
+      "types": "./dist/embed.d.ts",
+      "default": "./dist/embed.js"
+    }
+  },
+  "devDependencies": {
+    "terser": "^5.36.0",
+    "tsconfig": "workspace:*",
+    "tsup": "^8.3.5",
+    "typescript": "latest"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: planetscale_test_db
+    environment:
+      MYSQL_USER: ${DATABASE_USERNAME:-unkey}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-password}
+      MYSQL_DATABASE: unkey_test
+      MYSQL_ROOT_PASSWORD: rootpassword  # This must be set for MySQL to start properly
+    ports:
+      - "${DATABASE_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:

@@ -1,0 +1,25 @@
+{
+  "name": "@repo/collaboration",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@liveblocks/client": "^2.13.1",
+    "@liveblocks/node": "^2.13.1",
+    "@liveblocks/react": "^2.13.1",
+    "@repo/env": "workspace:*",
+    "react": "^19.0.0",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.1",
+    "@types/react": "19.0.1",
+    "@types/react-dom": "^19.0.1",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.3.3"
+  },
+  "author": "Yoan Yomba",
+  "license": "MIT"
+}

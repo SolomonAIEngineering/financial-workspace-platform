@@ -1,10 +1,5 @@
-dist
-node_modules
-.next
-build
-bun.lockb
-pnpm-lock.yaml
-prisma/json-schema/json-schema.json
-prisma/kysely
-public
-src/server
+# chadcn/ui components
+apps/web/src/components/ui/*.tsx
+packages/polarkit/src/components/ui/*.tsx
+# generated code
+packages/sdk/src/client/**

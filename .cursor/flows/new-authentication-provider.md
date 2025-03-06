@@ -48,7 +48,7 @@ Follow these steps in order to add Google OAuth support:
    ```ts
    loginProvider: {
      params: {
-       provider: 'github' | 'google';
+       provider: 'github' | 'google'
      }
      // ... rest of the type
    }
@@ -79,34 +79,34 @@ Remember:
 Example Google Provider Implementation:
 
 ```typescript
-import { Google } from 'arctic';
-import type { AuthProviderConfig } from '../lucia';
-import { findOrCreateUser } from '../findOrCreateUser';
-import { env } from '@/env';
+import { Google } from 'arctic'
+import type { AuthProviderConfig } from '../lucia'
+import { findOrCreateUser } from '../findOrCreateUser'
+import { env } from '@/env'
 
 const googleAuth = new Google(
   env.GOOGLE_CLIENT_ID ?? '',
   env.GOOGLE_CLIENT_SECRET ?? '',
-  env.NEXT_PUBLIC_SITE_URL + '/api/auth/google/callback'
-);
+  env.NEXT_PUBLIC_SITE_URL + '/api/auth/google/callback',
+)
 
 const config: AuthProviderConfig = {
   name: 'google',
   pkce: true, // Enable PKCE
-};
+}
 
 const getProviderAuthorizationUrl = (state: string, codeVerifier: string) => {
   return googleAuth.createAuthorizationURL(state, codeVerifier, {
     scopes: ['email', 'profile'],
-  });
-};
+  })
+}
 
 const handleProviderCallback = async (
   code: string,
   codeVerifier: string,
-  userId?: string
+  userId?: string,
 ) => {
-  const tokens = await googleAuth.validateAuthorizationCode(code, codeVerifier);
+  const tokens = await googleAuth.validateAuthorizationCode(code, codeVerifier)
 
   const response = await fetch(
     'https://www.googleapis.com/oauth2/v3/userinfo',
@@ -114,10 +114,10 @@ const handleProviderCallback = async (
       headers: {
         Authorization: `Bearer ${tokens.accessToken}`,
       },
-    }
-  );
+    },
+  )
 
-  const googleUser = await response.json();
+  const googleUser = await response.json()
 
   const user = await findOrCreateUser({
     email: googleUser.email,
@@ -128,14 +128,14 @@ const handleProviderCallback = async (
     providerId: 'google',
     providerUserId: googleUser.sub,
     username: googleUser.email.split('@')[0],
-  });
+  })
 
-  return user.id;
-};
+  return user.id
+}
 
 export const googleProvider = {
   config,
   getProviderAuthorizationUrl,
   handleProviderCallback,
-};
+}
 ```

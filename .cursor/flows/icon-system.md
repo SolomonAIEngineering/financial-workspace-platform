@@ -14,10 +14,10 @@ This guide explains how to work with our enhanced icon system, which provides a 
 
 ```typescript
 type IconBaseProps = {
-  label?: string; // Screen reader label (required for standalone icons)
-  className?: string; // Custom classes
-  spin?: boolean; // Enable spin animation
-};
+  label?: string // Screen reader label (required for standalone icons)
+  className?: string // Custom classes
+  spin?: boolean // Enable spin animation
+}
 ```
 
 ## 2. Icon Variants

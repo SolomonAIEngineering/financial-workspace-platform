@@ -1,0 +1,14 @@
+{
+  "name": "@repo/storage",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@vercel/blob": "^0.27.0",
+    "typescript": "^5.8.2"
+  },
+  "devDependencies": {
+    "tsconfig": "workspace:*"
+  },
+  "author": "Yoan Yomba",
+  "license": "MIT"
+}

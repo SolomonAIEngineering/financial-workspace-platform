@@ -1,0 +1,1763 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Session": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "ip_address": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "user_agent": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "user_id",
+        "expires_at"
+      ]
+    },
+    "OauthAccount": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "providerId": {
+          "type": "string"
+        },
+        "providerUserId": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "required": [
+        "providerId",
+        "providerUserId",
+        "userId"
+      ]
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sessions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Session"
+          }
+        },
+        "oauthAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/OauthAccount"
+          }
+        },
+        "role": {
+          "type": "string",
+          "default": "USER",
+          "enum": [
+            "USER",
+            "ADMIN",
+            "SUPERADMIN",
+            "MANAGER",
+            "EDITOR",
+            "VIEWER",
+            "GUEST"
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "firstName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "profileImageUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "bio": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "timezone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "en"
+        },
+        "jobTitle": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "department": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "employeeId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "hireDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "yearsOfExperience": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "phoneNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "businessEmail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "businessPhone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "officeLocation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "organizationName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "organizationUnit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "manager": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "directReports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "teamName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "addressLine1": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "addressLine2": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "city": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "postalCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notificationPreferences": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "displayPreferences": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "documentPreferences": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "notificationsEnabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "lastTransactionNotificationAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "linkedinProfile": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "twitterProfile": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "githubProfile": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "default": 1
+        },
+        "stripeCustomerId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accountStatus": {
+          "type": "string",
+          "default": "ACTIVE",
+          "enum": [
+            "ACTIVE",
+            "CLOSED",
+            "FROZEN",
+            "INACTIVE",
+            "PENDING",
+            "DISCONNECTED",
+            "SUSPENDED",
+            "ARCHIVED"
+          ]
+        },
+        "lastLoginAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "uploadLimit": {
+          "type": "integer",
+          "default": 100000000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "documents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Document"
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/File"
+          }
+        },
+        "discussions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Discussion"
+          }
+        },
+        "documentVersions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DocumentVersion"
+          }
+        },
+        "bankConnections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankConnection"
+          }
+        },
+        "bankAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankAccount"
+          }
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "spendingInsights": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SpendingInsight"
+          }
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserActivity"
+          }
+        },
+        "notifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Notification"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "username"
+      ]
+    },
+    "Document": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "templateId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "parentDocument": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Document"
+          }
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "content": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "contentRich": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "coverImage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "icon": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "isPublished": {
+          "type": "boolean",
+          "default": false
+        },
+        "isArchived": {
+          "type": "boolean",
+          "default": false
+        },
+        "pinned": {
+          "type": "boolean",
+          "default": false
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "isTemplate": {
+          "type": "boolean",
+          "default": false
+        },
+        "status": {
+          "type": "string",
+          "default": "draft"
+        },
+        "textStyle": {
+          "type": "string",
+          "default": "DEFAULT",
+          "enum": [
+            "DEFAULT",
+            "SERIF",
+            "MONO"
+          ]
+        },
+        "smallText": {
+          "type": "boolean",
+          "default": false
+        },
+        "fullWidth": {
+          "type": "boolean",
+          "default": false
+        },
+        "lockPage": {
+          "type": "boolean",
+          "default": false
+        },
+        "toc": {
+          "type": "boolean",
+          "default": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "discussions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Discussion"
+          }
+        },
+        "documentVersions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DocumentVersion"
+          }
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/File"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "updatedAt"
+      ]
+    },
+    "DocumentVersion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "document": {
+          "$ref": "#/definitions/Document"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "contentRich": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "documentId",
+        "userId",
+        "updatedAt"
+      ]
+    },
+    "Discussion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "document": {
+          "$ref": "#/definitions/Document"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "documentContent": {
+          "type": "string"
+        },
+        "documentContentRich": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "isResolved": {
+          "type": "boolean",
+          "default": false
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "documentId",
+        "userId",
+        "documentContent"
+      ]
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "discussion": {
+          "$ref": "#/definitions/Discussion"
+        },
+        "content": {
+          "type": "string"
+        },
+        "contentRich": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "isEdited": {
+          "type": "boolean",
+          "default": false
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "discussionId",
+        "content"
+      ]
+    },
+    "File": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "document": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Document"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "size": {
+          "type": "integer"
+        },
+        "url": {
+          "type": "string"
+        },
+        "appUrl": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "size",
+        "url",
+        "appUrl",
+        "type"
+      ]
+    },
+    "BankConnection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "institutionId": {
+          "type": "string"
+        },
+        "institutionName": {
+          "type": "string"
+        },
+        "accessToken": {
+          "type": "string"
+        },
+        "itemId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "default": "ACTIVE",
+          "enum": [
+            "ACTIVE",
+            "ERROR",
+            "DISCONNECTED",
+            "PENDING",
+            "REQUIRES_ATTENTION",
+            "LOGIN_REQUIRED",
+            "REQUIRES_REAUTH"
+          ]
+        },
+        "errorCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errorMessage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastStatusChangedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "logo": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "primaryColor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "oauthSupported": {
+          "type": "boolean",
+          "default": false
+        },
+        "mfaSupported": {
+          "type": "boolean",
+          "default": false
+        },
+        "lastSyncedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "nextSyncScheduledAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "syncStatus": {
+          "type": "string",
+          "default": "IDLE",
+          "enum": [
+            "IDLE",
+            "SYNCING",
+            "FAILED",
+            "SCHEDULED"
+          ]
+        },
+        "balanceLastUpdated": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastNotifiedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "notificationCount": {
+          "type": "integer",
+          "default": 0
+        },
+        "webhookUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "consentExpiresAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "disabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankAccount"
+          }
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastAlertedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "alertCount": {
+          "type": "integer",
+          "default": 0
+        },
+        "lastCheckedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastAccessedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastExpiryNotifiedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "expiryNotificationCount": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "required": [
+        "userId",
+        "institutionId",
+        "institutionName",
+        "accessToken",
+        "itemId",
+        "updatedAt"
+      ]
+    },
+    "BankAccount": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "bankConnection": {
+          "$ref": "#/definitions/BankConnection"
+        },
+        "plaidAccountId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "officialName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "DEPOSITORY",
+            "CREDIT",
+            "LOAN",
+            "INVESTMENT",
+            "MORTGAGE",
+            "BROKERAGE",
+            "OTHER"
+          ]
+        },
+        "subtype": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "CHECKING",
+            "SAVINGS",
+            "CD",
+            "MONEY_MARKET",
+            "CREDIT_CARD",
+            "PAYPAL",
+            "AUTO_LOAN",
+            "STUDENT_LOAN",
+            "MORTGAGE",
+            "RETIREMENT",
+            "MUTUAL_FUND",
+            "ETF",
+            "STOCK",
+            "CASH_MANAGEMENT",
+            "PREPAID",
+            "HEALTH_SAVINGS",
+            "OTHER"
+          ]
+        },
+        "verificationStatus": {
+          "type": "string",
+          "default": "NONE",
+          "enum": [
+            "NONE",
+            "PENDING_AUTOMATIC_VERIFICATION",
+            "PENDING_MANUAL_VERIFICATION",
+            "MANUALLY_VERIFIED",
+            "AUTOMATICALLY_VERIFIED",
+            "VERIFICATION_FAILED"
+          ]
+        },
+        "mask": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "displayName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accountNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "routingNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "iban": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "swift": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "availableBalance": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "currentBalance": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "limit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "isoCurrencyCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "balanceLastUpdated": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "capabilities": {
+          "type": "array",
+          "enum": [
+            "BALANCE",
+            "OWNERSHIP",
+            "PAYMENT",
+            "TRANSACTIONS",
+            "STATEMENTS",
+            "IDENTITY",
+            "AUTH"
+          ]
+        },
+        "permissionsGranted": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "type": "string",
+          "default": "ACTIVE",
+          "enum": [
+            "ACTIVE",
+            "CLOSED",
+            "FROZEN",
+            "INACTIVE",
+            "PENDING",
+            "DISCONNECTED",
+            "SUSPENDED",
+            "ARCHIVED"
+          ]
+        },
+        "isHidden": {
+          "type": "boolean",
+          "default": false
+        },
+        "isPrimary": {
+          "type": "boolean",
+          "default": false
+        },
+        "isFavorite": {
+          "type": "boolean",
+          "default": false
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "monthlySpending": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "monthlyIncome": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "averageBalance": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "budgetCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastSyncedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "errorCount": {
+          "type": "integer",
+          "default": 0
+        },
+        "errorMessage": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "bankConnectionId",
+        "plaidAccountId",
+        "name",
+        "type",
+        "capabilities",
+        "updatedAt"
+      ]
+    },
+    "Transaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "bankAccount": {
+          "$ref": "#/definitions/BankAccount"
+        },
+        "bankConnection": {
+          "$ref": "#/definitions/BankConnection"
+        },
+        "plaidTransactionId": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "isoCurrencyCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "name": {
+          "type": "string"
+        },
+        "merchantName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pending": {
+          "type": "boolean",
+          "default": false
+        },
+        "category": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "INCOME",
+            "TRANSFER",
+            "LOAN_PAYMENTS",
+            "BANK_FEES",
+            "ENTERTAINMENT",
+            "FOOD_AND_DRINK",
+            "GENERAL_MERCHANDISE",
+            "HOME_IMPROVEMENT",
+            "MEDICAL",
+            "PERSONAL_CARE",
+            "GENERAL_SERVICES",
+            "GOVERNMENT_AND_NON_PROFIT",
+            "TRANSPORTATION",
+            "TRAVEL",
+            "UTILITIES",
+            "OTHER"
+          ]
+        },
+        "subCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "categoryIconUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "customCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "location": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "paymentChannel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "paymentMethod": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "originalDescription": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "originalCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "originalMerchantName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "excludeFromBudget": {
+          "type": "boolean",
+          "default": false
+        },
+        "isRecurring": {
+          "type": "boolean",
+          "default": false
+        },
+        "recurrenceId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Attachment"
+          }
+        },
+        "parentTransaction": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Transaction"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "splitTransactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "bankAccountId",
+        "bankConnectionId",
+        "plaidTransactionId",
+        "amount",
+        "date",
+        "name",
+        "updatedAt"
+      ]
+    },
+    "Attachment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "transaction": {
+          "$ref": "#/definitions/Transaction"
+        },
+        "name": {
+          "type": "string"
+        },
+        "fileUrl": {
+          "type": "string"
+        },
+        "fileType": {
+          "type": "string"
+        },
+        "fileSize": {
+          "type": "integer"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "transactionId",
+        "name",
+        "fileUrl",
+        "fileType",
+        "fileSize",
+        "updatedAt"
+      ]
+    },
+    "UserActivity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "detail": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "required": [
+        "userId",
+        "type",
+        "detail"
+      ]
+    },
+    "Notification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        },
+        "read": {
+          "type": "boolean",
+          "default": false
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "required": [
+        "userId",
+        "type",
+        "title",
+        "body"
+      ]
+    },
+    "SpendingInsight": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timeframe": {
+          "type": "string",
+          "default": "MONTH",
+          "enum": [
+            "DAY",
+            "WEEK",
+            "MONTH",
+            "QUARTER",
+            "YEAR",
+            "CUSTOM"
+          ]
+        },
+        "year": {
+          "type": "integer"
+        },
+        "month": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "quarter": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "week": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "totalTransactions": {
+          "type": "integer"
+        },
+        "totalSpending": {
+          "type": "number"
+        },
+        "avgTransactionSize": {
+          "type": "number"
+        },
+        "categoryStats": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "merchantStats": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "spendingTrend": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "incomeTotal": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "incomeTrend": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "userId",
+        "startDate",
+        "endDate",
+        "year",
+        "totalTransactions",
+        "totalSpending",
+        "avgTransactionSize",
+        "categoryStats",
+        "updatedAt"
+      ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "session": {
+      "$ref": "#/definitions/Session"
+    },
+    "oauthAccount": {
+      "$ref": "#/definitions/OauthAccount"
+    },
+    "user": {
+      "$ref": "#/definitions/User"
+    },
+    "document": {
+      "$ref": "#/definitions/Document"
+    },
+    "documentVersion": {
+      "$ref": "#/definitions/DocumentVersion"
+    },
+    "discussion": {
+      "$ref": "#/definitions/Discussion"
+    },
+    "comment": {
+      "$ref": "#/definitions/Comment"
+    },
+    "file": {
+      "$ref": "#/definitions/File"
+    },
+    "bankConnection": {
+      "$ref": "#/definitions/BankConnection"
+    },
+    "bankAccount": {
+      "$ref": "#/definitions/BankAccount"
+    },
+    "transaction": {
+      "$ref": "#/definitions/Transaction"
+    },
+    "attachment": {
+      "$ref": "#/definitions/Attachment"
+    },
+    "userActivity": {
+      "$ref": "#/definitions/UserActivity"
+    },
+    "notification": {
+      "$ref": "#/definitions/Notification"
+    },
+    "spendingInsight": {
+      "$ref": "#/definitions/SpendingInsight"
+    }
+  }
+}

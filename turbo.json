@@ -1,5 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "**/.env.*local",
+    "**/.env"
+  ],
   "globalPassThroughEnv": [
     "VERCEL_URL",
     "NODE_ENV",
@@ -22,45 +26,65 @@
     "PLAIN_FEEDBACK_LABEL_SUPPORT",
     "RESEND_API_KEY",
     "OPENAI_API_KEY",
-    "UPLOADTHING_APP_ID"
+    "UPLOADTHING_APP_ID",
+     "CODESPACES",
+    "CODESPACE_NAME",
+    "GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN",
+    "GITHUB_TOKEN",
+    "NODE_ENV",
+    "NEXT_RUNTIME",
+    "NEXT_PUBLIC_ENVIRONMENT",
+    "NEXT_PUBLIC_API_URL",
+    "NEXT_PUBLIC_STRIPE_KEY",
+    "NEXT_PUBLIC_CODESPACE_NAME",
+    "NEXT_PUBLIC_FRONTEND_BASE_URL",
+    "NEXT_PUBLIC_GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN",
+    "NEXT_PUBLIC_CODESPACE_NAME",
+    "NEXT_PUBLIC_GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN",
+    "VERCEL_ENV",
+    "NEXT_PUBLIC_VERCEL_ENV",
+    "NEXT_PUBLIC_LOGIN_PATH",
+    "NEXT_PUBLIC_GITHUB_APP_NAMESPACE",
+    "NEXT_PUBLIC_LOCALSTORAGE_PERSIST_KEY",
+    "NEXT_PUBLIC_LOCALSTORAGE_PERSIST_VERSION",
+    "NEXT_PUBLIC_GITHUB_BADGE_EMBED_DEFAULT_LABEL",
+    "NEXT_PUBLIC_SENTRY_DSN",
+    "NEXT_PUBLIC_POSTHOG_TOKEN",
+    "NEXT_PUBLIC_STRIPE_COUNTRIES_WHITELIST",
+    "NEXT_PUBLIC_APPLE_DOMAIN_ASSOCIATION",
+    "SENTRY_AUTH_TOKEN",
+    "VERCEL_GIT_COMMIT_SHA",
+    "NEXT_PUBLIC_SENTRY_DSN",
+    "SENTRY_PROJECT",
+    "SENTRY_ORG",
+    "POLAR_AUTH_COOKIE_KEY",
+    "POLAR_CHECKOUT_EMBED_SCRIPT_ALLOWED_ORIGINS",
+    "NEXT_PUBLIC_CHECKOUT_EMBED_SCRIPT_SRC"
   ],
   "tasks": {
-    "brl": {
-      "cache": false
-    },
     "build": {
       "dependsOn": ["^build"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "!.eslintrc.cjs",
-        "!.env.example",
-        ".env.production.local",
-        ".env.local",
-        ".env.production",
-        ".env"
-      ],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
-    "clean": {
-      "cache": false
-    },
     "lint": {
-      "inputs": ["$TURBO_DEFAULT$"]
+      "dependsOn": ["^lint"]
     },
     "lint:fix": {
-      "inputs": ["$TURBO_DEFAULT$"]
-    },
-    "typecheck": {
-      "inputs": ["$TURBO_DEFAULT$"],
-      "outputs": ["*.tsbuildinfo"]
+      "dependsOn": ["^lint:fix"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
+    "clean": {
+      "cache": false
+    },
+    "typecheck": {
+      "outputs": ["*.tsbuildinfo"]
+    },
     "start": {
       "dependsOn": ["^build", "build"],
-      "cache": true,
+      "cache": false,
       "persistent": true
     }
   }

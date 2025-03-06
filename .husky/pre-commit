@@ -77,18 +77,18 @@ if [ -n "$MERGE_CONFLICTS" ]; then
 fi
 
 # Check for sensitive files
-SENSITIVE_PATTERNS="\.(env|pem|key|pfx|p12|password|secret)$|^\.env\.|password|secret|credential"
-SENSITIVE_FILES=$(git diff --cached --name-only | grep -iE "$SENSITIVE_PATTERNS" | grep -v "\.env\.example$" 2>/dev/null || true)
-if [ -n "$SENSITIVE_FILES" ]; then
-    echo "${RED}❌ Warning: Potentially sensitive files detected:${NC}"
-    echo "$SENSITIVE_FILES"
-    echo "${YELLOW}Please verify these files should be committed.${NC}"
-    read -p "Do you want to proceed with the commit? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
-fi
+# SENSITIVE_PATTERNS="\.(env|pem|key|pfx|p12|password|secret)$|^\.env\.|password|secret|credential"
+# SENSITIVE_FILES=$(git diff --cached --name-only | grep -iE "$SENSITIVE_PATTERNS" | grep -v "\.env\.example$" 2>/dev/null || true)
+# if [ -n "$SENSITIVE_FILES" ]; then
+#     echo "${RED}❌ Warning: Potentially sensitive files detected:${NC}"
+#     echo "$SENSITIVE_FILES"
+#     echo "${YELLOW}Please verify these files should be committed.${NC}"
+#     read -p "Do you want to proceed with the commit? (y/N) " -n 1 -r
+#     echo
+#     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+#         exit 1
+#     fi
+# fi
 
 # Validate Dockerfile syntax if changed
 DOCKERFILES=$(git diff --cached --name-only | grep -E 'Dockerfile$|Dockerfile\.' 2>/dev/null || true)

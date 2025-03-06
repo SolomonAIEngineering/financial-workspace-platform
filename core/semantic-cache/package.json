@@ -1,0 +1,46 @@
+{
+  "name": "@core/semantic-cache",
+  "version": "1.0.8",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "private": true,
+  "files": [
+    "./dist/**"
+  ],
+  "author": "Yoan Yomba",
+  "scripts": {
+    "build": "wrangler build",
+    "dev": "wrangler dev src/worker.ts --remote",
+    "format": "biome format --write .",
+    "deploy": "wrangler deploy --minify",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.4.1",
+    "@cloudflare/workers-types": "^4.20240603.0",
+    "@types/node": "22.10.1",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.5",
+    "vitest": "^1.6.0",
+    "wrangler": "^3.62.0"
+  },
+  "dependencies": {
+    "@chronark/zod-bird": "^0.3.9",
+    "@planetscale/database": "^1.16.0",
+    "@polar/error": "workspace:^",
+    "@repo/cache": "workspace:^",
+    "@repo/hash": "workspace:^",
+    "@repo/id": "workspace:^",
+    "@repo/logs": "workspace:^",
+    "@repo/metrics": "workspace:^",
+    "@repo/worker-logging": "workspace:^",
+    "ai": "^4.0.13",
+    "drizzle-orm": "generated",
+    "hono": "^4.2.7",
+    "openai": "^4.52.1",
+    "superjson": "^2.2.1",
+    "zod": "^3.23.5"
+  },
+  "license": "MIT"
+}

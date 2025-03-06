@@ -1,0 +1,662 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres", "driverAdapters"]
+}
+
+generator jsonSchema {
+  provider              = "prisma-json-schema-generator"
+  includeRequiredFields = "true"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator kysely {
+  provider        = "prisma-kysely"
+  previewFeatures = ["fullTextSearchPostgres"]
+  output          = "./kysely"
+}
+
+generator types {
+  provider = "prisma-type-generator"
+  output   = "../src/server/types"
+}
+
+model Session {
+  id         String   @id
+  user_id    String
+  expires_at DateTime
+  user       User     @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  ip_address String?  @db.VarChar(45)
+  user_agent String?
+}
+
+model OauthAccount {
+  id             String @id @default(cuid())
+  providerId     String
+  providerUserId String
+  userId         String
+  user           User   @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@unique([providerId, providerUserId])
+}
+
+model User {
+  id            String         @id
+  username      String         @unique
+  password_hash String?
+  email         String?        @unique
+  sessions      Session[]
+  oauthAccounts OauthAccount[]
+  role          UserRole       @default(USER)
+
+  // User profile information
+  name            String?
+  firstName       String?
+  lastName        String?
+  profileImageUrl String? @db.Text
+  bio             String? @db.Text
+  timezone        String?
+  language        String? @default("en")
+
+  // Professional details
+  jobTitle          String?
+  department        String?
+  employeeId        String?
+  hireDate          DateTime?
+  yearsOfExperience Int?
+  skills            String[]  @default([])
+
+  // Contact information
+  phoneNumber    String?
+  businessEmail  String?
+  businessPhone  String?
+  officeLocation String?
+
+  // Organization data
+  organizationName String?
+  organizationUnit String?
+  managerUserId    String? // Self-relation to manager
+  manager          User?   @relation("UserManagement", fields: [managerUserId], references: [id], onDelete: SetNull)
+  directReports    User[]  @relation("UserManagement")
+  teamName         String?
+
+  // Business address
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  postalCode   String?
+  country      String?
+
+  // Preferences
+  notificationPreferences Json?
+  displayPreferences      Json?
+  documentPreferences     Json?
+  notificationsEnabled    Boolean @default(true) // Whether notifications are enabled for this user
+
+  // Notification tracking
+  lastTransactionNotificationAt DateTime? // When the last transaction notification was sent
+
+  // Social profiles
+  linkedinProfile String?
+  twitterProfile  String?
+  githubProfile   String?
+
+  // System information
+  version          Int           @default(1)
+  stripeCustomerId String?       @unique
+  accountStatus    AccountStatus @default(ACTIVE)
+  lastLoginAt      DateTime?
+  uploadLimit      Int           @default(100000000)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  documents        Document[]
+  comments         Comment[]
+  files            File[]
+  discussions      Discussion[]
+  documentVersions DocumentVersion[]
+
+  // Bank accounts related models
+  bankConnections  BankConnection[]
+  bankAccounts     BankAccount[]
+  transactions     Transaction[]
+  spendingInsights SpendingInsight[]
+
+  // Add this relation field
+  activities UserActivity[]
+
+  // Add the notifications relation
+  notifications Notification[]
+
+  @@index([username])
+  @@index([email])
+  @@index([organizationName])
+}
+
+model Document {
+  id         String  @id
+  templateId String?
+
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String
+  parentDocumentId String?
+  parentDocument   Document?  @relation("ParentChild", fields: [parentDocumentId], references: [id])
+  children         Document[] @relation("ParentChild")
+
+  title       String?
+  content     String?
+  contentRich Json?
+  coverImage  String?
+  icon        String?
+  isPublished Boolean  @default(false)
+  isArchived  Boolean  @default(false)
+  pinned      Boolean  @default(false)
+  tags        String[] @default([])
+  isTemplate  Boolean  @default(false)
+  status      String   @default("draft")
+
+  textStyle TextStyle @default(DEFAULT)
+  smallText Boolean   @default(false)
+  fullWidth Boolean   @default(false)
+  lockPage  Boolean   @default(false)
+  toc       Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  discussions      Discussion[]
+  documentVersions DocumentVersion[]
+  files            File[]
+
+  @@unique([userId, templateId])
+}
+
+model DocumentVersion {
+  id         String   @id
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String?
+  contentRich Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Discussion {
+  id String @id
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  documentContent     String
+  documentContentRich Json?
+  isResolved          Boolean   @default(false)
+  comments            Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Comment {
+  id String @id
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  discussionId String
+  discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+
+  content     String
+  contentRich Json?
+  isEdited    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model File {
+  id String @id
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  documentId String?
+  document   Document? @relation(fields: [documentId], references: [id])
+
+  size   Int
+  url    String @db.Text
+  appUrl String @db.Text
+  type   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// Enhanced BankConnection model
+model BankConnection {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Plaid specific fields
+  institutionId   String
+  institutionName String
+  accessToken     String @db.Text // Encrypted access token
+  itemId          String @unique // Plaid item ID
+
+  // Enhanced status tracking
+  status              BankConnectionStatus @default(ACTIVE)
+  errorCode           String? // Plaid error code if status is error
+  errorMessage        String?              @db.Text // Plaid error message if status is error
+  lastStatusChangedAt DateTime? // When the status last changed
+
+  // Enhanced metadata
+  logo           String? // Institution logo URL
+  primaryColor   String? // Brand primary color
+  oauthSupported Boolean @default(false) // Whether the institution supports OAuth
+  mfaSupported   Boolean @default(false) // Whether MFA is supported
+
+  // Sync status tracking
+  lastSyncedAt        DateTime?
+  nextSyncScheduledAt DateTime?
+  syncStatus          SyncStatus @default(IDLE)
+  balanceLastUpdated  DateTime? // Last time account balances were updated
+
+  // Notification tracking
+  lastNotifiedAt    DateTime? // Last time a notification was sent for this connection
+  notificationCount Int       @default(0) // Count of notifications sent
+
+  // Webhook handling
+  webhookUrl       String?   @db.Text
+  consentExpiresAt DateTime?
+
+  // Status fields
+  disabled Boolean @default(false) // Whether this connection is disabled
+
+  // Accounts associated with this connection
+  accounts     BankAccount[]
+  transactions Transaction[]
+
+  // Audit trail
+  lastUpdated DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Add these fields
+  lastAlertedAt DateTime?
+  alertCount    Int       @default(0)
+  lastCheckedAt DateTime?
+
+  // Fields for expiring connection notifications
+  lastAccessedAt          DateTime?
+  lastExpiryNotifiedAt    DateTime?
+  expiryNotificationCount Int       @default(0)
+
+  @@index([userId])
+  @@index([itemId])
+  @@index([status])
+  @@index([institutionId])
+}
+
+// Enhanced BankAccount model
+model BankAccount {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Connection this account belongs to
+  bankConnectionId String
+  bankConnection   BankConnection @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  // Plaid specific fields
+  plaidAccountId     String // Plaid's account ID
+  name               String
+  officialName       String?
+  type               AccountType
+  subtype            AccountSubtype?
+  verificationStatus VerificationStatus @default(NONE)
+
+  // Enhanced account information
+  mask          String? // Last 4 digits of account number
+  displayName   String? // Custom name for the account (user-defined)
+  accountNumber String? // Full account number (encrypted)
+  routingNumber String? // Routing number (encrypted)
+  iban          String? // International account number (encrypted)
+  swift         String? // SWIFT code
+
+  // Enhanced balance information
+  availableBalance   Float?
+  currentBalance     Float?
+  limit              Float?
+  isoCurrencyCode    String?
+  balanceLastUpdated DateTime?
+
+  // Account permissions and capabilities
+  capabilities       AccountCapabilities[]
+  permissionsGranted String[]              @default([])
+
+  // Account status and visibility
+  status     AccountStatus @default(ACTIVE)
+  isHidden   Boolean       @default(false)
+  isPrimary  Boolean       @default(false)
+  isFavorite Boolean       @default(false)
+  enabled    Boolean       @default(true) // Whether the account is enabled
+
+  // Transaction data
+  transactions Transaction[]
+
+  // Statistics and analytics
+  monthlySpending Float?
+  monthlyIncome   Float?
+  averageBalance  Float?
+
+  // Custom categorization
+  tags           String[] @default([])
+  budgetCategory String?
+
+  // Sync and error tracking
+  lastSyncedAt DateTime? // When the account was last synced
+  errorCount   Int       @default(0) // Number of consecutive sync errors
+  errorMessage String?   @db.Text // Last error message
+
+  // Metadata
+  lastUpdated DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@unique([userId, plaidAccountId])
+  @@index([userId])
+  @@index([bankConnectionId])
+  @@index([type])
+  @@index([status])
+}
+
+// New Transaction model for enhanced financial tracking
+model Transaction {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Relationship to accounts
+  bankAccountId    String
+  bankAccount      BankAccount    @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  bankConnectionId String
+  bankConnection   BankConnection @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  // Transaction details
+  plaidTransactionId String   @unique // Plaid's transaction ID
+  amount             Float
+  isoCurrencyCode    String?
+  date               DateTime
+  name               String
+  merchantName       String?
+  description        String?
+  pending            Boolean  @default(false)
+
+  // Enhanced categorization
+  category        TransactionCategory?
+  subCategory     String?
+  categoryIconUrl String?
+  customCategory  String?
+
+  // Location data
+  location Json? // Stores address, city, region, postal code, country, lat/long
+
+  // Payment metadata
+  paymentChannel String?
+  paymentMethod  String?
+
+  // Enhanced metadata
+  originalDescription  String?
+  originalCategory     String?
+  originalMerchantName String?
+
+  // Personal finance management
+  excludeFromBudget Boolean @default(false)
+  isRecurring       Boolean @default(false)
+  recurrenceId      String?
+
+  // Tagging and organization
+  tags        String[]     @default([])
+  notes       String?
+  attachments Attachment[]
+
+  // Split transaction support
+  parentTransactionId String?
+  parentTransaction   Transaction?  @relation("SplitTransactions", fields: [parentTransactionId], references: [id])
+  splitTransactions   Transaction[] @relation("SplitTransactions")
+
+  // Audit trail
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([bankAccountId])
+  @@index([bankConnectionId])
+  @@index([date])
+  @@index([category])
+  @@index([pending])
+  @@index([isRecurring])
+}
+
+// Attachment model for transaction receipts and documents
+model Attachment {
+  id            String      @id @default(cuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  name     String
+  fileUrl  String @db.Text
+  fileType String
+  fileSize Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([transactionId])
+}
+
+// Enhanced enums for more specific classifications
+enum BankConnectionStatus {
+  ACTIVE
+  ERROR
+  DISCONNECTED
+  PENDING
+  REQUIRES_ATTENTION
+  LOGIN_REQUIRED
+  REQUIRES_REAUTH
+}
+
+enum SyncStatus {
+  IDLE
+  SYNCING
+  FAILED
+  SCHEDULED
+}
+
+enum AccountType {
+  DEPOSITORY
+  CREDIT
+  LOAN
+  INVESTMENT
+  MORTGAGE
+  BROKERAGE
+  OTHER
+}
+
+enum AccountSubtype {
+  CHECKING
+  SAVINGS
+  CD
+  MONEY_MARKET
+  CREDIT_CARD
+  PAYPAL
+  AUTO_LOAN
+  STUDENT_LOAN
+  MORTGAGE
+  RETIREMENT
+  MUTUAL_FUND
+  ETF
+  STOCK
+  CASH_MANAGEMENT
+  PREPAID
+  HEALTH_SAVINGS
+  OTHER
+}
+
+enum AccountStatus {
+  ACTIVE
+  CLOSED
+  FROZEN
+  INACTIVE
+  PENDING
+  DISCONNECTED
+  SUSPENDED
+  ARCHIVED
+}
+
+enum VerificationStatus {
+  NONE
+  PENDING_AUTOMATIC_VERIFICATION
+  PENDING_MANUAL_VERIFICATION
+  MANUALLY_VERIFIED
+  AUTOMATICALLY_VERIFIED
+  VERIFICATION_FAILED
+}
+
+enum AccountCapabilities {
+  BALANCE
+  OWNERSHIP
+  PAYMENT
+  TRANSACTIONS
+  STATEMENTS
+  IDENTITY
+  AUTH
+}
+
+enum TransactionCategory {
+  INCOME
+  TRANSFER
+  LOAN_PAYMENTS
+  BANK_FEES
+  ENTERTAINMENT
+  FOOD_AND_DRINK
+  GENERAL_MERCHANDISE
+  HOME_IMPROVEMENT
+  MEDICAL
+  PERSONAL_CARE
+  GENERAL_SERVICES
+  GOVERNMENT_AND_NON_PROFIT
+  TRANSPORTATION
+  TRAVEL
+  UTILITIES
+  OTHER
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPERADMIN
+  MANAGER
+  EDITOR
+  VIEWER
+  GUEST
+}
+
+enum TextStyle {
+  DEFAULT
+  SERIF
+  MONO
+}
+
+// Optional: Add UserActivity model if you want to track notifications
+model UserActivity {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  detail    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Notification model for system and user notifications
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([read])
+}
+
+// SpendingInsight model for financial analytics
+model SpendingInsight {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Time period
+  startDate DateTime
+  endDate   DateTime
+  timeframe SpendingTimeframe @default(MONTH) // The timeframe this insight covers
+  year      Int // Year of the insight
+  month     Int? // Month number (1-12) if applicable
+  quarter   Int? // Quarter (1-4) if applicable
+  week      Int? // Week number if applicable
+
+  // Transaction insights
+  totalTransactions  Int
+  totalSpending      Float
+  avgTransactionSize Float
+
+  // Category breakdown
+  categoryStats Json // Structured data for category spending
+  merchantStats Json? // Structured data for merchant spending
+
+  // Trends
+  spendingTrend Float? // Percentage change from previous period
+  incomeTotal   Float?
+  incomeTrend   Float? // Percentage change from previous period
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([startDate, endDate])
+  @@index([timeframe, year, month])
+  @@index([userId, timeframe, year, month])
+}
+
+// Add a new enum for spending timeframes
+enum SpendingTimeframe {
+  DAY
+  WEEK
+  MONTH
+  QUARTER
+  YEAR
+  CUSTOM
+}
