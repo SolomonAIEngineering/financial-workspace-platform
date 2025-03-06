@@ -94,7 +94,7 @@ export const registerV1KeysGetVerifications = (app: App) =>
 
     if (keyId) {
       const data = await cache.keyById.swr(keyId, async (keyId) => {
-        const dbRes = await db.readonly.query.keys.findFirst({
+        const dbRes: any = await db.readonly.query.keys.findFirst({
           where: (table, { eq, and, isNull }) =>
             and(eq(table.id, keyId), isNull(table.deletedAt)),
           with: {
@@ -171,7 +171,7 @@ export const registerV1KeysGetVerifications = (app: App) =>
         if (!dbRes) {
           return []
         }
-        return dbRes.map((key) => ({ key, api: key.keyAuth.api }))
+        return dbRes.map((key: any) => ({ key, api: key.keyAuth.api }))
       })
       if (keys.err) {
         throw new UnkeyApiError({
