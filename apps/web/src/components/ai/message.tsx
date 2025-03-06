@@ -1,16 +1,14 @@
 'use client';
 
+import { CodeBlock } from '@/components/ui/codeblock';
+import { Icons } from '@/components/ui/icons';
+import { MemoizedReactMarkdown } from '@/components/chat/markdown';
+import { Spinner } from '@/registry/default/potion-ui/spinner';
 import type { StreamableValue } from 'ai/rsc';
-
 import { cn } from '@udecode/cn';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-
 import { useStreamableText } from '@/components/ai/utils/useStreamableText';
-import { MemoizedReactMarkdown } from '@/components/chat/markdown';
-import { CodeBlock } from '@/components/ui/codeblock';
-import { Icons } from '@/components/ui/icons';
-import { Spinner } from '@/registry/default/potion-ui/spinner';
 
 // Different types of message bubbles.
 
@@ -77,7 +75,7 @@ export function BotMessage({
                   {...props}
                 />
               ) : (
-                <code className={className} {...props}>
+                <code className={className} {...(props as React.HTMLAttributes<HTMLElement>)}>
                   {children}
                 </code>
               );

@@ -1,16 +1,14 @@
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 
+import { ChatMessageActions } from '@/components/chat/chat-message-actions';
+import { CodeBlock } from '@/components/ui/codeblock';
+import { Icons } from '@/components/ui/icons';
+import { MemoizedReactMarkdown } from '@/components/chat/markdown';
 import type { Message } from 'ai';
-
 import { cn } from '@udecode/cn';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
-
-import { ChatMessageActions } from '@/components/chat/chat-message-actions';
-import { MemoizedReactMarkdown } from '@/components/chat/markdown';
-import { CodeBlock } from '@/components/ui/codeblock';
-import { Icons } from '@/components/ui/icons';
 
 export interface ChatMessageProps {
   message: Message;
@@ -63,7 +61,7 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
                   {...props}
                 />
               ) : (
-                <code className={className} {...props}>
+                <code className={className} {...(props as React.HTMLAttributes<HTMLElement>)}>
                   {children}
                 </code>
               );
