@@ -10,7 +10,7 @@
     "migrate": "drizzle-kit push",
     "studio": "dotenv -e .env drizzle-kit studio",
     "generate": "dotenv -e .env drizzle-kit generate",
-    "postinstall": "pnpm run format && pnpm run generate && pnpm run typecheck",
+    "postinstall": "pnpm run typecheck",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit"
   },
