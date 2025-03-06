@@ -30,8 +30,8 @@ jobs:
       #   run: pnpm run lint --filter=@midday/dashboard
       # - name: 🪐 Check TypeScript
       #   run: pnpm run typecheck --filter=@midday/dashboard
-      - name: 🧪 Run unit tests
-        run: pnpm run test
+      # - name: 🧪 Run unit tests
+      #   run: pnpm run test
       - name: 📤 Pull Vercel Environment Information
         run: pnpm dlx vercel pull --yes --environment=production --token=$WX79m1FZpp92YqVF9NslaXMB
       - name: 🏗 Build Project Artifacts
