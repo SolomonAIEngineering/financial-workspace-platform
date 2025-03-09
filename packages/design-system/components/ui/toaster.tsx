@@ -7,8 +7,9 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-} from '@repo/design-system/components/ui/toast'
-import { useToast } from '@repo/design-system/hooks/use-toast'
+} from '@solomonai/design-system/components/ui/toast'
+
+import { useToast } from '@solomonai/design-system/hooks/use-toast'
 
 export function Toaster() {
   const { toasts } = useToast()

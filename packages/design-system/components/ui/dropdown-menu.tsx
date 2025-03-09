@@ -1,13 +1,15 @@
 'use client'
 
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
+import * as React from 'react'
+
 import {
   CheckIcon,
   ChevronRightIcon,
   DotFilledIcon,
 } from '@radix-ui/react-icons'
-import { cn } from '@repo/design-system/lib/utils'
-import * as React from 'react'
+
+import { cn } from '@solomonai/design-system/lib/utils'
 
 const DropdownMenu = DropdownMenuPrimitive.Root
 

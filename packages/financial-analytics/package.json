@@ -1,5 +1,5 @@
 {
-  "name": "@repo/financial-analytics",
+  "name": "@solomonai/financial-analytics",
   "version": "1.0.0",
   "private": true,
   "sideEffects": false,

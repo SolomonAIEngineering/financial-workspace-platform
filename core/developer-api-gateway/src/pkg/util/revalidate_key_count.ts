@@ -1,4 +1,4 @@
-import { type Database, and, eq, isNull, schema, sql } from '@repo/db'
+import { type Database, and, eq, isNull, schema, sql } from '@solomonai/db'
 
 /**
  * Counts the keys in a keyspace and writes it back to `sizeApprox`

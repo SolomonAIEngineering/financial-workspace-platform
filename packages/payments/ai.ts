@@ -1,4 +1,4 @@
-import { env } from '@repo/env'
+import { env } from '@solomonai/env'
 import { StripeAgentToolkit } from '@stripe/agent-toolkit/ai-sdk'
 
 export const paymentsAgentToolkit = new StripeAgentToolkit({

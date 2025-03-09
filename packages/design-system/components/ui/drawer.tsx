@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { cn } from '@repo/design-system/lib/utils'
+import { cn } from '@solomonai/design-system/lib/utils'
 import { Drawer as DrawerPrimitive } from 'vaul'
 
 // Helper type for forwardRef components

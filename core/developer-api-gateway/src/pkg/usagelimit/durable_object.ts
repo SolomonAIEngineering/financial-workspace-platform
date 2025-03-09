@@ -8,7 +8,7 @@ import {
   schema,
   sql,
 } from '@/pkg/db'
-import { ConsoleLogger } from '@repo/worker-logging'
+import { ConsoleLogger } from '@solomonai/worker-logging'
 import type { Env } from '../env'
 import { limitRequestSchema, revalidateRequestSchema } from './interface'
 

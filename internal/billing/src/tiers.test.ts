@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 
-import { SchemaError } from '@polar/error'
+import { SchemaError } from '@solomonai/error'
 import { type BillingTier, calculateTieredPrices } from './tiers'
 
 describe('calculateTieredPrices', () => {

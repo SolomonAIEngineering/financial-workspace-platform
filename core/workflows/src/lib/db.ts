@@ -1,5 +1,5 @@
 import { Client } from '@planetscale/database'
-import { type Database, drizzle, schema } from '@repo/db'
+import { type Database, drizzle, schema } from '@solomonai/db'
 
 type ConnectionOptions = {
   host: string
@@ -34,4 +34,4 @@ export function createConnection(opts: ConnectionOptions): Database {
     },
   )
 }
-export * from '@repo/db'
+export * from '@solomonai/db'

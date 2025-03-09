@@ -1,5 +1,5 @@
 {
-  "name": "@polar-core/developer-platform-gateway",
+  "name": "@solomonai-core/developer-platform-gateway",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",

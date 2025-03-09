@@ -6,9 +6,9 @@ import { rootKeyAuth } from '@/pkg/auth/root_key'
 import { openApiErrorResponses, UnkeyApiError } from '@/pkg/errors'
 import { match } from '@/pkg/util/wildcard'
 import { DatabaseError } from '@planetscale/database'
-import { type RatelimitNamespace, schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { buildUnkeyQuery } from '@repo/rbac'
+import { type RatelimitNamespace, schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { buildUnkeyQuery } from '@solomonai/rbac'
 
 const route = createRoute({
   tags: ['ratelimits'],

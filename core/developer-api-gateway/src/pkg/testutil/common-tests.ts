@@ -5,11 +5,11 @@
  * files.
  */
 
+import { eq, schema } from '@solomonai/db'
 import { describe, expect, test } from 'vitest'
 
 import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
-import { eq, schema } from '@repo/db'
-import { newId } from '@repo/id'
+import { newId } from '@solomonai/id'
 import { randomUUID } from 'node:crypto'
 import type { ErrorResponse } from '../errors'
 import type { StepRequest } from './request'

@@ -1,13 +1,13 @@
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
 import { expect, test } from 'vitest'
 import type {
   V1IdentitiesDeleteIdentityRequest,
   V1IdentitiesDeleteIdentityResponse,
 } from './v1_identities_deleteIdentity'
+
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('deletes the identity', async (t) => {
   const h = await IntegrationHarness.init(t)

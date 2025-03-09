@@ -1,26 +1,28 @@
 'use client'
 
-import { ViewVerticalIcon } from '@radix-ui/react-icons'
-import { Slot } from '@radix-ui/react-slot'
-import { Button } from '@repo/design-system/components/ui/button'
-import { Input } from '@repo/design-system/components/ui/input'
-import { Separator } from '@repo/design-system/components/ui/separator'
+import * as React from 'react'
+
 import {
   Sheet,
   SheetContent,
   SheetTitle,
-} from '@repo/design-system/components/ui/sheet'
-import { Skeleton } from '@repo/design-system/components/ui/skeleton'
+} from '@solomonai/design-system/components/ui/sheet'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@repo/design-system/components/ui/tooltip'
-import { useIsMobile } from '@repo/design-system/hooks/use-mobile'
-import { cn } from '@repo/design-system/lib/utils'
+} from '@solomonai/design-system/components/ui/tooltip'
 import { VariantProps, cva } from 'class-variance-authority'
-import * as React from 'react'
+
+import { ViewVerticalIcon } from '@radix-ui/react-icons'
+import { Slot } from '@radix-ui/react-slot'
+import { Button } from '@solomonai/design-system/components/ui/button'
+import { Input } from '@solomonai/design-system/components/ui/input'
+import { Separator } from '@solomonai/design-system/components/ui/separator'
+import { Skeleton } from '@solomonai/design-system/components/ui/skeleton'
+import { useIsMobile } from '@solomonai/design-system/hooks/use-mobile'
+import { cn } from '@solomonai/design-system/lib/utils'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar:state'
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7

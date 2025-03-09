@@ -1,4 +1,4 @@
-import { Err, Ok, type Result } from '@polar/error'
+import { Err, Ok, type Result } from '@solomonai/error'
 import type { z } from 'zod'
 import { InsertError, type QueryError } from './error'
 import type { Inserter, Querier } from './interface'

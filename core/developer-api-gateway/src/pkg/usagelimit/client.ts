@@ -1,4 +1,4 @@
-import type { Logger } from '@repo/worker-logging'
+import type { Logger } from '@solomonai/worker-logging'
 import type { Metrics } from '../metrics'
 import {
   type LimitRequest,

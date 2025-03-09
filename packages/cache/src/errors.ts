@@ -1,4 +1,4 @@
-import { BaseError } from '@polar/error'
+import { BaseError } from '@solomonai/error'
 
 export class CacheError extends BaseError {
   public readonly name = 'CacheError'

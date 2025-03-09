@@ -12,10 +12,10 @@ import {
   type Result,
   SchemaError,
   wrap,
-} from '@polar/error'
-import { sha256 } from '@repo/hash'
-import type { PermissionQuery, RBAC } from '@repo/rbac'
-import type { Logger } from '@repo/worker-logging'
+} from '@solomonai/error'
+import { sha256 } from '@solomonai/hash'
+import type { PermissionQuery, RBAC } from '@solomonai/rbac'
+import type { Logger } from '@solomonai/worker-logging'
 import { retry } from '../util/retry'
 
 export class DisabledWorkspaceError extends BaseError<{ workspaceId: string }> {

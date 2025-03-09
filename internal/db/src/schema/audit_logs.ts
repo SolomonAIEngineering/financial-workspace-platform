@@ -1,4 +1,3 @@
-import { relations } from 'drizzle-orm'
 import {
   bigint,
   index,
@@ -9,11 +8,13 @@ import {
   uniqueIndex,
   varchar,
 } from 'drizzle-orm/mysql-core'
+
+import { newId } from '@solomonai/id'
+import { relations } from 'drizzle-orm'
 import { deleteProtection } from './util/delete_protection'
 import { lifecycleDates } from './util/lifecycle_dates'
 import { workspaces } from './workspaces'
 
-import { newId } from '@repo/id'
 export const auditLogBucket = mysqlTable(
   'audit_log_bucket',
   {

@@ -12,7 +12,7 @@ import arcjet, {
   request,
   shield,
 } from '@arcjet/next'
-import { env } from '@repo/env'
+import { env } from '@solomonai/env'
 
 /**
  * Base Arcjet instance configured with default security settings.

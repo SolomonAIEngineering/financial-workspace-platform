@@ -1,12 +1,12 @@
-import { newId } from '@repo/id'
-import { KeyV1 } from '@repo/keys'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 import { expect, test } from 'vitest'
-
 import type {
   V1KeysWhoAmIRequest,
   V1KeysWhoAmIResponse,
 } from './v1_keys_whoami'
+
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('when the key does not exist', async (t) => {
   const h = await IntegrationHarness.init(t)

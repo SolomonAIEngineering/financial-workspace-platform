@@ -1,14 +1,13 @@
 import { expect, test } from 'vitest'
-
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
 import type {
   V1KeysRemoveRolesRequest,
   V1KeysRemoveRolesResponse,
 } from './v1_keys_removeRoles'
+
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('removes role by name', async (t) => {
   const h = await IntegrationHarness.init(t)

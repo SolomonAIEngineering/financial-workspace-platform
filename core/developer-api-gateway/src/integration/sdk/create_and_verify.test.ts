@@ -1,7 +1,7 @@
 import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
-import { type Flatten, SolomonAI, or } from '@repo/api/src/index' // use unbundled raw esm typescript
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
+import { type Flatten, SolomonAI, or } from '@solomonai/api/src/index' // use unbundled raw esm typescript
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
 import { expect, test } from 'vitest'
 
 test('create with roles and permissions', async (t) => {

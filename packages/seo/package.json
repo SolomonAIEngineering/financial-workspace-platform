@@ -1,5 +1,5 @@
 {
-  "name": "@repo/seo",
+  "name": "@solomonai/seo",
   "version": "0.0.0",
   "private": true,
   "dependencies": {

@@ -1,4 +1,4 @@
-import { base64 } from '@repo/encoding'
+import { base64 } from '@solomonai/encoding'
 
 export class AesGCM {
   public readonly key: CryptoKey

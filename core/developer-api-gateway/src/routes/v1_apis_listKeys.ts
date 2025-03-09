@@ -4,9 +4,9 @@ import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
 import { retry } from '@/pkg/util/retry'
-import type { Identity } from '@repo/db'
-import { schema } from '@repo/db'
-import { buildUnkeyQuery } from '@repo/rbac'
+import type { Identity } from '@solomonai/db'
+import { schema } from '@solomonai/db'
+import { buildUnkeyQuery } from '@solomonai/rbac'
 import { keySchema } from './schema'
 
 const route = createRoute({

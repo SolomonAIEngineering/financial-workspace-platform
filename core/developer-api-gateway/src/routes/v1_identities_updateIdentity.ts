@@ -4,9 +4,9 @@ import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 import { type UnkeyAuditLog, insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
-import { type Ratelimit, eq, schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { buildUnkeyQuery } from '@repo/rbac'
+import { type Ratelimit, eq, schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { buildUnkeyQuery } from '@solomonai/rbac'
 
 const route = createRoute({
   tags: ['identities'],

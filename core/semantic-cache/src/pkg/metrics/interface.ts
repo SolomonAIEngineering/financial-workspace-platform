@@ -1,4 +1,4 @@
-import type { Metric } from '@repo/metrics'
+import type { Metric } from '@solomonai/metrics'
 
 export interface Metrics {
   /**

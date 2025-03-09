@@ -1,15 +1,16 @@
-import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
-import { schema } from '@repo/db'
-import { sha256 } from '@repo/hash'
-import { newId } from '@repo/id'
-import { KeyV1 } from '@repo/keys'
-import { randomUUID } from 'node:crypto'
 import { describe, expect, test } from 'vitest'
-import { runCommonRouteTests } from '../pkg/testutil/common-tests'
 import type {
   V1KeysUpdateRemainingRequest,
   V1KeysUpdateRemainingResponse,
 } from './v1_keys_updateRemaining'
+
+import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
+import { schema } from '@solomonai/db'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
+import { randomUUID } from 'node:crypto'
+import { runCommonRouteTests } from '../pkg/testutil/common-tests'
 
 runCommonRouteTests<V1KeysUpdateRemainingRequest>({
   prepareRequest: async (rh) => {

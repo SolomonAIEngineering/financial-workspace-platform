@@ -1,4 +1,4 @@
-import { Err, Ok, type Result } from '@polar/error'
+import { Err, Ok, type Result } from '@solomonai/error'
 import type { Context } from './context'
 import { CacheError } from './errors'
 import type { Store } from './stores'

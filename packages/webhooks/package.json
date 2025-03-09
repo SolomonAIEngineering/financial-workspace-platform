@@ -1,10 +1,10 @@
 {
-  "name": "@repo/webhooks",
+  "name": "@solomonai/webhooks",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@repo/auth": "workspace:*",
-    "@repo/env": "workspace:*",
+    "@solomonai/auth": "workspace:*",
+    "@solomonai/env": "workspace:*",
     "svix": "^1.43.0"
   },
   "devDependencies": {

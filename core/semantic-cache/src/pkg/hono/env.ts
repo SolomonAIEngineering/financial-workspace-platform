@@ -1,6 +1,5 @@
 import type { Env } from '@/pkg/env'
-import type { Logger } from '@repo/worker-logging'
-
+import type { Logger } from '@solomonai/worker-logging'
 import type { Analytics } from '../analytics'
 import type { Metrics } from '../metrics'
 

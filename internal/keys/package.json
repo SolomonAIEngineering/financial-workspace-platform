@@ -1,5 +1,5 @@
 {
-  "name": "@repo/keys",
+  "name": "@solomonai/keys",
   "version": "1.0.0",
   "description": "",
   "main": "./src/index.ts",
@@ -14,7 +14,7 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "@repo/hash": "workspace:^",
+    "@solomonai/hash": "workspace:^",
     "base-x": "^4.0.0",
     "tsconfig": "workspace:*",
     "vitest": "^3.0.7"

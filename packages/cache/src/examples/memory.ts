@@ -1,6 +1,7 @@
-// This example has relative imports to do type checks, you need to import from "@repo/cache"
-import { DefaultStatefulContext, Namespace, createCache } from '..' // @repo/cache
-import { MemoryStore } from '../stores' // @repo/cache/stores
+// This example has relative imports to do type checks, you need to import from "@solomonai/cache"
+import { DefaultStatefulContext, Namespace, createCache } from '..' // @solomonai/cache
+
+import { MemoryStore } from '../stores' // @solomonai/cache/stores
 
 /**
  * In serverless you'd get this from the request handler

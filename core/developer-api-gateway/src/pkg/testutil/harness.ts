@@ -1,7 +1,7 @@
 import { Client } from '@planetscale/database'
-import { sha256 } from '@repo/hash'
-import { newId } from '@repo/id'
-import { KeyV1 } from '@repo/keys'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
 import type { TaskContext } from 'vitest'
 import {
   type Api,

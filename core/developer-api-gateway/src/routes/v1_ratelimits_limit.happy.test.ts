@@ -1,13 +1,14 @@
 import { expect, test } from 'vitest'
-
-import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { randomUUID } from 'node:crypto'
 import type {
   V1RatelimitLimitRequest,
   V1RatelimitLimitResponse,
 } from './v1_ratelimits_limit'
+
+import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+
 test('setting cost=0 returns the limit without modifying', async (t) => {
   const h = await IntegrationHarness.init(t)
   const namespace = {

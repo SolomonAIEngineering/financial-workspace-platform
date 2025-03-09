@@ -1,4 +1,4 @@
-import { Ok, type Result } from '@polar/error'
+import { Ok, type Result } from '@solomonai/error'
 import type { Context } from 'hono'
 import type {
   RateLimiter,

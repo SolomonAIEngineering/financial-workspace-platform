@@ -1,14 +1,13 @@
 import { expect, test } from 'vitest'
-
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
 import type {
   V1KeysSetPermissionsRequest,
   V1KeysSetPermissionsResponse,
 } from './v1_keys_setPermissions'
+
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('creates all missing permissions', async (t) => {
   const h = await IntegrationHarness.init(t)

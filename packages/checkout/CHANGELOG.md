@@ -1,4 +1,4 @@
-# @polar-sh/checkout
+# @solomonai/checkout
 
 ## 0.1.8
 
@@ -62,4 +62,4 @@
 
 ### Minor Changes
 
-- Initial release of @polar-sh/checkout
+- Initial release of @solomonai/checkout

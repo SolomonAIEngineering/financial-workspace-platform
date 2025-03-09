@@ -1,5 +1,5 @@
-import { SchemaError } from '@polar/error'
-import type { PermissionQuery } from '@repo/rbac'
+import { SchemaError } from '@solomonai/error'
+import type { PermissionQuery } from '@solomonai/rbac'
 import type { Context } from 'hono'
 import { UnkeyApiError } from '../errors'
 import type { HonoEnv } from '../hono/env'

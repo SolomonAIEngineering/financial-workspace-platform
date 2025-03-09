@@ -3,7 +3,7 @@
  * The client handles authentication, request management, and provides typed interfaces for all API endpoints.
  */
 
-import type { PermissionQuery } from '@repo/rbac'
+import type { PermissionQuery } from '@solomonai/rbac'
 import type { ErrorResponse } from './errors'
 import type { paths } from './openapi'
 

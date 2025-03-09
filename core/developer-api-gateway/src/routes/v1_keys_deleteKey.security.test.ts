@@ -1,9 +1,8 @@
-import { schema } from '@repo/db'
-import { sha256 } from '@repo/hash'
-import { newId } from '@repo/id'
-import { KeyV1 } from '@repo/keys'
-
 import { runCommonRouteTests } from '@/pkg/testutil/common-tests'
+import { schema } from '@solomonai/db'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
 import type { V1KeysDeleteKeyRequest } from './v1_keys_deleteKey'
 
 runCommonRouteTests<V1KeysDeleteKeyRequest>({

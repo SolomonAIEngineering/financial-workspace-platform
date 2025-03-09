@@ -17,7 +17,7 @@ import { appErrors } from '@/lib/errors'
 // 1. Define input schema with Zod
 const schema = z.object({
   // Define the shape of your input data with proper validation
-  userId: z.string().min(1, "User ID is required"),
+  userId: z.string().min(1, 'User ID is required'),
   // Add more fields as needed with specific validation rules
 })
 
@@ -28,17 +28,17 @@ export const actionName = createSafeActionClient()
     try {
       // 3. Implement action logic here
       const result = await someService.performOperation(input)
-      
+
       // 4. Return success response
-      return { 
-        success: true, 
-        data: result 
+      return {
+        success: true,
+        data: result,
       }
     } catch (error) {
       // 5. Handle errors and return error response
-      return { 
-        success: false, 
-        error: error instanceof AppError ? error : appErrors.UNEXPECTED_ERROR 
+      return {
+        success: false,
+        error: error instanceof AppError ? error : appErrors.UNEXPECTED_ERROR,
       }
     }
   })
@@ -102,23 +102,23 @@ const schema = z.object({
   // Pagination parameters
   limit: z.number().int().positive().optional().default(10),
   offset: z.number().int().min(0).optional().default(0),
-  
+
   // Filtering parameters
   userId: z.string().optional(),
   accountId: z.string().optional(),
   categoryId: z.string().optional(),
-  
+
   // Sorting parameters
   sortBy: z.string().optional().default('date'),
   sortOrder: z.enum(['asc', 'desc']).optional().default('desc'),
-  
+
   // Date range parameters
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-  
+
   // Search parameter
   search: z.string().optional(),
-  
+
   // Additional filters
   status: z.enum(['pending', 'cleared', 'all']).optional().default('all'),
   minAmount: z.number().optional(),
@@ -128,38 +128,42 @@ const schema = z.object({
 
 export const getTransactionsFromLayout = createSafeActionClient()
   .schema(schema)
-  .action(async (input): Promise<ActionResponse<{ transactions: Transaction[] }>> => {
-    try {
-      // Transform date strings to Date objects if present
-      const filters = {
-        ...input,
-        startDate: input.startDate ? new Date(input.startDate) : undefined,
-        endDate: input.endDate ? new Date(input.endDate) : undefined,
+  .action(
+    async (input): Promise<ActionResponse<{ transactions: Transaction[] }>> => {
+      try {
+        // Transform date strings to Date objects if present
+        const filters = {
+          ...input,
+          startDate: input.startDate ? new Date(input.startDate) : undefined,
+          endDate: input.endDate ? new Date(input.endDate) : undefined,
+        }
+
+        // Call transaction service with transformed filters
+        const transactions = await getTransactions(filters)
+
+        // Return strongly-typed response with transactions array
+        return {
+          success: true,
+          data: { transactions },
+        }
+      } catch (error) {
+        console.error('Failed to fetch transactions:', error)
+
+        // Return appropriate error response
+        return {
+          success: false,
+          error:
+            error instanceof AppError
+              ? error
+              : appErrors.FETCH_TRANSACTIONS_ERROR,
+        }
       }
-      
-      // Call transaction service with transformed filters
-      const transactions = await getTransactions(filters)
-      
-      // Return strongly-typed response with transactions array
-      return { 
-        success: true, 
-        data: { transactions } 
-      }
-    } catch (error) {
-      console.error('Failed to fetch transactions:', error)
-      
-      // Return appropriate error response
-      return { 
-        success: false, 
-        error: error instanceof AppError 
-          ? error 
-          : appErrors.FETCH_TRANSACTIONS_ERROR 
-      }
-    }
-  })
+    },
+  )
 ```
 
 **Implementation Notes:**
+
 - Uses extensive Zod schema validation for all possible filtering parameters
 - Handles date string conversion to Date objects
 - Returns strongly-typed Transaction[] array in the response
@@ -183,20 +187,20 @@ import { addJob } from '@/lib/queue'
 // File validation schema
 const schema = z.object({
   // Validates that input is a File object
-  file: z.instanceof(File, { message: "Please provide a valid file" }),
-  
+  file: z.instanceof(File, { message: 'Please provide a valid file' }),
+
   // The account to associate imported transactions with
-  accountId: z.string({ required_error: "Account ID is required" }),
-  
+  accountId: z.string({ required_error: 'Account ID is required' }),
+
   // Optional format specification
   format: z.enum(['csv', 'xlsx', 'qfx', 'ofx', 'qif']).optional(),
-  
+
   // Optional date format for parsing
   dateFormat: z.string().optional(),
-  
+
   // Whether to skip the first row (headers)
   skipHeaders: z.boolean().optional().default(true),
-  
+
   // Column mapping information
   columnMap: z.record(z.string(), z.string()).optional(),
 })
@@ -207,7 +211,7 @@ export const importTransactions = createSafeActionClient()
     try {
       // Convert file to buffer or readable stream
       const fileBuffer = await input.file.arrayBuffer()
-      
+
       // Create initial import job record
       const jobId = await addJob('transaction-import', {
         accountId: input.accountId,
@@ -218,23 +222,21 @@ export const importTransactions = createSafeActionClient()
         skipHeaders: input.skipHeaders,
         columnMap: input.columnMap,
       })
-      
+
       // Store file buffer in temporary storage
       await storeFileForProcessing(jobId, Buffer.from(fileBuffer))
-      
+
       // Return job ID for client to poll status
-      return { 
-        success: true, 
-        data: { jobId }
+      return {
+        success: true,
+        data: { jobId },
       }
     } catch (error) {
       console.error('Failed to import transactions:', error)
-      
-      return { 
-        success: false, 
-        error: error instanceof AppError 
-          ? error 
-          : appErrors.IMPORT_FAILED
+
+      return {
+        success: false,
+        error: error instanceof AppError ? error : appErrors.IMPORT_FAILED,
       }
     }
   })
@@ -243,18 +245,24 @@ export const importTransactions = createSafeActionClient()
 function detectFileFormat(fileName: string): string {
   const extension = fileName.split('.').pop()?.toLowerCase()
   switch (extension) {
-    case 'csv': return 'csv'
-    case 'xlsx': 
-    case 'xls': return 'xlsx'
+    case 'csv':
+      return 'csv'
+    case 'xlsx':
+    case 'xls':
+      return 'xlsx'
     case 'qfx':
-    case 'ofx': return 'ofx'
-    case 'qif': return 'qif'
-    default: return 'csv' // Default to CSV
+    case 'ofx':
+      return 'ofx'
+    case 'qif':
+      return 'qif'
+    default:
+      return 'csv' // Default to CSV
   }
 }
 ```
 
 **Implementation Notes:**
+
 - Handles file upload and conversion to buffer
 - Creates a background job for processing (integration with job queue)
 - Detects file format from extension
@@ -277,11 +285,11 @@ import { triggerManualSync } from '@/lib/services/sync-service'
 
 const schema = z.object({
   // User ID requesting the sync
-  userId: z.string({ required_error: "User ID is required" }),
-  
+  userId: z.string({ required_error: 'User ID is required' }),
+
   // Optional specific account IDs to sync (if not provided, syncs all)
   accountIds: z.array(z.string()).optional(),
-  
+
   // Optional date range to sync
   startDate: z.string().optional(),
   endDate: z.string().optional(),
@@ -297,28 +305,27 @@ export const manualSyncTransactions = createSafeActionClient()
         startDate: input.startDate ? new Date(input.startDate) : undefined,
         endDate: input.endDate ? new Date(input.endDate) : undefined,
       }
-      
+
       // Trigger sync process and get tracking ID
       const syncId = await triggerManualSync(syncOptions)
-      
-      return { 
-        success: true, 
-        data: { syncId } 
+
+      return {
+        success: true,
+        data: { syncId },
       }
     } catch (error) {
       console.error('Failed to trigger manual sync:', error)
-      
-      return { 
-        success: false, 
-        error: error instanceof AppError 
-          ? error 
-          : appErrors.SYNC_FAILED
+
+      return {
+        success: false,
+        error: error instanceof AppError ? error : appErrors.SYNC_FAILED,
       }
     }
   })
 ```
 
 **Implementation Notes:**
+
 - Supports syncing specific accounts or all accounts
 - Provides date range filtering for the sync operation
 - Returns a sync ID for tracking the background process
@@ -340,7 +347,7 @@ import { initiateReconnection } from '@/lib/services/connection-service'
 
 const schema = z.object({
   // Connection ID to reconnect
-  connectionId: z.string({ required_error: "Connection ID is required" }),
+  connectionId: z.string({ required_error: 'Connection ID is required' }),
 })
 
 export const reconnectConnection = createSafeActionClient()
@@ -349,40 +356,41 @@ export const reconnectConnection = createSafeActionClient()
     try {
       // Get connection details from database
       const connection = await getConnectionById(input.connectionId)
-      
+
       if (!connection) {
         throw appErrors.CONNECTION_NOT_FOUND
       }
-      
+
       // Call financial provider API to initiate reconnection flow
-      const { redirectUrl, tokenExpiry } = await initiateReconnection(connection)
-      
+      const { redirectUrl, tokenExpiry } =
+        await initiateReconnection(connection)
+
       // Update connection status in database
       await updateConnectionStatus(
-        input.connectionId, 
-        'reconnecting', 
-        tokenExpiry
+        input.connectionId,
+        'reconnecting',
+        tokenExpiry,
       )
-      
+
       // Return redirect URL for user to complete authentication
-      return { 
-        success: true, 
-        data: { redirectUrl } 
+      return {
+        success: true,
+        data: { redirectUrl },
       }
     } catch (error) {
       console.error('Failed to reconnect financial connection:', error)
-      
-      return { 
-        success: false, 
-        error: error instanceof AppError 
-          ? error 
-          : appErrors.RECONNECTION_FAILED
+
+      return {
+        success: false,
+        error:
+          error instanceof AppError ? error : appErrors.RECONNECTION_FAILED,
       }
     }
   })
 ```
 
 **Implementation Notes:**
+
 - Validates connection existence before attempting reconnection
 - Interfaces with financial provider APIs to initiate authentication
 - Updates connection status in the database
@@ -405,19 +413,33 @@ import { addJob } from '@/lib/queue'
 
 // Supported currency codes
 const SUPPORTED_CURRENCIES = [
-  'USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'CHF', 'CNY', 
-  'INR', 'BRL', 'MXN', 'SGD', 'HKD', 'SEK', 'NOK', 'NZD',
+  'USD',
+  'EUR',
+  'GBP',
+  'CAD',
+  'AUD',
+  'JPY',
+  'CHF',
+  'CNY',
+  'INR',
+  'BRL',
+  'MXN',
+  'SGD',
+  'HKD',
+  'SEK',
+  'NOK',
+  'NZD',
 ] as const
 
 const schema = z.object({
   // User ID for the currency update
-  userId: z.string({ required_error: "User ID is required" }),
-  
+  userId: z.string({ required_error: 'User ID is required' }),
+
   // Currency code from supported list
   currency: z.enum(SUPPORTED_CURRENCIES, {
-    errorMap: () => ({ message: "Please select a supported currency" })
+    errorMap: () => ({ message: 'Please select a supported currency' }),
   }),
-  
+
   // Whether to recalculate historical transactions (expensive operation)
   recalculateHistorical: z.boolean().optional().default(true),
 })
@@ -428,7 +450,7 @@ export const updateCurrency = createSafeActionClient()
     try {
       // Update user's currency preference
       await updateUserCurrency(input.userId, input.currency)
-      
+
       // If historical recalculation is requested, create a background job
       let jobId: string | undefined
       if (input.recalculateHistorical) {
@@ -437,25 +459,25 @@ export const updateCurrency = createSafeActionClient()
           currency: input.currency,
         })
       }
-      
-      return { 
-        success: true, 
-        data: { jobId } 
+
+      return {
+        success: true,
+        data: { jobId },
       }
     } catch (error) {
       console.error('Failed to update currency:', error)
-      
-      return { 
-        success: false, 
-        error: error instanceof AppError 
-          ? error 
-          : appErrors.CURRENCY_UPDATE_FAILED
+
+      return {
+        success: false,
+        error:
+          error instanceof AppError ? error : appErrors.CURRENCY_UPDATE_FAILED,
       }
     }
   })
 ```
 
 **Implementation Notes:**
+
 - Restricts to supported currency codes with enum validation
 - Handles immediate preference update and optional historical recalculation
 - Creates background job for expensive currency conversion operations
@@ -474,29 +496,33 @@ This background job processes imported transaction files:
 // Simplified example from import.ts
 import { Job } from '@/lib/queue'
 import { parseCSV, parseXLSX, parseOFX, parseQIF } from '@/lib/parsers'
-import { validateTransactions, saveTransactions } from '@/lib/services/transaction-service'
+import {
+  validateTransactions,
+  saveTransactions,
+} from '@/lib/services/transaction-service'
 
 export async function handleImportJob(job: Job): Promise<void> {
-  const { accountId, fileName, format, dateFormat, skipHeaders, columnMap } = job.data
-  
+  const { accountId, fileName, format, dateFormat, skipHeaders, columnMap } =
+    job.data
+
   // Retrieve file from temporary storage
   const fileBuffer = await retrieveFileForProcessing(job.id)
-  
+
   // Parse file based on format
   let transactions = []
   switch (format) {
     case 'csv':
-      transactions = await parseCSV(fileBuffer, { 
-        skipHeaders, 
-        dateFormat, 
-        columnMap 
+      transactions = await parseCSV(fileBuffer, {
+        skipHeaders,
+        dateFormat,
+        columnMap,
       })
       break
     case 'xlsx':
-      transactions = await parseXLSX(fileBuffer, { 
-        skipHeaders, 
-        dateFormat, 
-        columnMap 
+      transactions = await parseXLSX(fileBuffer, {
+        skipHeaders,
+        dateFormat,
+        columnMap,
       })
       break
     case 'ofx':
@@ -507,16 +533,16 @@ export async function handleImportJob(job: Job): Promise<void> {
       transactions = await parseQIF(fileBuffer, { dateFormat })
       break
   }
-  
+
   // Validate parsed transactions
   const validationResults = await validateTransactions(transactions)
-  
+
   // Handle duplicates and validation errors
   const { valid, duplicates, invalid } = validationResults
-  
+
   // Save valid transactions
   const savedCount = await saveTransactions(valid, accountId)
-  
+
   // Update job with results
   await job.update({
     status: 'completed',
@@ -525,13 +551,14 @@ export async function handleImportJob(job: Job): Promise<void> {
       saved: savedCount,
       duplicates: duplicates.length,
       invalid: invalid.length,
-      validationErrors: invalid.map(t => t.validationError)
-    }
+      validationErrors: invalid.map((t) => t.validationError),
+    },
   })
 }
 ```
 
 **Integration Notes:**
+
 - The `importTransactions` action creates the job
 - The job processes the file asynchronously, allowing the UI to remain responsive
 - Job status can be polled by the client to show progress
@@ -546,71 +573,76 @@ This background job updates currencies for historical transactions:
 ```typescript
 // Simplified example from update-base-currency.ts
 import { Job } from '@/lib/queue'
-import { 
-  getTransactionsByUserId, 
-  updateTransactionCurrency 
+import {
+  getTransactionsByUserId,
+  updateTransactionCurrency,
 } from '@/lib/services/transaction-service'
 import { getCurrencyRates } from '@/lib/services/exchange-rate-service'
 
 export async function handleCurrencyUpdateJob(job: Job): Promise<void> {
   const { userId, currency } = job.data
-  
+
   // Get all user transactions
   const transactions = await getTransactionsByUserId(userId)
-  
+
   // Get historical exchange rates for all transaction dates
-  const uniqueDates = [...new Set(transactions.map(t => t.date.toISOString().split('T')[0]))]
+  const uniqueDates = [
+    ...new Set(transactions.map((t) => t.date.toISOString().split('T')[0])),
+  ]
   const exchangeRates = await getCurrencyRates(uniqueDates, currency)
-  
+
   // Process transactions in batches to avoid memory issues
   const BATCH_SIZE = 100
   let processedCount = 0
-  
+
   for (let i = 0; i < transactions.length; i += BATCH_SIZE) {
     const batch = transactions.slice(i, i + BATCH_SIZE)
-    
+
     // Update each transaction's currency
-    await Promise.all(batch.map(async transaction => {
-      const transactionDate = transaction.date.toISOString().split('T')[0]
-      const rate = exchangeRates[transactionDate]
-      
-      if (!rate) {
-        console.warn(`No exchange rate found for ${transactionDate}`)
-        return
-      }
-      
-      // Convert amount using historical rate
-      const convertedAmount = transaction.originalAmount * rate
-      
-      // Update transaction with new currency and converted amount
-      await updateTransactionCurrency(
-        transaction.id,
-        currency,
-        convertedAmount,
-        rate
-      )
-    }))
-    
+    await Promise.all(
+      batch.map(async (transaction) => {
+        const transactionDate = transaction.date.toISOString().split('T')[0]
+        const rate = exchangeRates[transactionDate]
+
+        if (!rate) {
+          console.warn(`No exchange rate found for ${transactionDate}`)
+          return
+        }
+
+        // Convert amount using historical rate
+        const convertedAmount = transaction.originalAmount * rate
+
+        // Update transaction with new currency and converted amount
+        await updateTransactionCurrency(
+          transaction.id,
+          currency,
+          convertedAmount,
+          rate,
+        )
+      }),
+    )
+
     processedCount += batch.length
-    
+
     // Update job progress
     await job.update({
-      progress: Math.floor((processedCount / transactions.length) * 100)
+      progress: Math.floor((processedCount / transactions.length) * 100),
     })
   }
-  
+
   // Update job with results
   await job.update({
     status: 'completed',
     results: {
       totalProcessed: processedCount,
-      currency
-    }
+      currency,
+    },
   })
 }
 ```
 
 **Integration Notes:**
+
 - The `updateCurrency` action initiates this job when historical recalculation is needed
 - Processes transactions in batches to handle large datasets efficiently
 - Reports progress that can be displayed to the user
@@ -629,72 +661,74 @@ Here are comprehensive examples of how to use transaction actions in client comp
 import { useAction } from 'next-safe-action/hooks'
 import { useQueryState } from 'nuqs'
 import { getTransactionsFromLayout } from '@/actions/transactions/get-transactions-from-layout'
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from "@/components/ui/table"
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { DateRangePicker } from "@/components/ui/date-range-picker"
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select"
-import { formatCurrency } from "@/lib/utils"
-import { useState, useEffect } from "react"
-import { 
-  ChevronDown, 
-  Filter, 
-  RefreshCw, 
-  Search, 
-  SortAsc, 
-  SortDesc 
-} from "lucide-react"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { DateRangePicker } from '@/components/ui/date-range-picker'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { formatCurrency } from '@/lib/utils'
+import { useState, useEffect } from 'react'
+import {
+  ChevronDown,
+  Filter,
+  RefreshCw,
+  Search,
+  SortAsc,
+  SortDesc,
+} from 'lucide-react'
 
 export function TransactionsList() {
   // State for pagination
   const [limit, setLimit] = useQueryState('limit', { defaultValue: '10' })
   const [page, setPage] = useQueryState('page', { defaultValue: '1' })
-  
+
   // State for filtering
   const [search, setSearch] = useQueryState('search')
   const [dateRange, setDateRange] = useQueryState('dateRange')
   const [category, setCategory] = useQueryState('category')
   const [account, setAccount] = useQueryState('account')
-  
+
   // State for sorting
   const [sortBy, setSortBy] = useQueryState('sortBy', { defaultValue: 'date' })
-  const [sortOrder, setSortOrder] = useQueryState('sortOrder', { defaultValue: 'desc' })
-  
+  const [sortOrder, setSortOrder] = useQueryState('sortOrder', {
+    defaultValue: 'desc',
+  })
+
   // Local state for the table
   const [isRefreshing, setIsRefreshing] = useState(false)
-  
+
   // Parse filter values
   const parsedLimit = parseInt(limit || '10')
   const parsedPage = parseInt(page || '1')
   const offset = (parsedPage - 1) * parsedLimit
-  
+
   // Parse date range
-  const parsedDateRange = dateRange 
-    ? JSON.parse(dateRange) 
+  const parsedDateRange = dateRange
+    ? JSON.parse(dateRange)
     : { startDate: undefined, endDate: undefined }
-  
+
   // Setup action hook
   const { execute, result, status } = useAction(getTransactionsFromLayout)
-  
+
   // Fetch transactions when filters change
   const fetchTransactions = () => {
     execute({
@@ -709,25 +743,25 @@ export function TransactionsList() {
       sortOrder: (sortOrder || 'desc') as 'asc' | 'desc',
     })
   }
-  
+
   // Effect to fetch transactions when filters change
   useEffect(() => {
     fetchTransactions()
   }, [limit, page, dateRange, category, account, sortBy, sortOrder])
-  
+
   // Handle search submit
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     fetchTransactions()
   }
-  
+
   // Handle manual refresh
   const handleRefresh = () => {
     setIsRefreshing(true)
     fetchTransactions()
     setTimeout(() => setIsRefreshing(false), 500)
   }
-  
+
   // Handle sort change
   const handleSort = (column: string) => {
     if (sortBy === column) {
@@ -737,7 +771,7 @@ export function TransactionsList() {
       setSortOrder('desc')
     }
   }
-  
+
   return (
     <div className="space-y-4">
       {/* Filters section */}
@@ -747,18 +781,18 @@ export function TransactionsList() {
             placeholder="Search transactions..."
             value={search || ''}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64 mr-2"
+            className="mr-2 w-64"
           />
           <Button type="submit" variant="outline" size="icon">
             <Search className="h-4 w-4" />
           </Button>
         </form>
-        
+
         <DateRangePicker
           value={parsedDateRange}
           onChange={(range) => setDateRange(JSON.stringify(range))}
         />
-        
+
         <Select value={category || ''} onValueChange={setCategory}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder="Category" />
@@ -768,7 +802,7 @@ export function TransactionsList() {
             {/* Add categories from your data */}
           </SelectContent>
         </Select>
-        
+
         <Select value={account || ''} onValueChange={setAccount}>
           <SelectTrigger className="w-40">
             <SelectValue placeholder="Account" />
@@ -778,11 +812,11 @@ export function TransactionsList() {
             {/* Add accounts from your data */}
           </SelectContent>
         </Select>
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
-              <Filter className="h-4 w-4 mr-2" /> More Filters
+              <Filter className="mr-2 h-4 w-4" /> More Filters
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
@@ -792,51 +826,59 @@ export function TransactionsList() {
             <DropdownMenuItem>Tags</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        
-        <Button 
-          variant="ghost" 
+
+        <Button
+          variant="ghost"
           size="icon"
           onClick={handleRefresh}
           disabled={status === 'executing'}
         >
-          <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
+          />
         </Button>
       </div>
-      
+
       {/* Transactions table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer"
                 onClick={() => handleSort('date')}
               >
                 Date
-                {sortBy === 'date' && (
-                  sortOrder === 'asc' ? <SortAsc className="inline h-4 w-4 ml-1" /> : 
-                                        <SortDesc className="inline h-4 w-4 ml-1" />
-                )}
+                {sortBy === 'date' &&
+                  (sortOrder === 'asc' ? (
+                    <SortAsc className="ml-1 inline h-4 w-4" />
+                  ) : (
+                    <SortDesc className="ml-1 inline h-4 w-4" />
+                  ))}
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer"
                 onClick={() => handleSort('description')}
               >
                 Description
-                {sortBy === 'description' && (
-                  sortOrder === 'asc' ? <SortAsc className="inline h-4 w-4 ml-1" /> : 
-                                        <SortDesc className="inline h-4 w-4 ml-1" />
-                )}
+                {sortBy === 'description' &&
+                  (sortOrder === 'asc' ? (
+                    <SortAsc className="ml-1 inline h-4 w-4" />
+                  ) : (
+                    <SortDesc className="ml-1 inline h-4 w-4" />
+                  ))}
               </TableHead>
-              <TableHead 
+              <TableHead
                 className="cursor-pointer"
                 onClick={() => handleSort('amount')}
               >
                 Amount
-                {sortBy === 'amount' && (
-                  sortOrder === 'asc' ? <SortAsc className="inline h-4 w-4 ml-1" /> : 
-                                        <SortDesc className="inline h-4 w-4 ml-1" />
-                )}
+                {sortBy === 'amount' &&
+                  (sortOrder === 'asc' ? (
+                    <SortAsc className="ml-1 inline h-4 w-4" />
+                  ) : (
+                    <SortDesc className="ml-1 inline h-4 w-4" />
+                  ))}
               </TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Account</TableHead>
@@ -856,7 +898,8 @@ export function TransactionsList() {
                   <TableCell className="h-12 bg-gray-100"></TableCell>
                 </TableRow>
               ))
-            ) : result?.data?.transactions && result.data.transactions.length > 0 ? (
+            ) : result?.data?.transactions &&
+              result.data.transactions.length > 0 ? (
               // Data state
               result.data.transactions.map((transaction) => (
                 <TableRow key={transaction.id}>
@@ -864,10 +907,16 @@ export function TransactionsList() {
                     {new Date(transaction.date).toLocaleDateString()}
                   </TableCell>
                   <TableCell>{transaction.description}</TableCell>
-                  <TableCell className={transaction.amount < 0 ? 'text-red-500' : 'text-green-500'}>
+                  <TableCell
+                    className={
+                      transaction.amount < 0 ? 'text-red-500' : 'text-green-500'
+                    }
+                  >
                     {formatCurrency(transaction.amount, transaction.currency)}
                   </TableCell>
-                  <TableCell>{transaction.category?.name || 'Uncategorized'}</TableCell>
+                  <TableCell>
+                    {transaction.category?.name || 'Uncategorized'}
+                  </TableCell>
                   <TableCell>{transaction.account?.name}</TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -880,7 +929,9 @@ export function TransactionsList() {
                         <DropdownMenuItem>Edit</DropdownMenuItem>
                         <DropdownMenuItem>Categorize</DropdownMenuItem>
                         <DropdownMenuItem>Split</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
+                        <DropdownMenuItem className="text-red-500">
+                          Delete
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -889,7 +940,7 @@ export function TransactionsList() {
             ) : (
               // Empty state
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-10">
+                <TableCell colSpan={6} className="py-10 text-center">
                   No transactions found. Try adjusting your filters.
                 </TableCell>
               </TableRow>
@@ -897,13 +948,12 @@ export function TransactionsList() {
           </TableBody>
         </Table>
       </div>
-      
+
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          {result?.data?.transactions && 
-            `Showing ${offset + 1} - ${Math.min(offset + parsedLimit, result.data.transactions.length)} transactions`
-          }
+          {result?.data?.transactions &&
+            `Showing ${offset + 1} - ${Math.min(offset + parsedLimit, result.data.transactions.length)} transactions`}
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -914,14 +964,15 @@ export function TransactionsList() {
           >
             Previous
           </Button>
-          <div className="text-sm">
-            Page {parsedPage}
-          </div>
+          <div className="text-sm">Page {parsedPage}</div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setPage((parsedPage + 1).toString())}
-            disabled={!result?.data?.transactions || result.data.transactions.length < parsedLimit}
+            disabled={
+              !result?.data?.transactions ||
+              result.data.transactions.length < parsedLimit
+            }
           >
             Next
           </Button>
@@ -951,6 +1002,7 @@ export function TransactionsList() {
 These actions handle user account and profile operations:
 
 1. **`update-user-action.ts`**
+
    ```typescript
    const schema = z.object({
      userId: z.string(),
@@ -984,9 +1036,10 @@ These actions handle user account and profile operations:
 These actions manage team-based functionality:
 
 1. **`create-team-action.ts`**
+
    ```typescript
    const schema = z.object({
-     name: z.string().min(1, "Team name is required"),
+     name: z.string().min(1, 'Team name is required'),
      userId: z.string(),
      logo: z.string().optional(),
    })
@@ -1025,6 +1078,7 @@ Located in `apps/dashboard/src/actions/institutions/`
 These actions handle connections to financial institutions:
 
 1. **`connect-bank-account-action.ts`**
+
    ```typescript
    const schema = z.object({
      userId: z.string(),
@@ -1040,7 +1094,7 @@ These actions handle connections to financial institutions:
          const result = await financeService.exchangePublicToken(
            input.publicToken,
            input.institutionId,
-           input.userId
+           input.userId,
          )
          return { success: true, data: result }
        } catch (error) {
@@ -1056,9 +1110,10 @@ These actions handle connections to financial institutions:
 These actions handle categorization and tagging of transactions:
 
 1. **`create-tag-action.tsx`**
+
    ```typescript
    const schema = z.object({
-     name: z.string().min(1, "Tag name is required"),
+     name: z.string().min(1, 'Tag name is required'),
      color: z.string().optional(),
      userId: z.string(),
    })
@@ -1069,7 +1124,7 @@ These actions handle categorization and tagging of transactions:
        try {
          const tag = await tagService.create({
            name: input.name,
-           color: input.color || "#000000",
+           color: input.color || '#000000',
            userId: input.userId,
          })
          return { success: true, data: tag }
@@ -1092,6 +1147,7 @@ These actions handle categorization and tagging of transactions:
 These actions handle transaction management beyond basic CRUD:
 
 1. **`update-transaction-action.ts`**
+
    ```typescript
    const schema = z.object({
      id: z.string(),
@@ -1126,6 +1182,7 @@ These actions handle transaction management beyond basic CRUD:
 These actions manage user interface preferences:
 
 1. **`update-column-visibility-action.ts`**
+
    ```typescript
    const schema = z.object({
      userId: z.string(),
@@ -1140,7 +1197,7 @@ These actions manage user interface preferences:
          await preferencesService.updateColumnVisibility(
            input.userId,
            input.columnId,
-           input.visible
+           input.visible,
          )
          return { success: true }
        } catch (error) {
@@ -1163,6 +1220,7 @@ These actions manage user interface preferences:
 These actions handle document management:
 
 1. **`create-attachments-action.ts`**
+
    ```typescript
    const schema = z.object({
      files: z.array(z.instanceof(File)),
@@ -1205,10 +1263,11 @@ These actions handle customer relationship management:
 These actions handle user support and feedback:
 
 1. **`send-feedback-action.ts`**
+
    ```typescript
    const schema = z.object({
      userId: z.string(),
-     feedback: z.string().min(1, "Feedback is required"),
+     feedback: z.string().min(1, 'Feedback is required'),
      rating: z.number().min(1).max(5).optional(),
      category: z.enum(['bug', 'feature', 'general']).optional(),
      metadata: z.record(z.any()).optional(),
@@ -1274,7 +1333,7 @@ import { toast } from 'sonner'
 export function ActionComponent() {
   const { execute, result, status } = useAction(someAction, {
     onSuccess: (data) => toast.success('Action completed successfully'),
-    onError: (error) => toast.error(`Action failed: ${error.message}`)
+    onError: (error) => toast.error(`Action failed: ${error.message}`),
   })
 
   const handleExecute = (values) => {
@@ -1283,15 +1342,17 @@ export function ActionComponent() {
 
   return (
     <div>
-      <button 
+      <button
         onClick={() => handleExecute({ userId: 'user-id' })}
         disabled={status === 'executing'}
       >
         {status === 'executing' ? 'Processing...' : 'Execute Action'}
       </button>
-      
+
       {result.data && <div>Success: {JSON.stringify(result.data)}</div>}
-      {result.error && <div className="text-red-500">Error: {result.error.message}</div>}
+      {result.error && (
+        <div className="text-red-500">Error: {result.error.message}</div>
+      )}
     </div>
   )
 }
@@ -1300,32 +1361,38 @@ export function ActionComponent() {
 ## Best Practices
 
 1. **Error Handling**:
+
    - Use specific error types from `appErrors` for different error scenarios
    - Return appropriate error messages for client-side display
    - Log detailed errors server-side but return sanitized errors to clients
 
 2. **Validation**:
+
    - Always validate input using Zod schemas with descriptive error messages
    - Include min/max values, patterns, and other constraints where appropriate
    - Consider using custom refinements for complex validation rules
 
 3. **Performance**:
+
    - Avoid unnecessary database queries
    - Keep actions lightweight and focused on a single responsibility
    - Use proper database indexes for frequently queried fields
 
 4. **Security**:
+
    - Validate user permissions before performing sensitive operations
    - Never expose sensitive financial data
    - Use middleware for consistent authentication across actions
    - Sanitize all user input
 
 5. **User Experience**:
+
    - Provide meaningful feedback through the action response
    - Handle loading, success, and error states appropriately in the UI
    - Use optimistic updates where appropriate for responsive interfaces
 
 6. **Testing**:
+
    - Write unit tests for each action
    - Test happy paths and error cases
    - Mock external services for consistent test results
@@ -1333,4 +1400,4 @@ export function ActionComponent() {
 7. **Maintenance**:
    - Keep actions small and focused
    - Document inputs, outputs, and side effects
-   - Use consistent naming conventions across all actions 
+   - Use consistent naming conventions across all actions

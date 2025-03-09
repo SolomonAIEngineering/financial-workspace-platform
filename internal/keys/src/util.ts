@@ -1,4 +1,4 @@
-import { sha256 } from '@repo/hash'
+import { sha256 } from '@solomonai/hash'
 import { KeyV1 } from './v1'
 
 export async function newKey(opts: {

@@ -1,4 +1,4 @@
-# `@repo/smb-cli`
+# `@solomonai/smb-cli`
 
 A CLI for easily shortening URLs with the [Dub.co API](https://dub.co/api).
 
@@ -37,7 +37,7 @@ https://github.com/user-attachments/assets/2ce9fe51-68ab-4e6d-b08d-4da09c17f90e
 ## Testing Production-like Setup
 
 > **Warning**
-> If you have previously installed `@repo/smb-cli` globally, uninstall it first to avoid conflicts
+> If you have previously installed `@solomonai/smb-cli` globally, uninstall it first to avoid conflicts
 
 1. Clone the repository, install dependencies and navigate to the `cli` folder:
    ```bash

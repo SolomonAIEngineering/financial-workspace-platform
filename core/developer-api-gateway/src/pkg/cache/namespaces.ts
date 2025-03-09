@@ -7,7 +7,7 @@ import type {
   Ratelimit,
   RatelimitNamespace,
   RatelimitOverride,
-} from '@repo/db'
+} from '@solomonai/db'
 
 export type KeyHash = string
 

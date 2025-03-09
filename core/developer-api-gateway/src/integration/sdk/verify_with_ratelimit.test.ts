@@ -1,8 +1,9 @@
-import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
-import { SolomonAI } from '@repo/api/src/index' // use unbundled raw esm typescript
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
 import { expect, test } from 'vitest'
+
+import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
+import { SolomonAI } from '@solomonai/api/src/index' // use unbundled raw esm typescript
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
 
 test('1 per 10 seconds', async (t) => {
   const h = await IntegrationHarness.init(t)

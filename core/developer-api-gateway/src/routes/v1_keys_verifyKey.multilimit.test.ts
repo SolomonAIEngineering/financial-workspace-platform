@@ -1,16 +1,15 @@
 import { describe, expect, test } from 'vitest'
-
-import { schema } from '@repo/db'
-import { sha256 } from '@repo/hash'
-import { newId } from '@repo/id'
-import { KeyV1 } from '@repo/keys'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import type { ErrorResponse } from '@repo/api/src'
 import type {
   V1KeysVerifyKeyRequest,
   V1KeysVerifyKeyResponse,
 } from './v1_keys_verifyKey'
+
+import type { ErrorResponse } from '@solomonai/api/src'
+import { schema } from '@solomonai/db'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 describe('without identities', () => {
   test('returns valid', async (t) => {

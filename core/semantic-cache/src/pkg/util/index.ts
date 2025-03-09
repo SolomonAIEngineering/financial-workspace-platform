@@ -1,6 +1,6 @@
-import type { Context } from '@/pkg/hono/app'
-import { sha256 } from '@repo/hash'
 import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions'
+import type { Context } from '@/pkg/hono/app'
+import { sha256 } from '@solomonai/hash'
 
 export async function createCompletionChunk(content: string, stop = false) {
   return {
@@ -39,7 +39,7 @@ export function OpenAIResponse(content: string) {
  * ```ts
  * const chunk = 'This is a "sample" chunk of text.';
  * const word = extractWord(chunk);
- * console.log(word); // Output: sample
+ * console.info(word); // Output: sample
  * ```
  *
  * @param chunk - The chunk of text to extract the word from.

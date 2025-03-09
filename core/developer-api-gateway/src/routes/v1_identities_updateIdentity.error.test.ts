@@ -1,14 +1,13 @@
 import { describe, expect, test } from 'vitest'
-
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { randomUUID } from 'node:crypto'
 import type {
   V1IdentitiesUpdateIdentityRequest,
   V1IdentitiesUpdateIdentityResponse,
 } from './v1_identities_updateIdentity'
+
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('empty identityId', async (t) => {
   const h = await IntegrationHarness.init(t)

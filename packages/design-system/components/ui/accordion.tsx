@@ -1,9 +1,10 @@
 'use client'
 
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
-import { ChevronDownIcon } from '@radix-ui/react-icons'
-import { cn } from '@repo/design-system/lib/utils'
 import * as React from 'react'
+
+import { ChevronDownIcon } from '@radix-ui/react-icons'
+import { cn } from '@solomonai/design-system/lib/utils'
 
 const Accordion = AccordionPrimitive.Root
 

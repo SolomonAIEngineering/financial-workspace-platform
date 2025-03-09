@@ -1,3 +1,5 @@
+import * as React from 'react'
+
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -6,9 +8,9 @@ import {
 import {
   ButtonProps,
   buttonVariants,
-} from '@repo/design-system/components/ui/button'
-import { cn } from '@repo/design-system/lib/utils'
-import * as React from 'react'
+} from '@solomonai/design-system/components/ui/button'
+
+import { cn } from '@solomonai/design-system/lib/utils'
 
 const Pagination = ({ className, ...props }: React.ComponentProps<'nav'>) => (
   <nav

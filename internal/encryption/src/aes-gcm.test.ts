@@ -1,5 +1,6 @@
-import { base64 } from '@repo/encoding'
 import { describe, expect, it } from 'vitest'
+
+import { base64 } from '@solomonai/encoding'
 import { AesGCM } from './aes-gcm'
 
 describe('AesGCM', () => {

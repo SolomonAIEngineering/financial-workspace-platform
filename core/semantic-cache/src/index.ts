@@ -1,5 +1,5 @@
 import { cors, init, ratelimit } from '@/pkg/middleware'
-import { ConsoleLogger } from '@repo/worker-logging'
+import { ConsoleLogger } from '@solomonai/worker-logging'
 import { OpenAI } from 'openai'
 
 import { zEnv, type Env } from './pkg/env'

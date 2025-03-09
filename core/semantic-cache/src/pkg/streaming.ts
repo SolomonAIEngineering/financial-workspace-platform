@@ -1,9 +1,9 @@
-import { sha256 } from '@repo/hash'
+import { sha256 } from '@solomonai/hash'
 import { streamSSE } from 'hono/streaming'
 import type { OpenAI } from 'openai'
 
-import { BaseError, Err, Ok, wrap, type Result } from '@polar/error'
-import type { CacheError } from '@repo/cache'
+import type { CacheError } from '@solomonai/cache'
+import { BaseError, Err, Ok, wrap, type Result } from '@solomonai/error'
 
 import type { Context } from './hono/app'
 import {

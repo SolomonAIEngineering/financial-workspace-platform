@@ -11,7 +11,7 @@ import {
 } from 'drizzle-orm/mysql-core'
 import { embeddedEncrypted } from './util/embedded_encrypted'
 
-import { type Event, eventTypesArr } from '@repo/events'
+import { type Event, eventTypesArr } from '@solomonai/events'
 import { lifecycleDates } from './util/lifecycle_dates'
 import { workspaces } from './workspaces'
 

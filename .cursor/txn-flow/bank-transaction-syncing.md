@@ -45,11 +45,11 @@ The system is built on a background job architecture that processes tasks asynch
 
 Each banking provider has unique characteristics that affect our sync implementation:
 
-| Provider | Refresh Token Strategy | Rate Limits | Transaction History | Balance Updates |
-|----------|------------------------|-------------|---------------------|-----------------|
-| Plaid | 30-day refresh | 200 req/min | 24 months | Real-time capable |
-| Teller | 90-day refresh | 100 req/min | 12 months | Day-delayed |
-| GoCardless | OAuth refresh flow | 50 req/min | 18 months | Near real-time |
+| Provider   | Refresh Token Strategy | Rate Limits | Transaction History | Balance Updates   |
+| ---------- | ---------------------- | ----------- | ------------------- | ----------------- |
+| Plaid      | 30-day refresh         | 200 req/min | 24 months           | Real-time capable |
+| Teller     | 90-day refresh         | 100 req/min | 12 months           | Day-delayed       |
+| GoCardless | OAuth refresh flow     | 50 req/min  | 18 months           | Near real-time    |
 
 ## Architecture
 
@@ -105,22 +105,26 @@ The components interact through a well-defined workflow:
 The typical flow for syncing bank data follows these steps:
 
 1. **Setup**: When a user connects a bank, setup jobs initialize the connection and discover accounts
+
    - `connection-setup-job`: Validates and stores connection credentials
    - `account-discovery-job`: Discovers and registers all available accounts
    - `initial-sync-job`: Performs the first comprehensive data sync
 
 2. **Scheduling**: Scheduler jobs set up recurring syncs based on provider requirements and user activity patterns
+
    - `sync-schedule-optimizer`: Analyzes usage patterns to optimize sync frequency
    - `schedule-factory`: Creates appropriate schedule configurations
    - `dynamic-schedule-adjuster`: Adjusts schedules based on observed data changes
 
 3. **Syncing**: Sync jobs fetch new data from banking providers
+
    - `account-sync-job`: Updates account details and metadata
    - `balance-sync-job`: Updates account balances
    - `transaction-sync-job`: Fetches new transactions
    - `connection-health-job`: Monitors connection status
 
 4. **Processing**: Transaction jobs process and categorize the fetched data
+
    - `transaction-normalizer`: Standardizes transaction formats across providers
    - `transaction-enricher`: Adds metadata and merchant information
    - `transaction-categorizer`: Applies ML categorization
@@ -189,51 +193,54 @@ All bank sync jobs are built on a common job framework defined in `apps/dashboar
 
 ```typescript
 // apps/dashboard/jobs/utils/job-creator.ts
-import { Job, JobOptions, Queue } from 'bull';
-import { logger } from '@/lib/logger';
-import { v4 as uuidv4 } from 'uuid';
+import { Job, JobOptions, Queue } from 'bull'
+import { logger } from '@/lib/logger'
+import { v4 as uuidv4 } from 'uuid'
 
 interface JobDefinition<TData, TResult> {
-  name: string;
-  handler: (data: TData) => Promise<TResult>;
-  options?: JobOptions;
+  name: string
+  handler: (data: TData) => Promise<TResult>
+  options?: JobOptions
 }
 
 interface JobResponse<TResult> {
-  jobId: string;
-  publicAccessToken: string;
-  result?: TResult;
+  jobId: string
+  publicAccessToken: string
+  result?: TResult
 }
 
 export function createJob<TData, TResult>({
   name,
   handler,
-  options = {}
+  options = {},
 }: JobDefinition<TData, TResult>) {
   const processJob = async (job: Job<TData>): Promise<TResult> => {
     try {
-      logger.info(`Starting job: ${name}`, { jobId: job.id, attempt: job.attemptsMade });
-      
-      const result = await handler(job.data);
-      
-      logger.info(`Completed job: ${name}`, { 
-        jobId: job.id, 
+      logger.info(`Starting job: ${name}`, {
+        jobId: job.id,
         attempt: job.attemptsMade,
-        duration: Date.now() - job.timestamp
-      });
-      
-      return result;
+      })
+
+      const result = await handler(job.data)
+
+      logger.info(`Completed job: ${name}`, {
+        jobId: job.id,
+        attempt: job.attemptsMade,
+        duration: Date.now() - job.timestamp,
+      })
+
+      return result
     } catch (error) {
-      logger.error(`Failed job: ${name}`, { 
-        jobId: job.id, 
+      logger.error(`Failed job: ${name}`, {
+        jobId: job.id,
         attempt: job.attemptsMade,
         error: error.message,
-        stack: error.stack
-      });
-      
-      throw error;
+        stack: error.stack,
+      })
+
+      throw error
     }
-  };
+  }
 
   return {
     name,
@@ -241,32 +248,35 @@ export function createJob<TData, TResult>({
       attempts: 3,
       backoff: {
         type: 'exponential',
-        delay: 5000
+        delay: 5000,
       },
       removeOnComplete: {
         age: 7 * 24 * 60 * 60, // 7 days
-        count: 1000
+        count: 1000,
       },
-      ...options
+      ...options,
     },
     handler,
     processor: processJob,
-    enqueue: async (queue: Queue, data: TData): Promise<JobResponse<TResult>> => {
-      const publicAccessToken = uuidv4();
-      
+    enqueue: async (
+      queue: Queue,
+      data: TData,
+    ): Promise<JobResponse<TResult>> => {
+      const publicAccessToken = uuidv4()
+
       const job = await queue.add(name, data, {
         ...options,
         jobId: uuidv4(),
         // Store the public access token in job opts for status API access
-        opts: { publicAccessToken }
-      });
-      
+        opts: { publicAccessToken },
+      })
+
       return {
         jobId: job.id as string,
-        publicAccessToken
-      };
-    }
-  };
+        publicAccessToken,
+      }
+    },
+  }
 }
 ```
 
@@ -274,7 +284,7 @@ export function createJob<TData, TResult>({
 
 The core sync job (`sync-bank-job.ts`) handles fetching the latest data from a banking provider and updating the connection status:
 
-```typescript
+````typescript
 // apps/dashboard/jobs/tasks/bank/connections/sync-bank-job.ts
 import { createJob } from '@/jobs/utils/job-creator';
 import { getBankingProvider } from '@/lib/banking/providers';
@@ -315,66 +325,66 @@ export const syncBankJob = createJob<SyncBankJobData, SyncBankJobResult>({
   handler: async ({ connectionId, accessToken, provider, userId, forceRefresh = false }) => {
     const startTime = Date.now();
     const traceId = `sync-bank-${connectionId}-${Date.now()}`;
-    
-    logger.info('Starting bank sync job', { 
-      traceId, 
-      connectionId, 
+
+    logger.info('Starting bank sync job', {
+      traceId,
+      connectionId,
       provider,
       userId,
       forceRefresh
     });
-    
+
     try {
       // Increment sync attempt counter
       metrics.increment('bank_sync.attempts', { provider });
-      
+
       // Get the appropriate provider client
       const bankingProvider = getBankingProvider(provider);
-      
+
       // Apply rate limiting based on provider
       await rateLimiter.acquire(`provider:${provider}`, 1);
-      
+
       // Get connection details before sync
       const connection = await getBankConnection(connectionId);
       if (!connection) {
         throw new Error('Connection not found');
       }
-      
+
       if (connection.status === 'revoked') {
         logger.warn('Skipping sync for revoked connection', { traceId, connectionId });
-        return { 
-          success: false, 
+        return {
+          success: false,
           error: 'Connection revoked by user'
         };
       }
-      
+
       // Start sync transaction for atomicity
       await beginSyncTransaction(connectionId);
-      
+
       // Update connection status to syncing
       await updateBankConnection(connectionId, {
         status: 'syncing',
         last_sync_attempt: new Date().toISOString(),
       });
-      
+
       // Use different refresh strategies based on provider and force flag
       const syncOptions = getSyncOptions(provider, forceRefresh);
-      
+
       // Fetch the latest account data
       logger.debug('Fetching accounts from provider', { traceId, provider });
       const { accounts, balances } = await bankingProvider.getAccounts(
-        accessToken, 
+        accessToken,
         syncOptions
       );
-      
-      logger.info('Fetched accounts from provider', { 
-        traceId, 
-        accountCount: accounts.length 
+
+      logger.info('Fetched accounts from provider', {
+        traceId,
+        accountCount: accounts.length
       });
-      
+
       // Process accounts and balances
       await processAccountsAndBalances(connectionId, accounts, balances);
-      
+
       // Update the connection status and last accessed time
       await updateBankConnection(connectionId, {
         status: 'connected',
@@ -382,37 +392,37 @@ export const syncBankJob = createJob<SyncBankJobData, SyncBankJobResult>({
         error: null,
         error_count: 0,
       });
-      
+
       // Queue transaction sync job
       await queueTransactionSyncJob(connectionId, accessToken, provider);
-      
+
       // Commit sync transaction
       await commitSyncTransaction(connectionId);
-      
+
       // Record successful sync metric
-      metrics.timing('bank_sync.duration', Date.now() - startTime, { 
+      metrics.timing('bank_sync.duration', Date.now() - startTime, {
         provider,
-        status: 'success' 
+        status: 'success'
       });
-      
-      return { 
-        success: true, 
+
+      return {
+        success: true,
         accountCount: accounts.length,
         lastSyncTime: new Date().toISOString()
       };
     } catch (error) {
       // Rollback sync transaction
       await rollbackSyncTransaction(connectionId);
-      
+
       // Record failed sync metric
-      metrics.timing('bank_sync.duration', Date.now() - startTime, { 
+      metrics.timing('bank_sync.duration', Date.now() - startTime, {
         provider,
-        status: 'error' 
+        status: 'error'
       });
-      
+
       // Handle provider-specific errors
       const errorResponse = handleProviderError(error, connectionId, provider);
-      
+
       logger.error('Bank sync job failed', {
         traceId,
         connectionId,
@@ -421,7 +431,7 @@ export const syncBankJob = createJob<SyncBankJobData, SyncBankJobResult>({
         errorCode: error.code,
         errorType: error.type,
       });
-      
+
       return errorResponse;
     }
   },
@@ -460,7 +470,7 @@ async function processAccountsAndBalances(connectionId: string, accounts: any[],
   for (const account of accounts) {
     // Check if account already exists
     const existingAccount = await getAccountByProviderId(account.id, connectionId);
-    
+
     if (existingAccount) {
       // Update existing account
       await updateAccount(existingAccount.id, {
@@ -485,7 +495,7 @@ async function processAccountsAndBalances(connectionId: string, accounts: any[],
         last_updated: new Date().toISOString()
       });
     }
-    
+
     // Update account balance
     const balance = balances.find(b => b.account_id === account.id);
     if (balance) {
@@ -504,10 +514,10 @@ function handleProviderError(error: any, connectionId: string, provider: string)
   let requiresReauth = false;
   let status = 'error';
   let errorMessage = error.message || 'Unknown error';
-  
+
   // Update error count
   incrementConnectionErrorCount(connectionId);
-  
+
   // Handle provider-specific error codes
   if (provider === 'plaid') {
     if (error.code === 'ITEM_LOGIN_REQUIRED') {
@@ -540,16 +550,16 @@ function handleProviderError(error: any, connectionId: string, provider: string)
       errorMessage = 'Access denied';
     }
   }
-  
+
   // Update connection status based on error
   updateBankConnection(connectionId, {
     status,
     error: errorMessage,
     last_sync_attempt: new Date().toISOString(),
   });
-  
-  return { 
-    success: false, 
+
+  return {
+    success: false,
     error: errorMessage,
     requiresReauth
   };
@@ -559,7 +569,7 @@ function handleProviderError(error: any, connectionId: string, provider: string)
 async function queueTransactionSyncJob(connectionId: string, accessToken: string, provider: string) {
   // Get appropriate date range based on last successful sync
   const dateRange = await getTransactionSyncDateRange(connectionId);
-  
+
   await queueJob('sync-transactions', {
     connectionId,
     accessToken,
@@ -605,37 +615,37 @@ export const updateBalancesJob = createJob<UpdateBalancesJobData, UpdateBalances
   handler: async ({ connectionId, accessToken, provider, accountIds }) => {
     const startTime = Date.now();
     const traceId = `update-balances-${connectionId}-${Date.now()}`;
-    
-    logger.info('Starting balance update job', { 
-      traceId, 
-      connectionId, 
+
+    logger.info('Starting balance update job', {
+      traceId,
+      connectionId,
       provider,
       accountCount: accountIds?.length
     });
-    
+
     try {
       // Increment balance update attempt counter
       metrics.increment('balance_update.attempts', { provider });
-      
+
       // Get the appropriate provider client
       const bankingProvider = getBankingProvider(provider);
-      
+
       // Apply rate limiting for balance updates (lighter than full sync)
       await rateLimiter.acquire(`provider:${provider}:balance`, 0.5);
-      
+
       // Prepare options for balance fetch
       const options = {
         account_ids: accountIds || undefined
       };
-      
+
       // Fetch only balance information
       const { balances } = await bankingProvider.getBalances(accessToken, options);
-      
-      logger.debug('Fetched balances from provider', { 
-        traceId, 
-        balanceCount: balances.length 
+
+      logger.debug('Fetched balances from provider', {
+        traceId,
+        balanceCount: balances.length
       });
-      
+
       // Update balances in database with a single batch operation if possible
       if (balances.length > 10) {
         await batchUpdateAccountBalances(balances);
@@ -650,27 +660,27 @@ export const updateBalancesJob = createJob<UpdateBalancesJobData, UpdateBalances
           });
         }
       }
-      
+
       // Check for significant balance changes and queue notifications if needed
       await checkForSignificantBalanceChanges(connectionId, balances);
-      
+
       // Record successful balance update metric
-      metrics.timing('balance_update.duration', Date.now() - startTime, { 
+      metrics.timing('balance_update.duration', Date.now() - startTime, {
         provider,
-        status: 'success' 
+        status: 'success'
       });
-      
-      return { 
-        success: true, 
-        balanceCount: balances.length 
+
+      return {
+        success: true,
+        balanceCount: balances.length
       };
     } catch (error) {
       // Record failed balance update metric
-      metrics.timing('balance_update.duration', Date.now() - startTime, { 
+      metrics.timing('balance_update.duration', Date.now() - startTime, {
         provider,
-        status: 'error' 
+        status: 'error'
       });
-      
+
       logger.error('Balance update job failed', {
         traceId,
         connectionId,
@@ -678,13 +688,13 @@ export const updateBalancesJob = createJob<UpdateBalancesJobData, UpdateBalances
         error: error.message,
         errorCode: error.code
       });
-      
+
       // Don't update connection status for balance update failures
       // They are less critical than full sync failures
-      
-      return { 
-        success: false, 
-        error: error.message 
+
+      return {
+        success: false,
+        error: error.message
       };
     }
   },
@@ -699,7 +709,7 @@ async function batchUpdateAccountBalances(balances) {
     limit: balance.limit,
     last_updated: new Date().toISOString()
   }));
-  
+
   await performBatchBalanceUpdate(batchUpdates);
 }
 
@@ -707,25 +717,25 @@ async function batchUpdateAccountBalances(balances) {
 async function checkForSignificantBalanceChanges(connectionId, currentBalances) {
   // Get previous balance records
   const previousBalances = await getPreviousBalances(connectionId);
-  
+
   // Check each balance for significant changes
   for (const current of currentBalances) {
     const previous = previousBalances.find(p => p.account_id === current.account_id);
-    
+
     if (!previous) continue;
-    
+
     // Calculate change amount and percentage
     const changeAmount = current.current - previous.current;
     const changePercentage = (changeAmount / previous.current) * 100;
-    
+
     // Get account details for context
     const account = await getAccountByProviderId(current.account_id, connectionId);
-    
+
     // Check if change meets notification threshold
-    const isSignificant = 
+    const isSignificant =
       (Math.abs(changePercentage) > 15 && Math.abs(changeAmount) > 100) || // 15% change and >$100
       Math.abs(changeAmount) > 1000; // Any change >$1000
-    
+
     if (isSignificant) {
       // Queue balance change notification
       await queueJob('notify-balance-change', {
@@ -740,7 +750,7 @@ async function checkForSignificantBalanceChanges(connectionId, currentBalances) 
     }
   }
 }
-```
+````
 
 ### Account Creation and Update Job
 
@@ -748,54 +758,57 @@ A job for handling the creation and updating of accounts:
 
 ```typescript
 // apps/dashboard/jobs/tasks/bank/accounts/account-management-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { logger } from '@/lib/logger';
-import { metrics } from '@/lib/monitoring';
-import { sendNotification } from '@/lib/notifications';
+import { createJob } from '@/jobs/utils/job-creator'
+import { logger } from '@/lib/logger'
+import { metrics } from '@/lib/monitoring'
+import { sendNotification } from '@/lib/notifications'
 
 interface AccountManagementJobData {
-  connectionId: string;
-  accounts: any[];
-  userId: string;
-  operation: 'create' | 'update' | 'refresh';
+  connectionId: string
+  accounts: any[]
+  userId: string
+  operation: 'create' | 'update' | 'refresh'
 }
 
 interface AccountManagementJobResult {
-  success: boolean;
-  accountsCreated?: number;
-  accountsUpdated?: number;
-  error?: string;
+  success: boolean
+  accountsCreated?: number
+  accountsUpdated?: number
+  error?: string
 }
 
-export const accountManagementJob = createJob<AccountManagementJobData, AccountManagementJobResult>({
+export const accountManagementJob = createJob<
+  AccountManagementJobData,
+  AccountManagementJobResult
+>({
   name: 'account-management',
   handler: async ({ connectionId, accounts, userId, operation }) => {
-    const startTime = Date.now();
-    const traceId = `account-management-${connectionId}-${Date.now()}`;
-    
-    logger.info('Starting account management job', { 
-      traceId, 
-      connectionId, 
+    const startTime = Date.now()
+    const traceId = `account-management-${connectionId}-${Date.now()}`
+
+    logger.info('Starting account management job', {
+      traceId,
+      connectionId,
       accountCount: accounts.length,
-      operation
-    });
-    
+      operation,
+    })
+
     try {
-      let accountsCreated = 0;
-      let accountsUpdated = 0;
-      
+      let accountsCreated = 0
+      let accountsUpdated = 0
+
       // Get existing accounts for this connection
-      const existingAccounts = await getAccountsByConnectionId(connectionId);
-      
+      const existingAccounts = await getAccountsByConnectionId(connectionId)
+
       const existingAccountMap = existingAccounts.reduce((acc, account) => {
-        acc[account.provider_account_id] = account;
-        return acc;
-      }, {});
-      
+        acc[account.provider_account_id] = account
+        return acc
+      }, {})
+
       // Process each account
       for (const account of accounts) {
-        const existingAccount = existingAccountMap[account.id];
-        
+        const existingAccount = existingAccountMap[account.id]
+
         if (existingAccount) {
           // Check if account needs updating
           if (hasAccountChanged(existingAccount, account)) {
@@ -805,9 +818,9 @@ export const accountManagementJob = createJob<AccountManagementJobData, AccountM
               type: account.type,
               subtype: account.subtype,
               status: account.status || 'active',
-              last_updated: new Date().toISOString()
-            });
-            accountsUpdated++;
+              last_updated: new Date().toISOString(),
+            })
+            accountsUpdated++
           }
         } else {
           // Create new account
@@ -821,12 +834,12 @@ export const accountManagementJob = createJob<AccountManagementJobData, AccountM
             subtype: account.subtype,
             status: account.status || 'active',
             created_at: new Date().toISOString(),
-            last_updated: new Date().toISOString()
-          });
-          accountsCreated++;
+            last_updated: new Date().toISOString(),
+          })
+          accountsCreated++
         }
       }
-      
+
       // Notify user about new accounts if any were created
       if (accountsCreated > 0) {
         await sendNotification({
@@ -836,35 +849,35 @@ export const accountManagementJob = createJob<AccountManagementJobData, AccountM
           message: `We found ${accountsCreated} new account(s) in your bank connection.`,
           data: {
             connectionId,
-            accountsCreated
-          }
-        });
+            accountsCreated,
+          },
+        })
       }
-      
+
       // Record metrics
-      metrics.increment('accounts.created', accountsCreated);
-      metrics.increment('accounts.updated', accountsUpdated);
-      metrics.timing('account_management.duration', Date.now() - startTime);
-      
+      metrics.increment('accounts.created', accountsCreated)
+      metrics.increment('accounts.updated', accountsUpdated)
+      metrics.timing('account_management.duration', Date.now() - startTime)
+
       return {
         success: true,
         accountsCreated,
-        accountsUpdated
-      };
+        accountsUpdated,
+      }
     } catch (error) {
       logger.error('Account management job failed', {
         traceId,
         connectionId,
-        error: error.message
-      });
-      
+        error: error.message,
+      })
+
       return {
         success: false,
-        error: error.message
-      };
+        error: error.message,
+      }
     }
-  }
-});
+  },
+})
 
 // Helper to determine if account data has changed significantly
 function hasAccountChanged(existingAccount, newAccountData) {
@@ -874,7 +887,7 @@ function hasAccountChanged(existingAccount, newAccountData) {
     existingAccount.type !== newAccountData.type ||
     existingAccount.subtype !== newAccountData.subtype ||
     existingAccount.status !== (newAccountData.status || 'active')
-  );
+  )
 }
 ```
 
@@ -884,74 +897,83 @@ A job for managing token refresh processes for various providers:
 
 ```typescript
 // apps/dashboard/jobs/tasks/bank/connections/refresh-connection-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { getBankingProvider } from '@/lib/banking/providers';
-import { updateBankConnection } from '@/lib/banking/connection';
-import { logger } from '@/lib/logger';
-import { sendNotification } from '@/lib/notifications';
+import { createJob } from '@/jobs/utils/job-creator'
+import { getBankingProvider } from '@/lib/banking/providers'
+import { updateBankConnection } from '@/lib/banking/connection'
+import { logger } from '@/lib/logger'
+import { sendNotification } from '@/lib/notifications'
 
 interface RefreshConnectionJobData {
-  connectionId: string;
-  accessToken: string;
-  refreshToken: string;
-  provider: 'plaid' | 'teller' | 'gocardless';
-  userId: string;
+  connectionId: string
+  accessToken: string
+  refreshToken: string
+  provider: 'plaid' | 'teller' | 'gocardless'
+  userId: string
 }
 
 interface RefreshConnectionJobResult {
-  success: boolean;
-  newAccessToken?: string;
-  newRefreshToken?: string;
-  expiresAt?: string;
-  error?: string;
+  success: boolean
+  newAccessToken?: string
+  newRefreshToken?: string
+  expiresAt?: string
+  error?: string
 }
 
-export const refreshConnectionJob = createJob<RefreshConnectionJobData, RefreshConnectionJobResult>({
+export const refreshConnectionJob = createJob<
+  RefreshConnectionJobData,
+  RefreshConnectionJobResult
+>({
   name: 'refresh-connection',
   options: {
     priority: 15, // Higher priority than regular syncs
     attempts: 5,
     backoff: {
       type: 'exponential',
-      delay: 30000 // 30 seconds initial delay
-    }
+      delay: 30000, // 30 seconds initial delay
+    },
   },
-  handler: async ({ connectionId, accessToken, refreshToken, provider, userId }) => {
-    const traceId = `refresh-connection-${connectionId}-${Date.now()}`;
-    
-    logger.info('Starting connection refresh job', { 
-      traceId, 
-      connectionId, 
-      provider
-    });
-    
+  handler: async ({
+    connectionId,
+    accessToken,
+    refreshToken,
+    provider,
+    userId,
+  }) => {
+    const traceId = `refresh-connection-${connectionId}-${Date.now()}`
+
+    logger.info('Starting connection refresh job', {
+      traceId,
+      connectionId,
+      provider,
+    })
+
     try {
       // Get the appropriate provider client
-      const bankingProvider = getBankingProvider(provider);
-      
+      const bankingProvider = getBankingProvider(provider)
+
       // Update connection status to refreshing
       await updateBankConnection(connectionId, {
         status: 'refreshing',
-        last_refresh_attempt: new Date().toISOString()
-      });
-      
+        last_refresh_attempt: new Date().toISOString(),
+      })
+
       // Perform provider-specific token refresh
       const refreshResult = await bankingProvider.refreshTokens({
         accessToken,
-        refreshToken
-      });
-      
+        refreshToken,
+      })
+
       // Extract new tokens from result
-      const newAccessToken = refreshResult.access_token;
-      const newRefreshToken = refreshResult.refresh_token;
-      const expiresAt = refreshResult.expires_at;
-      
-      logger.info('Successfully refreshed connection tokens', { 
-        traceId, 
+      const newAccessToken = refreshResult.access_token
+      const newRefreshToken = refreshResult.refresh_token
+      const expiresAt = refreshResult.expires_at
+
+      logger.info('Successfully refreshed connection tokens', {
+        traceId,
         connectionId,
-        expiresAt
-      });
-      
+        expiresAt,
+      })
+
       // Update connection with new tokens
       await updateBankConnection(connectionId, {
         access_token: newAccessToken,
@@ -959,53 +981,59 @@ export const refreshConnectionJob = createJob<RefreshConnectionJobData, RefreshC
         expires_at: expiresAt,
         status: 'connected',
         last_refresh_success: new Date().toISOString(),
-        error: null
-      });
-      
+        error: null,
+      })
+
       // Queue a sync job with the new access token to verify it works
       await queueJob('sync-bank', {
         connectionId,
         accessToken: newAccessToken,
         provider,
-        userId
-      });
-      
+        userId,
+      })
+
       return {
         success: true,
         newAccessToken,
         newRefreshToken,
-        expiresAt
-      };
+        expiresAt,
+      }
     } catch (error) {
       logger.error('Connection refresh job failed', {
         traceId,
         connectionId,
         provider,
         error: error.message,
-        errorCode: error.code
-      });
-      
+        errorCode: error.code,
+      })
+
       // Update connection status based on error
-      let status = 'refresh_failed';
-      let errorMessage = error.message;
-      
+      let status = 'refresh_failed'
+      let errorMessage = error.message
+
       // Provider-specific error handling
       if (provider === 'plaid' && error.code === 'INVALID_REFRESH_TOKEN') {
-        status = 'invalid_refresh_token';
-        errorMessage = 'Invalid refresh token';
-      } else if (provider === 'gocardless' && error.code === 'refresh_token_expired') {
-        status = 'refresh_token_expired';
-        errorMessage = 'Refresh token expired';
+        status = 'invalid_refresh_token'
+        errorMessage = 'Invalid refresh token'
+      } else if (
+        provider === 'gocardless' &&
+        error.code === 'refresh_token_expired'
+      ) {
+        status = 'refresh_token_expired'
+        errorMessage = 'Refresh token expired'
       }
-      
+
       await updateBankConnection(connectionId, {
         status,
         error: errorMessage,
-        last_refresh_attempt: new Date().toISOString()
-      });
-      
+        last_refresh_attempt: new Date().toISOString(),
+      })
+
       // Notify user if refresh failed and needs attention
-      if (status === 'invalid_refresh_token' || status === 'refresh_token_expired') {
+      if (
+        status === 'invalid_refresh_token' ||
+        status === 'refresh_token_expired'
+      ) {
         await sendNotification({
           userId,
           type: 'connection_refresh_failed',
@@ -1014,18 +1042,18 @@ export const refreshConnectionJob = createJob<RefreshConnectionJobData, RefreshC
           data: {
             connectionId,
             provider,
-            error: errorMessage
-          }
-        });
+            error: errorMessage,
+          },
+        })
       }
-      
+
       return {
         success: false,
-        error: errorMessage
-      };
+        error: errorMessage,
+      }
     }
-  }
-});
+  },
+})
 ```
 
 ### Link-Token Creation Job
@@ -1034,61 +1062,64 @@ A job for creating link tokens for reconnection flows:
 
 ```typescript
 // apps/dashboard/jobs/tasks/bank/connections/create-link-token-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { getBankingProvider } from '@/lib/banking/providers';
-import { logger } from '@/lib/logger';
+import { createJob } from '@/jobs/utils/job-creator'
+import { getBankingProvider } from '@/lib/banking/providers'
+import { logger } from '@/lib/logger'
 
 interface CreateLinkTokenJobData {
-  userId: string;
-  connectionId?: string; // Optional for reconnection flows
-  provider: 'plaid' | 'teller' | 'gocardless';
-  clientUserId: string;
-  redirectUri?: string;
-  androidPackageName?: string;
-  iosBundleId?: string;
+  userId: string
+  connectionId?: string // Optional for reconnection flows
+  provider: 'plaid' | 'teller' | 'gocardless'
+  clientUserId: string
+  redirectUri?: string
+  androidPackageName?: string
+  iosBundleId?: string
 }
 
 interface CreateLinkTokenJobResult {
-  success: boolean;
-  linkToken?: string;
-  expiresAt?: string;
-  error?: string;
+  success: boolean
+  linkToken?: string
+  expiresAt?: string
+  error?: string
 }
 
-export const createLinkTokenJob = createJob<CreateLinkTokenJobData, CreateLinkTokenJobResult>({
+export const createLinkTokenJob = createJob<
+  CreateLinkTokenJobData,
+  CreateLinkTokenJobResult
+>({
   name: 'create-link-token',
-  handler: async ({ 
-    userId, 
-    connectionId, 
-    provider, 
-    clientUserId, 
+  handler: async ({
+    userId,
+    connectionId,
+    provider,
+    clientUserId,
     redirectUri,
     androidPackageName,
-    iosBundleId
+    iosBundleId,
   }) => {
-    const traceId = `create-link-token-${userId}-${Date.now()}`;
-    
-    logger.info('Starting link token creation job', { 
-      traceId, 
-      userId, 
+    const traceId = `create-link-token-${userId}-${Date.now()}`
+
+    logger.info('Starting link token creation job', {
+      traceId,
+      userId,
       provider,
-      connectionId: connectionId || 'new-connection'
-    });
-    
+      connectionId: connectionId || 'new-connection',
+    })
+
     try {
       // Get the appropriate provider client
-      const bankingProvider = getBankingProvider(provider);
-      
+      const bankingProvider = getBankingProvider(provider)
+
       // Get user information for the request
-      const user = await getUserById(userId);
-      
+      const user = await getUserById(userId)
+
       // Prepare options based on provider
       const options = {
         client_user_id: clientUserId,
         user: {
           name: user.name || user.email,
           email: user.email,
-          phone: user.phone
+          phone: user.phone,
         },
         client_name: 'Midday Finance',
         products: ['auth', 'transactions', 'investments', 'liabilities'],
@@ -1097,61 +1128,61 @@ export const createLinkTokenJob = createJob<CreateLinkTokenJobData, CreateLinkTo
         webhook: process.env.BANKING_WEBHOOK_URL,
         redirect_uri: redirectUri,
         android_package_name: androidPackageName,
-        ios_bundle_id: iosBundleId
-      };
-      
+        ios_bundle_id: iosBundleId,
+      }
+
       // Add connection_id for update mode if provided
       if (connectionId) {
-        const connection = await getBankConnection(connectionId);
-        
+        const connection = await getBankConnection(connectionId)
+
         if (!connection) {
-          throw new Error('Connection not found');
+          throw new Error('Connection not found')
         }
-        
+
         // Add provider-specific update configuration
         if (provider === 'plaid') {
-          options.access_token = connection.access_token;
+          options.access_token = connection.access_token
           options.update = {
-            account_selection_enabled: false
-          };
+            account_selection_enabled: false,
+          }
         } else if (provider === 'teller') {
-          options.enrollment_id = connection.provider_item_id;
-          options.mode = 'reconnect';
+          options.enrollment_id = connection.provider_item_id
+          options.mode = 'reconnect'
         } else if (provider === 'gocardless') {
-          options.requisition_id = connection.provider_item_id;
-          options.mode = 'update';
+          options.requisition_id = connection.provider_item_id
+          options.mode = 'update'
         }
       }
-      
+
       // Create link token with the provider
-      const linkTokenResponse = await bankingProvider.createLinkToken(options);
-      
-      logger.info('Successfully created link token', { 
-        traceId, 
-        expiresAt: linkTokenResponse.expiration 
-      });
-      
+      const linkTokenResponse = await bankingProvider.createLinkToken(options)
+
+      logger.info('Successfully created link token', {
+        traceId,
+        expiresAt: linkTokenResponse.expiration,
+      })
+
       return {
         success: true,
         linkToken: linkTokenResponse.link_token,
-        expiresAt: linkTokenResponse.expiration
-      };
+        expiresAt: linkTokenResponse.expiration,
+      }
     } catch (error) {
       logger.error('Link token creation job failed', {
         traceId,
         userId,
         provider,
         error: error.message,
-        errorCode: error.code
-      });
-      
+        errorCode: error.code,
+      })
+
       return {
         success: false,
-        error: error.message
-      };
+        error: error.message,
+      }
     }
-  }
-});
+  },
+})
 ```
 
 ## Transaction Processing
@@ -1164,46 +1195,55 @@ The transaction sync job fetches new transactions from the banking provider:
 
 ```typescript
 // jobs/tasks/bank/transactions/sync-transactions-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { getBankingProvider } from '@/lib/banking/providers';
-import { processTransactions } from '@/lib/banking/transactions';
-import { queueJob } from '@/jobs/utils/queue';
+import { createJob } from '@/jobs/utils/job-creator'
+import { getBankingProvider } from '@/lib/banking/providers'
+import { processTransactions } from '@/lib/banking/transactions'
+import { queueJob } from '@/jobs/utils/queue'
 
 export const syncTransactionsJob = createJob({
   name: 'sync-transactions',
-  handler: async ({ connectionId, accessToken, provider, startDate, endDate }) => {
+  handler: async ({
+    connectionId,
+    accessToken,
+    provider,
+    startDate,
+    endDate,
+  }) => {
     try {
-      const bankingProvider = getBankingProvider(provider);
-      
+      const bankingProvider = getBankingProvider(provider)
+
       // Fetch transactions for the specified date range
       const transactions = await bankingProvider.getTransactions(
         accessToken,
         startDate,
-        endDate
-      );
-      
+        endDate,
+      )
+
       // Process and store transactions
-      const processedCount = await processTransactions(connectionId, transactions);
-      
+      const processedCount = await processTransactions(
+        connectionId,
+        transactions,
+      )
+
       // Queue categorization job
       await queueJob('categorize-transactions', {
         connectionId,
-        transactionIds: transactions.map(t => t.id),
-      });
-      
-      return { 
-        success: true, 
+        transactionIds: transactions.map((t) => t.id),
+      })
+
+      return {
+        success: true,
         transactionCount: transactions.length,
-        processedCount
-      };
+        processedCount,
+      }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.message 
-      };
+      return {
+        success: false,
+        error: error.message,
+      }
     }
   },
-});
+})
 ```
 
 ### Transaction Categorization Job
@@ -1212,53 +1252,53 @@ A job that categorizes transactions using machine learning:
 
 ```typescript
 // jobs/tasks/bank/transactions/categorize-transactions-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { getTransactionCategorizer } from '@/lib/categorization';
-import { updateTransactionCategory } from '@/lib/banking/transactions';
+import { createJob } from '@/jobs/utils/job-creator'
+import { getTransactionCategorizer } from '@/lib/categorization'
+import { updateTransactionCategory } from '@/lib/banking/transactions'
 
 export const categorizeTransactionsJob = createJob({
   name: 'categorize-transactions',
   handler: async ({ connectionId, transactionIds }) => {
     try {
       // Get transactions from database
-      const transactions = await getTransactionsByIds(transactionIds);
-      
+      const transactions = await getTransactionsByIds(transactionIds)
+
       // Get categorizer instance
-      const categorizer = getTransactionCategorizer();
-      
+      const categorizer = getTransactionCategorizer()
+
       // Process transactions in batches to avoid memory issues
-      const batchSize = 100;
-      let categorizedCount = 0;
-      
+      const batchSize = 100
+      let categorizedCount = 0
+
       for (let i = 0; i < transactions.length; i += batchSize) {
-        const batch = transactions.slice(i, i + batchSize);
-        
+        const batch = transactions.slice(i, i + batchSize)
+
         // Categorize batch
-        const categorizedTransactions = await categorizer.categorize(batch);
-        
+        const categorizedTransactions = await categorizer.categorize(batch)
+
         // Update categories in database
         for (const transaction of categorizedTransactions) {
           await updateTransactionCategory(
             transaction.id,
             transaction.category,
-            transaction.confidence
-          );
-          categorizedCount++;
+            transaction.confidence,
+          )
+          categorizedCount++
         }
       }
-      
-      return { 
-        success: true, 
-        categorizedCount 
-      };
+
+      return {
+        success: true,
+        categorizedCount,
+      }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.message 
-      };
+      return {
+        success: false,
+        error: error.message,
+      }
     }
   },
-});
+})
 ```
 
 ## Notification System
@@ -1271,32 +1311,32 @@ A job that checks for expiring connections and notifies users:
 
 ```typescript
 // jobs/tasks/bank/notifications/connection-expiration-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { differenceInDays } from 'date-fns';
-import { sendNotification } from '@/lib/notifications';
+import { createJob } from '@/jobs/utils/job-creator'
+import { differenceInDays } from 'date-fns'
+import { sendNotification } from '@/lib/notifications'
 
 // Constants for expiration thresholds
-const WARNING_DAYS = 14;
-const CRITICAL_DAYS = 3;
+const WARNING_DAYS = 14
+const CRITICAL_DAYS = 3
 
 export const connectionExpirationJob = createJob({
   name: 'check-connection-expiration',
   handler: async () => {
     try {
       // Get all active connections
-      const connections = await getActiveConnections();
-      
-      let warningCount = 0;
-      let criticalCount = 0;
-      
+      const connections = await getActiveConnections()
+
+      let warningCount = 0
+      let criticalCount = 0
+
       for (const connection of connections) {
-        if (!connection.expires_at) continue;
-        
+        if (!connection.expires_at) continue
+
         const daysUntilExpiration = differenceInDays(
           new Date(connection.expires_at),
-          new Date()
-        );
-        
+          new Date(),
+        )
+
         // Handle critical expiration (3 days or less)
         if (daysUntilExpiration <= CRITICAL_DAYS && daysUntilExpiration > 0) {
           await sendNotification({
@@ -1307,13 +1347,16 @@ export const connectionExpirationJob = createJob({
             data: {
               connectionId: connection.id,
               bankName: connection.name,
-              daysRemaining: daysUntilExpiration
-            }
-          });
-          criticalCount++;
+              daysRemaining: daysUntilExpiration,
+            },
+          })
+          criticalCount++
         }
         // Handle warning expiration (14 days or less)
-        else if (daysUntilExpiration <= WARNING_DAYS && daysUntilExpiration > CRITICAL_DAYS) {
+        else if (
+          daysUntilExpiration <= WARNING_DAYS &&
+          daysUntilExpiration > CRITICAL_DAYS
+        ) {
           await sendNotification({
             userId: connection.user_id,
             type: 'connection_warning',
@@ -1322,26 +1365,26 @@ export const connectionExpirationJob = createJob({
             data: {
               connectionId: connection.id,
               bankName: connection.name,
-              daysRemaining: daysUntilExpiration
-            }
-          });
-          warningCount++;
+              daysRemaining: daysUntilExpiration,
+            },
+          })
+          warningCount++
         }
       }
-      
-      return { 
-        success: true, 
+
+      return {
+        success: true,
         warningCount,
-        criticalCount
-      };
+        criticalCount,
+      }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.message 
-      };
+      return {
+        success: false,
+        error: error.message,
+      }
     }
   },
-});
+})
 ```
 
 ## Scheduler
@@ -1354,16 +1397,16 @@ A job that sets up the appropriate sync schedule for a connection:
 
 ```typescript
 // jobs/tasks/bank/scheduler/setup-sync-schedule-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { scheduleRecurringJob } from '@/jobs/utils/scheduler';
+import { createJob } from '@/jobs/utils/job-creator'
+import { scheduleRecurringJob } from '@/jobs/utils/scheduler'
 
 export const setupSyncScheduleJob = createJob({
   name: 'setup-sync-schedule',
   handler: async ({ connectionId, provider, accessToken }) => {
     try {
       // Different providers have different optimal sync frequencies
-      const scheduleConfig = getProviderScheduleConfig(provider);
-      
+      const scheduleConfig = getProviderScheduleConfig(provider)
+
       // Schedule transaction sync job
       await scheduleRecurringJob({
         jobName: 'sync-transactions',
@@ -1374,10 +1417,10 @@ export const setupSyncScheduleJob = createJob({
           accessToken,
           // Dynamic date range based on last sync
           startDate: 'dynamic:last-sync',
-          endDate: 'dynamic:now'
-        }
-      });
-      
+          endDate: 'dynamic:now',
+        },
+      })
+
       // Schedule balance update job (more frequent than transactions)
       await scheduleRecurringJob({
         jobName: 'update-balances',
@@ -1385,25 +1428,25 @@ export const setupSyncScheduleJob = createJob({
         data: {
           connectionId,
           provider,
-          accessToken
-        }
-      });
-      
-      return { 
-        success: true, 
+          accessToken,
+        },
+      })
+
+      return {
+        success: true,
         schedules: {
           transactions: scheduleConfig.transactionSchedule,
-          balances: scheduleConfig.balanceSchedule
-        }
-      };
+          balances: scheduleConfig.balanceSchedule,
+        },
+      }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.message 
-      };
+      return {
+        success: false,
+        error: error.message,
+      }
     }
   },
-});
+})
 
 // Helper function to get provider-specific schedule configuration
 function getProviderScheduleConfig(provider) {
@@ -1411,23 +1454,23 @@ function getProviderScheduleConfig(provider) {
     case 'plaid':
       return {
         transactionSchedule: '0 */6 * * *', // Every 6 hours
-        balanceSchedule: '0 */2 * * *'      // Every 2 hours
-      };
+        balanceSchedule: '0 */2 * * *', // Every 2 hours
+      }
     case 'teller':
       return {
         transactionSchedule: '0 */8 * * *', // Every 8 hours
-        balanceSchedule: '0 */3 * * *'      // Every 3 hours
-      };
+        balanceSchedule: '0 */3 * * *', // Every 3 hours
+      }
     case 'gocardless':
       return {
         transactionSchedule: '0 */12 * * *', // Every 12 hours
-        balanceSchedule: '0 */4 * * *'       // Every 4 hours
-      };
+        balanceSchedule: '0 */4 * * *', // Every 4 hours
+      }
     default:
       return {
         transactionSchedule: '0 */12 * * *', // Every 12 hours
-        balanceSchedule: '0 */6 * * *'       // Every 6 hours
-      };
+        balanceSchedule: '0 */6 * * *', // Every 6 hours
+      }
   }
 }
 ```
@@ -1442,47 +1485,47 @@ A job that attempts to recover failed connections:
 
 ```typescript
 // jobs/tasks/bank/sync/connection-recovery-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { getBankingProvider } from '@/lib/banking/providers';
-import { updateBankConnection } from '@/lib/banking/connection';
+import { createJob } from '@/jobs/utils/job-creator'
+import { getBankingProvider } from '@/lib/banking/providers'
+import { updateBankConnection } from '@/lib/banking/connection'
 
 export const connectionRecoveryJob = createJob({
   name: 'connection-recovery',
   handler: async ({ connectionId, provider, accessToken, retryCount = 0 }) => {
     try {
       // Get the appropriate provider client
-      const bankingProvider = getBankingProvider(provider);
-      
+      const bankingProvider = getBankingProvider(provider)
+
       // Check connection status
-      const status = await bankingProvider.checkConnection(accessToken);
-      
+      const status = await bankingProvider.checkConnection(accessToken)
+
       if (status.valid) {
         // Connection is valid, update status
         await updateBankConnection(connectionId, {
           status: 'connected',
           error: null,
-          error_retries: 0
-        });
-        
-        return { 
-          success: true, 
-          recovered: true 
-        };
+          error_retries: 0,
+        })
+
+        return {
+          success: true,
+          recovered: true,
+        }
       } else {
         // Connection is invalid, increment retry count
-        const newRetryCount = retryCount + 1;
-        
+        const newRetryCount = retryCount + 1
+
         await updateBankConnection(connectionId, {
           status: 'disconnected',
           error: status.error || 'Connection validation failed',
-          error_retries: newRetryCount
-        });
-        
+          error_retries: newRetryCount,
+        })
+
         // If we haven't exceeded max retries, schedule another attempt
         if (newRetryCount < 3) {
           // Schedule with exponential backoff
-          const delayMinutes = Math.pow(2, newRetryCount) * 15; // 15min, 30min, 60min
-          
+          const delayMinutes = Math.pow(2, newRetryCount) * 15 // 15min, 30min, 60min
+
           await scheduleJob({
             jobName: 'connection-recovery',
             runAt: new Date(Date.now() + delayMinutes * 60 * 1000),
@@ -1490,45 +1533,46 @@ export const connectionRecoveryJob = createJob({
               connectionId,
               provider,
               accessToken,
-              retryCount: newRetryCount
-            }
-          });
-          
-          return { 
-            success: true, 
+              retryCount: newRetryCount,
+            },
+          })
+
+          return {
+            success: true,
             recovered: false,
             scheduled: true,
-            nextAttempt: `in ${delayMinutes} minutes`
-          };
+            nextAttempt: `in ${delayMinutes} minutes`,
+          }
         }
-        
+
         // Max retries exceeded, notify user
         await sendNotification({
           userId: await getUserIdForConnection(connectionId),
           type: 'connection_failed',
           title: 'Bank Connection Failed',
-          message: 'We were unable to connect to your bank. Please reconnect your account.',
+          message:
+            'We were unable to connect to your bank. Please reconnect your account.',
           data: {
             connectionId,
-            error: status.error
-          }
-        });
-        
-        return { 
-          success: true, 
+            error: status.error,
+          },
+        })
+
+        return {
+          success: true,
           recovered: false,
           scheduled: false,
-          maxRetriesExceeded: true
-        };
+          maxRetriesExceeded: true,
+        }
       }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error.message 
-      };
+      return {
+        success: false,
+        error: error.message,
+      }
     }
   },
-});
+})
 ```
 
 ## Implementation Examples
@@ -1539,7 +1583,7 @@ When a user first connects a bank account, you need to set up the initial sync:
 
 ```typescript
 // Example of setting up initial bank sync after connection
-import { queueJob } from '@/jobs/utils/queue';
+import { queueJob } from '@/jobs/utils/queue'
 
 export async function handleBankConnection(connectionData) {
   // Save the connection to the database
@@ -1548,37 +1592,37 @@ export async function handleBankConnection(connectionData) {
     provider: connectionData.provider,
     access_token: connectionData.accessToken,
     institution_id: connectionData.institutionId,
-    status: 'connected'
-  });
-  
+    status: 'connected',
+  })
+
   // Queue initial sync jobs
   await queueJob('sync-bank', {
     connectionId: connection.id,
     accessToken: connection.access_token,
-    provider: connection.provider
-  });
-  
+    provider: connection.provider,
+  })
+
   // Queue historical transaction sync
   // Get date 90 days in the past for initial sync
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 90);
-  
+  const startDate = new Date()
+  startDate.setDate(startDate.getDate() - 90)
+
   await queueJob('sync-transactions', {
     connectionId: connection.id,
     accessToken: connection.access_token,
     provider: connection.provider,
     startDate: startDate.toISOString(),
-    endDate: new Date().toISOString()
-  });
-  
+    endDate: new Date().toISOString(),
+  })
+
   // Set up recurring sync schedule
   await queueJob('setup-sync-schedule', {
     connectionId: connection.id,
     provider: connection.provider,
-    accessToken: connection.access_token
-  });
-  
-  return connection;
+    accessToken: connection.access_token,
+  })
+
+  return connection
 }
 ```
 
@@ -1592,12 +1636,12 @@ Allow users to manually trigger a sync from the UI:
 
 import { createSafeActionClient } from 'next-safe-action'
 import { z } from 'zod'
-import { queueJob } from '@/jobs/utils/queue';
-import { getBankConnection } from '@/lib/banking/connection';
+import { queueJob } from '@/jobs/utils/queue'
+import { getBankConnection } from '@/lib/banking/connection'
 import type { ActionResponse } from '@/app/actions/actions'
 
 const schema = z.object({
-  connectionId: z.string()
+  connectionId: z.string(),
 })
 
 export const manualSyncTransactionsAction = createSafeActionClient()
@@ -1605,42 +1649,42 @@ export const manualSyncTransactionsAction = createSafeActionClient()
   .action(async ({ connectionId }): Promise<ActionResponse> => {
     try {
       // Get connection details
-      const connection = await getBankConnection(connectionId);
-      
+      const connection = await getBankConnection(connectionId)
+
       if (!connection) {
-        return { 
-          success: false, 
-          error: { message: 'Connection not found' } 
-        };
+        return {
+          success: false,
+          error: { message: 'Connection not found' },
+        }
       }
-      
+
       // Get date 30 days in the past for manual sync
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 30);
-      
+      const startDate = new Date()
+      startDate.setDate(startDate.getDate() - 30)
+
       // Queue sync job
       const job = await queueJob('sync-transactions', {
         connectionId,
         accessToken: connection.access_token,
         provider: connection.provider,
         startDate: startDate.toISOString(),
-        endDate: new Date().toISOString()
-      });
-      
-      return { 
-        success: true, 
+        endDate: new Date().toISOString(),
+      })
+
+      return {
+        success: true,
         data: {
           id: job.id,
-          publicAccessToken: job.publicAccessToken
-        }
-      };
+          publicAccessToken: job.publicAccessToken,
+        },
+      }
     } catch (error) {
-      return { 
-        success: false, 
-        error: { message: error.message || 'Failed to sync transactions' }
-      };
+      return {
+        success: false,
+        error: { message: error.message || 'Failed to sync transactions' },
+      }
     }
-  });
+  })
 ```
 
 ### 3. Monitoring Sync Status
@@ -1651,55 +1695,55 @@ Create a hook to monitor the status of a sync job:
 // Client-side hook for monitoring sync status
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
 export function useSyncStatus({ runId, accessToken }) {
-  const [status, setStatus] = useState('PENDING');
-  
+  const [status, setStatus] = useState('PENDING')
+
   useEffect(() => {
-    if (!runId || !accessToken) return;
-    
-    let intervalId;
-    
+    if (!runId || !accessToken) return
+
+    let intervalId
+
     const checkStatus = async () => {
       try {
         const response = await fetch(`/api/jobs/status?id=${runId}`, {
           headers: {
-            'Authorization': `Bearer ${accessToken}`
-          }
-        });
-        
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+
         if (!response.ok) {
-          throw new Error('Failed to fetch job status');
+          throw new Error('Failed to fetch job status')
         }
-        
-        const data = await response.json();
-        
-        setStatus(data.status);
-        
+
+        const data = await response.json()
+
+        setStatus(data.status)
+
         // Clear interval if job is complete or failed
         if (data.status === 'COMPLETED' || data.status === 'FAILED') {
-          clearInterval(intervalId);
+          clearInterval(intervalId)
         }
       } catch (error) {
-        console.error('Error checking job status:', error);
-        setStatus('FAILED');
-        clearInterval(intervalId);
+        console.error('Error checking job status:', error)
+        setStatus('FAILED')
+        clearInterval(intervalId)
       }
-    };
-    
+    }
+
     // Check immediately
-    checkStatus();
-    
+    checkStatus()
+
     // Then check every 2 seconds
-    intervalId = setInterval(checkStatus, 2000);
-    
+    intervalId = setInterval(checkStatus, 2000)
+
     return () => {
-      clearInterval(intervalId);
-    };
-  }, [runId, accessToken]);
-  
-  return { status, setStatus };
+      clearInterval(intervalId)
+    }
+  }, [runId, accessToken])
+
+  return { status, setStatus }
 }
 ```
 
@@ -1710,31 +1754,31 @@ Process and categorize transactions:
 ```typescript
 // Implementation of transaction processing
 export async function processTransactions(connectionId, transactions) {
-  let processedCount = 0;
-  
+  let processedCount = 0
+
   // Get existing transactions to avoid duplicates
-  const existingTransactionIds = await getExistingTransactionIds(connectionId);
-  
+  const existingTransactionIds = await getExistingTransactionIds(connectionId)
+
   // Process each transaction
   for (const transaction of transactions) {
     // Skip if transaction already exists
     if (existingTransactionIds.includes(transaction.id)) {
-      continue;
+      continue
     }
-    
+
     // Normalize transaction data
-    const normalizedTransaction = normalizeTransaction(transaction);
-    
+    const normalizedTransaction = normalizeTransaction(transaction)
+
     // Store in database
     await storeTransaction({
       ...normalizedTransaction,
-      connection_id: connectionId
-    });
-    
-    processedCount++;
+      connection_id: connectionId,
+    })
+
+    processedCount++
   }
-  
-  return processedCount;
+
+  return processedCount
 }
 
 // Helper to normalize transaction data from different providers
@@ -1750,7 +1794,7 @@ function normalizeTransaction(transaction) {
     category: transaction.category || null,
     location: transaction.location || null,
     // Add any other fields needed
-  };
+  }
 }
 ```
 
@@ -1767,4 +1811,4 @@ function normalizeTransaction(transaction) {
 
 ## Conclusion
 
-Implementing bank and transaction syncing requires careful coordination between multiple components. By following the patterns in this guide, you can create a robust system that reliably syncs financial data while providing a smooth user experience. 
+Implementing bank and transaction syncing requires careful coordination between multiple components. By following the patterns in this guide, you can create a robust system that reliably syncs financial data while providing a smooth user experience.

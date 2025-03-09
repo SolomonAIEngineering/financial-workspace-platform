@@ -1,5 +1,5 @@
 {
-  "name": "@polar-core/workflows",
+  "name": "@solomonai-core/workflows",
   "version": "0.0.1",
   "scripts": {
     "deploy": "wrangler deploy",
@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "@planetscale/database": "^1.16.0",
-    "@repo/db": "workspace:^",
-    "@repo/id": "workspace:^"
+    "@solomonai/db": "workspace:^",
+    "@solomonai/id": "workspace:^"
   },
   "author": "Yoan Yomba",
   "license": "MIT"

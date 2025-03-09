@@ -8,8 +8,8 @@
       }
     ],
     "paths": {
-      "@repo/*": ["../*"],
-      "@repo/design-system/*": ["./*"]
+      "@solomonai/*": ["../*"],
+      "@solomonai/design-system/*": ["./*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],

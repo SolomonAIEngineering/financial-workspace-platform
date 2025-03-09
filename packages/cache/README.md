@@ -1,5 +1,5 @@
 <div align="center">
-    <h1 align="center">@repo/cache</h1>
+    <h1 align="center">@solomonai/cache</h1>
     <h5>Cache all the things</h5>
 </div>
 
@@ -23,12 +23,16 @@
 ## Quickstart
 
 ```bash
-npm install @repo/cache
+npm install @solomonai/cache
 ```
 
 ```ts
-import { createCache, DefaultStatefulContext, Namespace } from '@repo/cache'
-import { MemoryStore, CloudflareStore } from '@repo/cache/stores'
+import {
+  createCache,
+  DefaultStatefulContext,
+  Namespace,
+} from '@solomonai/cache'
+import { MemoryStore, CloudflareStore } from '@solomonai/cache/stores'
 
 // Only required in stateful environments.
 // Cloudflare workers or Vercel provide an executionContext for you.
@@ -123,14 +127,18 @@ Most people would build a small wrapper around this to make it easier to use and
 ### Installation
 
 ```bash
-npm install @repo/cache
+npm install @solomonai/cache
 ```
 
 ### Basic Usage
 
 ```ts
-import { createCache, DefaultStatefulContext, Namespace } from '@repo/cache'
-import { MemoryStore, CloudflareStore } from '@repo/cache/stores'
+import {
+  createCache,
+  DefaultStatefulContext,
+  Namespace,
+} from '@solomonai/cache'
+import { MemoryStore, CloudflareStore } from '@solomonai/cache/stores'
 
 // Only required in stateful environments.
 // Cloudflare workers or Vercel provide an executionContext for you.
@@ -213,7 +221,7 @@ new Namespace<TValue>(ctx, opts)
   On Cloudflare workers or Vercel edge functions, you receive a context from the `fetch` handler. Otherwise, you can use:
 
   ```ts
-  import { DefaultStatefulContext } from '@repo/cache'
+  import { DefaultStatefulContext } from '@solomonai/cache'
   const ctx = new DefaultStatefulContext()
   ```
 
@@ -241,7 +249,7 @@ import {
   DefaultStatefulContext,
   MemoryStore,
   CloudflareStore,
-} from '@repo/cache'
+} from '@solomonai/cache'
 
 type User = {
   email: string
@@ -283,8 +291,12 @@ When setting or deleting a key, every store will be updated in parallel.
 #### Example
 
 ```ts
-import { DefaultStatefulContext, Namespace, createCache } from '@repo/cache'
-import { CloudflareStore, MemoryStore } from '@repo/cache/stores'
+import {
+  DefaultStatefulContext,
+  Namespace,
+  createCache,
+} from '@solomonai/cache'
+import { CloudflareStore, MemoryStore } from '@solomonai/cache/stores'
 
 /**
  * In serverless you'd get this from the request handler
@@ -347,8 +359,12 @@ const user = await cache.user.swr('userId', async (userId) => {
 **Example**
 
 ```ts
-import { DefaultStatefulContext, Namespace, createCache } from '@repo/cache'
-import { CloudflareStore, MemoryStore } from '@repo/cache/stores'
+import {
+  DefaultStatefulContext,
+  Namespace,
+  createCache,
+} from '@solomonai/cache'
+import { CloudflareStore, MemoryStore } from '@solomonai/cache/stores'
 
 /**
  * In serverless you'd get this from the request handler
@@ -408,7 +424,7 @@ export interface Context {
 For stateful applications, you can use the `DefaultStatefulContext`:
 
 ```ts
-import { DefaultStatefulContext } from '@repo/cache'
+import { DefaultStatefulContext } from '@solomonai/cache'
 const ctx = new DefaultStatefulContext()
 ```
 
@@ -433,7 +449,7 @@ You can create your own store by implementing the `Store` interface. [Read more.
 The memory store is an in-memory cache that is fast but only as persistent as your memory. In serverless environments, this means that the cache is lost when the function is cold-started.
 
 ```ts
-import { MemoryStore } from '@repo/cache/stores'
+import { MemoryStore } from '@solomonai/cache/stores'
 
 const memory = new MemoryStore({
   persistentMap: new Map(),
@@ -447,7 +463,7 @@ Ensure that the `Map` is instantiated in a persistent scope of your application.
 The Cloudflare store uses Cloudflare’s [`Cache` API](https://developers.cloudflare.com/workers/runtime-apis/cache/) to store cache values. This is a remote cache that is shared across all instances of your worker but isolated per datacenter. It’s still pretty fast but needs a network request to access the cache.
 
 ```ts
-import { CloudflareStore } from '@repo/cache/stores'
+import { CloudflareStore } from '@solomonai/cache/stores'
 
 const cloudflare = new CloudflareStore({
   cloudflareApiKey: '<CLOUDFLARE_API_KEY>',
@@ -479,7 +495,7 @@ const cloudflare = new CloudflareStore({
 The Upstash Redis store uses the [Serverless Redis](https://upstash.com/docs/redis/overall/getstarted) offering from Upstash to store cache values. This is a serverless database with Redis compatibility.
 
 ```ts
-import { UpstashRedisStore } from '@repo/cache/stores'
+import { UpstashRedisStore } from '@solomonai/cache/stores'
 import { Redis } from '@upstash/redis'
 
 const redis = new Redis({
@@ -553,7 +569,7 @@ interface Metrics<
 Wrap your store with the metrics middleware to start collecting metrics.
 
 ```ts
-import { withMetrics } from "@repo/cache/middleware";
+import { withMetrics } from "@solomonai/cache/middleware";
 
 const metricsSink = // your metrics sink
 const metricsMiddleware = withMetrics(metricsSink);
@@ -611,7 +627,7 @@ openssl rand -base64 32
 **Example Usage**
 
 ```ts
-import { withEncryption } from '@repo/cache'
+import { withEncryption } from '@solomonai/cache'
 
 const encryptionKey = '<BASE64_KEY>'
 const encryptionMiddleware = await withEncryption(encryptionKey)

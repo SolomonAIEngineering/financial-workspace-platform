@@ -1,15 +1,13 @@
+import { eq, schema } from '@solomonai/db'
 import { describe, expect, test } from 'vitest'
-
-import { sha256 } from '@repo/hash'
-
-import { eq, schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
 import type {
   V1KeysCreateKeyRequest,
   V1KeysCreateKeyResponse,
 } from './v1_keys_createKey'
+
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('creates key', async (t) => {
   const h = await IntegrationHarness.init(t)

@@ -8,7 +8,7 @@ Here's a complete example showing how to set up and use feature flags in a real 
 
 ```typescript
 // src/config/feature-flags.ts
-import { FeatureFlagManager, FeatureFlag, FeatureFlagValue } from '@polar-sh/platform-config';
+import { FeatureFlagManager, FeatureFlag, FeatureFlagValue } from '@solomonai/platform-config';
 
 // 1. Define your feature flags with types
 interface AppFeatureFlags {
@@ -191,19 +191,19 @@ The setup provides:
 
 ```bash
 # If using npm
-npm install @polar-sh/platform-config
+npm install @solomonai/platform-config
 
 # If using yarn
-yarn add @polar-sh/platform-config
+yarn add @solomonai/platform-config
 
 # If using pnpm
-pnpm add @polar-sh/platform-config
+pnpm add @solomonai/platform-config
 ```
 
 ## Quick Start
 
 ```typescript
-import { FeatureFlagManager } from "@polar-sh/platform-config";
+import { FeatureFlagManager } from "@solomonai/platform-config";
 
 // Create a feature flag manager
 const manager = new FeatureFlagManager();
@@ -306,7 +306,7 @@ manager.load();
 ### Built-in Validators
 
 ```typescript
-import { validators } from "@polar-sh/platform-config";
+import { validators } from "@solomonai/platform-config";
 
 const flag = {
   // ...

@@ -1,4 +1,4 @@
-# @repo/backend-client
+# @solomonai/backend-client
 
 This package provides a robust and flexible client for interacting with backend services. It's designed to be used as an internal module within a larger project.
 

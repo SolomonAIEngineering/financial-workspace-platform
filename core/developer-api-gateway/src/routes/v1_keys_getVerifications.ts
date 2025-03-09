@@ -3,7 +3,10 @@ import { createRoute, RouteConfigToTypedResponse, z } from '@hono/zod-openapi'
 
 import { rootKeyAuth } from '@/pkg/auth/root_key'
 import { openApiErrorResponses, UnkeyApiError } from '@/pkg/errors'
-import { buildUnkeyQuery, type solomonAIPermissionValidation } from '@repo/rbac'
+import {
+  buildUnkeyQuery,
+  type solomonAIPermissionValidation,
+} from '@solomonai/rbac'
 
 const route = createRoute({
   tags: ['keys'],

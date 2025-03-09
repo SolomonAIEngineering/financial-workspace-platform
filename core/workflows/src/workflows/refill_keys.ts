@@ -4,7 +4,7 @@ import {
   type WorkflowStep,
 } from 'cloudflare:workers'
 
-import { newId } from '@repo/id'
+import { newId } from '@solomonai/id'
 import { createConnection, eq, schema } from '../lib/db'
 import type { Env } from '../lib/env'
 

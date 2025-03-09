@@ -1,14 +1,5 @@
+import { eq, schema } from '@solomonai/db'
 import { describe, expect, test } from 'vitest'
-
-import { eq, schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import type { ErrorResponse } from '@repo/api/src'
-import { sha256 } from '@repo/hash'
-import { KeyV1 } from '@repo/keys'
-import type { V1KeysGetKeyResponse } from './v1_keys_getKey'
 import type {
   V1KeysVerifyKeyRequest,
   V1KeysVerifyKeyResponse,
@@ -17,6 +8,14 @@ import type {
   V1MigrationsCreateKeysRequest,
   V1MigrationsCreateKeysResponse,
 } from './v1_migrations_createKey'
+
+import type { ErrorResponse } from '@solomonai/api/src'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
+import type { V1KeysGetKeyResponse } from './v1_keys_getKey'
 
 test('creates key', async (t) => {
   const h = await IntegrationHarness.init(t)

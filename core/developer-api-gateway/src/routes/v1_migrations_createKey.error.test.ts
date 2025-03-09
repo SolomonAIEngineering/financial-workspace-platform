@@ -1,15 +1,14 @@
 import { expect, test } from 'vitest'
-
-import type { ErrorResponse } from '@/pkg/errors'
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
 import type {
   V1MigrationsCreateKeysRequest,
   V1MigrationsCreateKeysResponse,
 } from './v1_migrations_createKey'
+
+import type { ErrorResponse } from '@/pkg/errors'
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('when the api does not exist', async (t) => {
   const h = await IntegrationHarness.init(t)

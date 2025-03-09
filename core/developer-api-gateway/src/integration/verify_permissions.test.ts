@@ -1,10 +1,11 @@
-import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
 import type {
   V1KeysVerifyKeyRequest,
   V1KeysVerifyKeyResponse,
 } from '@/routes/v1_keys_verifyKey'
-import type { ErrorResponse } from '@repo/api/src'
 import { describe, expect, test } from 'vitest'
+
+import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
+import type { ErrorResponse } from '@solomonai/api/src'
 
 test('without permissions', async (t) => {
   const h = await IntegrationHarness.init(t)

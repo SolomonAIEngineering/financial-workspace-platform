@@ -1,4 +1,4 @@
-import type { Result } from '@polar/error'
+import type { Result } from '@solomonai/error'
 import type { CacheError } from '../errors'
 
 export type Entry<TValue> = {

@@ -1,4 +1,4 @@
-import { BaseError, type Result } from '@polar/error'
+import { BaseError, type Result } from '@solomonai/error'
 import type { Context } from 'hono'
 import { z } from 'zod'
 

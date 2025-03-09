@@ -1,8 +1,7 @@
 import { expect, test } from 'vitest'
 
-import { newId } from '@repo/id'
+import { newId } from '@solomonai/id'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
 import type { V1PermissionsGetPermissionResponse } from './v1_permissions_getPermission'
 
 test('permission does not exist', async (t) => {

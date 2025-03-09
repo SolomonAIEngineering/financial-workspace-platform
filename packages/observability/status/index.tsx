@@ -1,5 +1,6 @@
-import { env } from '@repo/env'
 import 'server-only'
+
+import { env } from '@solomonai/env'
 import type { BetterStackResponse } from './types'
 
 export const Status = async () => {

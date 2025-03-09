@@ -1,8 +1,9 @@
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
+import { expect, test } from 'vitest'
+
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
 import { randomUUID } from 'node:crypto'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-import { expect, test } from 'vitest'
 import type { V1RatelimitListOverridesResponse } from './v1_ratelimits_listOverrides'
 
 test('Missing Namespace', async (t) => {

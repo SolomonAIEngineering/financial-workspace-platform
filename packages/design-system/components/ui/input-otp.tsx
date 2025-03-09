@@ -5,7 +5,7 @@ import * as React from 'react'
 import { OTPInput, OTPInputContext } from 'input-otp'
 
 import { MinusIcon } from '@radix-ui/react-icons'
-import { cn } from '@repo/design-system/lib/utils'
+import { cn } from '@solomonai/design-system/lib/utils'
 
 // Helper type for forwardRef components
 type ForwardRefComponent<T, P> = React.ForwardRefExoticComponent<

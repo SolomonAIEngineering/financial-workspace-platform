@@ -1,4 +1,4 @@
-import { Log, type LogSchema } from '@repo/logs'
+import { Log, type LogSchema } from '@solomonai/logs'
 import type { Fields, Logger } from './interface'
 
 export class ConsoleLogger implements Logger {

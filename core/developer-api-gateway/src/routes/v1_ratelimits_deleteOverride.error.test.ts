@@ -1,14 +1,13 @@
 import { expect, test } from 'vitest'
-
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
 import type {
   V1RatelimitDeleteOverrideRequest,
   V1RatelimitDeleteOverrideResponse,
 } from './v1_ratelimits_deleteOverride'
+
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('Missing Namespace', async (t) => {
   const h = await IntegrationHarness.init(t)

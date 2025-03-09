@@ -1,17 +1,15 @@
 import { describe, expect, test } from 'vitest'
-
-import type { ErrorResponse } from '@/pkg/errors'
-
-import { schema } from '@repo/db'
-import { sha256 } from '@repo/hash'
-import { newId } from '@repo/id'
-import { KeyV1 } from '@repo/keys'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
 import type {
   LegacyKeysVerifyKeyRequest,
   LegacyKeysVerifyKeyResponse,
 } from './legacy_keys_verifyKey'
+
+import type { ErrorResponse } from '@/pkg/errors'
+import { schema } from '@solomonai/db'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('returns 200', async (t) => {
   const h = await IntegrationHarness.init(t)
