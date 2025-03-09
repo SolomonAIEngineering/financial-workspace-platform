@@ -19,12 +19,15 @@
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "typecheck": "turbo run typecheck",
-    "precommit": "pnpm format",
+    "precommit": "pnpm format && pnpm changeset",
     "preinstall": "npx only-allow pnpm",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
     "release-packages": "turbo run build lint test --filter='./packages/*' && changeset publish",
     "db:deploy": "cd apps/web && pnpm db:deploy"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.28.1",
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-tailwindcss": "^0.6.11",
