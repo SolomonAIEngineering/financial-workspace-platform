@@ -11,8 +11,8 @@ import {
 } from '@azure-rest/ai-document-intelligence'
 
 import type { AnalyzeOperationOutput } from '@azure-rest/ai-document-intelligence'
-import type { GetDocumentRequest } from '../../types'
 import { client } from '../../provider/azure'
+import type { GetDocumentRequest } from '../../types'
 
 /**
  * Processes documents to extract table layout information.

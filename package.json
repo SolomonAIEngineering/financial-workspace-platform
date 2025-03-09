@@ -19,7 +19,7 @@
     "clean": "turbo clean",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "typecheck": "turbo run typecheck",
-    "precommit": "pnpm format && pnpm changeset",
+    "precommit": "pnpm format && pnpm typecheck && pnpm build",
     "preinstall": "npx only-allow pnpm",
     "changeset": "changeset",
     "version-packages": "changeset version",

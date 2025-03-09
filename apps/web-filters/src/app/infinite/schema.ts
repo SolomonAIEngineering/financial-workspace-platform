@@ -1,12 +1,12 @@
+import { LEVELS } from "@/constants/levels";
+import { METHODS } from "@/constants/method";
+import { REGIONS } from "@/constants/region";
 import {
   ARRAY_DELIMITER,
   RANGE_DELIMITER,
   SLIDER_DELIMITER,
 } from "@/lib/delimiters";
-import { METHODS } from "@/constants/method";
-import { REGIONS } from "@/constants/region";
 import { z } from "zod";
-import { LEVELS } from "@/constants/levels";
 
 // https://github.com/colinhacks/zod/issues/2985#issue-2008642190
 const stringToBoolean = z
@@ -122,7 +122,7 @@ export const facetMetadataSchema = z.object({
 
 export type FacetMetadataSchema = z.infer<typeof facetMetadataSchema>;
 
-export type BaseChartSchema = { timestamp: number;[key: string]: number };
+export type BaseChartSchema = { timestamp: number; [key: string]: number };
 
 export const timelineChartSchema = z.object({
   timestamp: z.number(), // UNIX
@@ -131,7 +131,7 @@ export const timelineChartSchema = z.object({
       ...acc,
       [level]: z.number().default(0),
     }),
-    {} as Record<(typeof LEVELS)[number], z.ZodNumber>
+    {} as Record<(typeof LEVELS)[number], z.ZodNumber>,
   ),
   // REMINDER: make sure to have the `timestamp` field in the object
 }) satisfies z.ZodType<BaseChartSchema>;

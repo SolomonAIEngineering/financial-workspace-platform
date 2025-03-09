@@ -48,7 +48,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Extract package versions
-        if: steps.changesets.outputs.published == "true"
+        if: steps.changesets.outputs.published == true
         id: extract_versions
         run: |
           # Get the list of published packages and their versions
@@ -64,7 +64,7 @@ jobs:
           echo "published_packages=$PUBLISHED_PACKAGES" >> $GITHUB_OUTPUT
 
       - name: Create Git Tag for Root Package
-        if: steps.changesets.outputs.published == "true"
+        if: steps.changesets.outputs.published == true
         run: |
           ROOT_VERSION="${{ steps.extract_versions.outputs.root_version }}"
           git config --global user.name "GitHub Actions"
@@ -73,7 +73,7 @@ jobs:
           git push origin "v$ROOT_VERSION"
 
       - name: Create GitHub Release
-        if: steps.changesets.outputs.published == "true"
+        if: steps.changesets.outputs.published == true
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "v${{ steps.extract_versions.outputs.root_version }}"

@@ -1,5 +1,35 @@
 "use client";
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/custom/table";
+import { DataTableFilterCommand } from "@/components/data-table/data-table-filter-command";
+import { DataTableFilterControls } from "@/components/data-table/data-table-filter-controls";
+import { DataTableProvider } from "@/components/data-table/data-table-provider";
+import { DataTableResetButton } from "@/components/data-table/data-table-reset-button";
+import { MemoizedDataTableSheetContent } from "@/components/data-table/data-table-sheet/data-table-sheet-content";
+import { DataTableSheetDetails } from "@/components/data-table/data-table-sheet/data-table-sheet-details";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"; // TODO: check where to put this
+import type {
+  DataTableFilterField,
+  SheetField,
+} from "@/components/data-table/types";
+import { Button } from "@/components/ui/button";
+import { useHotKey } from "@/hooks/use-hot-key";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { formatCompactNumber } from "@/lib/format";
+import { arrSome, inDateRange } from "@/lib/table/filterfns";
+import { cn } from "@/lib/utils";
+import {
+  FetchPreviousPageOptions,
+  RefetchOptions,
+  type FetchNextPageOptions,
+} from "@tanstack/react-query";
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -14,52 +44,22 @@ import {
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
-  getFacetedUniqueValues as getTTableFacetedUniqueValues,
-  getFacetedMinMaxValues as getTTableFacetedMinMaxValues,
   getFilteredRowModel,
   getSortedRowModel,
+  getFacetedMinMaxValues as getTTableFacetedMinMaxValues,
+  getFacetedUniqueValues as getTTableFacetedUniqueValues,
   useReactTable,
 } from "@tanstack/react-table";
-import * as React from "react";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/custom/table";
-import { DataTableFilterControls } from "@/components/data-table/data-table-filter-controls";
-import { DataTableFilterCommand } from "@/components/data-table/data-table-filter-command";
-import { ColumnSchema, BaseChartSchema, columnFilterSchema } from "./schema";
-import type {
-  DataTableFilterField,
-  SheetField,
-} from "@/components/data-table/types";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"; // TODO: check where to put this
-import { cn } from "@/lib/utils";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import { useQueryState, useQueryStates } from "nuqs";
-import { searchParamsParser } from "./search-params";
-import {
-  FetchPreviousPageOptions,
-  RefetchOptions,
-  type FetchNextPageOptions,
-} from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { formatCompactNumber } from "@/lib/format";
-import { inDateRange, arrSome } from "@/lib/table/filterfns";
-import { DataTableSheetDetails } from "@/components/data-table/data-table-sheet/data-table-sheet-details";
-import { SocialsFooter } from "./_components/socials-footer";
-import { TimelineChart } from "./timeline-chart";
-import { useHotKey } from "@/hooks/use-hot-key";
-import { DataTableResetButton } from "@/components/data-table/data-table-reset-button";
-import { DataTableProvider } from "@/components/data-table/data-table-provider";
-import { MemoizedDataTableSheetContent } from "@/components/data-table/data-table-sheet/data-table-sheet-content";
+import { useQueryState, useQueryStates } from "nuqs";
+import * as React from "react";
 import { LiveButton } from "./_components/live-button";
 import { RefreshButton } from "./_components/refresh-button";
+import { SocialsFooter } from "./_components/socials-footer";
+import { BaseChartSchema, columnFilterSchema, ColumnSchema } from "./schema";
+import { searchParamsParser } from "./search-params";
+import { TimelineChart } from "./timeline-chart";
+
 // TODO: add a possible chartGroupBy
 export interface DataTableInfiniteProps<TData, TValue, TMeta> {
   columns: ColumnDef<TData, TValue>[];
