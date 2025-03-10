@@ -40,10 +40,10 @@ pids
 *.pem
 bundled
 
-# local env files
-.env
-.env.local
-.env.secrets
+# # local env files
+# .env
+# .env.local
+# .env.secrets
 
 # vercel
 .vercel
