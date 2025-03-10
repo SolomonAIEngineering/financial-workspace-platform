@@ -19,7 +19,7 @@
     "dev": "run-p dev:*",
     "dev:app": "next dev --turbo",
     "dev:db": "docker-compose up",
-    "dev:trigger": "trigger dev",
+    "dev:trigger": "pnpm with-env pnpm dlx trigger.dev@3.3.12 dev --skip-update-check",
     "docker": "docker-compose -f docker-compose.web.yml --env-file .env.local up --build",
     "email:dev": "pnpm with-env email dev --port 3333 --dir src/components/email",
     "postinstall": "pnpm db:generate",
@@ -36,13 +36,12 @@
     "vendor": "sh tooling/scripts/vendor.sh",
     "with-env": "dotenv -e .env.local --",
     "format": "prettier --write .",
-    "trigger:dev": "trigger dev",
-    "trigger:login": "trigger login",
-    "trigger:deploy": "trigger deploy",
-    "trigger:whoami": "trigger whoami"
+    "trigger:dev": "pnpm dlx trigger.dev@3.3.12 dev --skip-update-check",
+    "trigger:login": "pnpm dlx trigger.dev@3.3.12 login",
+    "trigger:deploy": "pnpm dlx trigger.dev@3.3.12 deploy",
+    "trigger:whoami": "pnpm dlx trigger.dev@3.3.12 whoami"
   },
   "dependencies": {
-    "24": "link:@heroicons/react/24",
     "@ai-sdk/openai": "^1.1.9",
     "@ariakit/react": "0.4.15",
     "@emoji-mart/data": "^1.2.1",
@@ -88,8 +87,10 @@
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-query-devtools": "^5.66.0",
     "@team-plain/typescript-sdk": "^5.8.0",
-    "@trigger.dev/express": "^3.3.12",
-    "@trigger.dev/sdk": "^3.3.12",
+    "@trigger.dev/express": "3.3.12",
+    "@trigger.dev/sdk": "3.3.12",
+    "@trigger.dev/nextjs": "3.3.12",
+    "@trigger.dev/react": "3.3.12",
     "@trpc/client": "11.0.0-rc.648",
     "@trpc/react-query": "11.0.0-rc.648",
     "@trpc/server": "11.0.0-rc.648",
@@ -219,7 +220,7 @@
     "@octokit/types": "13.8.0",
     "@tailwindcss/postcss": "^4.0.4",
     "@tailwindcss/typography": "^0.5.16",
-    "@trigger.dev/cli": "^3.3.12",
+    "@trigger.dev/cli": "3.3.12",
     "@types/eslint": "^9.6.1",
     "@types/lodash": "^4.17.15",
     "@types/node": "^22.13.1",
@@ -268,5 +269,8 @@
   },
   "prisma": {
     "seed": "pnpm with-env tsx prisma/seed.ts"
+  },
+  "trigger.dev": {
+    "endpointId": "web"
   }
 }
