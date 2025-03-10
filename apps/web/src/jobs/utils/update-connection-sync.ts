@@ -1,9 +1,8 @@
 import {
-    type BankConnection,
     BankConnectionStatus,
-    SyncStatus,
+    SyncStatus
 } from '@prisma/client';
-import { format, subDays } from 'date-fns';
+
 import { prisma } from '@/server/db';
 
 /**

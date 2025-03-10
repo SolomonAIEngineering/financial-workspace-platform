@@ -81,27 +81,7 @@ export function getTransactionDateRange(days = 30): {
  * @param size - The maximum size of each chunk
  * @returns An array of arrays, each containing at most `size` elements
  * 
- * @example
- * ```typescript
- * // Split a large array of items into chunks of 100
- * const items = [1, 2, 3, 4, 5, /* ...and so on */];
- * const batches = chunk(items, 100);
- * // Result: [array of 100 items, array of 100 items, array of 100 items, ...]
- * 
- * // Process each batch sequentially
- * for (const batch of batches) {
- * await processBatch(batch);
- * }
- * 
- * // Process batches with Promise.all for parallel execution
- * await Promise.all(batches.map(batch => processBatch(batch)));
- * 
- * // Use with map functions
- * const batchResults = batches.map(batch => {
- *   return batch.map(item => transform(item));
- * });
- * ```
- */
+*/
 export function chunk<T>(array: T[], size: number): T[][] {
   const chunked: T[][] = [];
   let index = 0;
