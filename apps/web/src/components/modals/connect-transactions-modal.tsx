@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertCircle, BarChart3, Building2, Check, Loader2, Search } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -15,6 +16,7 @@ import { BankLogo } from '../bank-account/bank-logo';
 import { Button } from '@/registry/default/potion-ui/button';
 import { ConnectBankProvider } from '../bank-connection/connect-bank-provider';
 import { CountrySelector } from '../bank-connection/country-selector';
+import { CubeIcon } from '@radix-ui/react-icons';
 import { Input } from '@/registry/default/potion-ui/input';
 import { InstitutionDetails } from '../institution/institution-details';
 import { LogEvents } from '@v1/analytics/events';
@@ -22,6 +24,7 @@ import { Skeleton } from '../ui/skeleton';
 import { createPlaidLinkTokenAction } from '@/actions/institution/create-link';
 import { exchangePublicTokenAction } from '@/actions/institution/exchange-public-token';
 import { getInstitutionsAction } from '@/actions/institution/get-institution';
+import { motion } from 'framer-motion';
 import { track } from '@v1/analytics/client';
 import { useConnectParams } from '@/lib/hooks/use-connect-params';
 import { usePlaidLink } from 'react-plaid-link';
@@ -29,20 +32,25 @@ import { useRouter } from 'next/navigation';
 
 /**
  * Renders a skeleton loading state for institution search results
- *
- * @returns A loading skeleton UI for the search results list
  */
 function SearchSkeleton() {
     return (
-        <div className="space-y-4">
-            {Array.from(new Array(10), (_, index) => (
-                <div className="flex items-center space-x-4" key={index.toString()}>
-                    <Skeleton className="h-9 w-9 rounded-full" />
-                    <div className="flex flex-col space-y-1">
-                        <Skeleton className="h-2 w-[140px] rounded-none" />
-                        <Skeleton className="h-2 w-[40px] rounded-none" />
+        <div className="space-y-5 px-1">
+            {Array.from(new Array(6), (_, index) => (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2, delay: index * 0.05 }}
+                    className="flex items-center space-x-4 p-2"
+                    key={index.toString()}
+                >
+                    <Skeleton className="h-12 w-12 rounded-md" />
+                    <div className="flex flex-col space-y-2 flex-1">
+                        <Skeleton className="h-3 w-[180px] rounded-md" />
+                        <Skeleton className="h-2 w-[100px] rounded-md" />
                     </div>
-                </div>
+                    <Skeleton className="h-9 w-24 rounded-md ml-auto" />
+                </motion.div>
             ))}
         </div>
     );
@@ -50,14 +58,6 @@ function SearchSkeleton() {
 
 /**
  * Props for the SearchResult component
- *
- * @property id - Unique identifier for the financial institution
- * @property name - Display name of the financial institution
- * @property logo - URL to the institution's logo image
- * @property provider - The provider name (e.g., "plaid", "teller")
- * @property availableHistory - Number of months of available transaction
- *   history
- * @property openPlaid - Function to open the Plaid connection dialog
  */
 type SearchResultProps = {
     id: string;
@@ -70,10 +70,6 @@ type SearchResultProps = {
 
 /**
  * Renders an individual financial institution search result
- *
- * @param props - The component props
- * @returns A search result item showing institution details and connection
- *   options
  */
 function SearchResult({
     id,
@@ -84,14 +80,25 @@ function SearchResult({
     openPlaid,
 }: SearchResultProps) {
     return (
-        <div className="flex justify-between">
-            <div className="flex items-center">
-                <BankLogo src={logo} alt={name} />
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-200"
+        >
+            <div className="flex items-center flex-1 min-w-0">
+                <div className="relative flex-shrink-0">
+                    <BankLogo src={logo} alt={name} className="w-12 h-12 rounded-md shadow-sm" />
+                    <div className="absolute -bottom-1 -right-1 bg-white dark:bg-gray-800 rounded-full p-0.5 shadow-sm">
+                        <div className={`w-3 h-3 rounded-full ${provider === 'plaid' ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
+                    </div>
+                </div>
 
-                <div className="ml-4 cursor-default space-y-1">
-                    <p className="text-sm leading-none font-medium">{name}</p>
+                <div className="ml-4 cursor-default space-y-0.5 truncate">
+                    <p className="text-sm font-medium truncate">{name}</p>
                     <InstitutionDetails provider={provider}>
-                        <span className="text-xs text-[#878787] capitalize">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center capitalize gap-1">
+                            <span className="inline-block w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600"></span>
                             Via {provider}
                         </span>
                     </InstitutionDetails>
@@ -104,17 +111,12 @@ function SearchResult({
                 openPlaid={openPlaid}
                 availableHistory={availableHistory}
             />
-        </div>
+        </motion.div>
     );
 }
 
 /**
  * Props for the SearchBar component
- *
- * @property query - Current search query value
- * @property countryCode - Selected country code
- * @property onQueryChange - Handler for search query changes
- * @property onCountryChange - Handler for country selection changes
  */
 type SearchBarProps = {
     query: string | null;
@@ -125,11 +127,7 @@ type SearchBarProps = {
 };
 
 /**
- * Renders the search bar with country selector for finding financial
- * institutions
- *
- * @param props - The component props
- * @returns A search input and country selector UI
+ * Renders the search bar with country selector
  */
 function SearchBar({
     query,
@@ -139,20 +137,26 @@ function SearchBar({
     onClearResults,
 }: SearchBarProps) {
     return (
-        <div className="relative flex space-x-2">
-            <Input
-                placeholder="Search bank..."
-                type="search"
-                onChange={(evt) => onQueryChange(evt.target.value || null)}
-                autoComplete="off"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck="false"
-                autoFocus
-                value={query ?? ''}
-            />
+        <div className="relative flex space-x-2 mt-5">
+            <div className="relative flex-1">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Search size={18} />
+                </div>
+                <Input
+                    placeholder="Search for your bank..."
+                    type="search"
+                    onChange={(evt) => onQueryChange(evt.target.value || null)}
+                    autoComplete="off"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck="false"
+                    autoFocus
+                    value={query ?? ''}
+                    className="pl-10 py-6 bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 rounded-lg"
+                />
+            </div>
 
-            <div className="absolute right-0">
+            <div className="z-10">
                 <CountrySelector
                     defaultValue={countryCode}
                     onSelect={(code) => {
@@ -167,9 +171,6 @@ function SearchBar({
 
 /**
  * Props for the NoResultsFound component
- *
- * @property onImport - Handler for the import button click
- * @property onContactUs - Handler for the contact us button click
  */
 type NoResultsFoundProps = {
     onImport: () => void;
@@ -178,39 +179,47 @@ type NoResultsFoundProps = {
 
 /**
  * Renders the empty state when no search results are found
- *
- * @param props - The component props
- * @returns An empty state UI with import and contact options
  */
 function NoResultsFound({ onImport, onContactUs }: NoResultsFoundProps) {
     return (
-        <div className="flex min-h-[350px] flex-col items-center justify-center">
-            <p className="mb-2 font-medium">No banks found</p>
-            <p className="text-center text-sm text-[#878787]">
-                We couldn't find a bank matching your criteria.
-                <br /> Let us know, or start with manual import.
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex min-h-[350px] flex-col items-center justify-center py-12 px-4"
+        >
+            <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/20 rounded-full flex items-center justify-center mb-5">
+                <AlertCircle className="text-amber-500 w-8 h-8" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">No banks found</h3>
+            <p className="text-center text-gray-500 dark:text-gray-400 max-w-md mb-6">
+                We couldn't find a bank matching your search criteria.
+                <br className="hidden sm:block" /> You can try a different search, import manually, or contact our support team.
             </p>
 
-            <div className="mt-4 flex space-x-2">
-                <Button variant="outline" onClick={onImport}>
-                    Import
+            <div className="flex flex-col sm:flex-row gap-3">
+                <Button
+                    variant="outline"
+                    onClick={onImport}
+                    className="min-w-32 gap-2"
+                >
+                    <Building2 size={16} />
+                    Manual Import
                 </Button>
 
-                <Button onClick={onContactUs}>Contact us</Button>
+                <Button
+                    onClick={onContactUs}
+                    className="min-w-32 gap-2"
+                >
+                    Need Help?
+                </Button>
             </div>
-        </div>
+        </motion.div>
     );
 }
 
 /**
  * Props for the SearchResults component
- *
- * @property loading - Whether results are currently loading
- * @property results - Array of institution search results
- * @property openPlaid - Function to open the Plaid connection dialog
- * @property onSetStepToNull - Function to set the step to null
- * @property onImport - Handler for the import button click
- * @property onContactUs - Handler for the contact us button click
  */
 type SearchResultsProps = {
     loading: boolean;
@@ -223,9 +232,6 @@ type SearchResultsProps = {
 
 /**
  * Renders the search results or appropriate empty/loading states
- *
- * @param props - The component props
- * @returns List of search results, loading state, or empty state
  */
 function SearchResults({
     loading,
@@ -236,33 +242,37 @@ function SearchResults({
     onContactUs,
 }: SearchResultsProps) {
     return (
-        <div className="mt-2 scrollbar-hide h-[430px] space-y-4 overflow-auto pt-2">
+        <div className="mt-4 scrollbar-hide h-[430px] space-y-2 overflow-auto px-1 py-2 rounded-lg">
             {loading && <SearchSkeleton />}
 
-            {results?.map((institution) => {
-                if (!institution) {
-                    return null;
-                }
-
-                return (
-                    <SearchResult
-                        key={institution.id}
-                        id={institution.id}
-                        name={institution.name}
-                        logo={institution.logo}
-                        provider={institution.provider}
-                        availableHistory={
-                            institution.available_history ? +institution.available_history : 0
+            {!loading && results && results.length > 0 && (
+                <div className="space-y-2 divide-y divide-gray-100 dark:divide-gray-800">
+                    {results.map((institution) => {
+                        if (!institution) {
+                            return null;
                         }
-                        openPlaid={() => {
-                            onSetStepToNull();
-                            openPlaid();
-                        }}
-                    />
-                );
-            })}
 
-            {!loading && results.length === 0 && (
+                        return (
+                            <SearchResult
+                                key={institution.id}
+                                id={institution.id}
+                                name={institution.name}
+                                logo={institution.logo}
+                                provider={institution.provider}
+                                availableHistory={
+                                    institution.available_history ? +institution.available_history : 0
+                                }
+                                openPlaid={() => {
+                                    onSetStepToNull();
+                                    openPlaid();
+                                }}
+                            />
+                        );
+                    })}
+                </div>
+            )}
+
+            {!loading && (!results || results.length === 0) && (
                 <NoResultsFound onImport={onImport} onContactUs={onContactUs} />
             )}
         </div>
@@ -271,11 +281,6 @@ function SearchResults({
 
 /**
  * Props for the ConnectTransactionsModal component
- *
- * @property countryCode - Initial country code to use for institution search
- * @property userId - ID of the current user
- * @property _isOpenOverride - Optional prop to override the default open state behavior
- * @property _onCloseOverride - Optional prop to override the default close behavior
  */
 type ConnectTransactionsModalProps = {
     countryCode: string;
@@ -285,15 +290,7 @@ type ConnectTransactionsModalProps = {
 };
 
 /**
- * Modal component for connecting to financial institutions and importing
- * transactions
- *
- * This component allows users to search for their financial institution across
- * different countries and providers (like Plaid), connect to it securely, and
- * import transaction data.
- *
- * @param props - The component props
- * @returns A dialog for connecting to financial institutions
+ * Modal component for connecting to financial institutions and importing transactions
  */
 export function ConnectTransactionsModal({
     countryCode: initialCountryCode,
@@ -305,6 +302,7 @@ export function ConnectTransactionsModal({
     const [loading, setLoading] = useState(true);
     const [results, setResults] = useState<Array<APIInstitutions.Institution>>([]);
     const [plaidToken, setPlaidToken] = useState<string | undefined>();
+    const [isCreatingToken, setIsCreatingToken] = useState(false);
 
     const {
         countryCode,
@@ -316,16 +314,13 @@ export function ConnectTransactionsModal({
     const isOpen = step === 'connect';
     const debouncedSearchTerm = useDebounce(query, 200);
 
-    // NOTE: Load SDKs here so it's not unmonted
+    // Load SDKs
     useScript('https://cdn.teller.io/connect/connect.js', {
         removeOnUnmount: false,
     });
 
     /**
      * Configure and initialize Plaid Link
-     *
-     * Sets up the Plaid Link connection flow with appropriate callbacks for
-     * token exchange and UI state management
      */
     const { open: openPlaid } = usePlaidLink({
         token: plaidToken,
@@ -335,7 +330,6 @@ export function ConnectTransactionsModal({
         product: ['transactions'],
 
         onSuccess: async (public_token, metadata) => {
-            // exchange the access token (this will perform token exchange with our enterprise backend as well)
             try {
                 const res = await exchangePublicTokenAction({
                     publicToken: public_token,
@@ -369,8 +363,6 @@ export function ConnectTransactionsModal({
 
     /**
      * Handles the dialog close event
-     *
-     * Resets all parameters and ensures proper UI state on modal close
      */
     const handleOnClose = () => {
         setParams(
@@ -387,18 +379,17 @@ export function ConnectTransactionsModal({
 
     /**
      * Fetches institution data based on country code and search query
-     *
-     * @param query - Optional search term to filter institutions
      */
     async function fetchData(query?: string) {
         try {
             setLoading(true);
             const result = await getInstitutionsAction({ countryCode, query });
+            setResults(result?.data || []);
             setLoading(false);
-            setResults(result?.data ?? []);
-        } catch {
-            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching institutions:', error);
             setResults([]);
+            setLoading(false);
         }
     }
 
@@ -421,18 +412,24 @@ export function ConnectTransactionsModal({
 
     // Create Plaid link token when modal opens in supported countries
     useEffect(() => {
-        /** Creates a Plaid link token for the current user */
         async function createLinkToken() {
-            const result = await createPlaidLinkTokenAction({
-                accessToken: null,
-            });
+            setIsCreatingToken(true);
+            try {
+                const result = await createPlaidLinkTokenAction({
+                    accessToken: null,
+                });
 
-            if (result?.data) {
-                setPlaidToken(result.data);
+                if (result?.data) {
+                    setPlaidToken(result.data);
+                }
+            } catch (error) {
+                console.error('Error creating Plaid link token:', error);
+            } finally {
+                setIsCreatingToken(false);
             }
         }
 
-        // NOTE: Only run where Plaid is supported
+        // Only run where Plaid is supported
         if ((isOpen && countryCode === 'US') || (isOpen && countryCode === 'CA')) {
             createLinkToken();
         }
@@ -440,35 +437,53 @@ export function ConnectTransactionsModal({
 
     return (
         <Dialog open={_isOpenOverride || isOpen} onOpenChange={_onCloseOverride || handleOnClose}>
-            <DialogContent className='md:min-w-[60%] md:min-h-[70%]'>
-                <div className="p-[5%]">
-                    <DialogHeader>
-                        <DialogTitle>Connect bank account</DialogTitle>
+            <DialogContent className="md:max-w-[700px] p-0 border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
+                <div className="p-6 md:p-8">
+                    <DialogHeader className="mb-2">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <DialogTitle className="text-2xl font-bold">
+                                    Connect your bank
+                                </DialogTitle>
+                                <DialogDescription className="mt-2 text-gray-500 dark:text-gray-400 max-w-md">
+                                    Securely connect your accounts to track transactions and get financial insights
+                                </DialogDescription>
+                            </div>
+                            <div className="hidden md:flex">
+                                <div className="flex gap-2 items-center bg-gray-50 dark:bg-gray-800/50 px-3 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400">
+                                    <CubeIcon className="text-primary" />
+                                    <span>Bank-level encryption</span>
+                                </div>
+                            </div>
+                        </div>
 
-                        <DialogDescription>
-                            We work with a variety of banking providers to support as many
-                            banks as possible. If you can't find yours,{' '}
-                            <button
-                                type="button"
-                                className="underline"
-                                onClick={() => setParams({ step: 'import' })}
-                            >
-                                manual import
-                            </button>{' '}
-                            is available as an alternative.
-                        </DialogDescription>
+                        {isCreatingToken ? (
+                            <div className="flex items-center justify-center gap-2 py-2 text-sm text-primary text-bold">
+                                <Loader2 size={16} className="animate-spin" />
+                                <span>Establishing secure connection...</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-center gap-2 py-2 text-sm text-bold">
+                                <Check size={16} />
+                                <span>Secure connection Established</span>
+                            </div>
+                        )}
 
-                        <div className="pt-4">
-                            <SearchBar
-                                query={query}
-                                countryCode={countryCode}
-                                onQueryChange={(newQuery) => setParams({ q: newQuery })}
-                                onCountryChange={(newCode) =>
-                                    setParams({ countryCode: newCode })
-                                }
-                                onClearResults={() => setResults([])}
-                            />
+                        <SearchBar
+                            query={query}
+                            countryCode={countryCode}
+                            onQueryChange={(newQuery) => setParams({ q: newQuery })}
+                            onCountryChange={(newCode) => setParams({ countryCode: newCode })}
+                            onClearResults={() => setResults([])}
+                        />
 
+                        <div className="mt-2 border-t border-gray-100 dark:border-gray-800 pt-2">
+                            <div className="flex justify-between items-center text-sm text-gray-500 px-2 mb-2">
+                                <span>Popular Banks</span>
+                                {!loading && results.length > 0 && (
+                                    <span>{results.length} results</span>
+                                )}
+                            </div>
                             <SearchResults
                                 loading={loading}
                                 results={results}
@@ -479,6 +494,22 @@ export function ConnectTransactionsModal({
                             />
                         </div>
                     </DialogHeader>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-800/50 p-4 text-center border-t border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
+                    Can't find your bank? Try <button
+                        type="button"
+                        className="font-medium text-primary underline underline-offset-2"
+                        onClick={() => setParams({ step: 'import' })}
+                    >
+                        manual import
+                    </button> or <button
+                        type="button"
+                        className="font-medium text-primary underline underline-offset-2"
+                        onClick={() => router.push('/account/support')}
+                    >
+                        contact support
+                    </button>
                 </div>
             </DialogContent>
         </Dialog>
