@@ -24,26 +24,26 @@ fi
 
 # Only run type-check if TypeScript files have changed
 TS_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E "\.tsx?$" || true)
-# if [ -n "$TS_FILES" ]; then
-#     echo "${YELLOW}TypeScript files changed. Running type check...${NC}"
-#     # Get the unique directories of changed TS files
-#     DIRS=$(echo "$TS_FILES" | xargs -n1 dirname | sort -u)
-#     for dir in $DIRS; do
-#         # Skip directories under database folder and apps/archon
-#         if [[ $dir == database/* ]] || [[ $dir == apps/archon* ]]; then
-#             echo "${YELLOW}Skipping type check for excluded directory: $dir${NC}"
-#             continue
-#         fi
-#         # Find the closest package.json
-#         while [ "$dir" != "." ] && [ ! -f "$dir/package.json" ]; do
-#             dir=$(dirname "$dir")
-#         done
-#         if [ -f "$dir/package.json" ] && [ -f "$dir/tsconfig.json" ]; then
-#             echo "${YELLOW}Checking types in $dir...${NC}"
-#             (cd "$dir" && pnpm tsc --noEmit) || handle_error "Type check failed in $dir. Please fix TypeScript errors before committing."
-#         fi
-#     done
-# fi
+if [ -n "$TS_FILES" ]; then
+    echo "${YELLOW}TypeScript files changed. Running type check...${NC}"
+    # Get the unique directories of changed TS files
+    DIRS=$(echo "$TS_FILES" | xargs -n1 dirname | sort -u)
+    for dir in $DIRS; do
+        # Skip directories under database folder and apps/archon
+        if [[ $dir == database/* ]] || [[ $dir == apps/archon* ]]; then
+            echo "${YELLOW}Skipping type check for excluded directory: $dir${NC}"
+            continue
+        fi
+        # Find the closest package.json
+        while [ "$dir" != "." ] && [ ! -f "$dir/package.json" ]; do
+            dir=$(dirname "$dir")
+        done
+        if [ -f "$dir/package.json" ] && [ -f "$dir/tsconfig.json" ]; then
+            echo "${YELLOW}Checking types in $dir...${NC}"
+            (cd "$dir" && pnpm tsc --noEmit) || handle_error "Type check failed in $dir. Please fix TypeScript errors before committing."
+        fi
+    done
+fi
 
 # # Run lint-staged for formatting and linting
 # echo "${YELLOW}Running lint-staged...${NC}"

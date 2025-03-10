@@ -426,12 +426,6 @@
             "$ref": "#/definitions/BankAccount"
           }
         },
-        "transactions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Transaction"
-          }
-        },
         "spendingInsights": {
           "type": "array",
           "items": {
@@ -448,6 +442,58 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/Notification"
+          }
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "usersOnTeams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UsersOnTeam"
+          }
+        },
+        "sentInvites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserInvite"
+          }
+        },
+        "trackerEntries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerEntry"
+          }
+        },
+        "reports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Report"
+          }
+        },
+        "trackerReports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerReport"
+          }
+        },
+        "apps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/App"
+          }
+        },
+        "Invoice": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Invoice"
           }
         }
       },
@@ -932,12 +978,6 @@
             "$ref": "#/definitions/BankAccount"
           }
         },
-        "transactions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Transaction"
-          }
-        },
         "lastUpdated": {
           "type": "string",
           "format": "date-time"
@@ -992,6 +1032,13 @@
         "expiryNotificationCount": {
           "type": "integer",
           "default": 0
+        },
+        "expiresAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         }
       },
       "required": [
@@ -1262,6 +1309,69 @@
             "null"
           ],
           "format": "date-time"
+        },
+        "recurringTransactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RecurringTransaction"
+          }
+        },
+        "recurringTransferDestinations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RecurringTransaction"
+          }
+        },
+        "balanceProjections": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "scheduledInflows": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": 0
+        },
+        "scheduledOutflows": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": 0
+        },
+        "recurringMonthlyInflow": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": 0
+        },
+        "recurringMonthlyOutflow": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "default": 0
+        },
+        "nextScheduledTransaction": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "Team": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Team"
+          }
         }
       },
       "required": [
@@ -1280,17 +1390,17 @@
         "id": {
           "type": "string"
         },
-        "user": {
-          "$ref": "#/definitions/User"
+        "userId": {
+          "type": "string"
         },
         "bankAccount": {
           "$ref": "#/definitions/BankAccount"
         },
-        "bankConnection": {
-          "$ref": "#/definitions/BankConnection"
-        },
         "plaidTransactionId": {
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "amount": {
           "type": "number"
@@ -1366,6 +1476,66 @@
             "null"
           ]
         },
+        "merchantId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantLogoUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantWebsite": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantPhone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantAddress": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantCity": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantState": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantZip": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantCountry": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "location": {
           "type": [
             "number",
@@ -1376,6 +1546,18 @@
             "null"
           ]
         },
+        "latitude": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "longitude": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
         "paymentChannel": {
           "type": [
             "string",
@@ -1383,6 +1565,66 @@
           ]
         },
         "paymentMethod": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "paymentProcessor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "paymentGateway": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transactionReference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "authorizationCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "checkNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "wireReference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "accountNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cardType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cardNetwork": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cardLastFour": {
           "type": [
             "string",
             "null"
@@ -1406,6 +1648,164 @@
             "null"
           ]
         },
+        "fiscalYear": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "fiscalMonth": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "fiscalQuarter": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "vatAmount": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "vatRate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "taxAmount": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "taxRate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "taxDeductible": {
+          "type": "boolean",
+          "default": false
+        },
+        "taxExempt": {
+          "type": "boolean",
+          "default": false
+        },
+        "taxCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transactionType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transactionMethod": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transactionChannel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "budgetCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "budgetSubcategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "budgetId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "plannedExpense": {
+          "type": "boolean",
+          "default": false
+        },
+        "discretionary": {
+          "type": "boolean",
+          "default": false
+        },
+        "needsWantsCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "spendingGoalId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "investmentCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "businessPurpose": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "costCenter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "projectCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reimbursable": {
+          "type": "boolean",
+          "default": false
+        },
+        "clientId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "invoiceId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "excludeFromBudget": {
           "type": "boolean",
           "default": false
@@ -1415,6 +1815,111 @@
           "default": false
         },
         "recurrenceId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recurringFrequency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recurringDay": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "estimatedNextDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "similarTransactions": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "cashFlowCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "cashFlowType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "inflationCategory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "confidenceScore": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "anomalyScore": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "insightTags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "isManual": {
+          "type": "boolean",
+          "default": false
+        },
+        "isModified": {
+          "type": "boolean",
+          "default": false
+        },
+        "isVerified": {
+          "type": "boolean",
+          "default": false
+        },
+        "isFlagged": {
+          "type": "boolean",
+          "default": false
+        },
+        "isHidden": {
+          "type": "boolean",
+          "default": false
+        },
+        "isLocked": {
+          "type": "boolean",
+          "default": false
+        },
+        "isReconciled": {
+          "type": "boolean",
+          "default": false
+        },
+        "needsAttention": {
+          "type": "boolean",
+          "default": false
+        },
+        "reviewStatus": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "userNotes": {
           "type": [
             "string",
             "null"
@@ -1438,6 +1943,22 @@
             "$ref": "#/definitions/Attachment"
           }
         },
+        "customFields": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "parentTransaction": {
           "anyOf": [
             {
@@ -1454,6 +1975,58 @@
             "$ref": "#/definitions/Transaction"
           }
         },
+        "isSplit": {
+          "type": "boolean",
+          "default": false
+        },
+        "splitTotal": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "splitCount": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "searchableText": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dateYear": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "dateMonth": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "dateDay": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "dateDayOfWeek": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "dateWeekOfYear": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
@@ -1461,16 +2034,450 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "importedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastReviewedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastModifiedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lastCategorizedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "frequency": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "WEEKLY",
+            "BIWEEKLY",
+            "MONTHLY",
+            "SEMI_MONTHLY",
+            "ANNUALLY",
+            "IRREGULAR",
+            "UNKNOWN"
+          ]
+        },
+        "internal": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "notified": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "baseAmount": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "baseCurrency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transactionCategory": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CustomTransactionCategory"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "transactionTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TransactionTag"
+          }
+        },
+        "customAttachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TransactionAttachment"
+          }
+        },
+        "inboxItems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Inbox"
+          }
+        },
+        "recurringTransaction": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RecurringTransaction"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
         "userId",
         "bankAccountId",
-        "bankConnectionId",
-        "plaidTransactionId",
         "amount",
         "date",
         "name",
+        "updatedAt"
+      ]
+    },
+    "RecurringTransaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "bankAccount": {
+          "$ref": "#/definitions/BankAccount"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "amount": {
+          "type": "number"
+        },
+        "currency": {
+          "type": "string"
+        },
+        "initialAccountBalance": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "frequency": {
+          "type": "string",
+          "enum": [
+            "WEEKLY",
+            "BIWEEKLY",
+            "MONTHLY",
+            "SEMI_MONTHLY",
+            "ANNUALLY",
+            "IRREGULAR",
+            "UNKNOWN"
+          ]
+        },
+        "interval": {
+          "type": "integer",
+          "default": 1
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "dayOfMonth": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "dayOfWeek": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "weekOfMonth": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "monthOfYear": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "executionDays": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "skipWeekends": {
+          "type": "boolean",
+          "default": false
+        },
+        "adjustForHolidays": {
+          "type": "boolean",
+          "default": false
+        },
+        "allowExecution": {
+          "type": "boolean",
+          "default": true
+        },
+        "limitExecutions": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "transactionTemplate": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "categorySlug": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "customFields": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "targetAccount": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/BankAccount"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "affectAvailableBalance": {
+          "type": "boolean",
+          "default": true
+        },
+        "lastExecutedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "nextScheduledDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "executionCount": {
+          "type": "integer",
+          "default": 0
+        },
+        "totalExecuted": {
+          "type": "number",
+          "default": 0
+        },
+        "lastExecutionStatus": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastExecutionError": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "minBalanceRequired": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "overspendAction": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "block"
+        },
+        "insufficientFundsCount": {
+          "type": "integer",
+          "default": 0
+        },
+        "expectedAmount": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "allowedVariance": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "varianceAction": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reminderDays": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "reminderSentAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "notifyOnExecution": {
+          "type": "boolean",
+          "default": true
+        },
+        "notifyOnFailure": {
+          "type": "boolean",
+          "default": true
+        },
+        "status": {
+          "type": "string",
+          "default": "active"
+        },
+        "isAutomated": {
+          "type": "boolean",
+          "default": true
+        },
+        "requiresApproval": {
+          "type": "boolean",
+          "default": false
+        },
+        "isVariable": {
+          "type": "boolean",
+          "default": false
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "confidenceScore": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "merchantId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merchantName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transactionType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "importanceLevel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastModifiedBy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "bankAccountId",
+        "title",
+        "amount",
+        "currency",
+        "frequency",
+        "startDate",
+        "executionDays",
         "updatedAt"
       ]
     },
@@ -1710,6 +2717,1749 @@
         "categoryStats",
         "updatedAt"
       ]
+    },
+    "Team": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "baseCurrency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "logoUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "inboxEmail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "inboxId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "inboxForwarding": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "documentClassification": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "usersOnTeam": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UsersOnTeam"
+          }
+        },
+        "customers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Customer"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Tag"
+          }
+        },
+        "invoices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Invoice"
+          }
+        },
+        "bankAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankAccount"
+          }
+        },
+        "transactionCategories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomTransactionCategory"
+          }
+        },
+        "transactionEnrichments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TransactionEnrichment"
+          }
+        },
+        "inboxItems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Inbox"
+          }
+        },
+        "transactionAttachments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TransactionAttachment"
+          }
+        },
+        "apps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/App"
+          }
+        },
+        "reports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Report"
+          }
+        },
+        "trackerProjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerProject"
+          }
+        },
+        "trackerReports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerReport"
+          }
+        },
+        "UserInvite": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserInvite"
+          }
+        },
+        "CustomerTag": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomerTag"
+          }
+        },
+        "TransactionTag": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TransactionTag"
+          }
+        },
+        "InvoiceTemplate": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InvoiceTemplate"
+          }
+        },
+        "TrackerEntry": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerEntry"
+          }
+        },
+        "TrackerProjectTag": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerProjectTag"
+          }
+        }
+      },
+      "required": []
+    },
+    "UsersOnTeam": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "default": "MEMBER",
+          "enum": [
+            "OWNER",
+            "MEMBER"
+          ]
+        },
+        "createdAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        }
+      },
+      "required": [
+        "userId",
+        "teamId"
+      ]
+    },
+    "UserInvite": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "OWNER",
+            "MEMBER"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inviter": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": []
+    },
+    "Customer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        },
+        "phone": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "contact": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "website": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "note": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "vatNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "addressLine1": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "addressLine2": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "city": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "state": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "zip": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "countryCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        },
+        "customerTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomerTag"
+          }
+        },
+        "invoices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Invoice"
+          }
+        },
+        "trackerProjects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerProject"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "token",
+        "teamId"
+      ]
+    },
+    "Tag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        },
+        "customerTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CustomerTag"
+          }
+        },
+        "transactionTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TransactionTag"
+          }
+        },
+        "projectTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerProjectTag"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "teamId"
+      ]
+    },
+    "CustomerTag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "customer": {
+          "$ref": "#/definitions/Customer"
+        },
+        "tag": {
+          "$ref": "#/definitions/Tag"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        }
+      },
+      "required": [
+        "customerId",
+        "tagId",
+        "teamId"
+      ]
+    },
+    "TransactionTag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "transaction": {
+          "$ref": "#/definitions/Transaction"
+        },
+        "tag": {
+          "$ref": "#/definitions/Tag"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        }
+      },
+      "required": [
+        "transactionId",
+        "tagId",
+        "teamId"
+      ]
+    },
+    "CustomTransactionCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "color": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "vat": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "system": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "embedding": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        }
+      },
+      "required": [
+        "name",
+        "slug",
+        "teamId"
+      ]
+    },
+    "TransactionEnrichment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "categorySlug": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "system": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": []
+    },
+    "Invoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "default": "DRAFT",
+          "enum": [
+            "DRAFT",
+            "UNPAID",
+            "PAID",
+            "OVERDUE",
+            "CANCELED"
+          ]
+        },
+        "customerName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "invoiceNumber": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "amount": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "subtotal": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "tax": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "vat": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "discount": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "issueDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "dueDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "paidAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "viewedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "reminderSentAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "lineItems": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "fromDetails": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "customerDetails": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "paymentDetails": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "note": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "internalNote": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "noteDetails": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "topBlock": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "bottomBlock": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "template": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "token": {
+          "type": "string"
+        },
+        "fileSize": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "filePath": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sentTo": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        },
+        "customer": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Customer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "teamId",
+        "token"
+      ]
+    },
+    "InvoiceTemplate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "deliveryType": {
+          "type": "string",
+          "default": "CREATE",
+          "enum": [
+            "CREATE",
+            "CREATE_AND_SEND"
+          ]
+        },
+        "size": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "A4",
+            "LETTER"
+          ]
+        },
+        "logoUrl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fromLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fromDetails": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "customerLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "invoiceNoLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "issueDateLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dueDateLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "descriptionLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "quantityLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "priceLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "taxLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "discountLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "vatLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "totalLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "totalSummaryLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "noteLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "paymentLabel": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "paymentDetails": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "taxRate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "vatRate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "dateFormat": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "includeDecimals": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "includeDiscount": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "includeTax": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "includeVat": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "includeUnits": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "includeQr": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        }
+      },
+      "required": [
+        "teamId"
+      ]
+    },
+    "TrackerProject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "default": "IN_PROGRESS",
+          "enum": [
+            "IN_PROGRESS",
+            "COMPLETED"
+          ]
+        },
+        "billable": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "estimate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "customer": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Customer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerEntry"
+          }
+        },
+        "projectTags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerProjectTag"
+          }
+        },
+        "reports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TrackerReport"
+          }
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "TrackerProjectTag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "trackerProject": {
+          "$ref": "#/definitions/TrackerProject"
+        },
+        "tag": {
+          "$ref": "#/definitions/Tag"
+        },
+        "team": {
+          "$ref": "#/definitions/Team"
+        }
+      },
+      "required": [
+        "trackerProjectId",
+        "tagId",
+        "teamId"
+      ]
+    },
+    "TrackerEntry": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "start": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "stop": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "duration": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "rate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "billed": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "project": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TrackerProject"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assigned": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": []
+    },
+    "TrackerReport": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "linkId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "shortLink": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "project": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TrackerProject"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "creator": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": []
+    },
+    "Report": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "PROFIT",
+            "REVENUE",
+            "BURN_RATE",
+            "EXPENSE"
+          ]
+        },
+        "from": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "to": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "linkId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "shortLink": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "expireAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "creator": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": []
+    },
+    "ExchangeRate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "base": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rate": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "updatedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      },
+      "required": []
+    },
+    "Inbox": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "INVOICE",
+            "EXPENSE"
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "default": "NEW",
+          "enum": [
+            "NEW",
+            "PROCESSING",
+            "PENDING",
+            "ARCHIVED",
+            "DELETED"
+          ]
+        },
+        "displayName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "amount": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "baseAmount": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "baseCurrency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "website": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fileName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "contentType": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "size": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "filePath": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "referenceId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "forwardedTo": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "meta": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "transaction": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Transaction"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attachment": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/TransactionAttachment"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": []
+    },
+    "TransactionAttachment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "size": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "path": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "transaction": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Transaction"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "inboxItems": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Inbox"
+          }
+        }
+      },
+      "required": []
+    },
+    "App": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "appId": {
+          "type": "string"
+        },
+        "config": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "settings": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
+        },
+        "createdAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "creator": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "appId"
+      ]
     }
   },
   "type": "object",
@@ -1747,6 +4497,9 @@
     "transaction": {
       "$ref": "#/definitions/Transaction"
     },
+    "recurringTransaction": {
+      "$ref": "#/definitions/RecurringTransaction"
+    },
     "attachment": {
       "$ref": "#/definitions/Attachment"
     },
@@ -1758,6 +4511,66 @@
     },
     "spendingInsight": {
       "$ref": "#/definitions/SpendingInsight"
+    },
+    "team": {
+      "$ref": "#/definitions/Team"
+    },
+    "usersOnTeam": {
+      "$ref": "#/definitions/UsersOnTeam"
+    },
+    "userInvite": {
+      "$ref": "#/definitions/UserInvite"
+    },
+    "customer": {
+      "$ref": "#/definitions/Customer"
+    },
+    "tag": {
+      "$ref": "#/definitions/Tag"
+    },
+    "customerTag": {
+      "$ref": "#/definitions/CustomerTag"
+    },
+    "transactionTag": {
+      "$ref": "#/definitions/TransactionTag"
+    },
+    "customTransactionCategory": {
+      "$ref": "#/definitions/CustomTransactionCategory"
+    },
+    "transactionEnrichment": {
+      "$ref": "#/definitions/TransactionEnrichment"
+    },
+    "invoice": {
+      "$ref": "#/definitions/Invoice"
+    },
+    "invoiceTemplate": {
+      "$ref": "#/definitions/InvoiceTemplate"
+    },
+    "trackerProject": {
+      "$ref": "#/definitions/TrackerProject"
+    },
+    "trackerProjectTag": {
+      "$ref": "#/definitions/TrackerProjectTag"
+    },
+    "trackerEntry": {
+      "$ref": "#/definitions/TrackerEntry"
+    },
+    "trackerReport": {
+      "$ref": "#/definitions/TrackerReport"
+    },
+    "report": {
+      "$ref": "#/definitions/Report"
+    },
+    "exchangeRate": {
+      "$ref": "#/definitions/ExchangeRate"
+    },
+    "inbox": {
+      "$ref": "#/definitions/Inbox"
+    },
+    "transactionAttachment": {
+      "$ref": "#/definitions/TransactionAttachment"
+    },
+    "app": {
+      "$ref": "#/definitions/App"
     }
   }
 }

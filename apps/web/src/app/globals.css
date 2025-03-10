@@ -97,21 +97,26 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar-background);
 
-  --font-heading: 'var(--font-heading)', 'ui-sans-serif', '-apple-system',
+  --font-heading:
+    'var(--font-heading)', 'ui-sans-serif', '-apple-system',
     'BlinkMacSystemFont', 'Segoe UI Variable Display', 'Segoe UI', 'Helvetica',
     'Apple Color Emoji', 'Arial', 'sans-serif', 'Segoe UI Emoji',
     'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-mono: 'var(--font-mono)', ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, 'Liberation Mono', 'Courier New', monospace;
-  --font-sans: 'var(--font-sans)', 'ui-sans-serif', '-apple-system',
-    'BlinkMacSystemFont', 'Segoe UI Variable Display', 'Segoe UI', 'Helvetica',
-    'Apple Color Emoji', 'Arial', 'sans-serif', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-mono:
+    'var(--font-mono)', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  --font-sans:
+    'var(--font-sans)', 'ui-sans-serif', '-apple-system', 'BlinkMacSystemFont',
+    'Segoe UI Variable Display', 'Segoe UI', 'Helvetica', 'Apple Color Emoji',
+    'Arial', 'sans-serif', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
 
-  --shadow-floating: rgba(16, 16, 16, 0.06) 0px 0px 0px 0.85px,
+  --shadow-floating:
+    rgba(16, 16, 16, 0.06) 0px 0px 0px 0.85px,
     rgba(16, 16, 16, 0.11) 0px 2.55px 5.95px,
     rgba(16, 16, 16, 0.21) 0px 7.65px 21.25px;
-  --shadow-toolbar: rgba(0, 0, 0, 0.08) 0px 13.6px 20.4px 0px,
+  --shadow-toolbar:
+    rgba(0, 0, 0, 0.08) 0px 13.6px 20.4px 0px,
     rgba(0, 0, 0, 0.1) 0px 1.7px 5.1px 0px,
     rgba(0, 0, 0, 0.1) 0px 0px 0.85px 0px;
 

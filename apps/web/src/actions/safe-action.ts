@@ -1,5 +1,4 @@
 import { createSafeActionClient } from 'next-safe-action';
-
 import { getOrThrowCurrentUser } from '@/lib/auth';
 
 // Create the base client

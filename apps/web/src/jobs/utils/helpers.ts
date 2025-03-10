@@ -1,69 +1,62 @@
-import {
-  type BankConnection,
-  BankConnectionStatus,
-  SyncStatus,
-} from '@prisma/client';
 import { format, subDays } from 'date-fns';
 
-import { prisma } from '@/server/db';
-
 /**
- * Get connections that need to be synced This can be used by scheduled jobs to
- * identify connections that need refreshing
+ * Formats a JavaScript Date object into a string format required by Plaid API.
+ *
+ * The Plaid API requires dates in the 'YYYY-MM-DD' format for various
+ * endpoints, such as transaction sync, account balance queries, and investment
+ * holdings.
+ *
+ * @example
+ *   ```typescript
+ *   // Format the current date for Plaid API
+ *   const today = new Date();
+ *   const formattedDate = formatDateForPlaid(today);
+ *   // Result: '2023-04-15' (if today is April 15, 2023)
+ *
+ *   // Use in Plaid API calls
+ *   const params = {
+ *     start_date: formatDateForPlaid(startDate),
+ *     end_date: formatDateForPlaid(endDate),
+ *   };
+ *   ```;
+ *
+ * @param date - The JavaScript Date object to format
+ * @returns A string in the format 'YYYY-MM-DD'
  */
-export async function getConnectionsForSync(): Promise<BankConnection[]> {
-  const connections = await prisma.bankConnection.findMany({
-    orderBy: {
-      lastSyncedAt: 'asc', // Sync oldest first
-    },
-    take: 50, // Process in batches of 50
-    where: {
-      OR: [
-        { lastSyncedAt: null }, // Never synced
-        {
-          lastSyncedAt: {
-            // Last sync was more than 12 hours ago
-            lt: new Date(Date.now() - 12 * 60 * 60 * 1000),
-          },
-        },
-        { syncStatus: SyncStatus.SCHEDULED }, // Explicitly scheduled for sync
-      ],
-      status: {
-        not: BankConnectionStatus.ERROR,
-      },
-    },
-  });
-
-  return connections;
-}
-
-/** Update a connection's sync status */
-export async function updateConnectionSyncStatus(
-  connectionId: string,
-  status: SyncStatus,
-  error?: string
-): Promise<void> {
-  await prisma.bankConnection.update({
-    data: {
-      errorMessage: error || undefined,
-      lastSyncedAt: status === SyncStatus.SYNCING ? undefined : new Date(),
-      status: error ? BankConnectionStatus.ERROR : undefined,
-      syncStatus: status,
-    },
-    where: {
-      id: connectionId,
-    },
-  });
-}
-
-/** Format a date for Plaid API */
 export function formatDateForPlaid(date: Date): string {
   return format(date, 'yyyy-MM-dd');
 }
 
 /**
- * Get start and end dates for transaction sync By default, fetches last 30 days
- * of transactions
+ * Calculates a date range for transaction synchronization with financial APIs.
+ *
+ * This utility function generates a start and end date range for retrieving
+ * transactions from financial services like Plaid. By default, it calculates a
+ * range covering the last 30 days up to the current date, but this can be
+ * customized by providing a different number of days.
+ *
+ * @example
+ *   ```typescript
+ *   // Get default 30-day range
+ *   const defaultRange = getTransactionDateRange();
+ *   // Result: { startDate: '2023-03-16', endDate: '2023-04-15' } (if today is April 15, 2023)
+ *
+ *   // Get transactions for the last 7 days
+ *   const weekRange = getTransactionDateRange(7);
+ *   // Result: { startDate: '2023-04-08', endDate: '2023-04-15' } (if today is April 15, 2023)
+ *
+ *   // Use in API calls
+ *   const { startDate, endDate } = getTransactionDateRange();
+ *   const response = await plaidClient.transactionsGet({
+ *     access_token: accessToken,
+ *     start_date: startDate,
+ *     end_date: endDate,
+ *   });
+ *   ```;
+ *
+ * @param days - Number of days to look back from today (default: 30)
+ * @returns An object containing formatted startDate and endDate strings
  */
 export function getTransactionDateRange(days = 30): {
   endDate: string;
@@ -78,7 +71,17 @@ export function getTransactionDateRange(days = 30): {
   };
 }
 
-/** Chunk an array into smaller arrays Used for batch processing */
+/**
+ * Splits an array into smaller arrays of specified size.
+ *
+ * This utility helps with batch processing of large datasets, which is useful
+ * for API rate limiting, memory optimization, or parallel processing.
+ *
+ * @typeParam T - The type of elements in the array
+ * @param array - The source array to split into chunks
+ * @param size - The maximum size of each chunk
+ * @returns An array of arrays, each containing at most `size` elements
+ */
 export function chunk<T>(array: T[], size: number): T[][] {
   const chunked: T[][] = [];
   let index = 0;

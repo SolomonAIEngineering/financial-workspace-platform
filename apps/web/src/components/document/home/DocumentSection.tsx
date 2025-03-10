@@ -1,11 +1,9 @@
+import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import React, { useState } from 'react';
 
 import type { Document } from '@/server/types/index';
-
-import { motion } from 'framer-motion';
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
-
 import { WithSkeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 /**
  * Props for the DocumentSection component
@@ -78,7 +76,7 @@ export function DocumentSection({
 
   return (
     <motion.div
-      className="mb-6"
+      className="mb-6 flex flex-col gap-5"
       animate={{ opacity: 1 }}
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}

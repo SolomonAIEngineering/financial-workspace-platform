@@ -1,17 +1,16 @@
+import { BANK_JOBS } from '../constants';
 import { BankConnectionStatus } from '@prisma/client';
-import { cronTrigger } from '@trigger.dev/sdk';
-
-import { prisma } from '@/server/db';
-import { getItemDetails } from '@/server/services/plaid';
-
 import { client } from '../../client';
+import { cronTrigger } from '@trigger.dev/sdk';
+import { getItemDetails } from '@/server/services/plaid';
+import { prisma } from '@/server/db';
 
 /**
  * This job monitors bank connections for issues and automatically updates their
  * status if there are any problems detected.
  */
 export const monitorBankConnectionsJob = client.defineJob({
-  id: 'monitor-bank-connections-job',
+  id: BANK_JOBS.MONITOR_CONNECTIONS,
   name: 'Monitor Bank Connections',
   trigger: cronTrigger({
     cron: '0 */8 * * *', // Every 8 hours

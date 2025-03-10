@@ -1,6 +1,6 @@
 'use client';
 
-import React, { type ElementRef, useRef } from 'react';
+import { type ElementRef, useRef } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@udecode/cn';

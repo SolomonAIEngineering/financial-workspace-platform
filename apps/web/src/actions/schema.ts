@@ -33,3 +33,22 @@ export const sendFeedbackSchema = z.object({
   feedback: z.string().min(1, 'Feedback cannot be empty'),
   feedbackType: FeedbackType.default('GENERAL'),
 });
+
+/**
+ * Zod schema for validating GoCardLess link creation
+ *
+ * @property {string} institutionId - The ID of the institution to connect with
+ * @property {number} availableHistory - The number of days of transaction
+ *   history available
+ * @property {string} redirectBase - The base URL to redirect to after
+ *   connection
+ * @property {string} step - The step in the connection flow (defaults to
+ *   "account")
+ * @schema createGoCardLessLinkSchema
+ */
+export const createGoCardLessLinkSchema = z.object({
+  institutionId: z.string(),
+  availableHistory: z.number(),
+  redirectBase: z.string(),
+  step: z.string().default('account'),
+});

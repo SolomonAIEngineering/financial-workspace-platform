@@ -1,20 +1,74 @@
+import { BANK_JOBS } from '../../constants';
+import { client } from '../../../client';
 import { eventTrigger } from '@trigger.dev/sdk';
-
 import { prisma } from '@/server/db';
 
-import { client } from '../../../client';
-
 /**
- * This job sends notifications to users about bank connections that are
- * approaching their expiration date and need attention
+ * This job sends detailed notifications to users about bank connections that
+ * are approaching their expiration date. It generates both email notifications
+ * and in-app notifications to ensure users are aware of connections that need
+ * attention.
+ *
+ * The notifications include:
+ *
+ * - How many days until the connection expires
+ * - How long the connection has been inactive
+ * - How many accounts are affected
+ * - A direct link to reconnect the bank
+ *
+ * @file Bank Connection Expiration Notifications
+ * @example
+ *   // Trigger an expiration notification for a specific connection
+ *   await client.sendEvent({
+ *     name: 'expiring-notification',
+ *     payload: {
+ *       userId: 'user_123abc',
+ *       connectionId: 'conn_456def',
+ *       email: 'user@example.com',
+ *       name: 'John',
+ *       institutionName: 'Chase Bank',
+ *       daysUntilExpiry: 14,
+ *       daysInactive: 30,
+ *       accountCount: 3,
+ *     },
+ *   });
+ *
+ * @example
+ *   // The job returns the following structure on success:
+ *   {
+ *   connectionId: "conn_456def",
+ *   emailHtml: "<!DOCTYPE html>...", // Full HTML content of the email
+ *   emailText: "Hello John...",      // Plain text version of the email
+ *   status: "success"
+ *   }
  */
 export const expiringNotificationsJob = client.defineJob({
-  id: 'expiring-notifications-job',
+  id: BANK_JOBS.EXPIRING_NOTIFICATIONS,
   name: 'Send Expiring Connection Notifications',
   trigger: eventTrigger({
     name: 'expiring-notification',
   }),
   version: '1.0.0',
+  /**
+   * Main job execution function that handles sending notifications for expiring
+   * connections
+   *
+   * @param payload - Information about the expiring connection
+   * @param payload.userId - The ID of the user who owns the connection
+   * @param payload.connectionId - The ID of the bank connection that's expiring
+   * @param payload.email - User's email address to send the notification to
+   * @param payload.name - User's name for personalized greeting
+   * @param payload.institutionName - Name of the financial institution
+   * @param payload.daysUntilExpiry - Number of days until the connection
+   *   expires
+   * @param payload.daysInactive - Number of days the connection has been
+   *   inactive
+   * @param payload.accountCount - Number of accounts linked through this
+   *   connection
+   * @param io - The I/O context provided by Trigger.dev for logging, running
+   *   tasks, etc.
+   * @returns An object containing the connection ID, email content, and status
+   */
   run: async (payload, io) => {
     const {
       accountCount,
@@ -107,7 +161,18 @@ export const expiringNotificationsJob = client.defineJob({
   },
 });
 
-/** Generate plain text email content */
+/**
+ * Generates the plain text version of the expiring connection email
+ *
+ * @param params - Parameters for constructing the email
+ * @param params.accountCount - Number of accounts affected by this connection
+ * @param params.daysInactive - Number of days since the connection was last
+ *   active
+ * @param params.daysUntilExpiry - Number of days until the connection expires
+ * @param params.institutionName - Name of the financial institution
+ * @param params.name - User's name for personalized greeting
+ * @returns A formatted plain text string containing the email content
+ */
 function generateExpiringEmailText({
   accountCount,
   daysInactive,
@@ -136,7 +201,20 @@ Thank you for using our service!
 `;
 }
 
-/** Generate HTML email content */
+/**
+ * Generates the HTML version of the expiring connection email
+ *
+ * @param params - Parameters for constructing the email
+ * @param params.accountCount - Number of accounts affected by this connection
+ * @param params.daysInactive - Number of days since the connection was last
+ *   active
+ * @param params.daysUntilExpiry - Number of days until the connection expires
+ * @param params.institutionName - Name of the financial institution
+ * @param params.name - User's name for personalized greeting
+ * @param params.reconnectUrl - URL for the user to click to reconnect their
+ *   account
+ * @returns A formatted HTML string containing the email content
+ */
 function generateExpiringEmailHtml({
   accountCount,
   daysInactive,

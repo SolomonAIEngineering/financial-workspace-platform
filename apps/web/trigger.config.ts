@@ -1,11 +1,11 @@
 import { defineConfig } from '@trigger.dev/sdk/v3';
 
 export default defineConfig({
-  project: process.env.TRIGGER_PROJECT_ID!,
+  project: 'proj_ytxnlllaekcwwlbxxqya',
 
   // Runtime configuration
   runtime: 'node',
-  logLevel: 'info',
+  logLevel: 'log',
   maxDuration: 900, // 15 minutes
 
   // Retry configuration

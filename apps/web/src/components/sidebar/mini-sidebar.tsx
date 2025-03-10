@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
-
+import { AnimatePresence, motion } from 'framer-motion';
 // Import Hero Icons
 import {
   CalendarIcon,
@@ -21,16 +20,15 @@ import {
   TableCellsIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import { cn } from '@udecode/cn';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState } from 'react';
+
 import { BarChart2Icon } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
-
 import { Icons } from '../ui/icons';
+import Link from 'next/link';
+import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
+import { cn } from '@udecode/cn';
+import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 
 interface MiniSidebarItemProps {
   href: string;

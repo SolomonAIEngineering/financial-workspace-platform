@@ -54,3 +54,26 @@ export function PopoverContent({
     </PopoverPrimitive.Portal>
   );
 }
+
+/**
+ * PopoverContentWithoutPortal is a forwardRef to the PopoverPrimitive.Content
+ * component. It is used to create a popover content without a portal.
+ *
+ * @param props - The props for the PopoverPrimitive.Content component.
+ * @returns The PopoverPrimitive.Content component.
+ */
+export const PopoverContentWithoutPortal = React.forwardRef<
+  React.ElementRef<typeof PopoverPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
+>(({ className, align = 'center', sideOffset = 4, ...props }, ref) => (
+  <PopoverPrimitive.Content
+    ref={ref}
+    align={align}
+    sideOffset={sideOffset}
+    className={cn(
+      'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 border bg-background p-4 text-popover-foreground shadow-md outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+      className
+    )}
+    {...props}
+  />
+));

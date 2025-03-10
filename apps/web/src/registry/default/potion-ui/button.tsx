@@ -44,6 +44,7 @@ export const buttonVariants = cva(
         navAction: 'size-5',
         none: '',
         xs: 'h-[26px] px-1.5 py-1 text-xs',
+        sm: 'h-[28px] gap-1.5 px-2 text-sm',
       },
       truncate: {
         true: 'truncate whitespace-nowrap',

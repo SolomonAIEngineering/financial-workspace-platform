@@ -1,18 +1,16 @@
 'use client';
 
-import React from 'react';
-
 import type { Document, User } from '@/server/types/index';
 
-import { useQuery } from '@tanstack/react-query';
-import { motion } from 'framer-motion';
-
-import { useAuthUser } from '@/components/auth/useAuthUser';
-import { useCurrentUser } from '@/components/auth/useCurrentUser';
 import { CreateDocumentButton } from '@/components/document/CreateDocumentButton';
 import { HomeDocuments } from '@/components/document/home/HomeDocuments';
-import { templateList } from '@/components/editor/utils/useTemplateDocument';
 import { Icons } from '@/components/ui/icons';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { templateList } from '@/components/editor/utils/useTemplateDocument';
+import { useAuthUser } from '@/components/auth/useAuthUser';
+import { useCurrentUser } from '@/components/auth/useCurrentUser';
+import { useQuery } from '@tanstack/react-query';
 import { useTRPC } from '@/trpc/react';
 
 export function Home() {

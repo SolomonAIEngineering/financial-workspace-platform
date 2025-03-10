@@ -9,16 +9,15 @@ import {
   getTransactions,
 } from '@/server/services/plaid';
 
-import { client } from '../client';
-import {
-  getConnectionsForSync,
-  getTransactionDateRange,
-  updateConnectionSyncStatus,
-} from '../utils/helpers';
+import { client } from '../../client';
+import { TRANSACTION_JOBS } from '../constants';
+import { getTransactionDateRange } from '../../utils/helpers';
+import { updateConnectionSyncStatus } from '../../utils/update-connection-sync';
+import { getConnectionsForSync } from '../../utils/get-connections-sync';
 
 // Define the job for syncing all user transactions
 export const syncAllTransactionsJob = client.defineJob({
-  id: 'sync-all-transactions-job',
+  id: TRANSACTION_JOBS.SYNC_ALL_TRANSACTIONS,
   name: 'Sync All Transactions',
   trigger: cronTrigger({
     cron: '0 */4 * * *', // Every 4 hours

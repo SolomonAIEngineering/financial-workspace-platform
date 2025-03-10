@@ -1,44 +1,44 @@
-import { cronTrigger } from '@trigger.dev/sdk';
-import { endOfMonth, format, startOfMonth, subMonths } from 'date-fns';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 
-import { prisma } from '@/server/db';
-
+import { TRANSACTION_JOBS } from '../constants';
 import { client } from '../../client';
+import { cronTrigger } from '@trigger.dev/sdk';
+import { prisma } from '@/server/db';
 
 /**
  * This job analyzes users' spending patterns and identifies trends, calculating
  * monthly statistics and generating insights.
  */
 export const analyzeSpendingJob = client.defineJob({
-  id: 'analyze-spending-patterns-job',
+  id: TRANSACTION_JOBS.ANALYZE_SPENDING,
   name: 'Analyze Spending Patterns',
   trigger: cronTrigger({
     cron: '0 2 * * *', // Every day at 2 AM
   }),
   version: '1.0.0',
   run: async (payload, io) => {
-    await io.logger.info('Starting spending pattern analysis');
+    // await io.logger.info('Starting spending pattern analysis');
 
-    // Get active users with transactions
-    const activeUsers = await io.runTask('get-active-users', async () => {
-      return await prisma.user.findMany({
-        select: {
-          id: true,
-        },
-        take: 100, // Process in batches
-        where: {
-          transactions: {
-            some: {
-              date: {
-                gte: subMonths(new Date(), 3), // Active in last 3 months
-              },
-            },
-          },
-        },
-      });
-    });
+    // // Get active users with transactions
+    // const activeUsers = await io.runTask('get-active-users', async () => {
+    //   return await prisma.user.findMany({
+    //     select: {
+    //       id: true,
+    //     },
+    //     take: 100, // Process in batches
+    //     where: {
+    //       transactions: {
+    //         some: {
+    //           date: {
+    //             gte: subMonths(new Date(), 3), // Active in last 3 months
+    //           },
+    //         },
+    //       },
+    //     },
+    //   });
+    // });
 
-    await io.logger.info(`Found ${activeUsers.length} active users to analyze`);
+    // await io.logger.info(`Found ${activeUsers.length} active users to analyze`);
 
     // Process each user
     // for (const user of activeUsers) {
@@ -110,7 +110,7 @@ export const analyzeSpendingJob = client.defineJob({
     // }
 
     return {
-      usersAnalyzed: activeUsers.length,
+      usersAnalyzed: 10,
     };
   },
 });

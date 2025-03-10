@@ -1,23 +1,57 @@
+import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@prisma/client';
+import { client } from '../../../client';
 import { cronTrigger } from '@trigger.dev/sdk';
+import { prisma } from '@/server/db';
 import { subDays } from 'date-fns';
 
-import { prisma } from '@/server/db';
-
-import { client } from '../../../client';
-
 /**
- * This job runs on a schedule to find disconnected bank connections and
- * notifies users about them. It helps maintain data quality by ensuring users
- * reconnect their accounts when needed.
+ * This job identifies and processes bank connections that are in a disconnected
+ * or error state. It runs on a daily schedule to:
+ *
+ * 1. Find bank connections that are in an error state and need attention
+ * 2. Send notifications to users about these disconnected connections
+ * 3. Automatically disable connections that have been in an error state for an
+ *    extended period despite multiple notifications
+ *
+ * This job is critical for maintaining data quality by ensuring users reconnect
+ * their accounts when needed, or by disabling abandoned connections that are no
+ * longer being maintained.
+ *
+ * @file Disconnected Bank Connections Scheduler
+ * @example
+ *   // The job runs automatically every day at noon, but can be triggered manually:
+ *   await client.sendEvent({
+ *     name: 'run-job',
+ *     payload: {
+ *       jobId: 'disconnected-scheduler-job',
+ *     },
+ *   });
+ *
+ * @example
+ *   // The job returns a summary of its actions:
+ *   {
+ *   connectionsProcessed: 12,  // Number of disconnected connections found
+ *   notificationsSent: 8,      // Number of notifications sent to users
+ *   disabledCount: 3           // Number of abandoned connections disabled
+ *   }
  */
 export const disconnectedSchedulerJob = client.defineJob({
-  id: 'disconnected-scheduler-job',
+  id: BANK_JOBS.DISCONNECTED_NOTIFICATIONS,
   name: 'Disconnected Connections Scheduler',
   trigger: cronTrigger({
     cron: '0 12 * * *', // Run daily at noon
   }),
   version: '1.0.0',
+  /**
+   * Main job execution function that processes disconnected connections
+   *
+   * @param payload - The job payload (empty for cron jobs)
+   * @param io - The I/O context provided by Trigger.dev for logging, running
+   *   tasks, etc.
+   * @returns A result object containing counts of connections processed,
+   *   notifications sent, and connections disabled
+   */
   run: async (payload, io) => {
     await io.logger.info('Starting disconnected connections scheduler');
 

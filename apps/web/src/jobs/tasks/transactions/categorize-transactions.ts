@@ -1,16 +1,15 @@
+import { TRANSACTION_JOBS } from '../constants';
 import { TransactionCategory } from '@prisma/client';
+import { client } from '../../client';
 import { cronTrigger } from '@trigger.dev/sdk';
-
 import { prisma } from '@/server/db';
-
-import { client } from '../client';
 
 /**
  * This job identifies transactions that need categorization and applies
  * auto-categorization based on patterns and merchant names.
  */
 export const categorizationJob = client.defineJob({
-  id: 'categorize-transactions-job',
+  id: TRANSACTION_JOBS.CATEGORIZE_TRANSACTIONS,
   name: 'Categorize Transactions',
   trigger: cronTrigger({
     cron: '0 3 * * *', // Run daily at 3 AM

@@ -168,7 +168,7 @@ export function BasicProfileTab({
       {/* Tab-specific save button */}
       <div className="mt-4 flex justify-end">
         <Button
-          className="rounded-full bg-gradient-to-r from-primary/90 to-primary/70 px-6 py-2 text-foreground shadow-sm transition-all duration-300 hover:from-primary hover:to-primary/80 hover:shadow"
+          className="rounded-full border border-primary bg-background px-6 py-2 text-primary shadow-sm transition-all duration-300 hover:shadow"
           disabled={isLoading || !form.formState.isDirty}
           onClick={() => onSubmit(form.getValues())}
           type="button"

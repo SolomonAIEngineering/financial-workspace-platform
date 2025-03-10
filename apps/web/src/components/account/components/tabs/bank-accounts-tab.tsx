@@ -7,8 +7,6 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -18,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useEffect, useState } from 'react';
+
 import { api } from '@/trpc/react';
 
 interface BankAccount {
@@ -56,19 +56,21 @@ export function BankAccountsList({ userId }: BankAccountsListProps) {
   useEffect(() => {
     if (data) {
       // Map API data to match our interface
-      const mappedAccounts = data.map((account) => {
+      const mappedAccounts = data.map((account: any) => {
         // Create the mapped account with known properties
         const mappedAccount: BankAccount = {
           id: account.id,
           availableBalance: account.availableBalance,
           currentBalance: account.currentBalance,
-          institution: account.institution,
-          isoCurrencyCode: account.isoCurrencyCode,
-          lastUpdated: account.connectedAt || new Date(),
-          mask: account.mask,
-          name: account.name,
+          institution: account.bankConnection?.institutionName || '',
+          isoCurrencyCode: account.isoCurrencyCode || 'USD',
+          lastUpdated: account.createdAt || new Date(),
+          mask: account.mask || '',
+          name: account.name || '',
           subtype: account.subtype || null,
           type: account.type,
+          institutionLogo: account.bankConnection?.logo || null,
+          institutionColor: account.bankConnection?.primaryColor || null,
         };
 
         return mappedAccount;
