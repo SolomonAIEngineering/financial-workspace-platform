@@ -3,13 +3,15 @@ import React, { useState } from 'react';
 import type { Document, User } from '@/server/types/index';
 
 import { motion } from 'framer-motion';
-import { PlusIcon } from 'lucide-react';
+import { FilterIcon, MenuIcon, PlusIcon } from 'lucide-react';
 
 import { CreateDocumentButton } from '../CreateDocumentButton';
 import { type FilterState, DocumentFilter } from './DocumentFilter';
 import { DocumentGroupedList } from './DocumentGroupedList';
 import { PinnedDocuments } from './PinnedDocuments';
 import { ViewModeToggle } from './ViewModeToggle';
+import { Button } from '@/registry/default/potion-ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 /**
  * Props for the HomeDocuments component
@@ -112,6 +114,49 @@ function applyFilters(docs: Document[], filters: FilterState): Document[] {
 }
 
 /**
+ * Category filter component optimized for mobile
+ */
+function CategoryFilters({
+  activeCategory,
+  setActiveCategory,
+}: {
+  activeCategory: 'all' | 'recent' | 'templates';
+  setActiveCategory: (category: 'all' | 'recent' | 'templates') => void;
+}) {
+  return (
+    <div className="flex w-full overflow-x-auto overflow-y-hidden rounded-md border border-gray-200 dark:border-gray-800">
+      <button
+        className={`whitespace-nowrap px-3 py-1.5 text-sm ${activeCategory === 'all'
+          ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
+          : 'bg-transparent text-gray-600 dark:text-gray-400'
+          }`}
+        onClick={() => setActiveCategory('all')}
+      >
+        All Documents
+      </button>
+      <button
+        className={`whitespace-nowrap px-3 py-1.5 text-sm ${activeCategory === 'recent'
+          ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
+          : 'bg-transparent text-gray-600 dark:text-gray-400'
+          }`}
+        onClick={() => setActiveCategory('recent')}
+      >
+        Recent
+      </button>
+      <button
+        className={`whitespace-nowrap px-3 py-1.5 text-sm ${activeCategory === 'templates'
+          ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
+          : 'bg-transparent text-gray-600 dark:text-gray-400'
+          }`}
+        onClick={() => setActiveCategory('templates')}
+      >
+        Templates
+      </button>
+    </div>
+  );
+}
+
+/**
  * HomeDocuments component integrates all document components on the home page
  *
  * This component manages the document display including view modes, filtering,
@@ -182,58 +227,76 @@ export function HomeDocuments({
 
   const displayedDocuments = getDocumentsByCategory();
 
-  return (
-    <div className="space-y-6">
-      {/* Top filter section */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Documents</h1>
+  // Mobile menu state
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-        <div className="ml-auto flex items-center gap-2">
-          {/* Create document button */}
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <CreateDocumentButton className="flex items-center rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700">
+  return (
+    <div className="space-y-4 md:space-y-6">
+      {/* Top section with title and primary actions - mobile responsive */}
+      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+        <h1 className="text-xl font-bold sm:text-2xl">Documents</h1>
+
+        <div className="flex items-center gap-2">
+          {/* Create document button - visible on all screen sizes */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex-1 sm:flex-none"
+          >
+            <CreateDocumentButton className="flex w-full items-center justify-center rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 sm:w-auto">
               <PlusIcon className="mr-1 h-4 w-4" />
-              New Document
+              <span className="whitespace-nowrap">New Document</span>
             </CreateDocumentButton>
           </motion.div>
 
-          {/* Category filter buttons */}
-          <div className="flex overflow-hidden rounded-md border border-gray-200 dark:border-gray-800">
-            <button
-              className={`px-3 py-1.5 text-sm ${
-                activeCategory === 'all'
-                  ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
-                  : 'bg-transparent text-gray-600 dark:text-gray-400'
-              }`}
-              onClick={() => setActiveCategory('all')}
-            >
-              All Documents
-            </button>
-            <button
-              className={`px-3 py-1.5 text-sm ${
-                activeCategory === 'recent'
-                  ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
-                  : 'bg-transparent text-gray-600 dark:text-gray-400'
-              }`}
-              onClick={() => setActiveCategory('recent')}
-            >
-              Recent
-            </button>
-            <button
-              className={`px-3 py-1.5 text-sm ${
-                activeCategory === 'templates'
-                  ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
-                  : 'bg-transparent text-gray-600 dark:text-gray-400'
-              }`}
-              onClick={() => setActiveCategory('templates')}
-            >
-              Templates
-            </button>
+          {/* View mode toggle - hidden on mobile, visible on tablet/desktop */}
+          <div className="hidden sm:block">
+            <ViewModeToggle setViewMode={setViewMode} viewMode={viewMode} />
           </div>
 
-          {/* View mode toggle */}
-          <ViewModeToggle setViewMode={setViewMode} viewMode={viewMode} />
+          {/* Mobile menu button - only visible on small screens */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-auto sm:hidden"
+                aria-label="Document options menu"
+              >
+                <MenuIcon className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="sm:hidden">
+              <div className="flex flex-col space-y-6 pt-6">
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">View Mode</h3>
+                  <ViewModeToggle setViewMode={setViewMode} viewMode={viewMode} />
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="text-sm font-medium">Filter Documents</h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => setShowFilters(!showFilters)}
+                  >
+                    <FilterIcon className="mr-2 h-4 w-4" />
+                    {showFilters ? 'Hide Filters' : 'Show Filters'}
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
+      </div>
+
+      {/* Category filters - full width on mobile */}
+      <div className="w-full overflow-hidden sm:w-auto">
+        <CategoryFilters
+          activeCategory={activeCategory}
+          setActiveCategory={setActiveCategory}
+        />
       </div>
 
       {/* Filter section */}
