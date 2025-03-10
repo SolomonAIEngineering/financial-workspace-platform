@@ -56,37 +56,32 @@ Each banking provider has unique characteristics that affect our sync implementa
 The bank syncing system is organized into a modular architecture within the Solomon AI application. The core components are located in the following directory structure:
 
 ```
-apps/dashboard/jobs/
+src/jobs/
+├── client.ts           # Trigger.dev client configuration
+├── index.ts            # Job registration and exports
 ├── utils/              # Job utilities and shared functions
-│   ├── job-creator.ts  # Factory for creating typed job definitions
-│   ├── queue.ts        # Queue management utilities
-│   ├── scheduler.ts    # Job scheduling utilities
+│   ├── helpers.ts      # Helper functions for jobs
+│   ├── rate-limiting.ts # Rate limiting utilities
 │   └── error-handling.ts # Common error handling patterns
 └── tasks/              # Task definitions organized by domain
     ├── bank/           # Banking-related jobs
-    │   ├── connections/ # Connection management jobs
-    │   ├── accounts/    # Account-related jobs
-    │   ├── transactions/ # Transaction processing jobs
-    │   └── notifications/ # Banking notification jobs
-    ├── user/           # User-related jobs
-    └── system/         # System maintenance jobs
+    │   ├── sync/       # Bank sync jobs
+    │   ├── setup/      # Bank setup jobs
+    │   ├── scheduler/  # Scheduling jobs
+    │   ├── notifications/ # Banking notification jobs
+    │   └── transactions/ # Transaction processing jobs
+    ├── financial/      # Financial analysis jobs
+    └── reconnect/      # Reconnection jobs
 ```
 
 The banking providers are integrated through a provider-agnostic adapter system:
 
 ```
-lib/banking/
-├── providers/          # Provider-specific adapters
-│   ├── plaid/          # Plaid integration
-│   ├── teller/         # Teller integration
-│   └── gocardless/     # GoCardless integration
-├── connection.ts       # Connection management utilities
-├── accounts.ts         # Account data handling
-├── transactions.ts     # Transaction processing utilities
-└── categorization/     # Transaction categorization system
-    ├── engine.ts       # Categorization engine
-    ├── models/         # ML models for categorization
-    └── training/       # Model training utilities
+server/services/
+├── plaid/             # Plaid integration
+├── teller/            # Teller integration
+├── gocardless/        # GoCardless integration
+└── common/            # Shared utilities for all providers
 ```
 
 ### Component Interactions
@@ -140,7 +135,7 @@ The typical flow for syncing bank data follows these steps:
 
 The bank syncing system is built on the following technologies:
 
-- **Job Queue**: Bull/Redis for reliable job queuing and processing
+- **Job Queue**: Trigger.dev for reliable job queuing and processing
 - **Database**: PostgreSQL for transaction and account data storage
 - **Caching**: Redis for caching frequently accessed data
 - **Machine Learning**: TensorFlow.js for transaction categorization
@@ -189,509 +184,81 @@ Bank sync jobs are responsible for fetching data from banking providers and upda
 
 ### Job Framework
 
-All bank sync jobs are built on a common job framework defined in `apps/dashboard/jobs/utils/job-creator.ts`:
+All bank sync jobs are built using Trigger.dev's job definition framework. The client is configured in `src/jobs/client.ts`:
 
 ```typescript
-// apps/dashboard/jobs/utils/job-creator.ts
-import { Job, JobOptions, Queue } from 'bull';
-import { logger } from '@/lib/logger';
-import { v4 as uuidv4 } from 'uuid';
+// src/jobs/client.ts
+import { TriggerClient } from '@trigger.dev/sdk';
 
-interface JobDefinition<TData, TResult> {
-  name: string;
-  handler: (data: TData) => Promise<TResult>;
-  options?: JobOptions;
-}
-
-interface JobResponse<TResult> {
-  jobId: string;
-  publicAccessToken: string;
-  result?: TResult;
-}
-
-export function createJob<TData, TResult>({
-  name,
-  handler,
-  options = {},
-}: JobDefinition<TData, TResult>) {
-  const processJob = async (job: Job<TData>): Promise<TResult> => {
-    try {
-      logger.info(`Starting job: ${name}`, {
-        jobId: job.id,
-        attempt: job.attemptsMade,
-      });
-
-      const result = await handler(job.data);
-
-      logger.info(`Completed job: ${name}`, {
-        jobId: job.id,
-        attempt: job.attemptsMade,
-        duration: Date.now() - job.timestamp,
-      });
-
-      return result;
-    } catch (error) {
-      logger.error(`Failed job: ${name}`, {
-        jobId: job.id,
-        attempt: job.attemptsMade,
-        error: error.message,
-        stack: error.stack,
-      });
-
-      throw error;
-    }
-  };
-
-  return {
-    name,
-    options: {
-      attempts: 3,
-      backoff: {
-        type: 'exponential',
-        delay: 5000,
-      },
-      removeOnComplete: {
-        age: 7 * 24 * 60 * 60, // 7 days
-        count: 1000,
-      },
-      ...options,
-    },
-    handler,
-    processor: processJob,
-    enqueue: async (
-      queue: Queue,
-      data: TData
-    ): Promise<JobResponse<TResult>> => {
-      const publicAccessToken = uuidv4();
-
-      const job = await queue.add(name, data, {
-        ...options,
-        jobId: uuidv4(),
-        // Store the public access token in job opts for status API access
-        opts: { publicAccessToken },
-      });
-
-      return {
-        jobId: job.id as string,
-        publicAccessToken,
-      };
-    },
-  };
-}
+/**
+ * This client is used to interact with the Trigger.dev API
+ * You can use it in your application to trigger jobs
+ */
+export const client = new TriggerClient({
+  id: 'smb-financial-management-platform',
+  apiKey: process.env.TRIGGER_API_KEY || '',
+  apiUrl: process.env.TRIGGER_API_URL,
+});
 ```
 
-### Core Sync Job
+Jobs are defined using the `client.defineJob()` method, which provides type safety and built-in logging, retries, and monitoring:
 
-The core sync job (`sync-bank-job.ts`) handles fetching the latest data from a banking provider and updating the connection status:
+```typescript
+// Example job definition pattern
+import { client } from '../client';
+import { eventTrigger } from '@trigger.dev/sdk';
+import { z } from 'zod';
 
-````typescript
-// apps/dashboard/jobs/tasks/bank/connections/sync-bank-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { getBankingProvider } from '@/lib/banking/providers';
-import { updateBankConnection } from '@/lib/banking/connection';
-import { updateAccountBalance } from '@/lib/banking/accounts';
-import { queueJob } from '@/jobs/utils/queue';
-import { logger } from '@/lib/logger';
-import { rateLimiter } from '@/lib/rate-limiting';
-import { metrics } from '@/lib/monitoring';
-
-interface SyncBankJobData {
-  connectionId: string;
-  accessToken: string;
-  provider: 'plaid' | 'teller' | 'gocardless';
-  userId: string;
-  forceRefresh?: boolean;
-}
-
-interface SyncBankJobResult {
-  success: boolean;
-  accountCount?: number;
-  error?: string;
-  requiresReauth?: boolean;
-  lastSyncTime?: string;
-}
-
-export const syncBankJob = createJob<SyncBankJobData, SyncBankJobResult>({
-  name: 'sync-bank',
-  options: {
-    priority: 10, // Higher priority
-    timeout: 60000, // 1 minute timeout
-    attempts: 5,
-    backoff: {
-      type: 'exponential',
-      delay: 10000
-    }
-  },
-  handler: async ({ connectionId, accessToken, provider, userId, forceRefresh = false }) => {
-    const startTime = Date.now();
-    const traceId = `sync-bank-${connectionId}-${Date.now()}`;
-
-    logger.info('Starting bank sync job', {
-      traceId,
+export const exampleSyncJob = client.defineJob({
+  // Unique identifier for the job
+  id: 'sync-bank-example',
+  
+  // Human-readable name
+  name: 'Sync Bank Example',
+  
+  // Version for tracking changes
+  version: '1.0.0',
+  
+  // Trigger that determines when the job runs
+  trigger: eventTrigger({
+    name: 'sync-bank-trigger',
+    schema: z.object({
+      connectionId: z.string(),
+      accessToken: z.string(),
+      provider: z.enum(['plaid', 'teller', 'gocardless']),
+      userId: z.string(),
+      forceRefresh: z.boolean().optional(),
+    }),
+  }),
+  
+  // The main job function
+  run: async (payload, io, ctx) => {
+    const { connectionId, accessToken, provider, userId, forceRefresh = false } = payload;
+    
+    // Log the start of the job
+    await io.logger.info('Starting bank sync job', {
       connectionId,
       provider,
       userId,
       forceRefresh
     });
-
+    
     try {
-      // Increment sync attempt counter
-      metrics.increment('bank_sync.attempts', { provider });
-
-      // Get the appropriate provider client
-      const bankingProvider = getBankingProvider(provider);
-
-      // Apply rate limiting based on provider
-      await rateLimiter.acquire(`provider:${provider}`, 1);
-
-      // Get connection details before sync
-      const connection = await getBankConnection(connectionId);
-      if (!connection) {
-        throw new Error('Connection not found');
-      }
-
-      if (connection.status === 'revoked') {
-        logger.warn('Skipping sync for revoked connection', { traceId, connectionId });
-        return {
-          success: false,
-          error: 'Connection revoked by user'
-        };
-      }
-
-      // Start sync transaction for atomicity
-      await beginSyncTransaction(connectionId);
-
-      // Update connection status to syncing
-      await updateBankConnection(connectionId, {
-        status: 'syncing',
-        last_sync_attempt: new Date().toISOString(),
-      });
-
-      // Use different refresh strategies based on provider and force flag
-      const syncOptions = getSyncOptions(provider, forceRefresh);
-
-      // Fetch the latest account data
-      logger.debug('Fetching accounts from provider', { traceId, provider });
-      const { accounts, balances } = await bankingProvider.getAccounts(
-        accessToken,
-        syncOptions
-      );
-
-      logger.info('Fetched accounts from provider', {
-        traceId,
-        accountCount: accounts.length
-      });
-
-      // Process accounts and balances
-      await processAccountsAndBalances(connectionId, accounts, balances);
-
-      // Update the connection status and last accessed time
-      await updateBankConnection(connectionId, {
-        status: 'connected',
-        last_sync_success: new Date().toISOString(),
-        error: null,
-        error_count: 0,
-      });
-
-      // Queue transaction sync job
-      await queueTransactionSyncJob(connectionId, accessToken, provider);
-
-      // Commit sync transaction
-      await commitSyncTransaction(connectionId);
-
-      // Record successful sync metric
-      metrics.timing('bank_sync.duration', Date.now() - startTime, {
-        provider,
-        status: 'success'
-      });
-
+      // Job implementation goes here
+      
       return {
         success: true,
-        accountCount: accounts.length,
+        accountCount: 5, // Example value
         lastSyncTime: new Date().toISOString()
       };
     } catch (error) {
-      // Rollback sync transaction
-      await rollbackSyncTransaction(connectionId);
-
-      // Record failed sync metric
-      metrics.timing('bank_sync.duration', Date.now() - startTime, {
-        provider,
-        status: 'error'
-      });
-
-      // Handle provider-specific errors
-      const errorResponse = handleProviderError(error, connectionId, provider);
-
-      logger.error('Bank sync job failed', {
-        traceId,
+      // Error handling
+      await io.logger.error('Bank sync job failed', {
         connectionId,
         provider,
         error: error.message,
-        errorCode: error.code,
-        errorType: error.type,
       });
-
-      return errorResponse;
-    }
-  },
-});
-
-// Helper function to get sync options based on provider and force flag
-function getSyncOptions(provider: string, forceRefresh: boolean) {
-  switch (provider) {
-    case 'plaid':
-      return {
-        force_refresh: forceRefresh,
-        options: {
-          account_ids: null, // fetch all accounts
-          with_holdings: true,
-          with_liabilities: true
-        }
-      };
-    case 'teller':
-      return {
-        refresh: forceRefresh,
-        include_balances: true
-      };
-    case 'gocardless':
-      return {
-        refresh_user_data: forceRefresh,
-        include_details: true
-      };
-    default:
-      return { force_refresh: forceRefresh };
-  }
-}
-
-// Helper function to process accounts and balances
-async function processAccountsAndBalances(connectionId: string, accounts: any[], balances: any[]) {
-  // Process each account
-  for (const account of accounts) {
-    // Check if account already exists
-    const existingAccount = await getAccountByProviderId(account.id, connectionId);
-
-    if (existingAccount) {
-      // Update existing account
-      await updateAccount(existingAccount.id, {
-        name: account.name,
-        official_name: account.official_name,
-        type: account.type,
-        subtype: account.subtype,
-        status: account.status || 'active',
-        last_updated: new Date().toISOString()
-      });
-    } else {
-      // Create new account
-      await createAccount({
-        connection_id: connectionId,
-        provider_account_id: account.id,
-        name: account.name,
-        official_name: account.official_name,
-        type: account.type,
-        subtype: account.subtype,
-        status: account.status || 'active',
-        created_at: new Date().toISOString(),
-        last_updated: new Date().toISOString()
-      });
-    }
-
-    // Update account balance
-    const balance = balances.find(b => b.account_id === account.id);
-    if (balance) {
-      await updateAccountBalance(account.id, {
-        current: balance.current,
-        available: balance.available,
-        limit: balance.limit,
-        last_updated: new Date().toISOString()
-      });
-    }
-  }
-}
-
-// Helper function to handle provider-specific errors
-function handleProviderError(error: any, connectionId: string, provider: string): SyncBankJobResult {
-  let requiresReauth = false;
-  let status = 'error';
-  let errorMessage = error.message || 'Unknown error';
-
-  // Update error count
-  incrementConnectionErrorCount(connectionId);
-
-  // Handle provider-specific error codes
-  if (provider === 'plaid') {
-    if (error.code === 'ITEM_LOGIN_REQUIRED') {
-      requiresReauth = true;
-      status = 'requires_reauth';
-      errorMessage = 'Bank login required';
-    } else if (error.code === 'INVALID_ACCESS_TOKEN') {
-      status = 'invalid_token';
-      errorMessage = 'Invalid access token';
-    } else if (error.code === 'RATE_LIMIT_EXCEEDED') {
-      status = 'rate_limited';
-      errorMessage = 'Rate limit exceeded';
-    }
-  } else if (provider === 'teller') {
-    if (error.code === 'token-invalid') {
-      status = 'invalid_token';
-      errorMessage = 'Invalid access token';
-    } else if (error.code === 'credentials-invalid') {
-      requiresReauth = true;
-      status = 'requires_reauth';
-      errorMessage = 'Invalid credentials';
-    }
-  } else if (provider === 'gocardless') {
-    if (error.code === 'authentication_failed') {
-      requiresReauth = true;
-      status = 'requires_reauth';
-      errorMessage = 'Authentication failed';
-    } else if (error.code === 'access_denied') {
-      status = 'access_denied';
-      errorMessage = 'Access denied';
-    }
-  }
-
-  // Update connection status based on error
-  updateBankConnection(connectionId, {
-    status,
-    error: errorMessage,
-    last_sync_attempt: new Date().toISOString(),
-  });
-
-  return {
-    success: false,
-    error: errorMessage,
-    requiresReauth
-  };
-}
-
-// Helper function to queue transaction sync job
-async function queueTransactionSyncJob(connectionId: string, accessToken: string, provider: string) {
-  // Get appropriate date range based on last successful sync
-  const dateRange = await getTransactionSyncDateRange(connectionId);
-
-  await queueJob('sync-transactions', {
-    connectionId,
-    accessToken,
-    provider,
-    startDate: dateRange.startDate,
-    endDate: dateRange.endDate
-  });
-}
-
-### Balance Update Job
-
-A specialized job for updating account balances more frequently than full syncs:
-
-```typescript
-// apps/dashboard/jobs/tasks/bank/accounts/update-balances-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { getBankingProvider } from '@/lib/banking/providers';
-import { updateAccountBalance } from '@/lib/banking/accounts';
-import { rateLimiter } from '@/lib/rate-limiting';
-import { logger } from '@/lib/logger';
-import { metrics } from '@/lib/monitoring';
-
-interface UpdateBalancesJobData {
-  connectionId: string;
-  accessToken: string;
-  provider: 'plaid' | 'teller' | 'gocardless';
-  accountIds?: string[];
-}
-
-interface UpdateBalancesJobResult {
-  success: boolean;
-  balanceCount?: number;
-  error?: string;
-}
-
-export const updateBalancesJob = createJob<UpdateBalancesJobData, UpdateBalancesJobResult>({
-  name: 'update-balances',
-  options: {
-    priority: 5,
-    timeout: 30000, // 30 second timeout
-    attempts: 3,
-  },
-  handler: async ({ connectionId, accessToken, provider, accountIds }) => {
-    const startTime = Date.now();
-    const traceId = `update-balances-${connectionId}-${Date.now()}`;
-
-    logger.info('Starting balance update job', {
-      traceId,
-      connectionId,
-      provider,
-      accountCount: accountIds?.length
-    });
-
-    try {
-      // Increment balance update attempt counter
-      metrics.increment('balance_update.attempts', { provider });
-
-      // Get the appropriate provider client
-      const bankingProvider = getBankingProvider(provider);
-
-      // Apply rate limiting for balance updates (lighter than full sync)
-      await rateLimiter.acquire(`provider:${provider}:balance`, 0.5);
-
-      // Prepare options for balance fetch
-      const options = {
-        account_ids: accountIds || undefined
-      };
-
-      // Fetch only balance information
-      const { balances } = await bankingProvider.getBalances(accessToken, options);
-
-      logger.debug('Fetched balances from provider', {
-        traceId,
-        balanceCount: balances.length
-      });
-
-      // Update balances in database with a single batch operation if possible
-      if (balances.length > 10) {
-        await batchUpdateAccountBalances(balances);
-      } else {
-        // Update balances individually for smaller batches
-        for (const balance of balances) {
-          await updateAccountBalance(balance.account_id, {
-            current: balance.current,
-            available: balance.available,
-            limit: balance.limit,
-            last_updated: new Date().toISOString()
-          });
-        }
-      }
-
-      // Check for significant balance changes and queue notifications if needed
-      await checkForSignificantBalanceChanges(connectionId, balances);
-
-      // Record successful balance update metric
-      metrics.timing('balance_update.duration', Date.now() - startTime, {
-        provider,
-        status: 'success'
-      });
-
-      return {
-        success: true,
-        balanceCount: balances.length
-      };
-    } catch (error) {
-      // Record failed balance update metric
-      metrics.timing('balance_update.duration', Date.now() - startTime, {
-        provider,
-        status: 'error'
-      });
-
-      logger.error('Balance update job failed', {
-        traceId,
-        connectionId,
-        provider,
-        error: error.message,
-        errorCode: error.code
-      });
-
-      // Don't update connection status for balance update failures
-      // They are less critical than full sync failures
-
+      
       return {
         success: false,
         error: error.message
@@ -699,195 +266,501 @@ export const updateBalancesJob = createJob<UpdateBalancesJobData, UpdateBalances
     }
   },
 });
+```
 
-// Efficient batch update for multiple account balances
-async function batchUpdateAccountBalances(balances) {
-  const batchUpdates = balances.map(balance => ({
-    account_id: balance.account_id,
-    current: balance.current,
-    available: balance.available,
-    limit: balance.limit,
-    last_updated: new Date().toISOString()
-  }));
-
-  await performBatchBalanceUpdate(batchUpdates);
-}
-
-// Check for significant balance changes that might require user notification
-async function checkForSignificantBalanceChanges(connectionId, currentBalances) {
-  // Get previous balance records
-  const previousBalances = await getPreviousBalances(connectionId);
-
-  // Check each balance for significant changes
-  for (const current of currentBalances) {
-    const previous = previousBalances.find(p => p.account_id === current.account_id);
-
-    if (!previous) continue;
-
-    // Calculate change amount and percentage
-    const changeAmount = current.current - previous.current;
-    const changePercentage = (changeAmount / previous.current) * 100;
-
-    // Get account details for context
-    const account = await getAccountByProviderId(current.account_id, connectionId);
-
-    // Check if change meets notification threshold
-    const isSignificant =
-      (Math.abs(changePercentage) > 15 && Math.abs(changeAmount) > 100) || // 15% change and >$100
-      Math.abs(changeAmount) > 1000; // Any change >$1000
-
-    if (isSignificant) {
-      // Queue balance change notification
-      await queueJob('notify-balance-change', {
-        userId: account.user_id,
-        accountId: account.id,
-        accountName: account.name,
-        previousBalance: previous.current,
-        currentBalance: current.current,
-        changeAmount,
-        changePercentage
-      });
-    }
-  }
-}
-````
-
-### Account Creation and Update Job
-
-A job for handling the creation and updating of accounts:
+Jobs are registered in the `src/jobs/index.ts` file:
 
 ```typescript
-// apps/dashboard/jobs/tasks/bank/accounts/account-management-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { logger } from '@/lib/logger';
-import { metrics } from '@/lib/monitoring';
-import { sendNotification } from '@/lib/notifications';
+// src/jobs/index.ts
+import { syncConnectionJob } from './tasks/bank/sync/connection';
+import { syncAccountJob } from './tasks/bank/sync/account';
+import { updateBalancesJob } from './tasks/bank/update-balances';
+// Import other jobs...
 
-interface AccountManagementJobData {
-  connectionId: string;
-  accounts: any[];
-  userId: string;
-  operation: 'create' | 'update' | 'refresh';
+// Define the jobs to be registered
+const jobs = [
+  syncConnectionJob,
+  syncAccountJob,
+  updateBalancesJob,
+  // Other jobs...
+];
+
+export function registerJobs() {
+  return jobs;
 }
+```
 
-interface AccountManagementJobResult {
-  success: boolean;
-  accountsCreated?: number;
-  accountsUpdated?: number;
-  error?: string;
-}
+### Core Sync Job
 
-export const accountManagementJob = createJob<
-  AccountManagementJobData,
-  AccountManagementJobResult
->({
-  name: 'account-management',
-  handler: async ({ connectionId, accounts, userId, operation }) => {
-    const startTime = Date.now();
-    const traceId = `account-management-${connectionId}-${Date.now()}`;
+The core sync job (`sync-connection.ts`) handles fetching the latest data from a banking provider and updating the connection status:
 
-    logger.info('Starting account management job', {
-      traceId,
-      connectionId,
-      accountCount: accounts.length,
-      operation,
-    });
+```typescript
+// src/jobs/tasks/bank/sync/connection.ts
+import { BankConnectionStatus } from '@prisma/client';
+import { eventTrigger } from '@trigger.dev/sdk';
+
+import { prisma } from '@/server/db';
+import { getItemDetails } from '@/server/services/plaid';
+
+import { client } from '../../../client';
+
+/**
+ * This job handles syncing a bank connection and all its accounts
+ * It's a fan-out job that triggers sync-account for each account
+ */
+export const syncConnectionJob = client.defineJob({
+  id: 'sync-connection-job',
+  name: 'Sync Bank Connection',
+  trigger: eventTrigger({
+    name: 'sync-connection',
+  }),
+  version: '1.0.0',
+  run: async (payload, io) => {
+    const { connectionId, manualSync = false } = payload;
+
+    await io.logger.info(`Starting connection sync for ${connectionId}`);
 
     try {
-      let accountsCreated = 0;
-      let accountsUpdated = 0;
+      // Fetch the connection details
+      const connection = await io.runTask('get-connection', async () => {
+        return await prisma.bankConnection.findUnique({
+          select: {
+            id: true,
+            accessToken: true,
+            institutionId: true,
+            institutionName: true,
+            status: true,
+            userId: true,
+          },
+          where: { id: connectionId },
+        });
+      });
 
-      // Get existing accounts for this connection
-      const existingAccounts = await getAccountsByConnectionId(connectionId);
-
-      const existingAccountMap = existingAccounts.reduce((acc, account) => {
-        acc[account.provider_account_id] = account;
-        return acc;
-      }, {});
-
-      // Process each account
-      for (const account of accounts) {
-        const existingAccount = existingAccountMap[account.id];
-
-        if (existingAccount) {
-          // Check if account needs updating
-          if (hasAccountChanged(existingAccount, account)) {
-            await updateAccount(existingAccount.id, {
-              name: account.name,
-              official_name: account.official_name,
-              type: account.type,
-              subtype: account.subtype,
-              status: account.status || 'active',
-              last_updated: new Date().toISOString(),
-            });
-            accountsUpdated++;
-          }
-        } else {
-          // Create new account
-          await createAccount({
-            connection_id: connectionId,
-            provider_account_id: account.id,
-            user_id: userId,
-            name: account.name,
-            official_name: account.official_name,
-            type: account.type,
-            subtype: account.subtype,
-            status: account.status || 'active',
-            created_at: new Date().toISOString(),
-            last_updated: new Date().toISOString(),
-          });
-          accountsCreated++;
-        }
+      if (!connection) {
+        await io.logger.error(`Connection ${connectionId} not found`);
+        throw new Error(`Connection ${connectionId} not found`);
       }
 
-      // Notify user about new accounts if any were created
-      if (accountsCreated > 0) {
-        await sendNotification({
-          userId,
-          type: 'accounts_added',
-          title: 'New Accounts Found',
-          message: `We found ${accountsCreated} new account(s) in your bank connection.`,
+      // Check connection status with Plaid
+      const connectionDetails = await io.runTask(
+        'check-connection-status',
+        async () => {
+          return await getItemDetails(connection.accessToken);
+        }
+      );
+
+      // Update connection status based on Plaid response
+      await io.runTask('update-connection-status', async () => {
+        await prisma.bankConnection.update({
           data: {
-            connectionId,
-            accountsCreated,
+            lastSyncAt: new Date(),
+            status: connectionDetails.error
+              ? BankConnectionStatus.ERROR
+              : BankConnectionStatus.ACTIVE,
+          },
+          where: { id: connectionId },
+        });
+      });
+
+      // Get all active accounts for this connection
+      const accounts = await io.runTask('get-accounts', async () => {
+        return await prisma.bankAccount.findMany({
+          select: {
+            id: true,
+            plaidAccountId: true,
+            status: true,
+          },
+          where: {
+            bankConnectionId: connectionId,
+            status: manualSync ? undefined : 'ACTIVE', // Include all accounts for manual sync
+          },
+        });
+      });
+
+      if (accounts.length === 0) {
+        await io.logger.info(
+          `No active accounts found for connection ${connectionId}`
+        );
+
+        return {
+          accountsSynced: 0,
+          status: 'success',
+        };
+      }
+
+      await io.logger.info(`Found ${accounts.length} accounts to sync`);
+
+      // Trigger account syncs with appropriate delays
+      let accountsSynced = 0;
+
+      for (const account of accounts) {
+        await client.sendEvent({
+          // Use context for delay information
+          context: {
+            delaySeconds: manualSync ? accountsSynced * 2 : accountsSynced * 30,
+          },
+          name: 'sync-account-trigger',
+          payload: {
+            accessToken: connection.accessToken,
+            bankAccountId: account.id,
+            manualSync,
+            userId: connection.userId,
+          },
+        });
+        accountsSynced++;
+      }
+
+      // For manual syncs, we'll also trigger transaction notifications
+      if (manualSync) {
+        await client.sendEvent({
+          // Use context for delay information
+          context: {
+            delaySeconds: 120, // 2 minutes
+          },
+          name: 'sync-transaction-notifications-trigger',
+          payload: {
+            userId: connection.userId,
           },
         });
       }
 
-      // Record metrics
-      metrics.increment('accounts.created', accountsCreated);
-      metrics.increment('accounts.updated', accountsUpdated);
-      metrics.timing('account_management.duration', Date.now() - startTime);
+      await io.logger.info(
+        `Connection sync completed, triggered ${accountsSynced} account syncs`
+      );
 
       return {
-        success: true,
-        accountsCreated,
-        accountsUpdated,
+        accountsSynced,
+        connectionId,
+        status: 'success',
       };
     } catch (error) {
-      logger.error('Account management job failed', {
-        traceId,
+      await io.logger.error(`Connection sync failed: ${error.message}`, {
         connectionId,
-        error: error.message,
+        error: error.stack,
+      });
+
+      // Update connection status to error
+      await prisma.bankConnection.update({
+        data: {
+          error: error.message,
+          lastSyncAt: new Date(),
+          status: BankConnectionStatus.ERROR,
+        },
+        where: { id: connectionId },
       });
 
       return {
-        success: false,
+        connectionId,
         error: error.message,
+        status: 'error',
+      };
+    }
+  },
+});
+```
+
+### Balance Update Job
+
+A specialized job for updating account balances more frequently than full syncs:
+
+```typescript
+// src/jobs/tasks/bank/update-balances.ts
+import { BankConnectionStatus } from '@prisma/client';
+import { cronTrigger } from '@trigger.dev/sdk';
+
+import { prisma } from '@/server/db';
+import { getAccounts } from '@/server/services/plaid';
+
+import { client } from '../../client';
+
+/**
+ * This job updates bank account balances on a frequent basis without pulling
+ * full transaction history, providing more real-time balance data.
+ */
+export const updateBalancesJob = client.defineJob({
+  id: 'update-bank-balances-job',
+  name: 'Update Bank Balances',
+  trigger: cronTrigger({
+    cron: '0 */2 * * *', // Every 2 hours
+  }),
+  version: '1.0.0',
+  run: async (payload, io) => {
+    await io.logger.info('Starting balance update job');
+
+    // Find active connections to update
+    const connections = await io.runTask('get-active-connections', async () => {
+      return await prisma.bankConnection.findMany({
+        include: {
+          accounts: {
+            where: {
+              status: 'ACTIVE',
+            },
+          },
+        },
+        orderBy: {
+          balanceLastUpdated: 'asc', // Update oldest first
+        },
+        take: 100, // Process in batches
+        where: {
+          status: BankConnectionStatus.ACTIVE,
+        },
+      });
+    });
+
+    await io.logger.info(
+      `Found ${connections.length} connections to update balances`
+    );
+
+    let successCount = 0;
+    let errorCount = 0;
+    let accountsUpdated = 0;
+
+    // Process each connection
+    for (const connection of connections) {
+      try {
+        // Skip connections with no active accounts
+        if (connection.accounts.length === 0) {
+          continue;
+        }
+
+        await io.logger.info(
+          `Updating balances for connection ${connection.id} with ${connection.accounts.length} accounts`
+        );
+
+        // Get account balances from Plaid
+        const plaidAccounts = await io.runTask(
+          `fetch-balances-${connection.id}`,
+          async () => {
+            return await getAccounts(connection.accessToken);
+          }
+        );
+
+        // Update each account balance
+        for (const account of connection.accounts) {
+          const plaidAccount = plaidAccounts.find(
+            (a) => a.plaidAccountId === account.plaidAccountId
+          );
+
+          if (plaidAccount) {
+            await io.runTask(`update-balance-${account.id}`, async () => {
+              await prisma.bankAccount.update({
+                data: {
+                  availableBalance: plaidAccount.availableBalance,
+                  balanceLastUpdated: new Date(),
+                  currentBalance: plaidAccount.currentBalance,
+                  limit: plaidAccount.limit,
+                },
+                where: { id: account.id },
+              });
+            });
+            accountsUpdated++;
+          }
+        }
+
+        // Update connection's balance last updated timestamp
+        await io.runTask(`update-connection-${connection.id}`, async () => {
+          await prisma.bankConnection.update({
+            data: {
+              balanceLastUpdated: new Date(),
+            },
+            where: { id: connection.id },
+          });
+        });
+
+        successCount++;
+      } catch (error) {
+        await io.logger.error(
+          `Error updating balances for connection ${connection.id}: ${error.message}`
+        );
+        errorCount++;
+      }
+    }
+
+    await io.logger.info(
+      `Balance update job completed: ${successCount} connections updated, ${accountsUpdated} account balances updated, ${errorCount} errors`
+    );
+
+    return {
+      accountsUpdated,
+      connectionsProcessed: connections.length,
+      errorCount,
+      successCount,
+    };
+  },
+});
+```
+
+### Account Creation and Setup Job
+
+A job for handling the initial setup of bank accounts:
+
+```typescript
+// src/jobs/tasks/bank/setup/initial.ts
+import {
+  type BankAccount,
+  AccountStatus,
+  AccountType,
+  BankConnectionStatus,
+} from '@prisma/client';
+import { eventTrigger } from '@trigger.dev/sdk';
+
+import { prisma } from '@/server/db';
+import { getAccounts, getInstitutionById } from '@/server/services/plaid';
+
+import { client } from '../../../client';
+
+/**
+ * This job handles the initial setup of a bank connection after a user has
+ * successfully authenticated with Plaid. It creates the bank connection record
+ * and all associated bank accounts, then triggers the initial sync.
+ */
+export const initialSetupJob = client.defineJob({
+  id: 'initial-setup-job',
+  name: 'Initial Bank Connection Setup',
+  trigger: eventTrigger({
+    name: 'initial-setup',
+  }),
+  version: '1.0.0',
+  run: async (payload, io) => {
+    const { accessToken, institutionId, itemId, publicToken, userId } = payload;
+
+    await io.logger.info(
+      `Starting initial setup for institution ${institutionId}`
+    );
+
+    try {
+      // Get institution details
+      const institution = await io.runTask('get-institution', async () => {
+        return await getInstitutionById(institutionId);
+      });
+
+      // Create bank connection record
+      const bankConnection = await io.runTask('create-connection', async () => {
+        return await prisma.bankConnection.create({
+          data: {
+            accessToken,
+            institutionId,
+            institutionName: institution.name,
+            itemId,
+            lastSyncAt: new Date(),
+            status: BankConnectionStatus.ACTIVE,
+            userId,
+          },
+        });
+      });
+
+      // Get accounts from Plaid
+      const plaidAccounts = await io.runTask('get-accounts', async () => {
+        return await getAccounts(accessToken);
+      });
+
+      await io.logger.info(
+        `Found ${plaidAccounts.length} accounts for institution ${institution.name}`
+      );
+
+      // Create bank account records
+      const bankAccounts: BankAccount[] = [];
+      for (const account of plaidAccounts) {
+        const bankAccount = await io.runTask(
+          `create-account-${account.plaidAccountId}`,
+          async () => {
+            return await prisma.bankAccount.create({
+              data: {
+                availableBalance: account.availableBalance,
+                balanceLastUpdated: new Date(),
+                bankConnectionId: bankConnection.id,
+                currentBalance: account.currentBalance,
+                isoCurrencyCode: account.isoCurrencyCode,
+                limit: account.limit,
+                mask: account.mask,
+                name: account.name,
+                officialName: account.officialName,
+                plaidAccountId: account.plaidAccountId,
+                status: AccountStatus.ACTIVE,
+                subtype: account.subtype,
+                type: mapPlaidAccountType(account.type, account.subtype),
+                userId,
+              },
+            });
+          }
+        );
+        bankAccounts.push(bankAccount);
+      }
+
+      // Trigger sync for each account with increasing delays
+      let delayCounter = 0;
+
+      for (const account of bankAccounts) {
+        // Trigger a complete sync for each account (delays increasing by 5 seconds)
+        await client.sendEvent({
+          // Add a context with delay information
+          context: {
+            delaySeconds: delayCounter * 5,
+          },
+          name: 'sync-account-trigger',
+          payload: {
+            accessToken,
+            bankAccountId: account.id,
+            manualSync: true, // Force sync even for accounts that might have issues
+            userId,
+          },
+        });
+        delayCounter++;
+      }
+
+      // Record this activity
+      await prisma.userActivity.create({
+        data: {
+          detail: `Connected ${institution.name} with ${bankAccounts.length} accounts`,
+          metadata: {
+            accountCount: bankAccounts.length,
+            bankConnectionId: bankConnection.id,
+          },
+          type: 'ACCOUNT_CONNECTED',
+          userId,
+        },
+      });
+
+      await io.logger.info(`Initial setup completed for ${institution.name}`);
+
+      return {
+        accountCount: bankAccounts.length,
+        bankConnectionId: bankConnection.id,
+        status: 'success',
+      };
+    } catch (error) {
+      await io.logger.error(
+        `Initial setup failed for institution ${institutionId}: ${error.message}`
+      );
+
+      return {
+        error: error.message,
+        institutionId,
+        status: 'error',
       };
     }
   },
 });
 
-// Helper to determine if account data has changed significantly
-function hasAccountChanged(existingAccount, newAccountData) {
-  return (
-    existingAccount.name !== newAccountData.name ||
-    existingAccount.official_name !== newAccountData.official_name ||
-    existingAccount.type !== newAccountData.type ||
-    existingAccount.subtype !== newAccountData.subtype ||
-    existingAccount.status !== (newAccountData.status || 'active')
-  );
+// Helper function to map Plaid account types to our internal types
+function mapPlaidAccountType(
+  type: string,
+  subtype: string | null
+): AccountType {
+  switch (type) {
+    case 'depository':
+      if (subtype === 'checking') return AccountType.CHECKING;
+      if (subtype === 'savings') return AccountType.SAVINGS;
+      return AccountType.DEPOSITORY;
+    case 'credit':
+      return AccountType.CREDIT;
+    case 'loan':
+      return AccountType.LOAN;
+    case 'investment':
+      return AccountType.INVESTMENT;
+    default:
+      return AccountType.OTHER;
+  }
 }
 ```
 
@@ -1194,52 +1067,176 @@ Transaction processing involves fetching, normalizing, categorizing, and storing
 The transaction sync job fetches new transactions from the banking provider:
 
 ```typescript
-// jobs/tasks/bank/transactions/sync-transactions-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { getBankingProvider } from '@/lib/banking/providers';
-import { processTransactions } from '@/lib/banking/transactions';
-import { queueJob } from '@/jobs/utils/queue';
+// src/jobs/tasks/bank/transactions/upsert.ts
+import { eventTrigger } from '@trigger.dev/sdk';
+import { z } from 'zod';
 
-export const syncTransactionsJob = createJob({
-  name: 'sync-transactions',
-  handler: async ({
-    connectionId,
-    accessToken,
-    provider,
-    startDate,
-    endDate,
-  }) => {
+import { prisma } from '@/server/db';
+import { getTransactions } from '@/server/services/plaid';
+import { categorizePlaidTransaction } from '@/server/services/categorization';
+
+import { client } from '../../../client';
+
+/**
+ * This job fetches transactions for a specific bank account and upserts them
+ * into the database. It also handles categorization of new transactions.
+ */
+export const upsertTransactionsJob = client.defineJob({
+  id: 'upsert-transactions-job',
+  name: 'Upsert Bank Transactions',
+  trigger: eventTrigger({
+    name: 'upsert-transactions-trigger',
+    schema: z.object({
+      accessToken: z.string(),
+      bankAccountId: z.string(),
+      userId: z.string(),
+    }),
+  }),
+  version: '1.0.0',
+  run: async (payload, io) => {
+    const { accessToken, bankAccountId, userId } = payload;
+
+    await io.logger.info(`Starting transaction sync for account ${bankAccountId}`);
+
     try {
-      const bankingProvider = getBankingProvider(provider);
-
-      // Fetch transactions for the specified date range
-      const transactions = await bankingProvider.getTransactions(
-        accessToken,
-        startDate,
-        endDate
-      );
-
-      // Process and store transactions
-      const processedCount = await processTransactions(
-        connectionId,
-        transactions
-      );
-
-      // Queue categorization job
-      await queueJob('categorize-transactions', {
-        connectionId,
-        transactionIds: transactions.map((t) => t.id),
+      // Get the bank account details
+      const bankAccount = await io.runTask('get-bank-account', async () => {
+        return await prisma.bankAccount.findUnique({
+          select: {
+            id: true,
+            plaidAccountId: true,
+            lastTransactionSync: true,
+          },
+          where: { id: bankAccountId },
+        });
       });
 
+      if (!bankAccount) {
+        throw new Error(`Bank account ${bankAccountId} not found`);
+      }
+
+      // Determine date range for transaction fetch
+      const startDate = bankAccount.lastTransactionSync
+        ? new Date(bankAccount.lastTransactionSync)
+        : new Date(Date.now() - 90 * 24 * 60 * 60 * 1000); // 90 days ago
+
+      const endDate = new Date();
+
+      // Fetch transactions from Plaid
+      const transactions = await io.runTask('fetch-transactions', async () => {
+        return await getTransactions(
+          accessToken,
+          bankAccount.plaidAccountId,
+          startDate,
+          endDate
+        );
+      });
+
+      await io.logger.info(
+        `Fetched ${transactions.length} transactions for account ${bankAccountId}`
+      );
+
+      // Process transactions in batches to avoid timeouts
+      const batchSize = 50;
+      let processedCount = 0;
+      let newCount = 0;
+      let updatedCount = 0;
+
+      for (let i = 0; i < transactions.length; i += batchSize) {
+        const batch = transactions.slice(i, i + batchSize);
+
+        await io.runTask(`process-batch-${i}`, async () => {
+          for (const transaction of batch) {
+            // Check if transaction already exists
+            const existingTransaction = await prisma.transaction.findUnique({
+              where: {
+                plaidTransactionId: transaction.plaidTransactionId,
+              },
+            });
+
+            if (existingTransaction) {
+              // Update existing transaction
+              await prisma.transaction.update({
+                data: {
+                  amount: transaction.amount,
+                  date: transaction.date,
+                  isoCurrencyCode: transaction.isoCurrencyCode,
+                  merchantName: transaction.merchantName,
+                  name: transaction.name,
+                  pending: transaction.pending,
+                },
+                where: {
+                  id: existingTransaction.id,
+                },
+              });
+              updatedCount++;
+            } else {
+              // Categorize the transaction
+              const category = await categorizePlaidTransaction(transaction);
+
+              // Create new transaction
+              await prisma.transaction.create({
+                data: {
+                  amount: transaction.amount,
+                  bankAccountId,
+                  category,
+                  date: transaction.date,
+                  isoCurrencyCode: transaction.isoCurrencyCode,
+                  merchantName: transaction.merchantName,
+                  name: transaction.name,
+                  pending: transaction.pending,
+                  plaidTransactionId: transaction.plaidTransactionId,
+                  userId,
+                },
+              });
+              newCount++;
+            }
+
+            processedCount++;
+          }
+        });
+      }
+
+      // Update last transaction sync timestamp
+      await io.runTask('update-sync-timestamp', async () => {
+        await prisma.bankAccount.update({
+          data: {
+            lastTransactionSync: endDate,
+          },
+          where: {
+            id: bankAccountId,
+          },
+        });
+      });
+
+      // If we found new transactions, trigger notifications
+      if (newCount > 0) {
+        await client.sendEvent({
+          name: 'sync-transaction-notifications-trigger',
+          payload: {
+            userId,
+          },
+        });
+      }
+
+      await io.logger.info(
+        `Transaction sync completed for account ${bankAccountId}: ${newCount} new, ${updatedCount} updated`
+      );
+
       return {
-        success: true,
-        transactionCount: transactions.length,
+        newTransactions: newCount,
         processedCount,
+        status: 'success',
+        updatedTransactions: updatedCount,
       };
     } catch (error) {
+      await io.logger.error(
+        `Transaction sync failed for account ${bankAccountId}: ${error.message}`
+      );
+
       return {
-        success: false,
         error: error.message,
+        status: 'error',
       };
     }
   },
@@ -1251,50 +1248,114 @@ export const syncTransactionsJob = createJob({
 A job that categorizes transactions using machine learning:
 
 ```typescript
-// jobs/tasks/bank/transactions/categorize-transactions-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { getTransactionCategorizer } from '@/lib/categorization';
-import { updateTransactionCategory } from '@/lib/banking/transactions';
+// src/jobs/tasks/categorize-transactions.ts
+import { cronTrigger } from '@trigger.dev/sdk';
 
-export const categorizeTransactionsJob = createJob({
-  name: 'categorize-transactions',
-  handler: async ({ connectionId, transactionIds }) => {
+import { prisma } from '@/server/db';
+import { categorizeTransaction } from '@/server/services/categorization';
+
+import { client } from '../client';
+
+/**
+ * This job runs periodically to categorize any uncategorized transactions
+ * using our machine learning categorization service.
+ */
+export const categorizationJob = client.defineJob({
+  id: 'categorize-transactions-job',
+  name: 'Categorize Transactions',
+  trigger: cronTrigger({
+    cron: '0 */4 * * *', // Every 4 hours
+  }),
+  version: '1.0.0',
+  run: async (payload, io) => {
+    await io.logger.info('Starting transaction categorization job');
+
     try {
-      // Get transactions from database
-      const transactions = await getTransactionsByIds(transactionIds);
-
-      // Get categorizer instance
-      const categorizer = getTransactionCategorizer();
-
-      // Process transactions in batches to avoid memory issues
-      const batchSize = 100;
-      let categorizedCount = 0;
-
-      for (let i = 0; i < transactions.length; i += batchSize) {
-        const batch = transactions.slice(i, i + batchSize);
-
-        // Categorize batch
-        const categorizedTransactions = await categorizer.categorize(batch);
-
-        // Update categories in database
-        for (const transaction of categorizedTransactions) {
-          await updateTransactionCategory(
-            transaction.id,
-            transaction.category,
-            transaction.confidence
-          );
-          categorizedCount++;
+      // Find uncategorized transactions
+      const uncategorizedTransactions = await io.runTask(
+        'get-uncategorized-transactions',
+        async () => {
+          return await prisma.transaction.findMany({
+            select: {
+              id: true,
+              amount: true,
+              date: true,
+              merchantName: true,
+              name: true,
+            },
+            take: 500, // Process in batches
+            where: {
+              category: null,
+            },
+          });
         }
+      );
+
+      if (uncategorizedTransactions.length === 0) {
+        await io.logger.info('No uncategorized transactions found');
+        return {
+          categorizedCount: 0,
+          status: 'success',
+        };
       }
 
+      await io.logger.info(
+        `Found ${uncategorizedTransactions.length} uncategorized transactions`
+      );
+
+      // Process transactions in batches
+      const batchSize = 50;
+      let categorizedCount = 0;
+
+      for (let i = 0; i < uncategorizedTransactions.length; i += batchSize) {
+        const batch = uncategorizedTransactions.slice(i, i + batchSize);
+
+        await io.runTask(`categorize-batch-${i}`, async () => {
+          for (const transaction of batch) {
+            try {
+              // Categorize the transaction
+              const category = await categorizeTransaction({
+                amount: transaction.amount,
+                date: transaction.date,
+                description: transaction.name,
+                merchantName: transaction.merchantName,
+              });
+
+              // Update the transaction with the category
+              await prisma.transaction.update({
+                data: {
+                  category,
+                  categorizedAt: new Date(),
+                },
+                where: {
+                  id: transaction.id,
+                },
+              });
+
+              categorizedCount++;
+            } catch (error) {
+              await io.logger.error(
+                `Error categorizing transaction ${transaction.id}: ${error.message}`
+              );
+            }
+          }
+        });
+      }
+
+      await io.logger.info(
+        `Categorization completed: ${categorizedCount} transactions categorized`
+      );
+
       return {
-        success: true,
         categorizedCount,
+        status: 'success',
       };
     } catch (error) {
+      await io.logger.error(`Categorization job failed: ${error.message}`);
+
       return {
-        success: false,
         error: error.message,
+        status: 'error',
       };
     }
   },
@@ -1389,90 +1450,196 @@ export const connectionExpirationJob = createJob({
 
 ## Scheduler
 
-The scheduler is responsible for setting up recurring jobs based on provider requirements and user preferences.
+The scheduler is responsible for setting up recurring jobs based on provider requirements and user preferences. With Trigger.dev, scheduling is handled through various trigger types.
 
-### Sync Schedule Setup
+### Cron-based Scheduling
 
-A job that sets up the appropriate sync schedule for a connection:
+For regular, time-based scheduling, Trigger.dev provides the `cronTrigger`:
 
 ```typescript
-// jobs/tasks/bank/scheduler/setup-sync-schedule-job.ts
-import { createJob } from '@/jobs/utils/job-creator';
-import { scheduleRecurringJob } from '@/jobs/utils/scheduler';
+// src/jobs/tasks/bank/scheduler/disconnected-scheduler.ts
+import { cronTrigger } from '@trigger.dev/sdk';
 
-export const setupSyncScheduleJob = createJob({
-  name: 'setup-sync-schedule',
-  handler: async ({ connectionId, provider, accessToken }) => {
-    try {
-      // Different providers have different optimal sync frequencies
-      const scheduleConfig = getProviderScheduleConfig(provider);
+import { prisma } from '@/server/db';
+import { BankConnectionStatus } from '@prisma/client';
 
-      // Schedule transaction sync job
-      await scheduleRecurringJob({
-        jobName: 'sync-transactions',
-        schedule: scheduleConfig.transactionSchedule, // e.g., '0 */6 * * *' for every 6 hours
-        data: {
-          connectionId,
-          provider,
-          accessToken,
-          // Dynamic date range based on last sync
-          startDate: 'dynamic:last-sync',
-          endDate: 'dynamic:now',
-        },
-      });
+import { client } from '../../../client';
 
-      // Schedule balance update job (more frequent than transactions)
-      await scheduleRecurringJob({
-        jobName: 'update-balances',
-        schedule: scheduleConfig.balanceSchedule, // e.g., '0 */2 * * *' for every 2 hours
-        data: {
-          connectionId,
-          provider,
-          accessToken,
-        },
-      });
+/**
+ * This job checks for disconnected bank connections and schedules
+ * reconnection attempts or sends notifications to users.
+ */
+export const disconnectedSchedulerJob = client.defineJob({
+  id: 'disconnected-scheduler-job',
+  name: 'Check Disconnected Bank Connections',
+  trigger: cronTrigger({
+    cron: '0 12 * * *', // Run daily at noon
+  }),
+  version: '1.0.0',
+  run: async (payload, io) => {
+    await io.logger.info('Starting disconnected connections check');
 
-      return {
-        success: true,
-        schedules: {
-          transactions: scheduleConfig.transactionSchedule,
-          balances: scheduleConfig.balanceSchedule,
-        },
-      };
-    } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
+    // Find disconnected connections
+    const disconnectedConnections = await io.runTask(
+      'get-disconnected-connections',
+      async () => {
+        return await prisma.bankConnection.findMany({
+          include: {
+            user: {
+              select: {
+                email: true,
+                name: true,
+              },
+            },
+          },
+          where: {
+            status: BankConnectionStatus.ERROR,
+          },
+        });
+      }
+    );
+
+    await io.logger.info(
+      `Found ${disconnectedConnections.length} disconnected connections`
+    );
+
+    // Process each disconnected connection
+    let notificationsSent = 0;
+
+    for (const connection of disconnectedConnections) {
+      // Check if we should send a notification (based on last notification time)
+      const shouldNotify = await io.runTask(
+        `check-notification-${connection.id}`,
+        async () => {
+          // Logic to determine if we should notify the user
+          // For example, don't notify more than once per week
+          return true; // Simplified for example
+        }
+      );
+
+      if (shouldNotify) {
+        // Send reconnection notification
+        await client.sendEvent({
+          name: 'reconnect-notification-trigger',
+          payload: {
+            connectionId: connection.id,
+            email: connection.user.email,
+            institutionName: connection.institutionName,
+            name: connection.user.name,
+            userId: connection.userId,
+          },
+        });
+        notificationsSent++;
+      }
     }
+
+    await io.logger.info(
+      `Disconnected scheduler completed: ${notificationsSent} notifications sent`
+    );
+
+    return {
+      connectionsChecked: disconnectedConnections.length,
+      notificationsSent,
+      status: 'success',
+    };
   },
 });
+```
 
-// Helper function to get provider-specific schedule configuration
-function getProviderScheduleConfig(provider) {
-  switch (provider) {
-    case 'plaid':
-      return {
-        transactionSchedule: '0 */6 * * *', // Every 6 hours
-        balanceSchedule: '0 */2 * * *', // Every 2 hours
-      };
-    case 'teller':
-      return {
-        transactionSchedule: '0 */8 * * *', // Every 8 hours
-        balanceSchedule: '0 */3 * * *', // Every 3 hours
-      };
-    case 'gocardless':
-      return {
-        transactionSchedule: '0 */12 * * *', // Every 12 hours
-        balanceSchedule: '0 */4 * * *', // Every 4 hours
-      };
-    default:
-      return {
-        transactionSchedule: '0 */12 * * *', // Every 12 hours
-        balanceSchedule: '0 */6 * * *', // Every 6 hours
-      };
-  }
-}
+### Event-based Scheduling
+
+For event-driven workflows, Trigger.dev provides the `eventTrigger`:
+
+```typescript
+// src/jobs/tasks/bank/scheduler/expiring-scheduler.ts
+import { eventTrigger } from '@trigger.dev/sdk';
+import { z } from 'zod';
+
+import { client } from '../../../client';
+
+/**
+ * This job schedules notifications for connections that are about to expire.
+ * It's triggered by a daily event but processes connections individually.
+ */
+export const expiringSchedulerJob = client.defineJob({
+  id: 'expiring-scheduler-job',
+  name: 'Schedule Expiring Connection Notifications',
+  trigger: eventTrigger({
+    name: 'check-expiring-connections',
+    schema: z.object({
+      connectionId: z.string(),
+      daysUntilExpiry: z.number(),
+      userId: z.string(),
+    }),
+  }),
+  version: '1.0.0',
+  run: async (payload, io) => {
+    const { connectionId, daysUntilExpiry, userId } = payload;
+
+    await io.logger.info(
+      `Checking expiring connection ${connectionId}, ${daysUntilExpiry} days until expiry`
+    );
+
+    // Different notification strategies based on days until expiry
+    if (daysUntilExpiry <= 3) {
+      // Critical notification - connection expires very soon
+      await client.sendEvent({
+        name: 'expiring-notification',
+        payload: {
+          connectionId,
+          daysUntilExpiry,
+          severity: 'critical',
+          userId,
+        },
+      });
+
+      await io.logger.info(
+        `Sent critical expiration notification for connection ${connectionId}`
+      );
+    } else if (daysUntilExpiry <= 14) {
+      // Warning notification - connection expires soon
+      await client.sendEvent({
+        name: 'expiring-notification',
+        payload: {
+          connectionId,
+          daysUntilExpiry,
+          severity: 'warning',
+          userId,
+        },
+      });
+
+      await io.logger.info(
+        `Sent warning expiration notification for connection ${connectionId}`
+      );
+    }
+
+    return {
+      connectionId,
+      daysUntilExpiry,
+      status: 'success',
+    };
+  },
+});
+```
+
+### Delayed Execution
+
+Trigger.dev allows for delayed execution using the `context` property when sending events:
+
+```typescript
+// Example of delayed execution
+await client.sendEvent({
+  // Add a context with delay information
+  context: {
+    delaySeconds: 300, // 5 minutes
+  },
+  name: 'sync-account-trigger',
+  payload: {
+    accessToken,
+    bankAccountId,
+    userId,
+  },
+});
 ```
 
 ## Error Handling
@@ -1583,46 +1750,35 @@ When a user first connects a bank account, you need to set up the initial sync:
 
 ```typescript
 // Example of setting up initial bank sync after connection
-import { queueJob } from '@/jobs/utils/queue';
+'use server';
+
+import { client } from '@/jobs/client';
 
 export async function handleBankConnection(connectionData) {
-  // Save the connection to the database
-  const connection = await createBankConnection({
-    user_id: connectionData.userId,
-    provider: connectionData.provider,
-    access_token: connectionData.accessToken,
-    institution_id: connectionData.institutionId,
-    status: 'connected',
-  });
+  try {
+    // Trigger the initial setup job
+    await client.sendEvent({
+      name: 'initial-setup',
+      payload: {
+        accessToken: connectionData.accessToken,
+        institutionId: connectionData.institutionId,
+        itemId: connectionData.itemId,
+        publicToken: connectionData.publicToken,
+        userId: connectionData.userId,
+      },
+    });
 
-  // Queue initial sync jobs
-  await queueJob('sync-bank', {
-    connectionId: connection.id,
-    accessToken: connection.access_token,
-    provider: connection.provider,
-  });
-
-  // Queue historical transaction sync
-  // Get date 90 days in the past for initial sync
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 90);
-
-  await queueJob('sync-transactions', {
-    connectionId: connection.id,
-    accessToken: connection.access_token,
-    provider: connection.provider,
-    startDate: startDate.toISOString(),
-    endDate: new Date().toISOString(),
-  });
-
-  // Set up recurring sync schedule
-  await queueJob('setup-sync-schedule', {
-    connectionId: connection.id,
-    provider: connection.provider,
-    accessToken: connection.access_token,
-  });
-
-  return connection;
+    return {
+      success: true,
+      message: 'Bank connection setup initiated',
+    };
+  } catch (error) {
+    console.error('Error setting up bank connection:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to set up bank connection',
+    };
+  }
 }
 ```
 
@@ -1634,169 +1790,130 @@ Allow users to manually trigger a sync from the UI:
 // Server action for manual sync
 'use server';
 
-import { createSafeActionClient } from 'next-safe-action';
-import { z } from 'zod';
-import { queueJob } from '@/jobs/utils/queue';
-import { getBankConnection } from '@/lib/banking/connection';
-import type { ActionResponse } from '@/app/actions/actions';
+import { client } from '@/jobs/client';
+import { prisma } from '@/server/db';
+import { revalidatePath } from 'next/cache';
 
-const schema = z.object({
-  connectionId: z.string(),
-});
+export async function manualSyncTransactionsAction(connectionId: string) {
+  try {
+    // Get connection details
+    const connection = await prisma.bankConnection.findUnique({
+      select: {
+        accessToken: true,
+        id: true,
+        userId: true,
+      },
+      where: { id: connectionId },
+    });
 
-export const manualSyncTransactionsAction = createSafeActionClient()
-  .schema(schema)
-  .action(async ({ connectionId }): Promise<ActionResponse> => {
-    try {
-      // Get connection details
-      const connection = await getBankConnection(connectionId);
-
-      if (!connection) {
-        return {
-          success: false,
-          error: { message: 'Connection not found' },
-        };
-      }
-
-      // Get date 30 days in the past for manual sync
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 30);
-
-      // Queue sync job
-      const job = await queueJob('sync-transactions', {
-        connectionId,
-        accessToken: connection.access_token,
-        provider: connection.provider,
-        startDate: startDate.toISOString(),
-        endDate: new Date().toISOString(),
-      });
-
-      return {
-        success: true,
-        data: {
-          id: job.id,
-          publicAccessToken: job.publicAccessToken,
-        },
-      };
-    } catch (error) {
+    if (!connection) {
       return {
         success: false,
-        error: { message: error.message || 'Failed to sync transactions' },
+        error: 'Connection not found',
       };
     }
-  });
+
+    // Get all accounts for this connection
+    const accounts = await prisma.bankAccount.findMany({
+      select: {
+        id: true,
+      },
+      where: {
+        bankConnectionId: connectionId,
+      },
+    });
+
+    // Trigger sync for each account with increasing delays
+    let delayCounter = 0;
+
+    for (const account of accounts) {
+      await client.sendEvent({
+        context: {
+          delaySeconds: delayCounter * 5, // 5 second delay between accounts
+        },
+        name: 'sync-account-trigger',
+        payload: {
+          accessToken: connection.accessToken,
+          bankAccountId: account.id,
+          manualSync: true, // Flag as manual sync
+          userId: connection.userId,
+        },
+      });
+      delayCounter++;
+    }
+
+    // Revalidate the accounts page to show updated status
+    revalidatePath('/accounts');
+
+    return {
+      success: true,
+      message: `Sync started for ${accounts.length} accounts`,
+    };
+  } catch (error) {
+    console.error('Error syncing transactions:', error);
+    return {
+      success: false,
+      error: error.message || 'Failed to sync transactions',
+    };
+  }
+}
 ```
 
 ### 3. Monitoring Sync Status
 
-Create a hook to monitor the status of a sync job:
+Create a component to display sync status:
 
-```typescript
-// Client-side hook for monitoring sync status
+```tsx
+// Client-side component for displaying sync status
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 
-export function useSyncStatus({ runId, accessToken }) {
-  const [status, setStatus] = useState('PENDING');
-
+export function SyncStatus({ bankAccount }) {
+  const [lastSyncText, setLastSyncText] = useState('');
+  
   useEffect(() => {
-    if (!runId || !accessToken) return;
-
-    let intervalId;
-
-    const checkStatus = async () => {
-      try {
-        const response = await fetch(`/api/jobs/status?id=${runId}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch job status');
-        }
-
-        const data = await response.json();
-
-        setStatus(data.status);
-
-        // Clear interval if job is complete or failed
-        if (data.status === 'COMPLETED' || data.status === 'FAILED') {
-          clearInterval(intervalId);
-        }
-      } catch (error) {
-        console.error('Error checking job status:', error);
-        setStatus('FAILED');
-        clearInterval(intervalId);
-      }
+    if (!bankAccount.lastTransactionSync) {
+      setLastSyncText('Never synced');
+      return;
+    }
+    
+    const updateSyncText = () => {
+      setLastSyncText(
+        `Last synced ${formatDistanceToNow(new Date(bankAccount.lastTransactionSync))} ago`
+      );
     };
-
-    // Check immediately
-    checkStatus();
-
-    // Then check every 2 seconds
-    intervalId = setInterval(checkStatus, 2000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [runId, accessToken]);
-
-  return { status, setStatus };
+    
+    updateSyncText();
+    const interval = setInterval(updateSyncText, 60000); // Update every minute
+    
+    return () => clearInterval(interval);
+  }, [bankAccount.lastTransactionSync]);
+  
+  return (
+    <div className="flex items-center gap-2">
+      <div className={`h-2 w-2 rounded-full ${bankAccount.lastTransactionSync ? 'bg-green-500' : 'bg-amber-500'}`} />
+      <span className="text-sm text-gray-600">{lastSyncText}</span>
+    </div>
+  );
 }
 ```
 
 ### 4. Implementing Transaction Processing
 
-Process and categorize transactions:
+The transaction processing is handled by the `upsertTransactionsJob` we defined earlier, which:
 
-```typescript
-// Implementation of transaction processing
-export async function processTransactions(connectionId, transactions) {
-  let processedCount = 0;
+1. Fetches transactions from Plaid
+2. Checks for existing transactions to avoid duplicates
+3. Categorizes new transactions
+4. Stores them in the database
+5. Triggers notifications for new transactions
 
-  // Get existing transactions to avoid duplicates
-  const existingTransactionIds = await getExistingTransactionIds(connectionId);
-
-  // Process each transaction
-  for (const transaction of transactions) {
-    // Skip if transaction already exists
-    if (existingTransactionIds.includes(transaction.id)) {
-      continue;
-    }
-
-    // Normalize transaction data
-    const normalizedTransaction = normalizeTransaction(transaction);
-
-    // Store in database
-    await storeTransaction({
-      ...normalizedTransaction,
-      connection_id: connectionId,
-    });
-
-    processedCount++;
-  }
-
-  return processedCount;
-}
-
-// Helper to normalize transaction data from different providers
-function normalizeTransaction(transaction) {
-  return {
-    id: transaction.id,
-    account_id: transaction.account_id,
-    amount: transaction.amount,
-    date: transaction.date,
-    description: transaction.description || transaction.name,
-    merchant_name: transaction.merchant_name,
-    pending: transaction.pending || false,
-    category: transaction.category || null,
-    location: transaction.location || null,
-    // Add any other fields needed
-  };
-}
-```
+This job is triggered:
+- After initial account setup
+- On a regular schedule (every few hours)
+- When a user manually requests a sync
 
 ## Best Practices
 
@@ -1811,4 +1928,16 @@ function normalizeTransaction(transaction) {
 
 ## Conclusion
 
-Implementing bank and transaction syncing requires careful coordination between multiple components. By following the patterns in this guide, you can create a robust system that reliably syncs financial data while providing a smooth user experience.
+Implementing bank and transaction syncing requires careful coordination between multiple components. By leveraging Trigger.dev's powerful job scheduling and execution capabilities, you can create a robust system that reliably syncs financial data while providing a smooth user experience.
+
+Trigger.dev offers several advantages over traditional job queues:
+
+1. **Type safety** with TypeScript integration
+2. **Built-in retries** with configurable backoff strategies
+3. **Detailed logging** for each step of the job
+4. **Task-based execution** for better observability
+5. **Delayed execution** for complex workflows
+6. **Event-driven architecture** for flexible job triggering
+7. **Cron scheduling** for recurring jobs
+
+These features make it easier to build, maintain, and debug complex background job workflows for financial data synchronization.
