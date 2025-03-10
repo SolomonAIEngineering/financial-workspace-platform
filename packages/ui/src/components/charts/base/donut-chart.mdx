@@ -1,0 +1,38 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import DonutChart from "./donut-chart.stories";
+
+<Meta of={DonutChart} />
+
+# DonutChart Component
+
+The `DonutChart` is a circular chart with a hole in the center that displays data as proportional segments, similar to a pie chart. It's particularly effective for showing the composition of a whole and the relative size of its parts. The component supports customizable colors, tooltips, and interactive features.
+
+## Component Props
+
+<Canvas of={DonutChart} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `DonutChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <DonutChart 
+      data={[
+        { name: "Category A", value: 30 },
+        { name: "Category B", value: 25 },
+        { name: "Category C", value: 20 },
+        { name: "Category D", value: 15 },
+        { name: "Category E", value: 10 }
+      ]}
+      colors={["#8884d8", "#83a6ed", "#8dd1e1", "#82ca9d", "#a4de6c"]}
+      width={400}
+      height={300}
+    />
+  </Story>
+</Canvas>
+``` 

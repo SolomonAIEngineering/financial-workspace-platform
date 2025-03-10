@@ -1,0 +1,13 @@
+{
+  "extends": "tsconfig/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "lib": ["DOM", "DOM.Iterable", "ESNext", "ES2019"],
+    "noImplicitAny": false
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

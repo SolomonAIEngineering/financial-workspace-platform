@@ -1,0 +1,39 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import InteractiveBarChart from "./interactive-bar-chart.stories";
+
+<Meta of={InteractiveBarChart} />
+
+# InteractiveBarChart Component
+
+The `InteractiveBarChart` extends the standard bar chart with enhanced interactivity features. It allows users to click on bars to select them, supports highlighting of selected bars, and can trigger custom actions based on user interactions. This makes it ideal for dashboards where users need to explore data dynamically.
+
+## Component Props
+
+<Canvas of={InteractiveBarChart} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `InteractiveBarChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <InteractiveBarChart 
+      data={[
+        { name: "Jan", value: 1200 },
+        { name: "Feb", value: 1900 },
+        { name: "Mar", value: 1500 },
+        { name: "Apr", value: 2200 },
+        { name: "May", value: 1800 }
+      ]}
+      onBarClick={(data) => console.info("Bar clicked:", data)}
+      width={600}
+      height={300}
+      barSize={40}
+    />
+  </Story>
+</Canvas>
+``` 

@@ -1,0 +1,77 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import BankAccountPortalView from "./bank-account-portal-view.stories";
+
+<Meta of={BankAccountPortalView} />
+
+# BankAccountPortalView Component
+
+The `BankAccountPortalView` component provides a detailed view for a specific bank account. It displays account information, balance history, transaction history, and actionable insights. This component enables users to monitor the activity and health of individual banking accounts.
+
+## Component Props
+
+<Canvas of={BankAccountPortalView} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `BankAccountPortalView`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <BankAccountPortalView
+      account={{
+        id: "acc-123",
+        name: "Business Checking",
+        type: "CHECKING",
+        balance: 12450.75,
+        availableBalance: 12200.50,
+        currency: "USD",
+        accountNumber: "****4567",
+        routingNumber: "******789",
+        institution: {
+          name: "Chase Bank",
+          logo: "/logos/chase.png"
+        }
+      }}
+      transactions={[
+        {
+          id: "tx-1",
+          date: "2023-05-15",
+          description: "Office Supplies",
+          amount: -245.50,
+          category: "Office Expenses",
+          pending: false
+        },
+        {
+          id: "tx-2",
+          date: "2023-05-14",
+          description: "Client Payment",
+          amount: 1200.00,
+          category: "Income",
+          pending: false
+        },
+        {
+          id: "tx-3",
+          date: "2023-05-16",
+          description: "Software License",
+          amount: -89.99,
+          category: "Software",
+          pending: true
+        }
+      ]}
+      balanceHistory={[
+        { date: "2023-05-01", balance: 10500.00 },
+        { date: "2023-05-05", balance: 9800.25 },
+        { date: "2023-05-10", balance: 11200.50 },
+        { date: "2023-05-15", balance: 12450.75 }
+      ]}
+      onTransactionSelect={(txId) => console.info("Transaction selected:", txId)}
+      onExportTransactions={() => console.info("Export transactions")}
+      loading={false}
+    />
+  </Story>
+</Canvas>
+``` 

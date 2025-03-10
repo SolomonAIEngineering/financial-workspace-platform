@@ -1,0 +1,40 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import DataTableFacetedFilter from "./data-table-faceted-filter.stories";
+
+<Meta of={DataTableFacetedFilter} />
+
+# DataTableFacetedFilter Component
+
+The `DataTableFacetedFilter` component provides a dropdown interface for filtering data by discrete values or options. It shows distribution counts for each option and allows users to select multiple values. The component is particularly useful for categorical data like status, category, or any field with a limited set of possible values.
+
+## Component Props
+
+<Canvas of={DataTableFacetedFilter} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `DataTableFacetedFilter`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <DataTableFacetedFilter
+      column={{
+        getFilterValue: () => [],
+        setFilterValue: (value) => console.info("Set filter:", value)
+      }}
+      title="Category"
+      options={[
+        { value: "income", label: "Income", count: 145 },
+        { value: "expense", label: "Expense", count: 237 },
+        { value: "transfer", label: "Transfer", count: 52 }
+      ]}
+      searchable={true}
+      className="w-72"
+    />
+  </Story>
+</Canvas>
+``` 

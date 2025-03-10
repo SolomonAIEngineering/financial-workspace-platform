@@ -1,0 +1,33 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import TableSkeleton from "./table-skeleton.stories";
+
+<Meta of={TableSkeleton} />
+
+# TableSkeleton Component
+
+The `TableSkeleton` component provides a loading placeholder for a data table. It displays animated skeleton rows and columns that mimic the structure of the table that will eventually be loaded. This component helps maintain visual consistency during data loading and reduces layout shifts when the actual table data becomes available.
+
+## Component Props
+
+<Canvas of={TableSkeleton} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `TableSkeleton`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <TableSkeleton 
+      rowCount={5}
+      columnCount={4}
+      hasHeader={true}
+      hasPagination={true}
+      className="w-full"
+    />
+  </Story>
+</Canvas>
+``` 

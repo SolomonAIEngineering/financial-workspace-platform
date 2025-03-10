@@ -1,0 +1,32 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import ContentLayout from "./content-layout.stories";
+
+<Meta of={ContentLayout} />
+
+# ContentLayout Component
+
+The `ContentLayout` component serves as the main content container that works alongside a collapsible sidebar. It adjusts its layout and spacing dynamically based on whether the sidebar is expanded or collapsed, ensuring the main content area uses the available space efficiently.
+
+## Component Props
+
+<Canvas of={ContentLayout} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `ContentLayout`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <ContentLayout collapsed={false}>
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+        <h1 className="text-2xl font-bold mb-4">Main Content</h1>
+        <p>This is the main content area of the application.</p>
+      </div>
+    </ContentLayout>
+  </Story>
+</Canvas>
+``` 

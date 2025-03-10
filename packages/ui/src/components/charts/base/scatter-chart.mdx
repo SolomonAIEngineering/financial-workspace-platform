@@ -1,0 +1,41 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import ScatterChart from "./scatter-chart.stories";
+
+<Meta of={ScatterChart} />
+
+# ScatterChart Component
+
+The `ScatterChart` is a visualization that displays individual data points on a two-dimensional grid. It's particularly useful for showing the relationship between two variables and identifying patterns, clusters, or outliers in the data. The component supports customizable point sizes, colors, and interactive tooltips.
+
+## Component Props
+
+<Canvas of={ScatterChart} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `ScatterChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <ScatterChart 
+      data={[
+        { x: 100, y: 200, z: 200 },
+        { x: 120, y: 100, z: 260 },
+        { x: 170, y: 300, z: 400 },
+        { x: 140, y: 250, z: 280 },
+        { x: 150, y: 400, z: 500 },
+        { x: 110, y: 280, z: 200 }
+      ]}
+      xAxisDataKey="x"
+      yAxisDataKey="y"
+      zAxisDataKey="z"
+      width={600}
+      height={400}
+    />
+  </Story>
+</Canvas>
+``` 

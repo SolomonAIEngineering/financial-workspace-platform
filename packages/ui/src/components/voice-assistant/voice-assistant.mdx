@@ -1,0 +1,46 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import VoiceAssistant from "./voice-assistant.stories";
+
+<Meta of={VoiceAssistant} />
+
+# VoiceAssistant Component
+
+The `VoiceAssistant` component provides a voice-controlled interface for interacting with the application. It allows users to give voice commands, ask questions, and receive audio responses. The component includes speech recognition capabilities, visual feedback during listening and processing, and a text display of recognized speech and responses.
+
+## Component Props
+
+<Canvas of={VoiceAssistant} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `VoiceAssistant`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <VoiceAssistant
+      onSpeechRecognized={(text) => console.info("Recognized speech:", text)}
+      onCommandProcessed={(command, response) => {
+        console.info("Processed command:", command);
+        console.info("Response:", response);
+      }}
+      commands={[
+        { 
+          pattern: "show me my balance", 
+          action: () => "Your current balance is $5,432.10" 
+        },
+        { 
+          pattern: "list recent transactions", 
+          action: () => "Your recent transactions include: $45 at Starbucks, $120 at Office Depot, and $34 at Amazon" 
+        }
+      ]}
+      initialMessage="How can I help you today?"
+      autoStart={false}
+      className="fixed bottom-4 right-4"
+    />
+  </Story>
+</Canvas>
+``` 

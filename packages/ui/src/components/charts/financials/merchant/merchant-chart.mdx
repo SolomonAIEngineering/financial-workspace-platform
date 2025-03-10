@@ -1,0 +1,39 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import MerchantChart from "./merchant-chart.stories";
+
+<Meta of={MerchantChart} />
+
+# MerchantChart Component
+
+The `MerchantChart` is a comprehensive visualization that displays spending across different merchants. It helps businesses track and analyze vendor relationships, identify key suppliers, and optimize procurement strategies. The chart can show total spending, transaction frequency, or other metrics by merchant.
+
+## Component Props
+
+<Canvas of={MerchantChart} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `MerchantChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <MerchantChart 
+      data={[
+        { merchant: "Vendor A", amount: 24500 },
+        { merchant: "Vendor B", amount: 18700 },
+        { merchant: "Vendor C", amount: 32100 },
+        { merchant: "Vendor D", amount: 15400 },
+        { merchant: "Vendor E", amount: 27900 }
+      ]}
+      currency="USD"
+      locale="en-US"
+      height={400}
+      showTotal={true}
+    />
+  </Story>
+</Canvas>
+``` 
