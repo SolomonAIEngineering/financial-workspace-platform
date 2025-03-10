@@ -15,6 +15,7 @@ export function useConnectParams(defaultCountryCode = 'US') {
     token: parseAsString,
     ref: parseAsString,
     institution_id: parseAsString,
+    item_id: parseAsString,
   });
 
   return {

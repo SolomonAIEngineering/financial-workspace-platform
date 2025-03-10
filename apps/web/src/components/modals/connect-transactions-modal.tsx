@@ -10,13 +10,13 @@ import {
 import { useDebounce, useScript } from '@uidotdev/usehooks';
 import { useEffect, useState } from 'react';
 
+import { APIInstitutions } from '@solomon-ai/workspace-financial-backend-sdk/resources/api-institutions.js';
 import { BankLogo } from '../bank-account/bank-logo';
 import { Button } from '@/registry/default/potion-ui/button';
 import { ConnectBankProvider } from '../bank-connection/connect-bank-provider';
 import { CountrySelector } from '../bank-connection/country-selector';
 import { Input } from '@/registry/default/potion-ui/input';
 import { InstitutionDetails } from '../institution/institution-details';
-import { InstitutionsSchema } from '@solomon-ai/financial-engine-sdk/resources/institutions.mjs';
 import { LogEvents } from '@v1/analytics/events';
 import { Skeleton } from '../ui/skeleton';
 import { createPlaidLinkTokenAction } from '@/actions/institution/create-link';
@@ -214,7 +214,7 @@ function NoResultsFound({ onImport, onContactUs }: NoResultsFoundProps) {
  */
 type SearchResultsProps = {
     loading: boolean;
-    results: Array<InstitutionsSchema.Data>;
+    results: Array<APIInstitutions.Institution>;
     openPlaid: any;
     onSetStepToNull: () => void;
     onImport: () => void;
@@ -303,7 +303,7 @@ export function ConnectTransactionsModal({
 }: ConnectTransactionsModalProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
-    const [results, setResults] = useState<Array<InstitutionsSchema.Data>>([]);
+    const [results, setResults] = useState<Array<APIInstitutions.Institution>>([]);
     const [plaidToken, setPlaidToken] = useState<string | undefined>();
 
     const {
@@ -340,19 +340,12 @@ export function ConnectTransactionsModal({
                 const res = await exchangePublicTokenAction({
                     publicToken: public_token,
                 });
-
-                // TODO: save the item id for the given institution id
-                console.log(
-                    'this is the result obtained from exchange public token',
-                    res
-                );
-
                 setParams({
                     step: 'account',
                     provider: 'plaid',
                     token: res?.data?.access_token,
                     institution_id: metadata.institution?.institution_id,
-                    // item_id: res?.data?.item_id,
+                    item_id: res?.data?.item_id,
                 });
                 track({
                     event: LogEvents.ConnectBankAuthorized.name,
@@ -402,13 +395,7 @@ export function ConnectTransactionsModal({
             setLoading(true);
             const result = await getInstitutionsAction({ countryCode, query });
             setLoading(false);
-
-            // Ensure we're accessing the data array correctly
-            if (result && 'data' in result && Array.isArray(result.data)) {
-                setResults(result.data);
-            } else {
-                setResults([]);
-            }
+            setResults(result?.data ?? []);
         } catch {
             setLoading(false);
             setResults([]);

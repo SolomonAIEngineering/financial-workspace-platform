@@ -45,19 +45,19 @@ export const createPlaidLinkTokenAction = authActionClient
     .schema(createPlaidLinkTokenSchema)
     .action(async ({ ctx: { user }, parsedInput: { accessToken } }) => {
         try {
-            console.log('createPlaidLinkTokenAction called with:', {
+            console.info('createPlaidLinkTokenAction called with:', {
                 userId: user.id,
                 accessToken: accessToken ? 'present' : 'not present',
             });
 
             // Log the API endpoint we're calling from the engine
-            console.log('Calling engine.auth.plaid.link with params:', {
+            console.info('Calling engine.auth.plaid.link with params:', {
                 userId: user.id,
                 accessToken: accessToken ? 'present' : 'not present',
             });
 
             // Check environment variables are configured
-            console.log('Environment variables check:', {
+            console.info('Environment variables check:', {
                 engineApiEndpoint: process.env.ENGINE_API_ENDPOINT || 'not set',
                 engineApiKeyPresent: process.env.MIDDAY_ENGINE_API_KEY ? 'present' : 'not set',
                 plaidEnvPresent: process.env.PLAID_ENV ? 'present' : 'not set',
@@ -102,12 +102,12 @@ export const createPlaidLinkTokenAction = authActionClient
              *   used to initialize Plaid Link on the client
              * @throws {Error} If the API call to create the link token fails
              */
-            const { data } = await engine.auth.plaid.link({
+            const { data } = await engine.apiPlaid.createLink({
                 userId: user.id,
                 accessToken: accessToken ?? undefined,
             });
 
-            console.log('Successfully created Plaid link token');
+            console.info('Successfully created Plaid link token');
             return data.link_token;
         } catch (error) {
             /**

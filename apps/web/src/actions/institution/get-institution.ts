@@ -1,6 +1,6 @@
 'use server';
 
-import { InstitutionsSchema } from '@solomon-ai/financial-engine-sdk/resources/institutions';
+import { APIInstitutions } from '@solomon-ai/workspace-financial-backend-sdk/resources/api-institutions.js';
 import { authActionClient } from '../safe-action';
 import { engine } from '@/lib/engine';
 import { getInstitutionsSchema } from './schema';
@@ -51,22 +51,15 @@ type GetAccountParams = {
  */
 export const getInstitutionsAction = authActionClient
     .schema(getInstitutionsSchema)
-    .action(async ({ parsedInput: { countryCode, query } }) => {
-        console.log('getInstitutionsAction called with params:', { countryCode, query });
+    .action(async ({ parsedInput: { countryCode, query } }): Promise<APIInstitutions.Institution[]> => {
         try {
-            console.log('Calling engine.institutions.list with:', {
-                countryCode: countryCode as any,
+            const { data } = await engine.apiInstitutions.list({
+                countryCode: countryCode as APIInstitutions.APIInstitutionListParams['countryCode'],
                 q: query,
+                limit: '10',
             });
-            const data = await engine.institutions.list({
-                countryCode: countryCode as any,
-                q: query,
-            });
-            console.log('Successfully retrieved institutions data:', {
-                count: Array.isArray(data) ? data.length : 'data is not an array',
-                dataStructure: typeof data === 'object' ? Object.keys(data) : typeof data
-            });
-            return { data };
+
+            return data;
         } catch (error) {
             console.error('Error in getInstitutionsAction:', error);
             console.error('Error details:', {
@@ -74,6 +67,6 @@ export const getInstitutionsAction = authActionClient
                 status: (error as any)?.status || 'unknown',
                 response: (error as any)?.response || 'unknown',
             });
-            return { data: [] };
+            return [];
         }
     });
