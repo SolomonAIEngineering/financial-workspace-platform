@@ -35,7 +35,7 @@ export const exchangePublicTokenAction = authActionClient
   .action(async ({ ctx: { user }, parsedInput: { publicToken } }) => {
     try {
       /** Call the engine API to exchange the public token for an access token */
-      const { data } = await engine.auth.plaid.exchange({
+      const { data } = await engine.apiPlaid.exchangeToken({
         token: publicToken,
       });
 

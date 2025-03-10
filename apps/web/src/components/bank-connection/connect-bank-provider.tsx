@@ -75,6 +75,9 @@ export function ConnectBankProvider({
         <BankConnectButton
           onClick={async () => {
             await updateUsage();
+
+            // Just call openPlaid directly - all the cleanup is now handled 
+            // in the ConnectTransactionsModal component's handleOpenPlaid
             openPlaid();
           }}
         />
@@ -193,18 +196,16 @@ function GoCardLessConnect({
 function BankConnectButton({ onClick }: { onClick: () => void }) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleClick = async () => {
+  const handleClick = () => {
     setIsLoading(true);
 
-    try {
-      await onClick();
-    } finally {
-      // Reset loading state after a timeout
-      // (Plaid will handle its own UI)
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 3000);
-    }
+    // Just call the onClick handler directly
+    onClick();
+
+    // Reset loading state after a very brief delay
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 50);
   };
 
   return (

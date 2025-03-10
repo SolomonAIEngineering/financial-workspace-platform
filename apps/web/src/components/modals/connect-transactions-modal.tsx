@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, Building2, Check, Loader2, Search } from 'lucide-react';
+import { AlertCircle, Building2, Check, RefreshCw, Search } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -16,7 +16,6 @@ import { BankLogo } from '../bank-account/bank-logo';
 import { Button } from '@/registry/default/potion-ui/button';
 import { ConnectBankProvider } from '../bank-connection/connect-bank-provider';
 import { CountrySelector } from '../bank-connection/country-selector';
-import { CubeIcon } from '@radix-ui/react-icons';
 import { Input } from '@/registry/default/potion-ui/input';
 import { InstitutionDetails } from '../institution/institution-details';
 import { LogEvents } from '@v1/analytics/events';
@@ -242,7 +241,7 @@ function SearchResults({
     onContactUs,
 }: SearchResultsProps) {
     return (
-        <div className="mt-4 scrollbar-hide h-[430px] space-y-2 overflow-auto px-1 py-2 rounded-lg">
+        <div className="mx-[3%] scrollbar-hide h-[430px] space-y-2 overflow-auto px-1 py-2 rounded-lg">
             {loading && <SearchSkeleton />}
 
             {!loading && results && results.length > 0 && (
@@ -262,10 +261,7 @@ function SearchResults({
                                 availableHistory={
                                     institution.available_history ? +institution.available_history : 0
                                 }
-                                openPlaid={() => {
-                                    onSetStepToNull();
-                                    openPlaid();
-                                }}
+                                openPlaid={openPlaid}
                             />
                         );
                     })}
@@ -274,6 +270,65 @@ function SearchResults({
 
             {!loading && (!results || results.length === 0) && (
                 <NoResultsFound onImport={onImport} onContactUs={onContactUs} />
+            )}
+        </div>
+    );
+}
+
+/**
+ * Component to display the transaction sync status
+ */
+function SyncStatusContent({ status, onComplete }: { status: 'idle' | 'syncing' | 'success' | 'error', onComplete: () => void }) {
+    return (
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center space-y-6">
+            {status === 'syncing' && (
+                <>
+                    <div className="relative w-20 h-20 flex items-center justify-center">
+                        <RefreshCw className="h-16 w-16 text-primary animate-spin" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Syncing Your Data</h3>
+                    <p className="text-muted-foreground max-w-md">
+                        We're connecting to your financial institution and syncing your transactions, accounts, and balances.
+                        This process may take a minute or two.
+                    </p>
+                </>
+            )}
+
+            {status === 'success' && (
+                <>
+                    <div className="relative w-20 h-20 flex items-center justify-center bg-green-100 rounded-full">
+                        <Check className="h-10 w-10 text-green-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Connection Successful!</h3>
+                    <p className="text-muted-foreground max-w-md">
+                        Your accounts and transactions have been successfully synced.
+                        You can now view your accounts and transactions.
+                    </p>
+                    <Button onClick={onComplete} className="mt-4">
+                        Go to Accounts
+                    </Button>
+                </>
+            )}
+
+            {status === 'error' && (
+                <>
+                    <div className="relative w-20 h-20 flex items-center justify-center bg-red-100 rounded-full">
+                        <AlertCircle className="h-10 w-10 text-red-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold">Sync Failed</h3>
+                    <p className="text-muted-foreground max-w-md">
+                        We encountered an error while syncing your accounts and transactions.
+                        Please try again later or contact support if the issue persists.
+                    </p>
+                    <div className="flex space-x-4 mt-4">
+                        <Button onClick={() => window.location.reload()} variant="outline">
+                            Try Again
+                        </Button>
+                        <Button onClick={onComplete}>
+                            Continue Anyway
+                        </Button>
+                    </div>
+                </>
             )}
         </div>
     );
@@ -303,6 +358,7 @@ export function ConnectTransactionsModal({
     const [results, setResults] = useState<Array<APIInstitutions.Institution>>([]);
     const [plaidToken, setPlaidToken] = useState<string | undefined>();
     const [isCreatingToken, setIsCreatingToken] = useState(false);
+    const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
 
     const {
         countryCode,
@@ -319,6 +375,68 @@ export function ConnectTransactionsModal({
         removeOnUnmount: false,
     });
 
+    const onSuccess = async (public_token: string, metadata: any) => {
+        try {
+            // First set the syncing state for UI feedback
+            setSyncStatus('syncing');
+
+            // Exchange the public token for an access token
+            const res = await exchangePublicTokenAction({
+                publicToken: public_token,
+            });
+
+            // Get the access token and item_id from the exchange response
+            const accessToken = res?.data?.access_token;
+            const itemId = res?.data?.item_id;
+            const institutionId = metadata.institution?.institution_id;
+
+            if (!accessToken || !itemId) {
+                throw new Error('Failed to get access token');
+            }
+
+            // Set params to move to syncing state
+            await setParams({
+                step: 'syncing',
+                provider: 'plaid',
+                token: accessToken,
+                institution_id: institutionId,
+                item_id: itemId,
+            });
+
+            // Trigger background job to sync transactions, bank accounts, and connections
+            // Use the API endpoint to trigger the sync
+            const syncResponse = await fetch('/api/sync-transactions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    accessToken,
+                    itemId,
+                    institutionId,
+                    userId
+                }),
+            });
+
+            if (!syncResponse.ok) {
+                const errorData = await syncResponse.json();
+                throw new Error(errorData.message || 'Failed to trigger sync job');
+            }
+
+            // Mark sync as successful
+            setSyncStatus('success');
+
+            track({
+                event: LogEvents.ConnectBankAuthorized.name,
+                channel: LogEvents.ConnectBankAuthorized.channel,
+                provider: 'plaid',
+            });
+        } catch (error) {
+            console.error('Error in exchangePublicToken or syncing:', error);
+            setSyncStatus('error');
+        }
+    };
+
     /**
      * Configure and initialize Plaid Link
      */
@@ -328,38 +446,39 @@ export function ConnectTransactionsModal({
         env: process.env.NEXT_PUBLIC_PLAID_ENVIRONMENT!,
         clientName: 'simfiny',
         product: ['transactions'],
-
-        onSuccess: async (public_token, metadata) => {
-            try {
-                const res = await exchangePublicTokenAction({
-                    publicToken: public_token,
-                });
-                await setParams({
-                    step: 'account',
-                    provider: 'plaid',
-                    token: res?.data?.access_token,
-                    institution_id: metadata.institution?.institution_id,
-                    item_id: res?.data?.item_id,
-                });
-                track({
-                    event: LogEvents.ConnectBankAuthorized.name,
-                    channel: LogEvents.ConnectBankAuthorized.channel,
-                    provider: 'plaid',
-                });
-            } catch (error) {
-                console.error('Error in exchangePublicToken:', error);
+        onSuccess,
+        onExit: async (err) => {
+            // If there's an error, log it
+            if (err) {
+                console.error('Plaid exit error:', err);
             }
-        },
-        onExit: async () => {
-            await setParams({ step: 'connect' });
+
+            // Reset the isOpeningPlaid flag so our dialog can be shown again if needed
+            setIsOpeningPlaid(false);
+
+            // We intentionally don't reopen our modal - user needs to manually reopen if desired
 
             track({
                 event: LogEvents.ConnectBankCanceled.name,
                 channel: LogEvents.ConnectBankCanceled.channel,
                 provider: 'plaid',
+                error: err ? String(err) : undefined,
             });
         },
     });
+
+    // Search-related handlers
+    const handleSearchChange = (newQuery: string | null) => setParams({ q: newQuery });
+    const handleCountryChange = (newCode: string) => setParams({ countryCode: newCode });
+    const handleClearResults = () => setResults([]);
+    const resetStep = () => setParams({ step: null });
+
+    // Handle sync completion and redirect to accounts or dashboard
+    const handleSyncComplete = async () => {
+        await setParams({ step: null });
+        // Redirect to accounts page or dashboard
+        router.push('/accounts');
+    };
 
     /**
      * Handles the dialog close event
@@ -465,76 +584,107 @@ export function ConnectTransactionsModal({
         }
     }, [isOpen, countryCode]);
 
+    // Track if we're currently opening Plaid
+    const [isOpeningPlaid, setIsOpeningPlaid] = useState(false);
+
+    useEffect(() => {
+        // Clean up any leftover dialogs when component unmounts
+        return () => {
+            // Force cleanup of any dialogs or overlays
+            document.querySelectorAll('[role="dialog"]').forEach(el => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            });
+        };
+    }, []);
+
+    // Variable to control dialog visibility
+    const isDialogOpen = (_isOpenOverride ?? step !== null) && !isOpeningPlaid;
+
+    // Create a wrapped openPlaid function that handles proper modal cleanup
+    const handleOpenPlaid = () => {
+        // Mark that we're opening Plaid to prevent our dialog from showing
+        setIsOpeningPlaid(true);
+
+        // Clean up any potential blocking elements
+        setTimeout(() => {
+            // Force remove any dialog elements
+            document.querySelectorAll('[role="dialog"]').forEach(el => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            });
+
+            // Remove fixed position overlays
+            document.querySelectorAll('.fixed.inset-0').forEach(el => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+            });
+
+            // Now we can safely open Plaid
+            openPlaid();
+        }, 100);
+    };
+
+    // When not showing our dialog, return null to completely unmount it from the DOM
+    if (!isDialogOpen) return null;
+
+    // Only render the Dialog when it should be visible
     return (
-        <Dialog open={_isOpenOverride || isOpen} onOpenChange={_onCloseOverride || handleOnClose}>
-            <DialogContent className="md:max-w-[700px] p-0 border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
-                <div className="p-6 md:p-8">
-                    <DialogHeader className="mb-2">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <DialogTitle className="text-2xl font-bold">
-                                    Connect your bank
-                                </DialogTitle>
-                                <DialogDescription className="mt-2 text-gray-500 dark:text-gray-400 max-w-md">
-                                    Securely connect your accounts to track transactions and get financial insights
-                                </DialogDescription>
-                            </div>
-                            <div className="hidden md:flex">
-                                <div className="flex gap-2 items-center bg-gray-50 dark:bg-gray-800/50 px-3 py-2 rounded-lg text-sm text-gray-500 dark:text-gray-400">
-                                    <CubeIcon className="text-primary" />
-                                    <span>Bank-level encryption</span>
+        <Dialog
+            open={true}
+            onOpenChange={(isOpen) => {
+                if (!isOpen && !_isOpenOverride) {
+                    void (_onCloseOverride
+                        ? _onCloseOverride()
+                        : handleOnClose());
+                }
+            }}
+        >
+            <DialogContent className="md:min-w-[60%] md:min-h-[60%] p-0 border-gray-200 dark:border-gray-800 shadow-xl overflow-hidden">
+                {step === 'connect' && (
+                    <>
+                        <div className="p-6 md:p-8">
+                            <DialogHeader className="mb-4">
+                                <div className="flex justify-between items-center">
+                                    <DialogTitle className="text-2xl sm:text-3xl">
+                                        Connect your bank
+                                    </DialogTitle>
+
                                 </div>
-                            </div>
-                        </div>
+                                <DialogDescription>
+                                    Connect your financial accounts to import transactions.
+                                </DialogDescription>
+                            </DialogHeader>
 
-                        {isCreatingToken ? (
-                            <div className="flex items-center justify-center gap-2 py-2 text-sm text-primary text-bold">
-                                <Loader2 size={16} className="animate-spin" />
-                                <span>Establishing secure connection...</span>
-                            </div>
-                        ) : (
-                            <div className="flex items-center justify-center gap-2 py-2 text-sm text-bold">
-                                <Check size={16} />
-                                <span>Secure connection Established</span>
-                            </div>
-                        )}
-
-                        <SearchBar
-                            query={query}
-                            countryCode={countryCode}
-                            onQueryChange={(newQuery) => setParams({ q: newQuery })}
-                            onCountryChange={(newCode) => setParams({ countryCode: newCode })}
-                            onClearResults={() => setResults([])}
-                        />
-
-                        <div className="mt-2 border-t border-gray-100 dark:border-gray-800 pt-2">
-                            <div className="flex justify-between items-center text-sm text-gray-500 px-2 mb-2">
-                                <span>Popular Banks</span>
-                                {!loading && results.length > 0 && (
-                                    <span>{results.length} results</span>
-                                )}
-                            </div>
-                            <SearchResults
-                                loading={loading}
-                                results={results}
-                                openPlaid={openPlaid}
-                                onSetStepToNull={() => setParams({ step: null })}
-                                onImport={() => setParams({ step: 'import' })}
-                                onContactUs={() => router.push('/account/support')}
+                            <SearchBar
+                                query={query}
+                                countryCode={countryCode}
+                                onQueryChange={handleSearchChange}
+                                onCountryChange={handleCountryChange}
+                                onClearResults={handleClearResults}
                             />
                         </div>
-                    </DialogHeader>
-                </div>
 
-                <div className="bg-gray-50 dark:bg-gray-800/50 p-4 text-center border-t border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
-                    Can't find your bank? Try <button
-                        type="button"
-                        className="font-medium text-primary underline underline-offset-2"
-                        onClick={() => setParams({ step: 'import' })}
-                    >
-                        manual import
-                    </button>
-                </div>
+                        <SearchResults
+                            loading={loading}
+                            results={results}
+                            openPlaid={handleOpenPlaid}
+                            onSetStepToNull={resetStep}
+                            onImport={() => { }}
+                            onContactUs={() => { }}
+                        />
+
+                        {/* Close button */}
+                        <button
+                            onClick={handleOnClose}
+                            className="absolute top-4 right-4 opacity-70 transition-opacity hover:opacity-100"
+                        >
+                            <span className="sr-only">Close</span>
+                            &times;
+                        </button>
+                    </>
+                )}
+
+                {(step === 'syncing' || step === 'account') && (
+                    <SyncStatusContent status={syncStatus} onComplete={handleSyncComplete} />
+                )}
             </DialogContent>
         </Dialog>
     );
