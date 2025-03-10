@@ -1,16 +1,15 @@
-import type { LayoutProps } from '@/lib/navigation/next-types';
-
-import { getCookie } from 'cookies-next/server';
-import { cookies } from 'next/headers';
-
-import { Main } from '@/app/(dynamic)/(main)/main';
 import { AIProvider } from '@/components/ai/ai-provider';
-import { isAuth } from '@/components/auth/rsc/auth';
+import { ConnectTransactionsModal } from '@/components/modals/connect-transactions-modal';
 import { DocumentPlate } from '@/components/editor/providers/document-plate';
-import { PublicPlate } from '@/components/editor/providers/public-plate';
-import { Panels } from '@/components/layouts/panels';
+import type { LayoutProps } from '@/lib/navigation/next-types';
+import { Main } from '@/app/(dynamic)/(main)/main';
 import { MiniSidebar } from '@/components/sidebar/mini-sidebar';
+import { Panels } from '@/components/layouts/panels';
+import { PublicPlate } from '@/components/editor/providers/public-plate';
 import { RightPanelType } from '@/hooks/useResizablePanel';
+import { cookies } from 'next/headers';
+import { getCookie } from 'cookies-next/server';
+import { isAuth } from '@/components/auth/rsc/auth';
 
 export default async function MainLayout({ children }: LayoutProps) {
   const session = await isAuth();
@@ -43,6 +42,9 @@ export default async function MainLayout({ children }: LayoutProps) {
           </Panels>
         </AIProvider>
       </PlateProvider>
+
+      {/* Bank connection modal */}
+      <ConnectTransactionsModal />
     </div>
   );
 }

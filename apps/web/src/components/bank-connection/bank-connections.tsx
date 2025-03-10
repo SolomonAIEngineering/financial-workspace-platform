@@ -6,25 +6,15 @@
 
 'use client';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useCallback, useEffect, useState } from 'react';
 
-import { toast } from 'sonner';
-
-import { api } from '@/trpc/react';
-
-import { Alert, AlertDescription } from '../../ui/alert';
-import { Badge } from '../../ui/badge';
-import { PlaidIntegration } from './plaid-link';
+import { Badge } from '@/components/ui/badge';
+import { BankAccount } from '@/server/types/index';
+import { PlaidIntegration } from '../account/components/plaid-link';
 import { SyncTransactionsButton } from './sync-transactions-button';
-
-interface BankAccount {
-  id: string;
-  connectedAt: Date;
-  institution: string;
-  mask: string;
-  name: string;
-  type: string;
-}
+import { api } from '@/trpc/react';
+import { toast } from 'sonner';
 
 interface BankConnectionsProps {
   userId: string;
@@ -48,7 +38,7 @@ export function BankConnections({ userId }: BankConnectionsProps) {
   // Update state when data changes
   useEffect(() => {
     if (data) {
-      setBankAccounts(data);
+      setBankAccounts(data as BankAccount[]);
     }
   }, [data]);
 
@@ -155,7 +145,7 @@ export function BankConnections({ userId }: BankConnectionsProps) {
           </p>
         </div>
         <div className="flex space-x-2">
-          <SyncTransactionsButton />
+          <SyncTransactionsButton connectionId={''} />
           {linkToken ? (
             <PlaidIntegration
               onExit={handlePlaidExit}
@@ -215,11 +205,7 @@ export function BankConnections({ userId }: BankConnectionsProps) {
                   <Badge variant="outline">{account.type}</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {account.institution} •••• {account.mask}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Connected on{' '}
-                  {new Date(account.connectedAt).toLocaleDateString()}
+                  {account.displayName} •••• {account.mask}
                 </p>
               </div>
               <button

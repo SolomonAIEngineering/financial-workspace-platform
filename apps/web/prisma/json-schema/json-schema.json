@@ -1032,6 +1032,13 @@
         "expiryNotificationCount": {
           "type": "integer",
           "default": 0
+        },
+        "expiresAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         }
       },
       "required": [

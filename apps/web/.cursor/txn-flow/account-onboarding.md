@@ -84,12 +84,12 @@ export function ConnectBankProvider({
   openPlaid,
   availableHistory,
 }: Props) {
-  const { setParams } = useConnectParams()
-  const updateInstitutionUsage = useAction(updateInstitutionUsageAction)
+  const { setParams } = useConnectParams();
+  const updateInstitutionUsage = useAction(updateInstitutionUsageAction);
 
   const updateUsage = () => {
-    updateInstitutionUsage.execute({ institutionId: id })
-  }
+    updateInstitutionUsage.execute({ institutionId: id });
+  };
 
   switch (provider) {
     case 'teller':
@@ -99,35 +99,35 @@ export function ConnectBankProvider({
           onSelect={() => {
             // NOTE: Wait for Teller sdk to be configured
             setTimeout(() => {
-              setParams({ step: null })
-            }, 950)
+              setParams({ step: null });
+            }, 950);
 
-            updateUsage()
+            updateUsage();
           }}
         />
-      )
+      );
     case 'gocardless': {
       return (
         <GoCardLessConnect
           id={id}
           availableHistory={availableHistory}
           onSelect={() => {
-            updateUsage()
+            updateUsage();
           }}
         />
-      )
+      );
     }
     case 'plaid':
       return (
         <BankConnectButton
           onClick={() => {
-            updateUsage()
-            openPlaid()
+            updateUsage();
+            openPlaid();
           }}
         />
-      )
+      );
     default:
-      return null
+      return null;
   }
 }
 ```
@@ -144,7 +144,7 @@ const { open: openPlaid } = usePlaidLink({
   clientName: 'Solomon AI',
   product: ['transactions'],
   onSuccess: async (public_token, metadata) => {
-    const { access_token, item_id } = await exchangePublicToken(public_token)
+    const { access_token, item_id } = await exchangePublicToken(public_token);
 
     setParams({
       step: 'account',
@@ -152,23 +152,23 @@ const { open: openPlaid } = usePlaidLink({
       token: access_token,
       ref: item_id,
       institution_id: metadata.institution?.institution_id,
-    })
+    });
     track({
       event: LogEvents.ConnectBankAuthorized.name,
       channel: LogEvents.ConnectBankAuthorized.channel,
       provider: 'plaid',
-    })
+    });
   },
   onExit: () => {
-    setParams({ step: 'connect' })
+    setParams({ step: 'connect' });
 
     track({
       event: LogEvents.ConnectBankCanceled.name,
       channel: LogEvents.ConnectBankCanceled.channel,
       provider: 'plaid',
-    })
+    });
   },
-})
+});
 ```
 
 ## Bank Search and Selection
@@ -183,25 +183,25 @@ The `ConnectTransactionsModal` provides a comprehensive interface for searching 
 export function ConnectTransactionsModal({
   countryCode: initialCountryCode,
 }: ConnectTransactionsModalProps) {
-  const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [results, setResults] = useState<Institutions['data']>([])
-  const [plaidToken, setPlaidToken] = useState<string | undefined>()
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [results, setResults] = useState<Institutions['data']>([]);
+  const [plaidToken, setPlaidToken] = useState<string | undefined>();
 
   const {
     countryCode,
     q: query,
     step,
     setParams,
-  } = useConnectParams(initialCountryCode)
+  } = useConnectParams(initialCountryCode);
 
-  const isOpen = step === 'connect'
-  const debouncedSearchTerm = useDebounce(query, 200)
+  const isOpen = step === 'connect';
+  const debouncedSearchTerm = useDebounce(query, 200);
 
   // Load SDKs for bank providers
   useScript('https://cdn.teller.io/connect/connect.js', {
     removeOnUnmount: false,
-  })
+  });
 
   // Plaid link configuration
   const { open: openPlaid } = usePlaidLink({
@@ -211,7 +211,7 @@ export function ConnectTransactionsModal({
     clientName: 'Solomon AI',
     product: ['transactions'],
     onSuccess: async (public_token, metadata) => {
-      const { access_token, item_id } = await exchangePublicToken(public_token)
+      const { access_token, item_id } = await exchangePublicToken(public_token);
 
       setParams({
         step: 'account',
@@ -219,23 +219,23 @@ export function ConnectTransactionsModal({
         token: access_token,
         ref: item_id,
         institution_id: metadata.institution?.institution_id,
-      })
+      });
       track({
         event: LogEvents.ConnectBankAuthorized.name,
         channel: LogEvents.ConnectBankAuthorized.channel,
         provider: 'plaid',
-      })
+      });
     },
     onExit: () => {
-      setParams({ step: 'connect' })
+      setParams({ step: 'connect' });
 
       track({
         event: LogEvents.ConnectBankCanceled.name,
         channel: LogEvents.ConnectBankCanceled.channel,
         provider: 'plaid',
-      })
+      });
     },
-  })
+  });
 
   // Handle modal close
   const handleOnClose = () => {
@@ -248,21 +248,21 @@ export function ConnectTransactionsModal({
       },
       {
         shallow: false,
-      },
-    )
-  }
+      }
+    );
+  };
 
   // Fetch institutions based on search query
   async function fetchData(query?: string) {
     try {
-      setLoading(true)
-      const { data } = await getInstitutions({ countryCode, query })
-      setLoading(false)
+      setLoading(true);
+      const { data } = await getInstitutions({ countryCode, query });
+      setLoading(false);
 
-      setResults(data)
+      setResults(data);
     } catch {
-      setLoading(false)
-      setResults([])
+      setLoading(false);
+      setResults([]);
     }
   }
 
@@ -272,31 +272,31 @@ export function ConnectTransactionsModal({
       (isOpen && !results?.length > 0) ||
       countryCode !== initialCountryCode
     ) {
-      fetchData()
+      fetchData();
     }
-  }, [isOpen, countryCode])
+  }, [isOpen, countryCode]);
 
   // Fetch institutions when search term changes
   useEffect(() => {
     if (isOpen) {
-      fetchData(debouncedSearchTerm ?? undefined)
+      fetchData(debouncedSearchTerm ?? undefined);
     }
-  }, [debouncedSearchTerm, isOpen])
+  }, [debouncedSearchTerm, isOpen]);
 
   // Create Plaid link token when modal opens in supported countries
   useEffect(() => {
     async function createLinkToken() {
-      const token = await createPlaidLinkTokenAction()
+      const token = await createPlaidLinkTokenAction();
 
       if (token) {
-        setPlaidToken(token)
+        setPlaidToken(token);
       }
     }
 
     if ((isOpen && countryCode === 'US') || (isOpen && countryCode === 'CA')) {
-      createLinkToken()
+      createLinkToken();
     }
-  }, [isOpen, countryCode])
+  }, [isOpen, countryCode]);
 
   // Render modal content
   return (
@@ -338,20 +338,20 @@ export function ConnectTransactionsModal({
                   <CountrySelector
                     defaultValue={countryCode}
                     onSelect={(countryCode) => {
-                      setParams({ countryCode })
-                      setResults([])
+                      setParams({ countryCode });
+                      setResults([]);
                     }}
                   />
                 </div>
               </div>
 
               {/* Search results */}
-              <div className="scrollbar-hide mt-2 h-[430px] space-y-4 overflow-auto pt-2">
+              <div className="mt-2 scrollbar-hide h-[430px] space-y-4 overflow-auto pt-2">
                 {loading && <SearchSkeleton />}
 
                 {results?.map((institution) => {
                   if (!institution) {
-                    return null
+                    return null;
                   }
 
                   return (
@@ -367,11 +367,11 @@ export function ConnectTransactionsModal({
                           : 0
                       }
                       openPlaid={() => {
-                        setParams({ step: null })
-                        openPlaid()
+                        setParams({ step: null });
+                        openPlaid();
                       }}
                     />
-                  )
+                  );
                 })}
 
                 {/* No results state */}
@@ -393,7 +393,7 @@ export function ConnectTransactionsModal({
 
                       <Button
                         onClick={() => {
-                          router.push('/account/support')
+                          router.push('/account/support');
                         }}
                       >
                         Contact us
@@ -407,7 +407,7 @@ export function ConnectTransactionsModal({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 ```
 
@@ -417,13 +417,13 @@ Each bank search result is rendered using the `SearchResult` component, which di
 
 ```tsx
 type SearchResultProps = {
-  id: string
-  name: string
-  logo: string | null
-  provider: string
-  availableHistory: number
-  openPlaid: () => void
-}
+  id: string;
+  name: string;
+  logo: string | null;
+  provider: string;
+  availableHistory: number;
+  openPlaid: () => void;
+};
 
 function SearchResult({
   id,
@@ -439,9 +439,9 @@ function SearchResult({
         <BankLogo src={logo} alt={name} />
 
         <div className="ml-4 cursor-default space-y-1">
-          <p className="text-sm font-medium leading-none">{name}</p>
+          <p className="text-sm leading-none font-medium">{name}</p>
           <InstitutionInfo provider={provider}>
-            <span className="text-xs capitalize text-[#878787]">
+            <span className="text-xs text-[#878787] capitalize">
               Via {provider}
             </span>
           </InstitutionInfo>
@@ -455,7 +455,7 @@ function SearchResult({
         availableHistory={availableHistory}
       />
     </div>
-  )
+  );
 }
 ```
 
@@ -477,7 +477,7 @@ function SearchSkeleton() {
         </div>
       ))}
     </div>
-  )
+  );
 }
 ```
 
@@ -490,8 +490,8 @@ export function CountrySelector({
   defaultValue,
   onSelect,
 }: {
-  defaultValue: string
-  onSelect: (countryCode: string) => void
+  defaultValue: string;
+  onSelect: (countryCode: string) => void;
 }) {
   return (
     <DropdownMenu>
@@ -514,7 +514,7 @@ export function CountrySelector({
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }
 ```
 
@@ -532,12 +532,12 @@ export function useConnectParams(defaultCountryCode = 'US') {
     token: parseAsString,
     ref: parseAsString,
     institution_id: parseAsString,
-  })
+  });
 
   return {
     ...params,
     setParams,
-  }
+  };
 }
 ```
 
@@ -561,27 +561,27 @@ export function connectionStatus(connection: Connection) {
   const warning =
     connection.expires_at &&
     differenceInDays(new Date(connection.expires_at), new Date()) <=
-      WARNING_DAYS
+      WARNING_DAYS;
 
   const error =
     connection.expires_at &&
-    differenceInDays(new Date(connection.expires_at), new Date()) <= ERROR_DAYS
+    differenceInDays(new Date(connection.expires_at), new Date()) <= ERROR_DAYS;
 
   const expired =
     connection.expires_at &&
-    differenceInDays(new Date(connection.expires_at), new Date()) <= 0
+    differenceInDays(new Date(connection.expires_at), new Date()) <= 0;
 
   const show =
     connection.expires_at &&
     differenceInDays(new Date(connection.expires_at), new Date()) <=
-      DISPLAY_DAYS
+      DISPLAY_DAYS;
 
   return {
     warning,
     error,
     expired,
     show,
-  }
+  };
 }
 ```
 
@@ -594,17 +594,17 @@ function ConnectionState({
   connection,
   isSyncing,
 }: {
-  connection: BankConnectionProps['connection']
-  isSyncing: boolean
+  connection: BankConnectionProps['connection'];
+  isSyncing: boolean;
 }) {
-  const { show, expired } = connectionStatus(connection)
+  const { show, expired } = connectionStatus(connection);
 
   if (isSyncing) {
     return (
       <div className="flex items-center space-x-1 text-xs font-normal">
         <span>Syncing...</span>
       </div>
-    )
+    );
   }
 
   if (connection.status === 'disconnected') {
@@ -623,7 +623,7 @@ function ConnectionState({
           Please reconnect to restore the connection to a good state.
         </TooltipContent>
       </>
-    )
+    );
   }
 
   if (show) {
@@ -646,7 +646,7 @@ function ConnectionState({
           </TooltipContent>
         )}
       </>
-    )
+    );
   }
 
   // Additional states...
@@ -677,19 +677,19 @@ export function BankAccount({
   type,
   hasError,
 }: Props) {
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState('');
   const [_, setParams] = useQueryStates({
     step: parseAsString,
     accountId: parseAsString,
     hide: parseAsBoolean,
     type: parseAsString,
-  })
+  });
 
-  const [isOpen, setOpen] = useState(false)
-  const t = useI18n()
+  const [isOpen, setOpen] = useState(false);
+  const t = useI18n();
 
-  const updateAccount = useAction(updateBankAccountAction)
-  const deleteAccount = useAction(deleteBankAccountAction)
+  const updateAccount = useAction(updateBankAccountAction);
+  const deleteAccount = useAction(deleteBankAccountAction);
 
   // Component JSX...
 }
@@ -701,41 +701,41 @@ The `BankAccountList` component fetches and displays all connected accounts:
 
 ```tsx
 export async function BankAccountList() {
-  const { data } = await getTeamBankAccounts()
+  const { data } = await getTeamBankAccounts();
 
-  const manualAccounts = data.filter((account) => account.manual)
+  const manualAccounts = data.filter((account) => account.manual);
 
-  const bankMap = {}
+  const bankMap = {};
 
   // Group accounts by bank
   for (const item of data) {
-    const bankId = item.bank?.id
+    const bankId = item.bank?.id;
 
     if (!bankId) {
-      continue
+      continue;
     }
 
     if (!bankMap[bankId]) {
       bankMap[bankId] = {
         ...item.bank,
         accounts: [],
-      }
+      };
     }
 
-    bankMap[bankId].accounts.push(item)
+    bankMap[bankId].accounts.push(item);
   }
 
   // Convert the map to an array
-  const result = Object.values(bankMap)
+  const result = Object.values(bankMap);
 
   // Sort accounts by enabled status
   function sortAccountsByEnabled(accounts) {
-    return accounts.sort((a, b) => b.enabled - a.enabled)
+    return accounts.sort((a, b) => b.enabled - a.enabled);
   }
 
   for (const bank of result) {
     if (Array.isArray(bank.accounts)) {
-      bank.accounts = sortAccountsByEnabled(bank.accounts)
+      bank.accounts = sortAccountsByEnabled(bank.accounts);
     }
   }
 
@@ -744,7 +744,7 @@ export async function BankAccountList() {
       <BankConnections data={result} />
       <ManualAccounts data={manualAccounts} />
     </>
-  )
+  );
 }
 ```
 
@@ -777,27 +777,27 @@ Background jobs are implemented as asynchronous functions that are queued and ex
 
 ```tsx
 // Example implementation of a transaction sync job
-import { createJob } from '../utils/job-creator'
-import { syncTransactions } from '@/lib/banking'
+import { createJob } from '../utils/job-creator';
+import { syncTransactions } from '@/lib/banking';
 
 export const transactionSyncJob = createJob({
   name: 'sync-transactions',
   handler: async ({ connectionId, accessToken }) => {
     try {
       // Fetch transactions from the banking provider
-      const transactions = await syncTransactions(connectionId, accessToken)
+      const transactions = await syncTransactions(connectionId, accessToken);
 
       // Process and store the transactions
-      await processTransactions(transactions)
+      await processTransactions(transactions);
 
-      return { success: true, count: transactions.length }
+      return { success: true, count: transactions.length };
     } catch (error) {
       // Log the error and return failure
-      console.error('Transaction sync failed:', error)
-      return { success: false, error: error.message }
+      console.error('Transaction sync failed:', error);
+      return { success: false, error: error.message };
     }
   },
-})
+});
 ```
 
 ### Job Scheduling
@@ -822,17 +822,17 @@ The UI components can monitor job status to provide feedback to users:
 
 ```tsx
 // Example of monitoring job status in a component
-const { status, setStatus } = useSyncStatus({ runId, accessToken })
+const { status, setStatus } = useSyncStatus({ runId, accessToken });
 
 useEffect(() => {
   if (status === 'COMPLETED') {
-    dismiss()
-    setRunId(undefined)
-    setSyncing(false)
-    router.replace('/settings/accounts')
-    router.refresh()
+    dismiss();
+    setRunId(undefined);
+    setSyncing(false);
+    router.replace('/settings/accounts');
+    router.refresh();
   }
-}, [status])
+}, [status]);
 ```
 
 ### Error Handling
@@ -870,7 +870,7 @@ export function ConnectedAccounts() {
         <AddAccountButton />
       </CardFooter>
     </Card>
-  )
+  );
 }
 ```
 
@@ -882,30 +882,30 @@ The `ConnectTransactionsModal` handles the bank search and selection process:
 export function ConnectTransactionsModal({
   countryCode: initialCountryCode,
 }: ConnectTransactionsModalProps) {
-  const router = useRouter()
-  const [loading, setLoading] = useState(true)
-  const [results, setResults] = useState<Institutions['data']>([])
-  const [plaidToken, setPlaidToken] = useState<string | undefined>()
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [results, setResults] = useState<Institutions['data']>([]);
+  const [plaidToken, setPlaidToken] = useState<string | undefined>();
 
   const {
     countryCode,
     q: query,
     step,
     setParams,
-  } = useConnectParams(initialCountryCode)
+  } = useConnectParams(initialCountryCode);
 
-  const isOpen = step === 'connect'
-  const debouncedSearchTerm = useDebounce(query, 200)
+  const isOpen = step === 'connect';
+  const debouncedSearchTerm = useDebounce(query, 200);
 
   // Load SDKs
   useScript('https://cdn.teller.io/connect/connect.js', {
     removeOnUnmount: false,
-  })
+  });
 
   // Plaid link setup
   const { open: openPlaid } = usePlaidLink({
     // Configuration...
-  })
+  });
 
   // Data fetching and UI rendering...
 }
@@ -917,16 +917,16 @@ The `BankConnectButton` provides a simple interface for initiating a connection:
 
 ```tsx
 export function BankConnectButton({ onClick }: Props) {
-  const [isLoading, setLoading] = useState(false)
+  const [isLoading, setLoading] = useState(false);
 
   const handleOnClick = () => {
-    setLoading(true)
-    onClick()
+    setLoading(true);
+    onClick();
 
     setTimeout(() => {
-      setLoading(false)
-    }, 3000)
-  }
+      setLoading(false);
+    }, 3000);
+  };
 
   return (
     <Button
@@ -939,7 +939,7 @@ export function BankConnectButton({ onClick }: Props) {
     >
       {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Connect'}
     </Button>
-  )
+  );
 }
 ```
 
@@ -951,9 +951,9 @@ The `BankConnections` component renders a list of connected banks with their acc
 export function BankConnections({
   data,
 }: {
-  data: BankConnectionProps['connection'][]
+  data: BankConnectionProps['connection'][];
 }) {
-  const defaultValue = data.length === 1 ? ['connection-0'] : undefined
+  const defaultValue = data.length === 1 ? ['connection-0'] : undefined;
 
   return (
     <div className="divide-y px-6">
@@ -967,11 +967,11 @@ export function BankConnections({
             >
               <BankConnection connection={connection} />
             </AccordionItem>
-          )
+          );
         })}
       </Accordion>
     </div>
-  )
+  );
 }
 ```
 
@@ -984,29 +984,29 @@ const manualSyncTransactions = useAction(manualSyncTransactionsAction, {
   onExecute: () => setSyncing(true),
   onSuccess: ({ data }) => {
     if (data) {
-      setRunId(data.id)
-      setAccessToken(data.publicAccessToken)
+      setRunId(data.id);
+      setAccessToken(data.publicAccessToken);
     }
   },
   onError: () => {
-    setSyncing(false)
-    setRunId(undefined)
-    setStatus('FAILED')
+    setSyncing(false);
+    setRunId(undefined);
+    setStatus('FAILED');
 
     toast({
       duration: 3500,
       variant: 'error',
       title: 'Something went wrong please try again.',
-    })
+    });
   },
-})
+});
 
 // Usage
 const handleManualSync = () => {
   manualSyncTransactions.execute({
     connectionId: connection.id,
-  })
-}
+  });
+};
 ```
 
 ## Best Practices

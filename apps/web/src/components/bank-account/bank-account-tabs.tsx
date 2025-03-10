@@ -8,9 +8,6 @@
 
 'use client';
 
-import { useState } from 'react';
-
-import { Icons } from '@/components/ui/icons';
 import {
   Tabs,
   TabsContent,
@@ -18,10 +15,12 @@ import {
   TabsTrigger,
 } from '@/registry/default/potion-ui/tabs';
 
-import { BankConnections } from './bank-connections';
-import { BankAccountsList } from './tabs/bank-accounts-tab';
-import { BankSettings } from './tabs/bank-settings-tab';
-import { BankTransactions } from './tabs/bank-transactions-tab';
+import { BankAccountsList } from '../account/components/tabs/bank-accounts-tab';
+import { BankSettings } from '../account/components/tabs/bank-settings-tab';
+import { BankTransactions } from '../account/components/tabs/bank-transactions-tab';
+import { ConnectedAccounts } from '../bank-connection/connected-accounts';
+import { Icons } from '@/components/ui/icons';
+import { useState } from 'react';
 
 interface BankAccountTabsProps {
   userId: string;
@@ -82,7 +81,7 @@ export function BankAccountTabs({ userId }: BankAccountTabsProps) {
           className="slide-in-from-bottom-2 animate-in space-y-4 duration-300"
           value="connections"
         >
-          <BankConnections userId={userId} />
+          <ConnectedAccounts />
         </TabsContent>
 
         <TabsContent

@@ -1,24 +1,22 @@
 'use client';
 
-import { useState } from 'react';
-
-import { useQuery } from '@tanstack/react-query';
-
-import { AccountSection } from '@/components/account/account-section';
-import { ProfileSection } from '@/components/account/profile-section';
-import { Icons } from '@/components/ui/icons';
-import { PageHeader } from '@/components/ui/page-header';
-import { Spinner } from '@/registry/default/potion-ui/spinner';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@/registry/default/potion-ui/tabs';
-import { useTRPC } from '@/trpc/react';
 
+import { AccountSection } from '@/components/account/account-section';
+import { BankConnections } from '../bank-connection/bank-connections';
+import { Icons } from '@/components/ui/icons';
+import { PageHeader } from '@/components/ui/page-header';
+import { ProfileSection } from '@/components/account/profile-section';
+import { Spinner } from '@/registry/default/potion-ui/spinner';
 import { useCurrentUser } from '../auth/useCurrentUser';
-import { BankConnections } from './components/bank-connections';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useTRPC } from '@/trpc/react';
 
 export function UserAccountPage() {
   const [activeTab, setActiveTab] = useState('profile');

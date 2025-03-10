@@ -312,6 +312,7 @@ model BankConnection {
   lastAccessedAt          DateTime?
   lastExpiryNotifiedAt    DateTime?
   expiryNotificationCount Int       @default(0)
+  expiresAt               DateTime?
 
   @@index([userId])
   @@index([itemId])

@@ -7,19 +7,19 @@ This document provides detailed implementation guidance for the server actions i
 All actions in the system follow a consistent implementation pattern using `next-safe-action`:
 
 ```typescript
-'use server'
+'use server';
 
-import { createSafeActionClient } from 'next-safe-action'
-import { z } from 'zod'
-import type { ActionResponse } from '@/types/actions'
-import { appErrors } from '@/lib/errors'
+import { createSafeActionClient } from 'next-safe-action';
+import { z } from 'zod';
+import type { ActionResponse } from '@/types/actions';
+import { appErrors } from '@/lib/errors';
 
 // 1. Define input schema with Zod
 const schema = z.object({
   // Define the shape of your input data with proper validation
   userId: z.string().min(1, 'User ID is required'),
   // Add more fields as needed with specific validation rules
-})
+});
 
 // 2. Create and export the action
 export const actionName = createSafeActionClient()
@@ -27,21 +27,21 @@ export const actionName = createSafeActionClient()
   .action(async (input): Promise<ActionResponse> => {
     try {
       // 3. Implement action logic here
-      const result = await someService.performOperation(input)
+      const result = await someService.performOperation(input);
 
       // 4. Return success response
       return {
         success: true,
         data: result,
-      }
+      };
     } catch (error) {
       // 5. Handle errors and return error response
       return {
         success: false,
         error: error instanceof AppError ? error : appErrors.UNEXPECTED_ERROR,
-      }
+      };
     }
-  })
+  });
 ```
 
 ## Key Components in the Actions System
@@ -52,23 +52,23 @@ This is the foundation file that configures the `next-safe-action` client for us
 
 ```typescript
 // Example structure of safe-action.ts
-import { createSafeActionClient } from 'next-safe-action'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createSafeActionClient } from 'next-safe-action';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 // Custom middleware for authentication
 const auth = async () => {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions);
   if (!session) {
-    throw new Error('Unauthorized')
+    throw new Error('Unauthorized');
   }
-  return { userId: session.user.id }
-}
+  return { userId: session.user.id };
+};
 
 // Create the safe action client with middleware
 export const action = createSafeActionClient({
   middleware: [auth],
-})
+});
 ```
 
 ### 2. `schema.ts`
@@ -88,14 +88,14 @@ These actions handle transaction-related operations in the Solomon AI dashboard.
 This action retrieves transactions with flexible filtering, sorting, and pagination options.
 
 ```typescript
-'use server'
+'use server';
 
-import { createSafeActionClient } from 'next-safe-action'
-import { z } from 'zod'
-import type { ActionResponse } from '@/types/actions'
-import { appErrors } from '@/lib/errors'
-import { getTransactions } from '@/lib/services/transaction-service'
-import { Transaction } from '@/types/transaction'
+import { createSafeActionClient } from 'next-safe-action';
+import { z } from 'zod';
+import type { ActionResponse } from '@/types/actions';
+import { appErrors } from '@/lib/errors';
+import { getTransactions } from '@/lib/services/transaction-service';
+import { Transaction } from '@/types/transaction';
 
 // Comprehensive schema for transaction filtering
 const schema = z.object({
@@ -124,7 +124,7 @@ const schema = z.object({
   minAmount: z.number().optional(),
   maxAmount: z.number().optional(),
   tags: z.array(z.string()).optional(),
-})
+});
 
 export const getTransactionsFromLayout = createSafeActionClient()
   .schema(schema)
@@ -136,18 +136,18 @@ export const getTransactionsFromLayout = createSafeActionClient()
           ...input,
           startDate: input.startDate ? new Date(input.startDate) : undefined,
           endDate: input.endDate ? new Date(input.endDate) : undefined,
-        }
+        };
 
         // Call transaction service with transformed filters
-        const transactions = await getTransactions(filters)
+        const transactions = await getTransactions(filters);
 
         // Return strongly-typed response with transactions array
         return {
           success: true,
           data: { transactions },
-        }
+        };
       } catch (error) {
-        console.error('Failed to fetch transactions:', error)
+        console.error('Failed to fetch transactions:', error);
 
         // Return appropriate error response
         return {
@@ -156,10 +156,10 @@ export const getTransactionsFromLayout = createSafeActionClient()
             error instanceof AppError
               ? error
               : appErrors.FETCH_TRANSACTIONS_ERROR,
-        }
+        };
       }
-    },
-  )
+    }
+  );
 ```
 
 **Implementation Notes:**
@@ -175,14 +175,14 @@ export const getTransactionsFromLayout = createSafeActionClient()
 This action allows users to import transactions from external files (CSV/Excel).
 
 ```typescript
-'use server'
+'use server';
 
-import { createSafeActionClient } from 'next-safe-action'
-import { z } from 'zod'
-import type { ActionResponse } from '@/types/actions'
-import { appErrors } from '@/lib/errors'
-import { importTransactionsFromFile } from '@/lib/services/import-service'
-import { addJob } from '@/lib/queue'
+import { createSafeActionClient } from 'next-safe-action';
+import { z } from 'zod';
+import type { ActionResponse } from '@/types/actions';
+import { appErrors } from '@/lib/errors';
+import { importTransactionsFromFile } from '@/lib/services/import-service';
+import { addJob } from '@/lib/queue';
 
 // File validation schema
 const schema = z.object({
@@ -203,14 +203,14 @@ const schema = z.object({
 
   // Column mapping information
   columnMap: z.record(z.string(), z.string()).optional(),
-})
+});
 
 export const importTransactions = createSafeActionClient()
   .schema(schema)
   .action(async (input): Promise<ActionResponse<{ jobId: string }>> => {
     try {
       // Convert file to buffer or readable stream
-      const fileBuffer = await input.file.arrayBuffer()
+      const fileBuffer = await input.file.arrayBuffer();
 
       // Create initial import job record
       const jobId = await addJob('transaction-import', {
@@ -221,42 +221,42 @@ export const importTransactions = createSafeActionClient()
         dateFormat: input.dateFormat,
         skipHeaders: input.skipHeaders,
         columnMap: input.columnMap,
-      })
+      });
 
       // Store file buffer in temporary storage
-      await storeFileForProcessing(jobId, Buffer.from(fileBuffer))
+      await storeFileForProcessing(jobId, Buffer.from(fileBuffer));
 
       // Return job ID for client to poll status
       return {
         success: true,
         data: { jobId },
-      }
+      };
     } catch (error) {
-      console.error('Failed to import transactions:', error)
+      console.error('Failed to import transactions:', error);
 
       return {
         success: false,
         error: error instanceof AppError ? error : appErrors.IMPORT_FAILED,
-      }
+      };
     }
-  })
+  });
 
 // Helper function to detect file format from extension
 function detectFileFormat(fileName: string): string {
-  const extension = fileName.split('.').pop()?.toLowerCase()
+  const extension = fileName.split('.').pop()?.toLowerCase();
   switch (extension) {
     case 'csv':
-      return 'csv'
+      return 'csv';
     case 'xlsx':
     case 'xls':
-      return 'xlsx'
+      return 'xlsx';
     case 'qfx':
     case 'ofx':
-      return 'ofx'
+      return 'ofx';
     case 'qif':
-      return 'qif'
+      return 'qif';
     default:
-      return 'csv' // Default to CSV
+      return 'csv'; // Default to CSV
   }
 }
 ```
@@ -275,13 +275,13 @@ function detectFileFormat(fileName: string): string {
 This action triggers a manual synchronization of transactions from connected financial accounts.
 
 ```typescript
-'use server'
+'use server';
 
-import { createSafeActionClient } from 'next-safe-action'
-import { z } from 'zod'
-import type { ActionResponse } from '@/types/actions'
-import { appErrors } from '@/lib/errors'
-import { triggerManualSync } from '@/lib/services/sync-service'
+import { createSafeActionClient } from 'next-safe-action';
+import { z } from 'zod';
+import type { ActionResponse } from '@/types/actions';
+import { appErrors } from '@/lib/errors';
+import { triggerManualSync } from '@/lib/services/sync-service';
 
 const schema = z.object({
   // User ID requesting the sync
@@ -293,7 +293,7 @@ const schema = z.object({
   // Optional date range to sync
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-})
+});
 
 export const manualSyncTransactions = createSafeActionClient()
   .schema(schema)
@@ -304,24 +304,24 @@ export const manualSyncTransactions = createSafeActionClient()
         ...input,
         startDate: input.startDate ? new Date(input.startDate) : undefined,
         endDate: input.endDate ? new Date(input.endDate) : undefined,
-      }
+      };
 
       // Trigger sync process and get tracking ID
-      const syncId = await triggerManualSync(syncOptions)
+      const syncId = await triggerManualSync(syncOptions);
 
       return {
         success: true,
         data: { syncId },
-      }
+      };
     } catch (error) {
-      console.error('Failed to trigger manual sync:', error)
+      console.error('Failed to trigger manual sync:', error);
 
       return {
         success: false,
         error: error instanceof AppError ? error : appErrors.SYNC_FAILED,
-      }
+      };
     }
-  })
+  });
 ```
 
 **Implementation Notes:**
@@ -337,56 +337,56 @@ export const manualSyncTransactions = createSafeActionClient()
 This action re-establishes connections to financial institutions when they expire or require re-authentication.
 
 ```typescript
-'use server'
+'use server';
 
-import { createSafeActionClient } from 'next-safe-action'
-import { z } from 'zod'
-import type { ActionResponse } from '@/types/actions'
-import { appErrors } from '@/lib/errors'
-import { initiateReconnection } from '@/lib/services/connection-service'
+import { createSafeActionClient } from 'next-safe-action';
+import { z } from 'zod';
+import type { ActionResponse } from '@/types/actions';
+import { appErrors } from '@/lib/errors';
+import { initiateReconnection } from '@/lib/services/connection-service';
 
 const schema = z.object({
   // Connection ID to reconnect
   connectionId: z.string({ required_error: 'Connection ID is required' }),
-})
+});
 
 export const reconnectConnection = createSafeActionClient()
   .schema(schema)
   .action(async (input): Promise<ActionResponse<{ redirectUrl: string }>> => {
     try {
       // Get connection details from database
-      const connection = await getConnectionById(input.connectionId)
+      const connection = await getConnectionById(input.connectionId);
 
       if (!connection) {
-        throw appErrors.CONNECTION_NOT_FOUND
+        throw appErrors.CONNECTION_NOT_FOUND;
       }
 
       // Call financial provider API to initiate reconnection flow
       const { redirectUrl, tokenExpiry } =
-        await initiateReconnection(connection)
+        await initiateReconnection(connection);
 
       // Update connection status in database
       await updateConnectionStatus(
         input.connectionId,
         'reconnecting',
-        tokenExpiry,
-      )
+        tokenExpiry
+      );
 
       // Return redirect URL for user to complete authentication
       return {
         success: true,
         data: { redirectUrl },
-      }
+      };
     } catch (error) {
-      console.error('Failed to reconnect financial connection:', error)
+      console.error('Failed to reconnect financial connection:', error);
 
       return {
         success: false,
         error:
           error instanceof AppError ? error : appErrors.RECONNECTION_FAILED,
-      }
+      };
     }
-  })
+  });
 ```
 
 **Implementation Notes:**
@@ -402,14 +402,14 @@ export const reconnectConnection = createSafeActionClient()
 This action updates the base currency for transaction display and calculations.
 
 ```typescript
-'use server'
+'use server';
 
-import { createSafeActionClient } from 'next-safe-action'
-import { z } from 'zod'
-import type { ActionResponse } from '@/types/actions'
-import { appErrors } from '@/lib/errors'
-import { updateUserCurrency } from '@/lib/services/currency-service'
-import { addJob } from '@/lib/queue'
+import { createSafeActionClient } from 'next-safe-action';
+import { z } from 'zod';
+import type { ActionResponse } from '@/types/actions';
+import { appErrors } from '@/lib/errors';
+import { updateUserCurrency } from '@/lib/services/currency-service';
+import { addJob } from '@/lib/queue';
 
 // Supported currency codes
 const SUPPORTED_CURRENCIES = [
@@ -429,7 +429,7 @@ const SUPPORTED_CURRENCIES = [
   'SEK',
   'NOK',
   'NZD',
-] as const
+] as const;
 
 const schema = z.object({
   // User ID for the currency update
@@ -442,38 +442,38 @@ const schema = z.object({
 
   // Whether to recalculate historical transactions (expensive operation)
   recalculateHistorical: z.boolean().optional().default(true),
-})
+});
 
 export const updateCurrency = createSafeActionClient()
   .schema(schema)
   .action(async (input): Promise<ActionResponse<{ jobId?: string }>> => {
     try {
       // Update user's currency preference
-      await updateUserCurrency(input.userId, input.currency)
+      await updateUserCurrency(input.userId, input.currency);
 
       // If historical recalculation is requested, create a background job
-      let jobId: string | undefined
+      let jobId: string | undefined;
       if (input.recalculateHistorical) {
         jobId = await addJob('update-currency-transactions', {
           userId: input.userId,
           currency: input.currency,
-        })
+        });
       }
 
       return {
         success: true,
         data: { jobId },
-      }
+      };
     } catch (error) {
-      console.error('Failed to update currency:', error)
+      console.error('Failed to update currency:', error);
 
       return {
         success: false,
         error:
           error instanceof AppError ? error : appErrors.CURRENCY_UPDATE_FAILED,
-      }
+      };
     }
-  })
+  });
 ```
 
 **Implementation Notes:**
@@ -494,54 +494,54 @@ This background job processes imported transaction files:
 
 ```typescript
 // Simplified example from import.ts
-import { Job } from '@/lib/queue'
-import { parseCSV, parseXLSX, parseOFX, parseQIF } from '@/lib/parsers'
+import { Job } from '@/lib/queue';
+import { parseCSV, parseXLSX, parseOFX, parseQIF } from '@/lib/parsers';
 import {
   validateTransactions,
   saveTransactions,
-} from '@/lib/services/transaction-service'
+} from '@/lib/services/transaction-service';
 
 export async function handleImportJob(job: Job): Promise<void> {
   const { accountId, fileName, format, dateFormat, skipHeaders, columnMap } =
-    job.data
+    job.data;
 
   // Retrieve file from temporary storage
-  const fileBuffer = await retrieveFileForProcessing(job.id)
+  const fileBuffer = await retrieveFileForProcessing(job.id);
 
   // Parse file based on format
-  let transactions = []
+  let transactions = [];
   switch (format) {
     case 'csv':
       transactions = await parseCSV(fileBuffer, {
         skipHeaders,
         dateFormat,
         columnMap,
-      })
-      break
+      });
+      break;
     case 'xlsx':
       transactions = await parseXLSX(fileBuffer, {
         skipHeaders,
         dateFormat,
         columnMap,
-      })
-      break
+      });
+      break;
     case 'ofx':
     case 'qfx':
-      transactions = await parseOFX(fileBuffer)
-      break
+      transactions = await parseOFX(fileBuffer);
+      break;
     case 'qif':
-      transactions = await parseQIF(fileBuffer, { dateFormat })
-      break
+      transactions = await parseQIF(fileBuffer, { dateFormat });
+      break;
   }
 
   // Validate parsed transactions
-  const validationResults = await validateTransactions(transactions)
+  const validationResults = await validateTransactions(transactions);
 
   // Handle duplicates and validation errors
-  const { valid, duplicates, invalid } = validationResults
+  const { valid, duplicates, invalid } = validationResults;
 
   // Save valid transactions
-  const savedCount = await saveTransactions(valid, accountId)
+  const savedCount = await saveTransactions(valid, accountId);
 
   // Update job with results
   await job.update({
@@ -553,7 +553,7 @@ export async function handleImportJob(job: Job): Promise<void> {
       invalid: invalid.length,
       validationErrors: invalid.map((t) => t.validationError),
     },
-  })
+  });
 }
 ```
 
@@ -572,62 +572,62 @@ This background job updates currencies for historical transactions:
 
 ```typescript
 // Simplified example from update-base-currency.ts
-import { Job } from '@/lib/queue'
+import { Job } from '@/lib/queue';
 import {
   getTransactionsByUserId,
   updateTransactionCurrency,
-} from '@/lib/services/transaction-service'
-import { getCurrencyRates } from '@/lib/services/exchange-rate-service'
+} from '@/lib/services/transaction-service';
+import { getCurrencyRates } from '@/lib/services/exchange-rate-service';
 
 export async function handleCurrencyUpdateJob(job: Job): Promise<void> {
-  const { userId, currency } = job.data
+  const { userId, currency } = job.data;
 
   // Get all user transactions
-  const transactions = await getTransactionsByUserId(userId)
+  const transactions = await getTransactionsByUserId(userId);
 
   // Get historical exchange rates for all transaction dates
   const uniqueDates = [
     ...new Set(transactions.map((t) => t.date.toISOString().split('T')[0])),
-  ]
-  const exchangeRates = await getCurrencyRates(uniqueDates, currency)
+  ];
+  const exchangeRates = await getCurrencyRates(uniqueDates, currency);
 
   // Process transactions in batches to avoid memory issues
-  const BATCH_SIZE = 100
-  let processedCount = 0
+  const BATCH_SIZE = 100;
+  let processedCount = 0;
 
   for (let i = 0; i < transactions.length; i += BATCH_SIZE) {
-    const batch = transactions.slice(i, i + BATCH_SIZE)
+    const batch = transactions.slice(i, i + BATCH_SIZE);
 
     // Update each transaction's currency
     await Promise.all(
       batch.map(async (transaction) => {
-        const transactionDate = transaction.date.toISOString().split('T')[0]
-        const rate = exchangeRates[transactionDate]
+        const transactionDate = transaction.date.toISOString().split('T')[0];
+        const rate = exchangeRates[transactionDate];
 
         if (!rate) {
-          console.warn(`No exchange rate found for ${transactionDate}`)
-          return
+          console.warn(`No exchange rate found for ${transactionDate}`);
+          return;
         }
 
         // Convert amount using historical rate
-        const convertedAmount = transaction.originalAmount * rate
+        const convertedAmount = transaction.originalAmount * rate;
 
         // Update transaction with new currency and converted amount
         await updateTransactionCurrency(
           transaction.id,
           currency,
           convertedAmount,
-          rate,
-        )
-      }),
-    )
+          rate
+        );
+      })
+    );
 
-    processedCount += batch.length
+    processedCount += batch.length;
 
     // Update job progress
     await job.update({
       progress: Math.floor((processedCount / transactions.length) * 100),
-    })
+    });
   }
 
   // Update job with results
@@ -637,7 +637,7 @@ export async function handleCurrencyUpdateJob(job: Job): Promise<void> {
       totalProcessed: processedCount,
       currency,
     },
-  })
+  });
 }
 ```
 
@@ -656,11 +656,11 @@ Here are comprehensive examples of how to use transaction actions in client comp
 ### Transaction List with Filtering
 
 ```tsx
-'use client'
+'use client';
 
-import { useAction } from 'next-safe-action/hooks'
-import { useQueryState } from 'nuqs'
-import { getTransactionsFromLayout } from '@/actions/transactions/get-transactions-from-layout'
+import { useAction } from 'next-safe-action/hooks';
+import { useQueryState } from 'nuqs';
+import { getTransactionsFromLayout } from '@/actions/transactions/get-transactions-from-layout';
 import {
   Table,
   TableBody,
@@ -668,25 +668,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from '@/components/ui/table';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { DateRangePicker } from '@/components/ui/date-range-picker'
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { DateRangePicker } from '@/components/ui/date-range-picker';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { formatCurrency } from '@/lib/utils'
-import { useState, useEffect } from 'react'
+} from '@/components/ui/select';
+import { formatCurrency } from '@/lib/utils';
+import { useState, useEffect } from 'react';
 import {
   ChevronDown,
   Filter,
@@ -694,40 +694,40 @@ import {
   Search,
   SortAsc,
   SortDesc,
-} from 'lucide-react'
+} from 'lucide-react';
 
 export function TransactionsList() {
   // State for pagination
-  const [limit, setLimit] = useQueryState('limit', { defaultValue: '10' })
-  const [page, setPage] = useQueryState('page', { defaultValue: '1' })
+  const [limit, setLimit] = useQueryState('limit', { defaultValue: '10' });
+  const [page, setPage] = useQueryState('page', { defaultValue: '1' });
 
   // State for filtering
-  const [search, setSearch] = useQueryState('search')
-  const [dateRange, setDateRange] = useQueryState('dateRange')
-  const [category, setCategory] = useQueryState('category')
-  const [account, setAccount] = useQueryState('account')
+  const [search, setSearch] = useQueryState('search');
+  const [dateRange, setDateRange] = useQueryState('dateRange');
+  const [category, setCategory] = useQueryState('category');
+  const [account, setAccount] = useQueryState('account');
 
   // State for sorting
-  const [sortBy, setSortBy] = useQueryState('sortBy', { defaultValue: 'date' })
+  const [sortBy, setSortBy] = useQueryState('sortBy', { defaultValue: 'date' });
   const [sortOrder, setSortOrder] = useQueryState('sortOrder', {
     defaultValue: 'desc',
-  })
+  });
 
   // Local state for the table
-  const [isRefreshing, setIsRefreshing] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Parse filter values
-  const parsedLimit = parseInt(limit || '10')
-  const parsedPage = parseInt(page || '1')
-  const offset = (parsedPage - 1) * parsedLimit
+  const parsedLimit = parseInt(limit || '10');
+  const parsedPage = parseInt(page || '1');
+  const offset = (parsedPage - 1) * parsedLimit;
 
   // Parse date range
   const parsedDateRange = dateRange
     ? JSON.parse(dateRange)
-    : { startDate: undefined, endDate: undefined }
+    : { startDate: undefined, endDate: undefined };
 
   // Setup action hook
-  const { execute, result, status } = useAction(getTransactionsFromLayout)
+  const { execute, result, status } = useAction(getTransactionsFromLayout);
 
   // Fetch transactions when filters change
   const fetchTransactions = () => {
@@ -741,36 +741,36 @@ export function TransactionsList() {
       accountId: account || undefined,
       sortBy: sortBy || 'date',
       sortOrder: (sortOrder || 'desc') as 'asc' | 'desc',
-    })
-  }
+    });
+  };
 
   // Effect to fetch transactions when filters change
   useEffect(() => {
-    fetchTransactions()
-  }, [limit, page, dateRange, category, account, sortBy, sortOrder])
+    fetchTransactions();
+  }, [limit, page, dateRange, category, account, sortBy, sortOrder]);
 
   // Handle search submit
   const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    fetchTransactions()
-  }
+    e.preventDefault();
+    fetchTransactions();
+  };
 
   // Handle manual refresh
   const handleRefresh = () => {
-    setIsRefreshing(true)
-    fetchTransactions()
-    setTimeout(() => setIsRefreshing(false), 500)
-  }
+    setIsRefreshing(true);
+    fetchTransactions();
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
 
   // Handle sort change
   const handleSort = (column: string) => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortBy(column)
-      setSortOrder('desc')
+      setSortBy(column);
+      setSortOrder('desc');
     }
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -993,7 +993,7 @@ export function TransactionsList() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 ```
 
@@ -1010,18 +1010,18 @@ These actions handle user account and profile operations:
      email: z.string().email().optional(),
      image: z.string().optional(),
      preferences: z.record(z.any()).optional(),
-   })
+   });
 
    export const updateUser = createSafeActionClient()
      .schema(schema)
      .action(async (input): Promise<ActionResponse> => {
        try {
-         const updatedUser = await userService.update(input)
-         return { success: true, data: updatedUser }
+         const updatedUser = await userService.update(input);
+         return { success: true, data: updatedUser };
        } catch (error) {
-         return { success: false, error: appErrors.USER_UPDATE_FAILED }
+         return { success: false, error: appErrors.USER_UPDATE_FAILED };
        }
-     })
+     });
    ```
 
 2. **`delete-user-action.ts`**
@@ -1042,7 +1042,7 @@ These actions manage team-based functionality:
      name: z.string().min(1, 'Team name is required'),
      userId: z.string(),
      logo: z.string().optional(),
-   })
+   });
 
    export const createTeam = createSafeActionClient()
      .schema(schema)
@@ -1052,12 +1052,12 @@ These actions manage team-based functionality:
            name: input.name,
            ownerId: input.userId,
            logo: input.logo,
-         })
-         return { success: true, data: team }
+         });
+         return { success: true, data: team };
        } catch (error) {
-         return { success: false, error: appErrors.TEAM_CREATION_FAILED }
+         return { success: false, error: appErrors.TEAM_CREATION_FAILED };
        }
-     })
+     });
    ```
 
 2. **`update-team-action.ts`**
@@ -1084,7 +1084,7 @@ These actions handle connections to financial institutions:
      userId: z.string(),
      institutionId: z.string(),
      publicToken: z.string(),
-   })
+   });
 
    export const connectBankAccount = createSafeActionClient()
      .schema(schema)
@@ -1094,13 +1094,13 @@ These actions handle connections to financial institutions:
          const result = await financeService.exchangePublicToken(
            input.publicToken,
            input.institutionId,
-           input.userId,
-         )
-         return { success: true, data: result }
+           input.userId
+         );
+         return { success: true, data: result };
        } catch (error) {
-         return { success: false, error: appErrors.CONNECTION_FAILED }
+         return { success: false, error: appErrors.CONNECTION_FAILED };
        }
-     })
+     });
    ```
 
 2. **`disconnect-app-action.ts`**
@@ -1116,7 +1116,7 @@ These actions handle categorization and tagging of transactions:
      name: z.string().min(1, 'Tag name is required'),
      color: z.string().optional(),
      userId: z.string(),
-   })
+   });
 
    export const createTag = createSafeActionClient()
      .schema(schema)
@@ -1126,12 +1126,12 @@ These actions handle categorization and tagging of transactions:
            name: input.name,
            color: input.color || '#000000',
            userId: input.userId,
-         })
-         return { success: true, data: tag }
+         });
+         return { success: true, data: tag };
        } catch (error) {
-         return { success: false, error: appErrors.TAG_CREATION_FAILED }
+         return { success: false, error: appErrors.TAG_CREATION_FAILED };
        }
-     })
+     });
    ```
 
 2. **`update-tag-action.ts`**
@@ -1156,18 +1156,18 @@ These actions handle transaction management beyond basic CRUD:
      amount: z.number().optional(),
      date: z.string().optional(),
      notes: z.string().optional(),
-   })
+   });
 
    export const updateTransaction = createSafeActionClient()
      .schema(schema)
      .action(async (input): Promise<ActionResponse> => {
        try {
-         const updated = await transactionService.update(input)
-         return { success: true, data: updated }
+         const updated = await transactionService.update(input);
+         return { success: true, data: updated };
        } catch (error) {
-         return { success: false, error: appErrors.TRANSACTION_UPDATE_FAILED }
+         return { success: false, error: appErrors.TRANSACTION_UPDATE_FAILED };
        }
-     })
+     });
    ```
 
 2. **`create-transaction-action.ts`**
@@ -1188,7 +1188,7 @@ These actions manage user interface preferences:
      userId: z.string(),
      columnId: z.string(),
      visible: z.boolean(),
-   })
+   });
 
    export const updateColumnVisibility = createSafeActionClient()
      .schema(schema)
@@ -1197,13 +1197,13 @@ These actions manage user interface preferences:
          await preferencesService.updateColumnVisibility(
            input.userId,
            input.columnId,
-           input.visible,
-         )
-         return { success: true }
+           input.visible
+         );
+         return { success: true };
        } catch (error) {
-         return { success: false, error: appErrors.PREFERENCES_UPDATE_FAILED }
+         return { success: false, error: appErrors.PREFERENCES_UPDATE_FAILED };
        }
-     })
+     });
    ```
 
 2. **`update-menu-action.ts`**
@@ -1226,7 +1226,7 @@ These actions handle document management:
      files: z.array(z.instanceof(File)),
      transactionId: z.string().optional(),
      folderId: z.string().optional(),
-   })
+   });
 
    export const createAttachments = createSafeActionClient()
      .schema(schema)
@@ -1235,12 +1235,12 @@ These actions handle document management:
          const attachments = await attachmentService.upload(input.files, {
            transactionId: input.transactionId,
            folderId: input.folderId,
-         })
-         return { success: true, data: { attachments } }
+         });
+         return { success: true, data: { attachments } };
        } catch (error) {
-         return { success: false, error: appErrors.ATTACHMENT_UPLOAD_FAILED }
+         return { success: false, error: appErrors.ATTACHMENT_UPLOAD_FAILED };
        }
-     })
+     });
    ```
 
 2. **`delete-attachment-action.ts`**
@@ -1271,7 +1271,7 @@ These actions handle user support and feedback:
      rating: z.number().min(1).max(5).optional(),
      category: z.enum(['bug', 'feature', 'general']).optional(),
      metadata: z.record(z.any()).optional(),
-   })
+   });
 
    export const sendFeedback = createSafeActionClient()
      .schema(schema)
@@ -1284,12 +1284,12 @@ These actions handle user support and feedback:
            category: input.category || 'general',
            metadata: input.metadata || {},
            timestamp: new Date(),
-         })
-         return { success: true }
+         });
+         return { success: true };
        } catch (error) {
-         return { success: false, error: appErrors.FEEDBACK_SUBMISSION_FAILED }
+         return { success: false, error: appErrors.FEEDBACK_SUBMISSION_FAILED };
        }
-     })
+     });
    ```
 
 2. **`send-support-action.tsx`**
@@ -1324,21 +1324,21 @@ These actions handle invoice management functionality.
 All actions should be used with the `useAction` hook from `next-safe-action/hooks`:
 
 ```tsx
-'use client'
+'use client';
 
-import { useAction } from 'next-safe-action/hooks'
-import { someAction } from '@/actions/some-action'
-import { toast } from 'sonner'
+import { useAction } from 'next-safe-action/hooks';
+import { someAction } from '@/actions/some-action';
+import { toast } from 'sonner';
 
 export function ActionComponent() {
   const { execute, result, status } = useAction(someAction, {
     onSuccess: (data) => toast.success('Action completed successfully'),
     onError: (error) => toast.error(`Action failed: ${error.message}`),
-  })
+  });
 
   const handleExecute = (values) => {
-    execute(values)
-  }
+    execute(values);
+  };
 
   return (
     <div>
@@ -1354,7 +1354,7 @@ export function ActionComponent() {
         <div className="text-red-500">Error: {result.error.message}</div>
       )}
     </div>
-  )
+  );
 }
 ```
 

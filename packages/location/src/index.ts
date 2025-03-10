@@ -1,96 +1,83 @@
-import { headers } from 'next/headers'
+import { EU_COUNTRY_CODES } from "./eu-countries";
+import countries from "./countries.json";
+import { currencies } from "./currencies";
+import flags from "./country-flags";
+import { headers } from "next/headers";
+import timezones from "./timezones.json";
 
-import countries from './countries.json'
-import flags from './country-flag'
-import { EU_COUNTRY_CODES } from './eu-countries'
-import timezones from './timezones.json'
-
-/**
- * Retrieves the country code from the request headers.
- * Uses Vercel's built-in geo-location headers.
- *
- * @returns {Promise<string>} Two-letter ISO country code (e.g., "US", "DE", "GB")
- * @default "US" - Returns "US" if the header is not present
- */
 export async function getCountryCode() {
-  return (await headers()).get('x-vercel-ip-country') || 'US'
+  return (await headers()).get("x-vercel-ip-country") || "SE";
 }
 
-/**
- * Retrieves the timezone from the request headers.
- * Uses Vercel's built-in geo-location headers.
- *
- * @returns {Promise<string>} IANA timezone identifier (e.g., "Europe/Berlin", "America/New_York")
- * @default "Europe/Berlin" - Returns "Europe/Berlin" if the header is not present
- */
 export async function getTimezone() {
-  return (await headers()).get('x-vercel-ip-timezone') || 'Europe/Berlin'
+  return (await headers()).get("x-vercel-ip-timezone") || "Europe/Berlin";
 }
 
-/**
- * Returns all available IANA timezones.
- *
- * @returns {Record<string, string[]>} Object containing timezone information
- */
+export async function getLocale() {
+  return (await headers()).get("x-vercel-ip-locale") || "en-US";
+}
+
 export function getTimezones() {
-  return timezones
+  return timezones;
 }
 
-/**
- * Retrieves detailed information about the current country based on the IP.
- *
- * @returns {Promise<Object>} Country information
- * @property {string | undefined} currencyCode - The three-letter currency code (e.g., "USD", "EUR")
- * @property {Object | undefined} currency - Currency information including name and symbol
- * @property {string | undefined} languages - Comma-separated list of languages spoken in the country
- */
-export async function getCountryInfo() {
-  const country = await getCountryCode()
+export async function getCurrency() {
+  const countryCode = await getCountryCode();
 
-  const countryInfo = countries.find((x) => x.cca2 === country)
+  return currencies[countryCode as keyof typeof currencies];
+}
+
+export async function getDateFormat() {
+  const country = await getCountryCode();
+
+  // US uses MM/dd/yyyy
+  if (country === "US") {
+    return "MM/dd/yyyy";
+  }
+
+  // China, Japan, Korea, Taiwan use yyyy-MM-dd
+  if (["CN", "JP", "KR", "TW"].includes(country)) {
+    return "yyyy-MM-dd";
+  }
+  // Most Latin American, African, and some Asian countries use dd/MM/yyyy
+  if (["AU", "NZ", "IN", "ZA", "BR", "AR"].includes(country)) {
+    return "dd/MM/yyyy";
+  }
+
+  // Default to yyyy-MM-dd for other countries
+  return "yyyy-MM-dd";
+}
+
+export async function getCountryInfo() {
+  const country = await getCountryCode();
+
+  const countryInfo = countries.find((x) => x.cca2 === country);
 
   const currencyCode =
-    countryInfo?.currencies && Object.keys(countryInfo.currencies)[0]
-  const currency =
-    currencyCode &&
-    countryInfo?.currencies &&
-    currencyCode in countryInfo.currencies
-      ? countryInfo.currencies[
-          currencyCode as keyof typeof countryInfo.currencies
-        ]
-      : undefined
+    countryInfo && Object.keys(countryInfo.currencies)?.at(0);
+  const currency = countryInfo?.currencies[currencyCode as keyof typeof countryInfo.currencies];
   const languages =
-    countryInfo && Object.values(countryInfo.languages).join(', ')
+    countryInfo && Object.values(countryInfo.languages).join(", ");
 
   return {
     currencyCode,
     currency,
     languages,
-  }
+  };
 }
 
-/**
- * Checks if the current IP address is from a European Union country.
- *
- * @returns {Promise<boolean>} True if the country code is in the EU_COUNTRY_CODES list
- */
 export async function isEU() {
-  const countryCode = (await headers()).get('x-vercel-ip-country')
+  const countryCode = await getCountryCode();
 
   if (countryCode && EU_COUNTRY_CODES.includes(countryCode)) {
-    return true
+    return true;
   }
 
-  return false
+  return false;
 }
 
-/**
- * Gets the flag emoji for the current country.
- *
- * @returns {Promise<string>} Flag emoji for the country (e.g., "🇺🇸", "🇩🇪")
- */
 export async function getCountry() {
-  const country = await getCountryCode()
+  const country = await getCountryCode();
 
-  return flags[country as keyof typeof flags]
+  return flags[country as keyof typeof flags];
 }
