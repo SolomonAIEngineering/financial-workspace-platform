@@ -48,7 +48,7 @@ interface BankLogoProps {
  * @param {string} [props.alt='Bank logo'] - Alt text for the image. Default is
  *   `'Bank logo'`
  * @param {string} [props.className] - Additional CSS classes
- * @param {'sm' | 'md' | 'lg'} [props.size='md'] - Size of the logo Default is
+ * @param {'sm' | 'md' | 'lg'} [props.size='md'] - Size of the logo. Default is
  *   `'md'`
  * @returns {JSX.Element} A circular container with either the bank logo or a
  *   fallback icon

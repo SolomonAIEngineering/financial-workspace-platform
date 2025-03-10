@@ -1,13 +1,8 @@
 'use server';
 
+import { authActionClient } from '../safe-action';
 import { engine } from '@/lib/engine';
-
-type GetAccountParams = {
-  id?: string;
-  accessToken?: string;
-  institutionId?: string; // Plaid
-  provider: 'gocardless' | 'teller' | 'plaid';
-};
+import { getAccountsSchema } from './schema';
 
 /**
  * Fetches accounts from various financial data providers
@@ -27,27 +22,26 @@ type GetAccountParams = {
  *   containing the sorted account data (sorted by balance amount descending)
  * @throws {Error} If the API request fails
  */
-export async function getAccounts({
-  id,
-  provider,
-  accessToken,
-  institutionId,
-}: GetAccountParams) {
-  try {
-    const accountsResponse = await engine.accounts.list({
-      id,
-      provider,
-      accessToken,
-      institutionId,
-    });
+export const getAccountsAction = authActionClient
+  .schema(getAccountsSchema)
+  .action(
+    async ({ parsedInput: { id, provider, accessToken, institutionId } }) => {
+      try {
+        const accountsResponse = await engine.accounts.list({
+          id,
+          provider,
+          accessToken,
+          institutionId,
+        });
 
-    const { data } = await accountsResponse;
+        const { data } = await accountsResponse;
 
-    return {
-      data: data.sort((a, b) => b.balance.amount - a.balance.amount),
-    };
-  } catch (error) {
-    console.error('Failed to get accounts:', error);
-    throw new Error('Failed to get accounts');
-  }
-}
+        return {
+          data: data.sort((a, b) => b.balance.amount - a.balance.amount),
+        };
+      } catch (error) {
+        console.error('Failed to get accounts:', error);
+        throw new Error('Failed to get accounts');
+      }
+    }
+  );

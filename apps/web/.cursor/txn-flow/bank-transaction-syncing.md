@@ -191,8 +191,8 @@ All bank sync jobs are built using Trigger.dev's job definition framework. The c
 import { TriggerClient } from '@trigger.dev/sdk';
 
 /**
- * This client is used to interact with the Trigger.dev API
- * You can use it in your application to trigger jobs
+ * This client is used to interact with the Trigger.dev API You can use it in
+ * your application to trigger jobs
  */
 export const client = new TriggerClient({
   id: 'smb-financial-management-platform',
@@ -212,13 +212,13 @@ import { z } from 'zod';
 export const exampleSyncJob = client.defineJob({
   // Unique identifier for the job
   id: 'sync-bank-example',
-  
+
   // Human-readable name
   name: 'Sync Bank Example',
-  
+
   // Version for tracking changes
   version: '1.0.0',
-  
+
   // Trigger that determines when the job runs
   trigger: eventTrigger({
     name: 'sync-bank-trigger',
@@ -230,26 +230,32 @@ export const exampleSyncJob = client.defineJob({
       forceRefresh: z.boolean().optional(),
     }),
   }),
-  
+
   // The main job function
   run: async (payload, io, ctx) => {
-    const { connectionId, accessToken, provider, userId, forceRefresh = false } = payload;
-    
+    const {
+      connectionId,
+      accessToken,
+      provider,
+      userId,
+      forceRefresh = false,
+    } = payload;
+
     // Log the start of the job
     await io.logger.info('Starting bank sync job', {
       connectionId,
       provider,
       userId,
-      forceRefresh
+      forceRefresh,
     });
-    
+
     try {
       // Job implementation goes here
-      
+
       return {
         success: true,
         accountCount: 5, // Example value
-        lastSyncTime: new Date().toISOString()
+        lastSyncTime: new Date().toISOString(),
       };
     } catch (error) {
       // Error handling
@@ -258,10 +264,10 @@ export const exampleSyncJob = client.defineJob({
         provider,
         error: error.message,
       });
-      
+
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   },
@@ -305,8 +311,8 @@ import { getItemDetails } from '@/server/services/plaid';
 import { client } from '../../../client';
 
 /**
- * This job handles syncing a bank connection and all its accounts
- * It's a fan-out job that triggers sync-account for each account
+ * This job handles syncing a bank connection and all its accounts It's a
+ * fan-out job that triggers sync-account for each account
  */
 export const syncConnectionJob = client.defineJob({
   id: 'sync-connection-job',
@@ -1096,7 +1102,9 @@ export const upsertTransactionsJob = client.defineJob({
   run: async (payload, io) => {
     const { accessToken, bankAccountId, userId } = payload;
 
-    await io.logger.info(`Starting transaction sync for account ${bankAccountId}`);
+    await io.logger.info(
+      `Starting transaction sync for account ${bankAccountId}`
+    );
 
     try {
       // Get the bank account details
@@ -1257,8 +1265,8 @@ import { categorizeTransaction } from '@/server/services/categorization';
 import { client } from '../client';
 
 /**
- * This job runs periodically to categorize any uncategorized transactions
- * using our machine learning categorization service.
+ * This job runs periodically to categorize any uncategorized transactions using
+ * our machine learning categorization service.
  */
 export const categorizationJob = client.defineJob({
   id: 'categorize-transactions-job',
@@ -1466,8 +1474,8 @@ import { BankConnectionStatus } from '@prisma/client';
 import { client } from '../../../client';
 
 /**
- * This job checks for disconnected bank connections and schedules
- * reconnection attempts or sends notifications to users.
+ * This job checks for disconnected bank connections and schedules reconnection
+ * attempts or sends notifications to users.
  */
 export const disconnectedSchedulerJob = client.defineJob({
   id: 'disconnected-scheduler-job',
@@ -1872,28 +1880,30 @@ import { formatDistanceToNow } from 'date-fns';
 
 export function SyncStatus({ bankAccount }) {
   const [lastSyncText, setLastSyncText] = useState('');
-  
+
   useEffect(() => {
     if (!bankAccount.lastTransactionSync) {
       setLastSyncText('Never synced');
       return;
     }
-    
+
     const updateSyncText = () => {
       setLastSyncText(
         `Last synced ${formatDistanceToNow(new Date(bankAccount.lastTransactionSync))} ago`
       );
     };
-    
+
     updateSyncText();
     const interval = setInterval(updateSyncText, 60000); // Update every minute
-    
+
     return () => clearInterval(interval);
   }, [bankAccount.lastTransactionSync]);
-  
+
   return (
     <div className="flex items-center gap-2">
-      <div className={`h-2 w-2 rounded-full ${bankAccount.lastTransactionSync ? 'bg-green-500' : 'bg-amber-500'}`} />
+      <div
+        className={`h-2 w-2 rounded-full ${bankAccount.lastTransactionSync ? 'bg-green-500' : 'bg-amber-500'}`}
+      />
       <span className="text-sm text-gray-600">{lastSyncText}</span>
     </div>
   );
@@ -1911,6 +1921,7 @@ The transaction processing is handled by the `upsertTransactionsJob` we defined 
 5. Triggers notifications for new transactions
 
 This job is triggered:
+
 - After initial account setup
 - On a regular schedule (every few hours)
 - When a user manually requests a sync

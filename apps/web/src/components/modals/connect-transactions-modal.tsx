@@ -21,7 +21,7 @@ import { LogEvents } from '@v1/analytics/events';
 import { Skeleton } from '../ui/skeleton';
 import { createPlaidLinkTokenAction } from '@/actions/institution/create-link';
 import { exchangePublicTokenAction } from '@/actions/institution/exchange-public-token';
-import { getInstitutions } from '@/actions/institution/get-institution';
+import { getInstitutionsAction } from '@/actions/institution/get-institution';
 import { track } from '@v1/analytics/client';
 import { useConnectParams } from '@/lib/hooks/use-connect-params';
 import { usePlaidLink } from 'react-plaid-link';
@@ -274,10 +274,14 @@ function SearchResults({
  *
  * @property countryCode - Initial country code to use for institution search
  * @property userId - ID of the current user
+ * @property _isOpenOverride - Optional prop to override the default open state behavior
+ * @property _onCloseOverride - Optional prop to override the default close behavior
  */
 type ConnectTransactionsModalProps = {
     countryCode: string;
     userId: string;
+    _isOpenOverride?: boolean;
+    _onCloseOverride?: () => void;
 };
 
 /**
@@ -294,6 +298,8 @@ type ConnectTransactionsModalProps = {
 export function ConnectTransactionsModal({
     countryCode: initialCountryCode,
     userId,
+    _isOpenOverride,
+    _onCloseOverride,
 }: ConnectTransactionsModalProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
@@ -378,11 +384,9 @@ export function ConnectTransactionsModal({
             {
                 step: null,
                 countryCode: null,
-                q: null,
                 ref: null,
             },
             {
-                // NOTE: Rerender so the overview modal is visible
                 shallow: false,
             }
         );
@@ -396,10 +400,15 @@ export function ConnectTransactionsModal({
     async function fetchData(query?: string) {
         try {
             setLoading(true);
-            const { data } = await getInstitutions({ countryCode, query });
+            const result = await getInstitutionsAction({ countryCode, query });
             setLoading(false);
 
-            setResults(data);
+            // Ensure we're accessing the data array correctly
+            if (result && 'data' in result && Array.isArray(result.data)) {
+                setResults(result.data);
+            } else {
+                setResults([]);
+            }
         } catch {
             setLoading(false);
             setResults([]);
@@ -443,9 +452,9 @@ export function ConnectTransactionsModal({
     }, [isOpen, countryCode]);
 
     return (
-        <Dialog open={isOpen} onOpenChange={handleOnClose}>
-            <DialogContent>
-                <div className="p-4">
+        <Dialog open={_isOpenOverride || isOpen} onOpenChange={_onCloseOverride || handleOnClose}>
+            <DialogContent className='md:min-w-[60%] md:min-h-[70%]'>
+                <div className="p-[5%]">
                     <DialogHeader>
                         <DialogTitle>Connect bank account</DialogTitle>
 

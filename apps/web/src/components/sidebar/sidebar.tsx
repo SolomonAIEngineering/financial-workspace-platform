@@ -1,17 +1,3 @@
-import React from 'react';
-
-import { cn } from '@udecode/cn';
-import { HouseIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-
-import { useSession } from '@/components/auth/useSession';
-import { useIsDesktop } from '@/components/providers/tailwind-provider';
-import { SearchStore } from '@/components/search/SearchStore';
-import { useToggleLeftPanel } from '@/hooks/useResizablePanel';
-import { routes } from '@/lib/navigation/routes';
-import { useMounted } from '@/registry/default/hooks/use-mounted';
-import { Button } from '@/registry/default/potion-ui/button';
 import {
   Popover,
   PopoverContent,
@@ -19,14 +5,28 @@ import {
 } from '@/registry/default/potion-ui/popover';
 import { api, useTRPC } from '@/trpc/react';
 
-import { useAuthGuard } from '../auth/useAuthGuard';
-import { FeedbackForm } from '../editor/feedback-form';
-import { pushModal } from '../modals';
-import { Icons } from '../ui/icons';
+import { Button } from '@/registry/default/potion-ui/button';
+import { ConnectTransactionsButton } from '../bank-connection/connect-transactions-button';
+import { ConnectTransactionsWrapper } from '../bank-connection/connect-transactions-wrapper';
 import { DocumentList } from './document-list';
+import { FeedbackForm } from '../editor/feedback-form';
+import { HouseIcon } from 'lucide-react';
+import { Icons } from '../ui/icons';
 import { NavItem } from './nav-item';
+import React from 'react';
+import { SearchStore } from '@/components/search/SearchStore';
 import { SidebarSwitcher } from './sidebar-switcher';
 import { TrashBox } from './trash-box';
+import { cn } from '@udecode/cn';
+import { pushModal } from '../modals';
+import { routes } from '@/lib/navigation/routes';
+import { toast } from 'sonner';
+import { useAuthGuard } from '../auth/useAuthGuard';
+import { useIsDesktop } from '@/components/providers/tailwind-provider';
+import { useMounted } from '@/registry/default/hooks/use-mounted';
+import { useRouter } from 'next/navigation';
+import { useSession } from '@/components/auth/useSession';
+import { useToggleLeftPanel } from '@/hooks/useResizablePanel';
 
 export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
   const session = useSession();
@@ -106,7 +106,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
           <div className="flex flex-col gap-0.5">
             <NavItem
               className="text-xs font-medium text-muted-foreground/90"
-              onClick={() => {}}
+              onClick={() => { }}
               label={session ? 'Private' : 'Draft'}
             >
               <Button
@@ -124,12 +124,29 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             </NavItem>
             <NavItem
               className="text-xs transition-colors"
-              onClick={() => {}}
+              onClick={() => { }}
               label="Feedback"
               icon={Icons.alertCircle}
               tooltip="Leave us some feedback"
             >
               <FeedbackForm />
+            </NavItem>
+            <NavItem
+              className="text-xs transition-colors"
+              onClick={() => { }}
+              label="Bank Account"
+              icon={Icons.chrome}
+            >
+              <ConnectTransactionsButton
+                userId={session?.userId ?? ''}
+                buttonProps={{
+                  variant: "secondary",
+                  size: "xs",
+                  className: cn(
+                    'h-6 gap-1 rounded-full px-2 text-xs'
+                  )
+                }}
+              />
             </NavItem>
 
             <DocumentList />
@@ -222,6 +239,13 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
           />
         </div>
       </div>
+
+      {/* 
+          NOTE: 
+            The modal wrapper component handles rendering the connect transaction modal and is required for the modal to work 
+            Please do not remove this component
+      */}
+      <ConnectTransactionsWrapper />
     </aside>
   );
 }

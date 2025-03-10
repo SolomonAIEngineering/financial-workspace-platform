@@ -1,5 +1,7 @@
+import { auth, isAuth } from '@/components/auth/rsc/auth';
+
 import { AIProvider } from '@/components/ai/ai-provider';
-import { ConnectTransactionsModal } from '@/components/modals/connect-transactions-modal';
+import { ConnectTransactionsProvider } from '@/components/bank-connection/connect-transactions-context';
 import { DocumentPlate } from '@/components/editor/providers/document-plate';
 import type { LayoutProps } from '@/lib/navigation/next-types';
 import { Main } from '@/app/(dynamic)/(main)/main';
@@ -9,10 +11,10 @@ import { PublicPlate } from '@/components/editor/providers/public-plate';
 import { RightPanelType } from '@/hooks/useResizablePanel';
 import { cookies } from 'next/headers';
 import { getCookie } from 'cookies-next/server';
-import { isAuth } from '@/components/auth/rsc/auth';
 
 export default async function MainLayout({ children }: LayoutProps) {
   const session = await isAuth();
+  const currentUser = await auth();
 
   const PlateProvider = session ? DocumentPlate : PublicPlate;
 
@@ -29,22 +31,22 @@ export default async function MainLayout({ children }: LayoutProps) {
     ? JSON.parse(rightPanelTypeCookie)
     : RightPanelType.comment;
 
+
   return (
     <div className="flex h-full min-h-dvh dark:bg-[#1F1F1F]">
       <PlateProvider>
         <AIProvider>
-          <MiniSidebar />
-          <Panels
-            initialLayout={initialLayout}
-            initialRightPanelType={initialRightPanelType}
-          >
-            <Main>{children}</Main>
-          </Panels>
+          <ConnectTransactionsProvider defaultUserId={currentUser?.user?.id}>
+            <MiniSidebar />
+            <Panels
+              initialLayout={initialLayout}
+              initialRightPanelType={initialRightPanelType}
+            >
+              <Main>{children}</Main>
+            </Panels>
+          </ConnectTransactionsProvider>
         </AIProvider>
       </PlateProvider>
-
-      {/* Bank connection modal */}
-      <ConnectTransactionsModal />
     </div>
   );
 }

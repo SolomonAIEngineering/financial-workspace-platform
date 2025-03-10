@@ -79,10 +79,10 @@ export function CountrySelector({
           className="w-full justify-between truncate bg-accent font-normal"
         >
           {value ? selected?.name : 'Select country'}
-          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-30" />
         </Button>
       </PopoverTrigger>
-      <PopoverContentWithoutPortal className="w-[225px] p-0">
+      <PopoverContentWithoutPortal className="w-[225px] p-0 rounded-2xl border-2 border-zinc-200">
         <Command>
           <CommandInput placeholder="Search country..." className="h-9 px-2" />
           <CommandEmpty>No country found.</CommandEmpty>
@@ -101,7 +101,7 @@ export function CountrySelector({
                 <CheckIcon
                   className={cn(
                     'ml-auto h-4 w-4',
-                    value === country.code ? 'opacity-100' : 'opacity-0'
+                    value === country.code ? 'opacity-30' : 'opacity-0'
                   )}
                 />
               </CommandItem>

@@ -2,12 +2,7 @@
 
 import { authActionClient } from '../safe-action';
 import { engine } from '@/lib/engine';
-import { z } from 'zod';
-
-/** Schema for validating the public token to be exchanged */
-export const exchangePublicTokenSchema = z.object({
-  publicToken: z.string(),
-});
+import { exchangePublicTokenSchema } from './schema';
 
 /**
  * Exchanges a Plaid public token for an access token
@@ -39,10 +34,7 @@ export const exchangePublicTokenAction = authActionClient
   .schema(exchangePublicTokenSchema)
   .action(async ({ ctx: { user }, parsedInput: { publicToken } }) => {
     try {
-      /**
-       * Call the engine API to exchange the public token for an
-       * access token
-       */
+      /** Call the engine API to exchange the public token for an access token */
       const { data } = await engine.auth.plaid.exchange({
         token: publicToken,
       });
@@ -50,8 +42,8 @@ export const exchangePublicTokenAction = authActionClient
       return data;
     } catch (error) {
       /**
-       * Error handling - Let next-safe-action handle the error
-       * formatting Client will receive { error: { message, ... } }
+       * Error handling - Let next-safe-action handle the error formatting
+       * Client will receive { error: { message, ... } }
        */
       console.error('Error exchanging public token:', error);
       throw error;
