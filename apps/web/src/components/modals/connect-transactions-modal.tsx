@@ -415,12 +415,39 @@ export function ConnectTransactionsModal({
         async function createLinkToken() {
             setIsCreatingToken(true);
             try {
+                // Check if we have a valid token in localStorage first
+                const storedTokenData = localStorage.getItem('plaidLinkToken');
+                if (storedTokenData) {
+                    const { token, expiration } = JSON.parse(storedTokenData);
+                    const now = new Date().getTime();
+
+                    // If token exists and hasn't expired (Plaid tokens expire after 4 hours)
+                    // We check with a 5-minute buffer to be safe
+                    if (token && expiration && now < expiration - 300000) {
+                        setPlaidToken(token);
+                        setIsCreatingToken(false);
+                        return;
+                    }
+                }
+
+                // If no valid token in localStorage, create a new one
                 const result = await createPlaidLinkTokenAction({
                     accessToken: null,
                 });
 
                 if (result?.data) {
                     setPlaidToken(result.data);
+
+                    // Store token in localStorage with expiration (4 hours from now)
+                    // Plaid tokens are valid for 4 hours, so we set expiration accordingly
+                    const expiration = new Date().getTime() + 4 * 60 * 60 * 1000;
+                    localStorage.setItem(
+                        'plaidLinkToken',
+                        JSON.stringify({
+                            token: result.data,
+                            expiration
+                        })
+                    );
                 }
             } catch (error) {
                 console.error('Error creating Plaid link token:', error);
@@ -503,12 +530,6 @@ export function ConnectTransactionsModal({
                         onClick={() => setParams({ step: 'import' })}
                     >
                         manual import
-                    </button> or <button
-                        type="button"
-                        className="font-medium text-primary underline underline-offset-2"
-                        onClick={() => router.push('/account/support')}
-                    >
-                        contact support
                     </button>
                 </div>
             </DialogContent>
