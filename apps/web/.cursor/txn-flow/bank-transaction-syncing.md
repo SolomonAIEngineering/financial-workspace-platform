@@ -1,6 +1,6 @@
 # Bank and Transaction Syncing Implementation Guide
 
-This guide provides a detailed explanation of how bank and transaction syncing is implemented in the Midday platform. It covers the background job architecture, syncing workflows, and includes code examples for implementing each component of the system.
+This guide provides a detailed explanation of how bank and transaction syncing is implemented in the Solomon AI platform. It covers the background job architecture, syncing workflows, and includes code examples for implementing each component of the system.
 
 ## Table of Contents
 
@@ -53,7 +53,7 @@ Each banking provider has unique characteristics that affect our sync implementa
 
 ## Architecture
 
-The bank syncing system is organized into a modular architecture within the Midday application. The core components are located in the following directory structure:
+The bank syncing system is organized into a modular architecture within the Solomon AI application. The core components are located in the following directory structure:
 
 ```
 apps/dashboard/jobs/
@@ -1121,7 +1121,7 @@ export const createLinkTokenJob = createJob<
           email: user.email,
           phone: user.phone,
         },
-        client_name: 'Midday Finance',
+        client_name: 'Solomon AI Finance',
         products: ['auth', 'transactions', 'investments', 'liabilities'],
         country_codes: ['US'],
         language: 'en',

@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
-
+import { AnimatePresence, motion } from 'framer-motion';
 // Import Hero Icons
 import {
   CalendarIcon,
@@ -21,16 +20,15 @@ import {
   TableCellsIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import { cn } from '@udecode/cn';
-import { AnimatePresence, motion } from 'framer-motion';
+import React, { useState } from 'react';
+
 import { BarChart2Icon } from 'lucide-react';
-import { useTheme } from 'next-themes';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
-
 import { Icons } from '../ui/icons';
+import Link from 'next/link';
+import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
+import { cn } from '@udecode/cn';
+import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 
 interface MiniSidebarItemProps {
   href: string;
@@ -66,12 +64,12 @@ const MiniSidebarItem = ({
           animate={
             active
               ? {
-                  boxShadow: [
-                    '0 0 0 rgba(var(--primary) / 0.2)',
-                    '0 0 12px rgba(var(--primary) / 0.3)',
-                    '0 0 0 rgba(var(--primary) / 0.2)',
-                  ],
-                }
+                boxShadow: [
+                  '0 0 0 rgba(var(--primary) / 0.2)',
+                  '0 0 12px rgba(var(--primary) / 0.3)',
+                  '0 0 0 rgba(var(--primary) / 0.2)',
+                ],
+              }
               : {}
           }
           transition={{
@@ -198,53 +196,53 @@ export function MiniSidebar() {
 
   const sidebarItems = useDemoItems
     ? demoItems.map((item) => ({
-        ...item,
-        isActive: pathname.includes(item.href),
-      }))
+      ...item,
+      isActive: pathname.includes(item.href),
+    }))
     : [
-        {
-          category: 'main',
-          href: '/dashboard',
-          icon: HomeIcon,
-          isActive: pathname.includes('/dashboard'),
-          tooltip: 'Workspace',
-        },
-        {
-          category: 'documents',
-          href: '/financial-overview',
-          icon: ChartBarSquareIcon,
-          isActive: pathname.includes('/financial-overview'),
-          tooltip: 'Financial Overview',
-        },
-        {
-          category: 'documents',
-          href: '/financial-analytics',
-          icon: CubeIcon,
-          isActive: pathname.includes('/financial-analytics'),
-          tooltip: 'Financial Analytics',
-        },
-        {
-          category: 'documents',
-          href: '/transactions',
-          icon: TableCellsIcon,
-          isActive: pathname.includes('/transactions'),
-          tooltip: 'Transactions',
-        },
-        {
-          category: 'documents',
-          href: '/invoices',
-          icon: CurrencyDollarIcon,
-          isActive: pathname.includes('/invoices'),
-          tooltip: 'invoices',
-        },
-        {
-          category: 'documents',
-          href: '/customers',
-          icon: UserGroupIcon,
-          isActive: pathname.includes('/customers'),
-          tooltip: 'customers',
-        },
-      ];
+      {
+        category: 'main',
+        href: '/dashboard',
+        icon: HomeIcon,
+        isActive: pathname.includes('/dashboard'),
+        tooltip: 'Workspace',
+      },
+      {
+        category: 'documents',
+        href: '/financial-overview',
+        icon: ChartBarSquareIcon,
+        isActive: pathname.includes('/financial-overview'),
+        tooltip: 'Financial Overview',
+      },
+      {
+        category: 'documents',
+        href: '/financial-analytics',
+        icon: CubeIcon,
+        isActive: pathname.includes('/financial-analytics'),
+        tooltip: 'Financial Analytics',
+      },
+      {
+        category: 'documents',
+        href: '/transactions',
+        icon: TableCellsIcon,
+        isActive: pathname.includes('/transactions'),
+        tooltip: 'Transactions',
+      },
+      {
+        category: 'documents',
+        href: '/invoices',
+        icon: CurrencyDollarIcon,
+        isActive: pathname.includes('/invoices'),
+        tooltip: 'invoices',
+      },
+      {
+        category: 'documents',
+        href: '/customers',
+        icon: UserGroupIcon,
+        isActive: pathname.includes('/customers'),
+        tooltip: 'customers',
+      },
+    ];
 
   const container = {
     hidden: { opacity: 0 },

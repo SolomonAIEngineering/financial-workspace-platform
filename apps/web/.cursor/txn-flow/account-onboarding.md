@@ -1,6 +1,6 @@
 # Account Onboarding and Bank Connection Guide
 
-This guide provides a comprehensive overview of implementing account onboarding and bank connection functionality in the Midday platform. It covers the components, workflows, and integration points needed to create a seamless banking connection experience.
+This guide provides a comprehensive overview of implementing account onboarding and bank connection functionality in the Solomon AI platform. It covers the components, workflows, and integration points needed to create a seamless banking connection experience.
 
 ## Table of Contents
 
@@ -141,7 +141,7 @@ const { open: openPlaid } = usePlaidLink({
   token: plaidToken,
   publicKey: '',
   env: process.env.NEXT_PUBLIC_PLAID_ENVIRONMENT!,
-  clientName: 'Midday',
+  clientName: 'Solomon AI',
   product: ['transactions'],
   onSuccess: async (public_token, metadata) => {
     const { access_token, item_id } = await exchangePublicToken(public_token)
@@ -208,7 +208,7 @@ export function ConnectTransactionsModal({
     token: plaidToken,
     publicKey: '',
     env: process.env.NEXT_PUBLIC_PLAID_ENVIRONMENT!,
-    clientName: 'Midday',
+    clientName: 'Solomon AI',
     product: ['transactions'],
     onSuccess: async (public_token, metadata) => {
       const { access_token, item_id } = await exchangePublicToken(public_token)

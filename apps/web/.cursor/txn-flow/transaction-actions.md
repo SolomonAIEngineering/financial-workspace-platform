@@ -1,6 +1,6 @@
-# Midday Actions Documentation
+# Solomon AI Actions Documentation
 
-This document provides detailed implementation guidance for the server actions in the Midday dashboard application.
+This document provides detailed implementation guidance for the server actions in the Solomon AI dashboard application.
 
 ## Core Implementation Pattern
 
@@ -81,7 +81,7 @@ Contains shared Zod schemas used across multiple actions for consistent validati
 
 Located in `apps/dashboard/src/actions/transactions/`
 
-These actions handle transaction-related operations in the Midday dashboard. Each action follows the standard next-safe-action pattern but contains specialized business logic for handling financial transaction data.
+These actions handle transaction-related operations in the Solomon AI dashboard. Each action follows the standard next-safe-action pattern but contains specialized business logic for handling financial transaction data.
 
 #### 1. `get-transactions-from-layout.ts`
 
