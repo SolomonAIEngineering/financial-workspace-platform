@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, BarChart3, Building2, Check, Loader2, Search } from 'lucide-react';
+import { AlertCircle, Building2, Check, Loader2, Search } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -223,7 +223,7 @@ function NoResultsFound({ onImport, onContactUs }: NoResultsFoundProps) {
  */
 type SearchResultsProps = {
     loading: boolean;
-    results: Array<APIInstitutions.Institution>;
+    results: APIInstitutions.Institution[];
     openPlaid: any;
     onSetStepToNull: () => void;
     onImport: () => void;
@@ -334,7 +334,7 @@ export function ConnectTransactionsModal({
                 const res = await exchangePublicTokenAction({
                     publicToken: public_token,
                 });
-                setParams({
+                await setParams({
                     step: 'account',
                     provider: 'plaid',
                     token: res?.data?.access_token,
@@ -350,8 +350,8 @@ export function ConnectTransactionsModal({
                 console.error('Error in exchangePublicToken:', error);
             }
         },
-        onExit: () => {
-            setParams({ step: 'connect' });
+        onExit: async () => {
+            await setParams({ step: 'connect' });
 
             track({
                 event: LogEvents.ConnectBankCanceled.name,
@@ -364,8 +364,8 @@ export function ConnectTransactionsModal({
     /**
      * Handles the dialog close event
      */
-    const handleOnClose = () => {
-        setParams(
+    const handleOnClose = async () => {
+        await setParams(
             {
                 step: null,
                 countryCode: null,
@@ -402,12 +402,15 @@ export function ConnectTransactionsModal({
             fetchData();
         }
     }, [isOpen, countryCode]);
-
     // Fetch data when search term changes
     useEffect(() => {
-        if (isOpen) {
-            fetchData(debouncedSearchTerm ?? undefined);
-        }
+        const loadData = async () => {
+            if (isOpen) {
+                await fetchData(debouncedSearchTerm ?? undefined);
+            }
+        };
+
+        loadData();
     }, [debouncedSearchTerm, isOpen]);
 
     // Create Plaid link token when modal opens in supported countries

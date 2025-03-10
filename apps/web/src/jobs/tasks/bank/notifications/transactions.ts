@@ -191,12 +191,12 @@ export const transactionNotificationsJob = client.defineJob({
         .slice(0, 5); // Top 5
 
       const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
-      const accountSummaries = (Object.values(accountTransactions) as Array<{
+      const accountSummaries = (Object.values(accountTransactions) as {
         accountMask: string;
         accountName: string;
         total: number;
         transactions: any[];
-      }>).map(
+      }[]).map(
         (acct) => ({
           mask: acct.accountMask,
           name: acct.accountName,

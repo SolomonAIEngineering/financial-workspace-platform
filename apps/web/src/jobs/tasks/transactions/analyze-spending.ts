@@ -1,4 +1,4 @@
-import { endOfMonth, format, startOfMonth, subMonths } from 'date-fns';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
 
 import { TRANSACTION_JOBS } from '../constants';
 import { client } from '../../client';

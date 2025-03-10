@@ -24,8 +24,9 @@ export function InstitutionDetails({ provider, children }: Props) {
       case 'teller': {
         return 'With Teller we can connect instantly to more than 5,000 financial institutions in the US.';
       }
-      default:
-        break;
+      default: {
+        return 'Unknown provider';
+      }
     }
   };
 

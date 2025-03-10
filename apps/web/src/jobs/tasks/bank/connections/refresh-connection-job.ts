@@ -1,4 +1,5 @@
 import { BANK_JOBS } from '../../constants';
+import { BankConnectionStatus } from '@/server/types/index';
 import { client } from '../../../client';
 import { eventTrigger } from '@trigger.dev/sdk';
 import { prisma } from '@/server/db';
@@ -85,8 +86,8 @@ export const refreshConnectionJob = client.defineJob({
       await io.runTask('update-connection-status-refreshing', async () => {
         await prisma.bankConnection.update({
           data: {
-            status: 'REFRESHING',
-            lastRefreshAttempt: new Date(),
+            status: 'PENDING',
+            lastSyncedAt: new Date(),
           },
           where: { id: connectionId },
         });
@@ -151,11 +152,10 @@ export const refreshConnectionJob = client.defineJob({
         await prisma.bankConnection.update({
           data: {
             accessToken: newAccessToken,
-            refreshToken: newRefreshToken,
             expiresAt: new Date(expiresAt),
             status: 'ACTIVE',
-            lastRefreshSuccess: new Date(),
-            error: null,
+            lastSyncedAt: new Date(),
+            errorMessage: null,
           },
           where: { id: connectionId },
         });
@@ -203,9 +203,9 @@ export const refreshConnectionJob = client.defineJob({
       await io.runTask('update-connection-with-error', async () => {
         await prisma.bankConnection.update({
           data: {
-            status,
-            error: errorMessage,
-            lastRefreshAttempt: new Date(),
+            status: status as BankConnectionStatus,
+            errorMessage: errorMessage,
+            lastSyncedAt: new Date(),
           },
           where: { id: connectionId },
         });

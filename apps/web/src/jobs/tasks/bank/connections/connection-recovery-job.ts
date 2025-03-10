@@ -106,8 +106,8 @@ export const connectionRecoveryJob = client.defineJob({
           }
         );
 
-        status.valid = !itemDetails.error;
-        status.error = itemDetails.error;
+        status.valid = itemDetails.status === 'HEALTHY';
+        status.error = itemDetails.status;
       } else if (provider === 'teller') {
         // Simulate Teller connection check
         status = await io.runTask('check-teller-connection', async () => {
@@ -130,8 +130,7 @@ export const connectionRecoveryJob = client.defineJob({
           await prisma.bankConnection.update({
             data: {
               status: 'ACTIVE',
-              error: null,
-              errorRetries: 0,
+              errorMessage: null,
             },
             where: { id: connectionId },
           });
@@ -168,8 +167,7 @@ export const connectionRecoveryJob = client.defineJob({
           await prisma.bankConnection.update({
             data: {
               status: 'ERROR',
-              error: status.error || 'Connection validation failed',
-              errorRetries: newRetryCount,
+              errorMessage: status.error || 'Connection validation failed',
             },
             where: { id: connectionId },
           });
@@ -221,7 +219,7 @@ export const connectionRecoveryJob = client.defineJob({
         await client.sendEvent({
           name: 'connection-notification',
           payload: {
-            userId: connection.userId,
+            userId: connection?.userId,
             type: 'connection_failed',
             title: 'Bank Connection Failed',
             message:

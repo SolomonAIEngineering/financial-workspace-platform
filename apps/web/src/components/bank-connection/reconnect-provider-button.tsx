@@ -35,9 +35,9 @@ export function ReconnectProviderButton({
     return null;
   }
 
-  const handleReconnect = () => {
+  const handleReconnect = async () => {
     // Set URL parameters to open the connection modal with the right provider
-    setParams({
+    await setParams({
       step: 'connect',
       provider: connection.oauthSupported ? 'plaid' : 'teller',
       institution_id: connection.institutionId,

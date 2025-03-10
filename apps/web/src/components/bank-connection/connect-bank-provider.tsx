@@ -34,7 +34,7 @@ export function ConnectBankProvider({
     institutionId: string;
   }) => {
     // In a real implementation, this would call an API endpoint
-    console.log('Updating institution usage:', institutionId);
+    console.info('Updating institution usage:', institutionId);
     return { success: true };
   };
 
@@ -44,21 +44,22 @@ export function ConnectBankProvider({
 
   // Render different provider components based on the provider type
   switch (provider) {
-    case 'teller':
+    case 'teller': {
       return (
         <TellerConnect
           id={id}
           onSelect={async () => {
             // NOTE: Wait for Teller sdk to be configured
-            setTimeout(() => {
-              setParams({ step: null });
+            setTimeout(async () => {
+              await setParams({ step: null });
             }, 950);
 
             await updateUsage();
           }}
         />
       );
-    case 'gocardless':
+    }
+    case 'gocardless': {
       return (
         <GoCardLessConnect
           id={id}
@@ -68,7 +69,8 @@ export function ConnectBankProvider({
           }}
         />
       );
-    case 'plaid':
+    }
+    case 'plaid': {
       return (
         <BankConnectButton
           onClick={async () => {
@@ -77,8 +79,10 @@ export function ConnectBankProvider({
           }}
         />
       );
-    default:
+    }
+    default: {
       return null;
+    }
   }
 }
 
@@ -95,7 +99,7 @@ function TellerConnect({ id, onSelect }: { id: string; onSelect: () => void }) {
 
     try {
       // In a real implementation, this would initialize the Teller SDK
-      console.log('Connecting to Teller for institution:', id);
+      console.info('Connecting to Teller for institution:', id);
 
       // Simulate connection delay
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -148,8 +152,8 @@ function GoCardLessConnect({
 
     try {
       // In a real implementation, this would initialize the GoCardless SDK
-      console.log('Connecting to GoCardless for institution:', id);
-      console.log('Available history:', availableHistory, 'months');
+      console.info('Connecting to GoCardless for institution:', id);
+      console.info('Available history:', availableHistory, 'months');
 
       // Simulate connection delay
       await new Promise((resolve) => setTimeout(resolve, 1000));

@@ -19,16 +19,16 @@ export function ConnectTransactionsWrapper() {
     // to 'connect' to ensure the internal modal logic works correctly
     if (isOpen) {
         // Use setTimeout to avoid React state update warnings
-        setTimeout(() => {
-            setParams({ step: 'connect', countryCode });
+        setTimeout(async () => {
+            await setParams({ step: 'connect', countryCode });
         }, 0);
     }
 
     // Custom handleClose to call the closeModal function from context
     // and also reset the URL parameters
-    const handleClose = () => {
+    const handleClose = async () => {
         closeModal();
-        setParams({
+        await setParams({
             step: null,
             countryCode: null,
             q: null,

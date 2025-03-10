@@ -7,15 +7,10 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Bell, Eye, EyeOff, RefreshCw, Save } from 'lucide-react';
-import { toast } from 'sonner';
 import * as z from 'zod';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Bell, Eye, EyeOff, RefreshCw, Save } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   Form,
@@ -33,8 +28,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
+import { useEffect, useState } from 'react';
+
 import { Button } from '@/registry/default/potion-ui/button';
+import { Switch } from '@/components/ui/switch';
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // Define the form schema
 const bankSettingsSchema = z.object({
@@ -95,7 +95,7 @@ export function BankSettings({ userId }: BankSettingsProps) {
   const saveSettingsMutation = {
     mutate: (values: BankSettingsFormValues) => {
       // Mock implementation
-      console.log('Saving settings:', values);
+      console.info('Saving settings:', values);
       toast.success('Settings saved successfully');
       setIsLoading(false);
     },
