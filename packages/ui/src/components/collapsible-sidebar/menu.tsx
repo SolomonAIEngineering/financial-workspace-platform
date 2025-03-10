@@ -1,29 +1,36 @@
 "use client";
 
+import * as React from "react";
+
 import { Ellipsis, LogOut } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Group } from "../../types/menu";
-import { cn } from "../../utils/cn";
-import { Button } from "../button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "../tooltip";
-import { CollapseMenuButton } from "./collapse-menu-button";
 
-import * as React from "react";
+import { Button } from "../button";
+import { CollapseMenuButton } from "./collapse-menu-button";
+import { Group } from "../../types/menu";
+import Link from "next/link";
 import { ScrollArea } from "../scroll-area";
+import { cn } from "../../utils/cn";
+import { usePathname } from "next/navigation";
 
 interface MenuProps {
   isOpen: boolean | undefined;
   menu: Group<string>[];
+  onMenuItemClick: (href: string) => void;
+  className?: string;
 }
 
 export function Menu({ isOpen, menu }: MenuProps) {
   const pathname = usePathname();
+
+  function onMenuItemClick(href: string): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
@@ -98,6 +105,7 @@ export function Menu({ isOpen, menu }: MenuProps) {
                         active={active}
                         submenus={submenus}
                         isOpen={isOpen}
+                        onClick={() => onMenuItemClick(href)}
                       />
                     </div>
                   ),
@@ -109,7 +117,7 @@ export function Menu({ isOpen, menu }: MenuProps) {
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={() => {}}
+                    onClick={() => { }}
                     variant="outline"
                     className="mt-5 h-10 w-full justify-center"
                   >

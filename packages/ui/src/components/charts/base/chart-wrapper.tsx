@@ -8,7 +8,7 @@ import { Button } from "../../button";
 /**
  * Props for the ChartWrapper component.
  */
-interface ChartWrapperProps {
+export interface ChartWrapperProps {
   /** The content to be wrapped and revealed */
   children: ReactNode;
   /** Text to display on the button when closed */
@@ -88,9 +88,8 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       </Button>
       {/* Wrapper for the revealing content */}
       <div
-        className={`mt-2 overflow-hidden transition-all ease-in-out ${
-          isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
-        }`}
+        className={`mt-2 overflow-hidden transition-all ease-in-out ${isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+          }`}
         style={{ transitionDuration: `${animationDuration}ms` }}
       >
         {children}

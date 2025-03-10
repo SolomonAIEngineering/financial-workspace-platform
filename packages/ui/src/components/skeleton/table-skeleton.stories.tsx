@@ -3,7 +3,7 @@ import TableSkeleton from "./table-skeleton";
 
 const meta: Meta<typeof TableSkeleton> = {
   component: TableSkeleton,
-  tags: ["autodocs"],
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
 };
 
 export default meta;

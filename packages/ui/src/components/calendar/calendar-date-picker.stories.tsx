@@ -7,7 +7,6 @@ import { addDays } from "date-fns";
 
 const meta: Meta<typeof CalendarDatePicker> = {
   component: CalendarDatePicker,
-  tags: ["autodocs"],
   argTypes: {
     id: { control: "text" },
     className: { control: "text" },

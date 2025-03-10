@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import * as CalendarPicker from "./calendar-picker.stories";
+import CalendarPicker from "./calendar-picker.stories";
 
 <Meta of={CalendarPicker} />
 
@@ -10,7 +10,7 @@ The `CalendarPicker` is a form-based date range picker component that wraps the 
 
 ## Component Props
 
-<Canvas of={CalendarPicker.Default} />
+<Canvas of={CalendarPicker} />
 
 <Controls />
 
@@ -24,7 +24,7 @@ Here's a basic usage example of the `CalendarPicker`:
     <CalendarPicker 
       initialFrom={new Date(2023, 0, 1)}
       initialTo={new Date()}
-      onDateChange={(from, to) => console.log("Date range changed:", from, to)}
+      onDateChange={(from, to) => console.info("Date range changed:", from, to)}
     />
   </Story>
 </Canvas>

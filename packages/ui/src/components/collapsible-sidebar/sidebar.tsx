@@ -1,19 +1,21 @@
-import { PanelsTopLeft } from "lucide-react";
-import Link from "next/link";
 import * as React from "react";
+
+import { Button } from "../button";
+import { Group } from "../../types/menu";
+import Link from "next/link";
+import { Menu } from "./menu";
+import { PanelsTopLeft } from "lucide-react";
+import { SidebarToggle } from "./sidebar-toggle";
+import { cn } from "../../utils/cn";
 import { useSidebarToggle } from "../../hooks/use-sidebar-toggle";
 import { useStore } from "../../hooks/use-store";
-import { Group } from "../../types/menu";
-import { cn } from "../../utils/cn";
-import { Button } from "../button";
-import { Menu } from "./menu";
-import { SidebarToggle } from "./sidebar-toggle";
 
 export interface SidebarProps {
   menu: Group<string>[];
+  className?: string;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ menu }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ menu, className }) => {
   const sidebar = useStore(useSidebarToggle, (state) => state);
 
   if (!sidebar) return null;
@@ -49,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ menu }) => {
             </h1>
           </Link>
         </Button>
-        <Menu isOpen={sidebar?.isOpen} menu={menu} />
+        <Menu isOpen={sidebar?.isOpen} menu={menu} onMenuItemClick={() => { }} />
       </div>
     </aside>
   );

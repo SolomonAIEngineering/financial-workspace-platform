@@ -1,0 +1,72 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import FinancialPortalView from "./financial-portal-view.stories";
+
+<Meta of={FinancialPortalView} />
+
+# FinancialPortalView Component
+
+The `FinancialPortalView` component provides a comprehensive dashboard for viewing and managing financial information. It aggregates data from various financial accounts and displays them in a unified interface with summaries, charts, and actionable insights. This component serves as the main entry point for users to monitor their overall financial health.
+
+## Component Props
+
+<Canvas of={FinancialPortalView} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `FinancialPortalView`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <FinancialPortalView
+      accounts={[
+        {
+          id: "acc-123",
+          name: "Main Checking",
+          type: "CHECKING",
+          balance: 12450.75,
+          currency: "USD",
+          institution: {
+            name: "Chase Bank",
+            logo: "/logos/chase.png"
+          }
+        },
+        {
+          id: "acc-456",
+          name: "Business Savings",
+          type: "SAVINGS",
+          balance: 45250.00,
+          currency: "USD",
+          institution: {
+            name: "Bank of America",
+            logo: "/logos/bofa.png"
+          }
+        }
+      ]}
+      transactions={[
+        {
+          id: "tx-1",
+          date: "2023-05-15",
+          description: "Office Supplies",
+          amount: -245.50,
+          category: "Office Expenses"
+        },
+        {
+          id: "tx-2",
+          date: "2023-05-14",
+          description: "Client Payment",
+          amount: 1200.00,
+          category: "Income"
+        }
+      ]}
+      onAccountSelect={(accountId) => console.info("Selected account:", accountId)}
+      onViewAllTransactions={() => console.info("View all transactions")}
+      onAddAccount={() => console.info("Add new account")}
+      loading={false}
+    />
+  </Story>
+</Canvas>
+``` 

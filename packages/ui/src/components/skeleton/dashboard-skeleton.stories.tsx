@@ -3,7 +3,7 @@ import { DashboardSkeleton } from "./dashboard-skeleton";
 
 const meta: Meta<typeof DashboardSkeleton> = {
   component: DashboardSkeleton,
-  tags: ["autodocs"],
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
 };
 
 export default meta;

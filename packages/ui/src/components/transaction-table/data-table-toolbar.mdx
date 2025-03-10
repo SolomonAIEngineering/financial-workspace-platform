@@ -1,0 +1,48 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import DataTableToolbar from "./data-table-toolbar.stories";
+
+<Meta of={DataTableToolbar} />
+
+# DataTableToolbar Component
+
+The `DataTableToolbar` component provides a comprehensive control bar for data tables. It includes functionality for global search, filter management, column visibility, and table actions like export or bulk operations. The toolbar adapts to the current state of the table, showing relevant controls and feedback based on the active filters and selections.
+
+## Component Props
+
+<Canvas of={DataTableToolbar} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `DataTableToolbar`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <DataTableToolbar
+      table={{
+        getSelectedRowModel: () => ({ rows: [] }),
+        getAllColumns: () => [
+          { id: "date", getCanHide: () => true, getIsVisible: () => true, toggleVisibility: () => {} },
+          { id: "description", getCanHide: () => true, getIsVisible: () => true, toggleVisibility: () => {} },
+          { id: "amount", getCanHide: () => true, getIsVisible: () => true, toggleVisibility: () => {} },
+          { id: "category", getCanHide: () => true, getIsVisible: () => true, toggleVisibility: () => {} }
+        ],
+        getState: () => ({ columnFilters: [], globalFilter: "" }),
+        resetColumnFilters: () => console.info("Reset filters"),
+        setGlobalFilter: (value) => console.info("Set global filter:", value)
+      }}
+      filterableColumns={[
+        { id: "date", title: "Date", options: [] },
+        { id: "category", title: "Category", options: ["Income", "Expense", "Transfer"] },
+        { id: "amount", title: "Amount", options: [] }
+      ]}
+      searchPlaceholder="Search transactions..."
+      deleteRowsAction={(rows) => console.info("Delete rows:", rows)}
+      exportAction={() => console.info("Export data")}
+    />
+  </Story>
+</Canvas>
+``` 

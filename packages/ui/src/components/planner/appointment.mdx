@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import * as Appointment from "./appointment.stories";
+import Appointment from "./appointment.stories";
 
 <Meta of={Appointment} />
 
@@ -10,7 +10,7 @@ The `Appointment` component visualizes a single appointment or event within the 
 
 ## Component Props
 
-<Canvas of={Appointment.Default} />
+<Canvas of={Appointment} />
 
 <Controls />
 
@@ -32,8 +32,8 @@ Here's a basic usage example of the `Appointment`:
           description: "Initial project planning and team introductions"
         }}
         selected={false}
-        onClick={() => console.log("Appointment clicked")}
-        onDoubleClick={() => console.log("Appointment double-clicked")}
+        onClick={() => console.info("Appointment clicked")}
+        onDoubleClick={() => console.info("Appointment double-clicked")}
         draggable={true}
         resizable={true}
         style={{ position: "absolute", top: 0, left: 0, right: 0 }}

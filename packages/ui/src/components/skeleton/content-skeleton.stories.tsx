@@ -3,7 +3,7 @@ import { ContentPlaceholder } from "./content-skeleton";
 
 const meta: Meta<typeof ContentPlaceholder> = {
   component: ContentPlaceholder,
-  tags: ["autodocs"],
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
 };
 
 export default meta;

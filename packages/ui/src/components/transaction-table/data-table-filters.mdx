@@ -1,0 +1,48 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import DataTableFilters from "./data-table-filters.stories";
+
+<Meta of={DataTableFilters} />
+
+# DataTableFilters Component
+
+The `DataTableFilters` component provides a user interface for filtering data in a table. It offers various filter types like text, date range, numeric range, and select filters. The component makes it easy for users to narrow down large datasets and find specific information quickly and efficiently.
+
+## Component Props
+
+<Canvas of={DataTableFilters} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `DataTableFilters`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <DataTableFilters
+      table={{
+        getColumn: (id) => ({
+          id,
+          getFilterValue: () => undefined,
+          setFilterValue: (value) => console.info(`Set filter ${id}:`, value)
+        }),
+        getAllColumns: () => [
+          { id: "date", getFacetedUniqueValues: () => new Map() },
+          { id: "amount", getFacetedUniqueValues: () => new Map() },
+          { id: "category", getFacetedUniqueValues: () => new Map() },
+          { id: "status", getFacetedUniqueValues: () => new Map() }
+        ]
+      }}
+      filters={[
+        { id: "date", type: "date" },
+        { id: "amount", type: "number" },
+        { id: "category", type: "select" },
+        { id: "status", type: "select" }
+      ]}
+      className="p-4 border rounded"
+    />
+  </Story>
+</Canvas>
+``` 

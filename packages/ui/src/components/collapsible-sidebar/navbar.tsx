@@ -1,16 +1,17 @@
 import * as React from "react";
+
 import { Group } from "../../types/menu";
+import { ModeToggle } from "./mode-toggle";
 import { SheetMenu } from "./sheet-menu";
 import { UserNav } from "./user-nav";
-
-import { ModeToggle } from "./mode-toggle";
 
 interface NavbarProps {
   title: string;
   menu: Group<string>[];
+  children?: React.ReactNode;
 }
 
-export function Navbar({ title, menu }: NavbarProps) {
+export function Navbar({ title, menu, children }: NavbarProps) {
   return (
     <header className="sticky top-0 z-10 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">
       <div className="mx-4 flex h-14 items-center sm:mx-8">
@@ -21,6 +22,7 @@ export function Navbar({ title, menu }: NavbarProps) {
         <div className="flex flex-1 items-center justify-end space-x-2">
           <ModeToggle />
           <UserNav />
+          {children}
         </div>
       </div>
     </header>

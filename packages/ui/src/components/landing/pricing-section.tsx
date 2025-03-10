@@ -111,7 +111,7 @@ const demoPrices = [
  */
 export const PricingSection: React.FC<{
   pricingPlans: PricingPlan[];
-}> = () => {
+}> = ({ pricingPlans }) => {
   const [interval, setInterval] = useState<Interval>("month");
   const [isLoading, setIsLoading] = useState(false);
   const [id, setId] = useState<string | null>(null);

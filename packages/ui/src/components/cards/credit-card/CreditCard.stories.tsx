@@ -9,7 +9,7 @@ const meta: Meta<typeof CreditCard> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     cardType: {
       control: {

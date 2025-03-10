@@ -1,0 +1,43 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import LinkedAccountCard from "./linked-account-card.stories";
+
+<Meta of={LinkedAccountCard} />
+
+# LinkedAccountCard Component
+
+The `LinkedAccountCard` component provides a card interface for displaying information about a financial account linked to the platform through an API connection. It shows the institution name, account type, connection status, and last sync information. This component is used to help users manage their connected financial accounts.
+
+## Component Props
+
+<Canvas of={LinkedAccountCard} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `LinkedAccountCard`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <LinkedAccountCard
+      account={{
+        id: "link-123",
+        institutionName: "Chase Bank",
+        institutionLogo: "/logos/chase.png",
+        accountType: "Banking",
+        connectionStatus: "connected",
+        lastSynced: "2023-05-15T14:30:00Z",
+        numberOfAccounts: 3,
+        totalBalance: 58500.25,
+        currency: "USD"
+      }}
+      onViewDetails={() => console.info("View account details")}
+      onRefresh={() => console.info("Refresh account data")}
+      onDisconnect={() => console.info("Disconnect account")}
+      loading={false}
+    />
+  </Story>
+</Canvas>
+``` 

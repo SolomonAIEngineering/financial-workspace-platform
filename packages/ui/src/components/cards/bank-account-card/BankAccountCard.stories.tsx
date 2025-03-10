@@ -4,7 +4,7 @@ import { BankAccountCard } from "./BankAccountCard";
 
 const meta: Meta<typeof BankAccountCard> = {
   component: BankAccountCard,
-  tags: ["autodocs"],
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     bankAccount: {
       control: {

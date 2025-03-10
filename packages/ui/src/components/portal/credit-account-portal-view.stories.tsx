@@ -7,7 +7,7 @@ const meta: Meta<typeof CreditAccountsOverviewSummary> = {
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     financialProfile: {
       control: {

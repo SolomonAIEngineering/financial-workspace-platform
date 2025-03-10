@@ -41,6 +41,9 @@ interface CollapseMenuButtonProps {
   active: boolean;
   submenus: Submenu[];
   isOpen: boolean | undefined;
+  onClick: () => void;
+  className?: string;
+  collapsed?: boolean;
 }
 
 export function CollapseMenuButton({

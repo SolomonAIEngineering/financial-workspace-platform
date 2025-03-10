@@ -32,62 +32,62 @@ export const MonthlyMerchantGrowthRateChart: React.FC<
   merchants,
   selectedSpendingPeriod,
 }) => {
-  const [selectedMerchant, setSelectedMerchant] = useState<string>(
-    merchants[0] || "",
-  );
-
-  const allChartData = useMemo(() => {
-    return MerchantFinancialMetricsConverter.calculateMonthlyGrowthRate(
-      records,
-      selectedSpendingPeriod,
+    const [selectedMerchant, setSelectedMerchant] = useState<string>(
+      merchants[0] || "",
     );
-  }, [records, selectedSpendingPeriod]);
 
-  const chartData = useMemo(() => {
-    const data = allChartData[selectedMerchant] || [];
+    const allChartData = useMemo(() => {
+      return MerchantFinancialMetricsConverter.calculateMonthlyGrowthRate(
+        records,
+        selectedSpendingPeriod,
+      );
+    }, [records, selectedSpendingPeriod]);
 
-    // convert to scatter data points
-    return data.map(
-      ({ month, growthRate }) =>
-        ({ date: month, value: growthRate }) as ChartDataPoint,
+    const chartData = useMemo(() => {
+      const data = allChartData[selectedMerchant] || [];
+
+      // convert to scatter data points
+      return data.map(
+        ({ month, growthRate }) =>
+          ({ date: month, value: growthRate }) as ChartDataPoint,
+      );
+    }, [allChartData, selectedMerchant]);
+
+    useEffect(() => {
+      console.info("Component re-rendered. Selected merchant:", selectedMerchant);
+      console.info("Chart data:", chartData);
+    }, [selectedMerchant, chartData]);
+
+    return (
+      <div>
+        <div className="flex flex-1 justify-between">
+          <p className="flex flex-1 gap-2 p-[3%] text-lg font-bold md:text-2xl">
+            <HiSquare3Stack3D className="inline-block h-6 w-6 align-middle" />
+            {selectedMerchant}
+          </p>
+          <Select onValueChange={setSelectedMerchant} value={selectedMerchant}>
+            <SelectTrigger className="my-[2%] w-fit">
+              <SelectValue placeholder="Select a merchant" />
+            </SelectTrigger>
+            <SelectContent>
+              {merchants.map((merchant) => (
+                <SelectItem key={merchant} value={merchant}>
+                  {merchant}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="py-[2%]">
+          <AreaChart
+            currency={currency}
+            data={chartData}
+            height={height}
+            locale={locale}
+            enableAssistantMode={enableAssistantMode}
+          />
+        </div>
+      </div>
     );
-  }, [allChartData, selectedMerchant]);
-
-  useEffect(() => {
-    console.info("Component re-rendered. Selected merchant:", selectedMerchant);
-    console.info("Chart data:", chartData);
-  }, [selectedMerchant, chartData]);
-
-  return (
-    <div>
-      <div className="flex flex-1 justify-between">
-        <p className="flex flex-1 gap-2 p-[3%] text-lg font-bold md:text-2xl">
-          <HiSquare3Stack3D className="inline-block h-6 w-6 align-middle" />
-          {selectedMerchant}
-        </p>
-        <Select onValueChange={setSelectedMerchant} value={selectedMerchant}>
-          <SelectTrigger className="my-[2%] w-fit">
-            <SelectValue placeholder="Select a merchant" />
-          </SelectTrigger>
-          <SelectContent>
-            {merchants.map((merchant) => (
-              <SelectItem key={merchant} value={merchant}>
-                {merchant}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="py-[2%]">
-        <AreaChart
-          currency={currency}
-          data={chartData}
-          height={height}
-          locale={locale}
-          enableAssistantMode={enableAssistantMode}
-        />
-      </div>
-    </div>
-  );
-};
+  };

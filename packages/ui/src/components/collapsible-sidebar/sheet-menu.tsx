@@ -1,11 +1,12 @@
-import { MenuIcon, PanelsTopLeft } from "lucide-react";
-import Link from "next/link";
-import { Group } from "../../types/menu";
-import { Menu } from "./menu";
-
 import * as React from "react";
-import { Button } from "../button";
+
+import { MenuIcon, PanelsTopLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../sheet";
+
+import { Button } from "../button";
+import { Group } from "../../types/menu";
+import Link from "next/link";
+import { Menu } from "./menu";
 
 interface SheetMenuProps {
   menu: Group<string>[];
@@ -32,7 +33,7 @@ export const SheetMenu: React.FC<SheetMenuProps> = ({ menu }) => {
             </Link>
           </Button>
         </SheetHeader>
-        <Menu isOpen menu={menu} />
+        <Menu isOpen menu={menu} onMenuItemClick={() => { }} />
       </SheetContent>
     </Sheet>
   );

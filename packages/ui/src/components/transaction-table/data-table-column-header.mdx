@@ -1,0 +1,37 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import DataTableColumnHeader from "./data-table-column-header.stories";
+
+<Meta of={DataTableColumnHeader} />
+
+# DataTableColumnHeader Component
+
+The `DataTableColumnHeader` component provides a customizable header for data table columns. It displays the column title and includes interactive elements for sorting, filtering, and other column-specific actions. The component supports different visual states based on sort direction and active filters.
+
+## Component Props
+
+<Canvas of={DataTableColumnHeader} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `DataTableColumnHeader`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <DataTableColumnHeader
+      column={{ 
+        id: "amount", 
+        getCanSort: () => true,
+        getIsSorted: () => "asc",
+        getToggleSortingHandler: () => () => console.info("Toggle sorting")
+      }}
+      title="Amount"
+      description="Transaction amount in USD"
+      className="py-2 px-4 border-b"
+    />
+  </Story>
+</Canvas>
+``` 

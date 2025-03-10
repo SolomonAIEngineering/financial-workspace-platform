@@ -1,21 +1,30 @@
 "use client";
 
 import * as React from "react";
+
+import { Footer } from "./footer";
+import { Group } from "../../types/menu";
+import { Sidebar } from "./sidebar";
+import { cn } from "../../utils/cn";
 import { useSidebarToggle } from "../../hooks/use-sidebar-toggle";
 import { useStore } from "../../hooks/use-store";
-import { Group } from "../../types/menu";
-import { cn } from "../../utils/cn";
-import { Footer } from "./footer";
-import { Sidebar } from "./sidebar";
 
 export default function CollapsiblePanelLayout({
   children,
   menu,
   footerMessage,
+  defaultCollapsed,
+  sidebarContent,
+  mainContent,
+  className,
 }: {
   children: React.ReactNode;
   menu: Group<string>[];
   footerMessage: string;
+  defaultCollapsed: boolean;
+  sidebarContent: React.ReactNode;
+  mainContent: React.ReactNode;
+  className?: string;
 }) {
   const sidebar = useStore(useSidebarToggle, (state) => state);
 
