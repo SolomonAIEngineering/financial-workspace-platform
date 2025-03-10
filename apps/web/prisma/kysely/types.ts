@@ -132,6 +132,75 @@ export const SpendingTimeframe = {
 } as const
 export type SpendingTimeframe =
   (typeof SpendingTimeframe)[keyof typeof SpendingTimeframe]
+export const TeamRole = {
+  OWNER: 'OWNER',
+  MEMBER: 'MEMBER',
+} as const
+export type TeamRole = (typeof TeamRole)[keyof typeof TeamRole]
+export const InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  UNPAID: 'UNPAID',
+  PAID: 'PAID',
+  OVERDUE: 'OVERDUE',
+  CANCELED: 'CANCELED',
+} as const
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
+export const InvoiceDeliveryType = {
+  CREATE: 'CREATE',
+  CREATE_AND_SEND: 'CREATE_AND_SEND',
+} as const
+export type InvoiceDeliveryType =
+  (typeof InvoiceDeliveryType)[keyof typeof InvoiceDeliveryType]
+export const InvoiceSize = {
+  A4: 'A4',
+  LETTER: 'LETTER',
+} as const
+export type InvoiceSize = (typeof InvoiceSize)[keyof typeof InvoiceSize]
+export const TrackerStatus = {
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+} as const
+export type TrackerStatus = (typeof TrackerStatus)[keyof typeof TrackerStatus]
+export const InboxType = {
+  INVOICE: 'INVOICE',
+  EXPENSE: 'EXPENSE',
+} as const
+export type InboxType = (typeof InboxType)[keyof typeof InboxType]
+export const InboxStatus = {
+  NEW: 'NEW',
+  PROCESSING: 'PROCESSING',
+  PENDING: 'PENDING',
+  ARCHIVED: 'ARCHIVED',
+  DELETED: 'DELETED',
+} as const
+export type InboxStatus = (typeof InboxStatus)[keyof typeof InboxStatus]
+export const ReportType = {
+  PROFIT: 'PROFIT',
+  REVENUE: 'REVENUE',
+  BURN_RATE: 'BURN_RATE',
+  EXPENSE: 'EXPENSE',
+} as const
+export type ReportType = (typeof ReportType)[keyof typeof ReportType]
+export const TransactionFrequency = {
+  WEEKLY: 'WEEKLY',
+  BIWEEKLY: 'BIWEEKLY',
+  MONTHLY: 'MONTHLY',
+  SEMI_MONTHLY: 'SEMI_MONTHLY',
+  ANNUALLY: 'ANNUALLY',
+  IRREGULAR: 'IRREGULAR',
+  UNKNOWN: 'UNKNOWN',
+} as const
+export type TransactionFrequency =
+  (typeof TransactionFrequency)[keyof typeof TransactionFrequency]
+export type App = {
+  id: string
+  app_id: string
+  config: unknown | null
+  settings: unknown | null
+  team_id: string | null
+  created_by: string | null
+  created_at: Generated<Timestamp | null>
+}
 export type Attachment = {
   id: string
   transactionId: string
@@ -182,6 +251,16 @@ export type BankAccount = {
   createdAt: Generated<Timestamp>
   updatedAt: Timestamp
   deletedAt: Timestamp | null
+  balanceProjections: unknown | null
+  scheduledInflows: Generated<number | null>
+  scheduledOutflows: Generated<number | null>
+  recurringMonthlyInflow: Generated<number | null>
+  recurringMonthlyOutflow: Generated<number | null>
+  nextScheduledTransaction: Timestamp | null
+}
+export type BankAccountToTeam = {
+  A: string
+  B: string
 }
 export type BankConnection = {
   id: string
@@ -228,6 +307,45 @@ export type Comment = {
   createdAt: Generated<Timestamp>
   updatedAt: Generated<Timestamp>
 }
+export type Customer = {
+  id: string
+  name: string
+  email: string
+  token: string
+  phone: string | null
+  contact: string | null
+  website: string | null
+  note: string | null
+  vat_number: string | null
+  address_line_1: string | null
+  address_line_2: string | null
+  city: string | null
+  state: string | null
+  zip: string | null
+  country: string | null
+  country_code: string | null
+  team_id: string
+  created_at: Generated<Timestamp>
+}
+export type CustomerTag = {
+  id: string
+  customer_id: string
+  tag_id: string
+  team_id: string
+  created_at: Generated<Timestamp>
+}
+export type CustomTransactionCategory = {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  color: string | null
+  vat: number | null
+  system: boolean | null
+  embedding: string | null
+  team_id: string
+  created_at: Generated<Timestamp | null>
+}
 export type Discussion = {
   id: string
   documentId: string
@@ -271,6 +389,13 @@ export type DocumentVersion = {
   createdAt: Generated<Timestamp>
   updatedAt: Timestamp
 }
+export type ExchangeRate = {
+  id: string
+  base: string | null
+  target: string | null
+  rate: number | null
+  updated_at: Timestamp | null
+}
 export type File = {
   id: string
   userId: string
@@ -281,6 +406,103 @@ export type File = {
   type: string
   createdAt: Generated<Timestamp>
   updatedAt: Generated<Timestamp>
+}
+export type Inbox = {
+  id: string
+  type: InboxType | null
+  status: Generated<InboxStatus | null>
+  display_name: string | null
+  description: string | null
+  date: Timestamp | null
+  amount: number | null
+  currency: string | null
+  base_amount: number | null
+  base_currency: string | null
+  website: string | null
+  file_name: string | null
+  content_type: string | null
+  size: number | null
+  file_path: Generated<string[]>
+  attachment_id: string | null
+  transaction_id: string | null
+  reference_id: string | null
+  forwarded_to: string | null
+  meta: unknown | null
+  team_id: string | null
+  created_at: Generated<Timestamp>
+}
+export type Invoice = {
+  id: string
+  team_id: string
+  status: Generated<InvoiceStatus>
+  customer_id: string | null
+  customer_name: string | null
+  invoice_number: string | null
+  amount: number | null
+  subtotal: number | null
+  tax: number | null
+  vat: number | null
+  discount: number | null
+  currency: string | null
+  issue_date: Timestamp | null
+  due_date: Timestamp | null
+  paid_at: Timestamp | null
+  viewed_at: Timestamp | null
+  reminder_sent_at: Timestamp | null
+  line_items: unknown | null
+  from_details: unknown | null
+  customer_details: unknown | null
+  payment_details: unknown | null
+  note: string | null
+  internal_note: string | null
+  note_details: unknown | null
+  top_block: unknown | null
+  bottom_block: unknown | null
+  template: unknown | null
+  url: string | null
+  token: string
+  file_size: number | null
+  file_path: Generated<string[]>
+  sent_to: string | null
+  user_id: string | null
+  created_at: Generated<Timestamp>
+  updated_at: Timestamp | null
+}
+export type InvoiceTemplate = {
+  id: string
+  team_id: string
+  title: string | null
+  delivery_type: Generated<InvoiceDeliveryType>
+  size: InvoiceSize | null
+  logo_url: string | null
+  currency: string | null
+  from_label: string | null
+  from_details: unknown | null
+  customer_label: string | null
+  invoice_no_label: string | null
+  issue_date_label: string | null
+  due_date_label: string | null
+  description_label: string | null
+  quantity_label: string | null
+  price_label: string | null
+  tax_label: string | null
+  discount_label: string | null
+  vat_label: string | null
+  total_label: string | null
+  total_summary_label: string | null
+  note_label: string | null
+  payment_label: string | null
+  payment_details: unknown | null
+  tax_rate: number | null
+  vat_rate: number | null
+  date_format: string | null
+  include_decimals: boolean | null
+  include_discount: boolean | null
+  include_tax: boolean | null
+  include_vat: boolean | null
+  include_units: boolean | null
+  include_qr: boolean | null
+  created_at: Generated<Timestamp>
 }
 export type Notification = {
   id: string
@@ -297,6 +519,77 @@ export type OauthAccount = {
   providerId: string
   providerUserId: string
   userId: string
+}
+export type RecurringTransaction = {
+  id: string
+  bankAccountId: string
+  title: string
+  description: string | null
+  amount: number
+  currency: string
+  initialAccountBalance: number | null
+  frequency: TransactionFrequency
+  interval: Generated<number>
+  startDate: Timestamp
+  endDate: Timestamp | null
+  dayOfMonth: number | null
+  dayOfWeek: number | null
+  weekOfMonth: number | null
+  monthOfYear: number | null
+  executionDays: number[]
+  skipWeekends: Generated<boolean>
+  adjustForHolidays: Generated<boolean>
+  allowExecution: Generated<boolean>
+  limitExecutions: number | null
+  transactionTemplate: unknown | null
+  categorySlug: string | null
+  tags: Generated<string[]>
+  notes: string | null
+  customFields: unknown | null
+  targetAccountId: string | null
+  affectAvailableBalance: Generated<boolean>
+  lastExecutedAt: Timestamp | null
+  nextScheduledDate: Timestamp | null
+  executionCount: Generated<number>
+  totalExecuted: Generated<number>
+  lastExecutionStatus: string | null
+  lastExecutionError: string | null
+  minBalanceRequired: number | null
+  overspendAction: Generated<string | null>
+  insufficientFundsCount: Generated<number>
+  expectedAmount: number | null
+  allowedVariance: number | null
+  varianceAction: string | null
+  reminderDays: Generated<number[]>
+  reminderSentAt: Timestamp | null
+  notifyOnExecution: Generated<boolean>
+  notifyOnFailure: Generated<boolean>
+  status: Generated<string>
+  isAutomated: Generated<boolean>
+  requiresApproval: Generated<boolean>
+  isVariable: Generated<boolean>
+  source: string | null
+  confidenceScore: number | null
+  merchantId: string | null
+  merchantName: string | null
+  transactionType: string | null
+  importanceLevel: string | null
+  createdAt: Generated<Timestamp>
+  updatedAt: Timestamp
+  lastModifiedBy: string | null
+}
+export type Report = {
+  id: string
+  type: ReportType | null
+  from: Timestamp | null
+  to: Timestamp | null
+  currency: string | null
+  link_id: string | null
+  short_link: string | null
+  expire_at: Timestamp | null
+  created_by: string | null
+  team_id: string | null
+  created_at: Generated<Timestamp>
 }
 export type Session = {
   id: string
@@ -326,12 +619,74 @@ export type SpendingInsight = {
   createdAt: Generated<Timestamp>
   updatedAt: Timestamp
 }
+export type Tag = {
+  id: string
+  name: string
+  team_id: string
+  created_at: Generated<Timestamp>
+}
+export type Team = {
+  id: string
+  name: string | null
+  base_currency: string | null
+  email: string | null
+  logo_url: string | null
+  inbox_email: string | null
+  inbox_id: string | null
+  inbox_forwarding: boolean | null
+  document_classification: boolean | null
+  flags: Generated<string[]>
+  created_at: Generated<Timestamp>
+}
+export type TrackerEntry = {
+  id: string
+  project_id: string | null
+  assigned_id: string | null
+  description: string | null
+  date: Timestamp | null
+  start: Timestamp | null
+  stop: Timestamp | null
+  duration: number | null
+  rate: number | null
+  currency: string | null
+  billed: boolean | null
+  team_id: string | null
+  created_at: Generated<Timestamp>
+}
+export type TrackerProject = {
+  id: string
+  name: string
+  description: string | null
+  status: Generated<TrackerStatus>
+  customer_id: string | null
+  billable: boolean | null
+  currency: string | null
+  rate: number | null
+  estimate: number | null
+  team_id: string | null
+  created_at: Generated<Timestamp>
+}
+export type TrackerProjectTag = {
+  id: string
+  tracker_project_id: string
+  tag_id: string
+  team_id: string
+  created_at: Generated<Timestamp>
+}
+export type TrackerReport = {
+  id: string
+  project_id: string | null
+  created_by: string | null
+  link_id: string | null
+  short_link: string | null
+  team_id: string | null
+  created_at: Generated<Timestamp>
+}
 export type Transaction = {
   id: string
   userId: string
   bankAccountId: string
-  bankConnectionId: string
-  plaidTransactionId: string
+  plaidTransactionId: string | null
   amount: number
   isoCurrencyCode: string | null
   date: Timestamp
@@ -343,20 +698,137 @@ export type Transaction = {
   subCategory: string | null
   categoryIconUrl: string | null
   customCategory: string | null
+  merchantId: string | null
+  merchantLogoUrl: string | null
+  merchantCategory: string | null
+  merchantWebsite: string | null
+  merchantPhone: string | null
+  merchantAddress: string | null
+  merchantCity: string | null
+  merchantState: string | null
+  merchantZip: string | null
+  merchantCountry: string | null
   location: unknown | null
+  latitude: number | null
+  longitude: number | null
   paymentChannel: string | null
   paymentMethod: string | null
+  paymentProcessor: string | null
+  paymentGateway: string | null
+  transactionReference: string | null
+  authorizationCode: string | null
+  checkNumber: string | null
+  wireReference: string | null
+  accountNumber: string | null
+  cardType: string | null
+  cardNetwork: string | null
+  cardLastFour: string | null
   originalDescription: string | null
   originalCategory: string | null
   originalMerchantName: string | null
+  fiscalYear: number | null
+  fiscalMonth: number | null
+  fiscalQuarter: number | null
+  vatAmount: number | null
+  vatRate: number | null
+  taxAmount: number | null
+  taxRate: number | null
+  taxDeductible: Generated<boolean>
+  taxExempt: Generated<boolean>
+  taxCategory: string | null
+  status: string | null
+  transactionType: string | null
+  transactionMethod: string | null
+  transactionChannel: string | null
+  budgetCategory: string | null
+  budgetSubcategory: string | null
+  budgetId: string | null
+  plannedExpense: Generated<boolean>
+  discretionary: Generated<boolean>
+  needsWantsCategory: string | null
+  spendingGoalId: string | null
+  investmentCategory: string | null
+  businessPurpose: string | null
+  costCenter: string | null
+  projectCode: string | null
+  reimbursable: Generated<boolean>
+  clientId: string | null
+  invoiceId: string | null
   excludeFromBudget: Generated<boolean>
   isRecurring: Generated<boolean>
   recurrenceId: string | null
+  recurringFrequency: string | null
+  recurringDay: number | null
+  estimatedNextDate: Timestamp | null
+  similarTransactions: number | null
+  cashFlowCategory: string | null
+  cashFlowType: string | null
+  inflationCategory: string | null
+  confidenceScore: number | null
+  anomalyScore: number | null
+  insightTags: Generated<string[]>
+  isManual: Generated<boolean>
+  isModified: Generated<boolean>
+  isVerified: Generated<boolean>
+  isFlagged: Generated<boolean>
+  isHidden: Generated<boolean>
+  isLocked: Generated<boolean>
+  isReconciled: Generated<boolean>
+  needsAttention: Generated<boolean>
+  reviewStatus: string | null
+  userNotes: string | null
   tags: Generated<string[]>
   notes: string | null
+  customFields: unknown | null
+  labels: Generated<string[]>
   parentTransactionId: string | null
+  isSplit: Generated<boolean>
+  splitTotal: number | null
+  splitCount: number | null
+  searchableText: string | null
+  dateYear: number | null
+  dateMonth: number | null
+  dateDay: number | null
+  dateDayOfWeek: number | null
+  dateWeekOfYear: number | null
   createdAt: Generated<Timestamp>
   updatedAt: Timestamp
+  importedAt: Timestamp | null
+  lastReviewedAt: Timestamp | null
+  lastModifiedAt: Timestamp | null
+  lastCategorizedAt: Timestamp | null
+  category_slug: string | null
+  frequency: TransactionFrequency | null
+  internal: boolean | null
+  notified: boolean | null
+  base_amount: number | null
+  base_currency: string | null
+  recurringTransactionId: string | null
+}
+export type TransactionAttachment = {
+  id: string
+  transaction_id: string | null
+  name: string | null
+  type: string | null
+  size: number | null
+  path: Generated<string[]>
+  team_id: string | null
+  created_at: Generated<Timestamp>
+}
+export type TransactionEnrichment = {
+  id: string
+  name: string | null
+  category_slug: string | null
+  team_id: string | null
+  system: boolean | null
+  created_at: Generated<Timestamp>
+}
+export type TransactionTag = {
+  id: string
+  transaction_id: string
+  tag_id: string
+  team_id: string
+  created_at: Generated<Timestamp>
 }
 export type User = {
   id: string
@@ -407,6 +879,7 @@ export type User = {
   createdAt: Generated<Timestamp>
   updatedAt: Generated<Timestamp>
   deletedAt: Timestamp | null
+  teamId: string | null
 }
 export type UserActivity = {
   id: string
@@ -416,20 +889,58 @@ export type UserActivity = {
   metadata: unknown | null
   createdAt: Generated<Timestamp>
 }
+export type UserInvite = {
+  id: string
+  email: string | null
+  code: string | null
+  team_id: string | null
+  invited_by: string | null
+  role: TeamRole | null
+  created_at: Generated<Timestamp>
+}
+export type UsersOnTeam = {
+  id: string
+  user_id: string
+  team_id: string
+  role: Generated<TeamRole>
+  created_at: Generated<Timestamp | null>
+}
 export type DB = {
+  _BankAccountToTeam: BankAccountToTeam
+  apps: App
   Attachment: Attachment
   BankAccount: BankAccount
   BankConnection: BankConnection
   Comment: Comment
+  customer_tags: CustomerTag
+  customers: Customer
   Discussion: Discussion
   Document: Document
   DocumentVersion: DocumentVersion
+  exchange_rates: ExchangeRate
   File: File
+  inbox: Inbox
+  invoice_templates: InvoiceTemplate
+  invoices: Invoice
   Notification: Notification
   OauthAccount: OauthAccount
+  recurring_transactions: RecurringTransaction
+  reports: Report
   Session: Session
   SpendingInsight: SpendingInsight
-  Transaction: Transaction
+  tags: Tag
+  teams: Team
+  tracker_entries: TrackerEntry
+  tracker_project_tags: TrackerProjectTag
+  tracker_projects: TrackerProject
+  tracker_reports: TrackerReport
+  transaction_attachments: TransactionAttachment
+  transaction_categories: CustomTransactionCategory
+  transaction_enrichments: TransactionEnrichment
+  transaction_tags: TransactionTag
+  transactions: Transaction
   User: User
+  user_invites: UserInvite
   UserActivity: UserActivity
+  users_on_team: UsersOnTeam
 }

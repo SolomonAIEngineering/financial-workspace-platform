@@ -62,6 +62,7 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date| null;
+  teamId: string| null;
 }
 
 export interface Document {
@@ -209,14 +210,19 @@ export interface BankAccount {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date| null;
+  balanceProjections: Record<string, unknown>| null;
+  scheduledInflows: number| null;
+  scheduledOutflows: number| null;
+  recurringMonthlyInflow: number| null;
+  recurringMonthlyOutflow: number| null;
+  nextScheduledTransaction: Date| null;
 }
 
 export interface Transaction {
   id: string;
   userId: string;
   bankAccountId: string;
-  bankConnectionId: string;
-  plaidTransactionId: string;
+  plaidTransactionId: string| null;
   amount: number;
   isoCurrencyCode: string| null;
   date: Date;
@@ -228,20 +234,171 @@ export interface Transaction {
   subCategory: string| null;
   categoryIconUrl: string| null;
   customCategory: string| null;
+  merchantId: string| null;
+  merchantLogoUrl: string| null;
+  merchantCategory: string| null;
+  merchantWebsite: string| null;
+  merchantPhone: string| null;
+  merchantAddress: string| null;
+  merchantCity: string| null;
+  merchantState: string| null;
+  merchantZip: string| null;
+  merchantCountry: string| null;
   location: Record<string, unknown>| null;
+  latitude: number| null;
+  longitude: number| null;
   paymentChannel: string| null;
   paymentMethod: string| null;
+  paymentProcessor: string| null;
+  paymentGateway: string| null;
+  transactionReference: string| null;
+  authorizationCode: string| null;
+  checkNumber: string| null;
+  wireReference: string| null;
+  accountNumber: string| null;
+  cardType: string| null;
+  cardNetwork: string| null;
+  cardLastFour: string| null;
   originalDescription: string| null;
   originalCategory: string| null;
   originalMerchantName: string| null;
+  fiscalYear: number| null;
+  fiscalMonth: number| null;
+  fiscalQuarter: number| null;
+  vatAmount: number| null;
+  vatRate: number| null;
+  taxAmount: number| null;
+  taxRate: number| null;
+  taxDeductible: boolean;
+  taxExempt: boolean;
+  taxCategory: string| null;
+  status: string| null;
+  transactionType: string| null;
+  transactionMethod: string| null;
+  transactionChannel: string| null;
+  budgetCategory: string| null;
+  budgetSubcategory: string| null;
+  budgetId: string| null;
+  plannedExpense: boolean;
+  discretionary: boolean;
+  needsWantsCategory: string| null;
+  spendingGoalId: string| null;
+  investmentCategory: string| null;
+  businessPurpose: string| null;
+  costCenter: string| null;
+  projectCode: string| null;
+  reimbursable: boolean;
+  clientId: string| null;
+  invoiceId: string| null;
   excludeFromBudget: boolean;
   isRecurring: boolean;
   recurrenceId: string| null;
+  recurringFrequency: string| null;
+  recurringDay: number| null;
+  estimatedNextDate: Date| null;
+  similarTransactions: number| null;
+  cashFlowCategory: string| null;
+  cashFlowType: string| null;
+  inflationCategory: string| null;
+  confidenceScore: number| null;
+  anomalyScore: number| null;
+  insightTags: string[];
+  isManual: boolean;
+  isModified: boolean;
+  isVerified: boolean;
+  isFlagged: boolean;
+  isHidden: boolean;
+  isLocked: boolean;
+  isReconciled: boolean;
+  needsAttention: boolean;
+  reviewStatus: string| null;
+  userNotes: string| null;
   tags: string[];
   notes: string| null;
+  customFields: Record<string, unknown>| null;
+  labels: string[];
   parentTransactionId: string| null;
+  isSplit: boolean;
+  splitTotal: number| null;
+  splitCount: number| null;
+  searchableText: string| null;
+  dateYear: number| null;
+  dateMonth: number| null;
+  dateDay: number| null;
+  dateDayOfWeek: number| null;
+  dateWeekOfYear: number| null;
   createdAt: Date;
   updatedAt: Date;
+  importedAt: Date| null;
+  lastReviewedAt: Date| null;
+  lastModifiedAt: Date| null;
+  lastCategorizedAt: Date| null;
+  categorySlug: string| null;
+  frequency: TransactionFrequency| null;
+  internal: boolean| null;
+  notified: boolean| null;
+  baseAmount: number| null;
+  baseCurrency: string| null;
+  recurringTransactionId: string| null;
+}
+
+export interface RecurringTransaction {
+  id: string;
+  bankAccountId: string;
+  title: string;
+  description: string| null;
+  amount: number;
+  currency: string;
+  initialAccountBalance: number| null;
+  frequency: TransactionFrequency;
+  interval: number;
+  startDate: Date;
+  endDate: Date| null;
+  dayOfMonth: number| null;
+  dayOfWeek: number| null;
+  weekOfMonth: number| null;
+  monthOfYear: number| null;
+  executionDays: number[];
+  skipWeekends: boolean;
+  adjustForHolidays: boolean;
+  allowExecution: boolean;
+  limitExecutions: number| null;
+  transactionTemplate: Record<string, unknown>| null;
+  categorySlug: string| null;
+  tags: string[];
+  notes: string| null;
+  customFields: Record<string, unknown>| null;
+  targetAccountId: string| null;
+  affectAvailableBalance: boolean;
+  lastExecutedAt: Date| null;
+  nextScheduledDate: Date| null;
+  executionCount: number;
+  totalExecuted: number;
+  lastExecutionStatus: string| null;
+  lastExecutionError: string| null;
+  minBalanceRequired: number| null;
+  overspendAction: string| null;
+  insufficientFundsCount: number;
+  expectedAmount: number| null;
+  allowedVariance: number| null;
+  varianceAction: string| null;
+  reminderDays: number[];
+  reminderSentAt: Date| null;
+  notifyOnExecution: boolean;
+  notifyOnFailure: boolean;
+  status: string;
+  isAutomated: boolean;
+  requiresApproval: boolean;
+  isVariable: boolean;
+  source: string| null;
+  confidenceScore: number| null;
+  merchantId: string| null;
+  merchantName: string| null;
+  transactionType: string| null;
+  importanceLevel: string| null;
+  createdAt: Date;
+  updatedAt: Date;
+  lastModifiedBy: string| null;
 }
 
 export interface Attachment {
@@ -295,6 +452,295 @@ export interface SpendingInsight {
   incomeTrend: number| null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface Team {
+  id: string;
+  name: string| null;
+  baseCurrency: string| null;
+  email: string| null;
+  logoUrl: string| null;
+  inboxEmail: string| null;
+  inboxId: string| null;
+  inboxForwarding: boolean| null;
+  documentClassification: boolean| null;
+  flags: string[];
+  createdAt: Date;
+}
+
+export interface UsersOnTeam {
+  id: string;
+  userId: string;
+  teamId: string;
+  role: TeamRole;
+  createdAt: Date| null;
+}
+
+export interface UserInvite {
+  id: string;
+  email: string| null;
+  code: string| null;
+  teamId: string| null;
+  invitedBy: string| null;
+  role: TeamRole| null;
+  createdAt: Date;
+}
+
+export interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  token: string;
+  phone: string| null;
+  contact: string| null;
+  website: string| null;
+  note: string| null;
+  vatNumber: string| null;
+  addressLine1: string| null;
+  addressLine2: string| null;
+  city: string| null;
+  state: string| null;
+  zip: string| null;
+  country: string| null;
+  countryCode: string| null;
+  teamId: string;
+  createdAt: Date;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  teamId: string;
+  createdAt: Date;
+}
+
+export interface CustomerTag {
+  id: string;
+  customerId: string;
+  tagId: string;
+  teamId: string;
+  createdAt: Date;
+}
+
+export interface TransactionTag {
+  id: string;
+  transactionId: string;
+  tagId: string;
+  teamId: string;
+  createdAt: Date;
+}
+
+export interface CustomTransactionCategory {
+  id: string;
+  name: string;
+  slug: string;
+  description: string| null;
+  color: string| null;
+  vat: number| null;
+  system: boolean| null;
+  embedding: string| null;
+  teamId: string;
+  createdAt: Date| null;
+}
+
+export interface TransactionEnrichment {
+  id: string;
+  name: string| null;
+  categorySlug: string| null;
+  teamId: string| null;
+  system: boolean| null;
+  createdAt: Date;
+}
+
+export interface Invoice {
+  id: string;
+  teamId: string;
+  status: InvoiceStatus;
+  customerId: string| null;
+  customerName: string| null;
+  invoiceNumber: string| null;
+  amount: number| null;
+  subtotal: number| null;
+  tax: number| null;
+  vat: number| null;
+  discount: number| null;
+  currency: string| null;
+  issueDate: Date| null;
+  dueDate: Date| null;
+  paidAt: Date| null;
+  viewedAt: Date| null;
+  reminderSentAt: Date| null;
+  lineItems: Record<string, unknown>| null;
+  fromDetails: Record<string, unknown>| null;
+  customerDetails: Record<string, unknown>| null;
+  paymentDetails: Record<string, unknown>| null;
+  note: string| null;
+  internalNote: string| null;
+  noteDetails: Record<string, unknown>| null;
+  topBlock: Record<string, unknown>| null;
+  bottomBlock: Record<string, unknown>| null;
+  template: Record<string, unknown>| null;
+  url: string| null;
+  token: string;
+  fileSize: number| null;
+  filePath: string[];
+  sentTo: string| null;
+  userId: string| null;
+  createdAt: Date;
+  updatedAt: Date| null;
+}
+
+export interface InvoiceTemplate {
+  id: string;
+  teamId: string;
+  title: string| null;
+  deliveryType: InvoiceDeliveryType;
+  size: InvoiceSize| null;
+  logoUrl: string| null;
+  currency: string| null;
+  fromLabel: string| null;
+  fromDetails: Record<string, unknown>| null;
+  customerLabel: string| null;
+  invoiceNoLabel: string| null;
+  issueDateLabel: string| null;
+  dueDateLabel: string| null;
+  descriptionLabel: string| null;
+  quantityLabel: string| null;
+  priceLabel: string| null;
+  taxLabel: string| null;
+  discountLabel: string| null;
+  vatLabel: string| null;
+  totalLabel: string| null;
+  totalSummaryLabel: string| null;
+  noteLabel: string| null;
+  paymentLabel: string| null;
+  paymentDetails: Record<string, unknown>| null;
+  taxRate: number| null;
+  vatRate: number| null;
+  dateFormat: string| null;
+  includeDecimals: boolean| null;
+  includeDiscount: boolean| null;
+  includeTax: boolean| null;
+  includeVat: boolean| null;
+  includeUnits: boolean| null;
+  includeQr: boolean| null;
+  createdAt: Date;
+}
+
+export interface TrackerProject {
+  id: string;
+  name: string;
+  description: string| null;
+  status: TrackerStatus;
+  customerId: string| null;
+  billable: boolean| null;
+  currency: string| null;
+  rate: number| null;
+  estimate: number| null;
+  teamId: string| null;
+  createdAt: Date;
+}
+
+export interface TrackerProjectTag {
+  id: string;
+  trackerProjectId: string;
+  tagId: string;
+  teamId: string;
+  createdAt: Date;
+}
+
+export interface TrackerEntry {
+  id: string;
+  projectId: string| null;
+  assignedId: string| null;
+  description: string| null;
+  date: Date| null;
+  start: Date| null;
+  stop: Date| null;
+  duration: number| null;
+  rate: number| null;
+  currency: string| null;
+  billed: boolean| null;
+  teamId: string| null;
+  createdAt: Date;
+}
+
+export interface TrackerReport {
+  id: string;
+  projectId: string| null;
+  createdBy: string| null;
+  linkId: string| null;
+  shortLink: string| null;
+  teamId: string| null;
+  createdAt: Date;
+}
+
+export interface Report {
+  id: string;
+  type: ReportType| null;
+  from: Date| null;
+  to: Date| null;
+  currency: string| null;
+  linkId: string| null;
+  shortLink: string| null;
+  expireAt: Date| null;
+  createdBy: string| null;
+  teamId: string| null;
+  createdAt: Date;
+}
+
+export interface ExchangeRate {
+  id: string;
+  base: string| null;
+  target: string| null;
+  rate: number| null;
+  updatedAt: Date| null;
+}
+
+export interface Inbox {
+  id: string;
+  type: InboxType| null;
+  status: InboxStatus| null;
+  displayName: string| null;
+  description: string| null;
+  date: Date| null;
+  amount: number| null;
+  currency: string| null;
+  baseAmount: number| null;
+  baseCurrency: string| null;
+  website: string| null;
+  fileName: string| null;
+  contentType: string| null;
+  size: number| null;
+  filePath: string[];
+  attachmentId: string| null;
+  transactionId: string| null;
+  referenceId: string| null;
+  forwardedTo: string| null;
+  meta: Record<string, unknown>| null;
+  teamId: string| null;
+  createdAt: Date;
+}
+
+export interface TransactionAttachment {
+  id: string;
+  transactionId: string| null;
+  name: string| null;
+  type: string| null;
+  size: number| null;
+  path: string[];
+  teamId: string| null;
+  createdAt: Date;
+}
+
+export interface App {
+  id: string;
+  appId: string;
+  config: Record<string, unknown>| null;
+  settings: Record<string, unknown>| null;
+  teamId: string| null;
+  createdBy: string| null;
+  createdAt: Date| null;
 }
 
 export type BankConnectionStatus = "ACTIVE" | "ERROR" | "DISCONNECTED" | "PENDING" | "REQUIRES_ATTENTION" | "LOGIN_REQUIRED" | "REQUIRES_REAUTH";
@@ -440,6 +886,82 @@ export declare const SpendingTimeframe: {
   readonly CUSTOM: "CUSTOM";
 };
 
+export type TeamRole = "OWNER" | "MEMBER";
+
+export declare const TeamRole: {
+  readonly OWNER: "OWNER";
+  readonly MEMBER: "MEMBER";
+};
+
+export type InvoiceStatus = "DRAFT" | "UNPAID" | "PAID" | "OVERDUE" | "CANCELED";
+
+export declare const InvoiceStatus: {
+  readonly DRAFT: "DRAFT";
+  readonly UNPAID: "UNPAID";
+  readonly PAID: "PAID";
+  readonly OVERDUE: "OVERDUE";
+  readonly CANCELED: "CANCELED";
+};
+
+export type InvoiceDeliveryType = "CREATE" | "CREATE_AND_SEND";
+
+export declare const InvoiceDeliveryType: {
+  readonly CREATE: "CREATE";
+  readonly CREATE_AND_SEND: "CREATE_AND_SEND";
+};
+
+export type InvoiceSize = "A4" | "LETTER";
+
+export declare const InvoiceSize: {
+  readonly A4: "A4";
+  readonly LETTER: "LETTER";
+};
+
+export type TrackerStatus = "IN_PROGRESS" | "COMPLETED";
+
+export declare const TrackerStatus: {
+  readonly IN_PROGRESS: "IN_PROGRESS";
+  readonly COMPLETED: "COMPLETED";
+};
+
+export type InboxType = "INVOICE" | "EXPENSE";
+
+export declare const InboxType: {
+  readonly INVOICE: "INVOICE";
+  readonly EXPENSE: "EXPENSE";
+};
+
+export type InboxStatus = "NEW" | "PROCESSING" | "PENDING" | "ARCHIVED" | "DELETED";
+
+export declare const InboxStatus: {
+  readonly NEW: "NEW";
+  readonly PROCESSING: "PROCESSING";
+  readonly PENDING: "PENDING";
+  readonly ARCHIVED: "ARCHIVED";
+  readonly DELETED: "DELETED";
+};
+
+export type ReportType = "PROFIT" | "REVENUE" | "BURN_RATE" | "EXPENSE";
+
+export declare const ReportType: {
+  readonly PROFIT: "PROFIT";
+  readonly REVENUE: "REVENUE";
+  readonly BURN_RATE: "BURN_RATE";
+  readonly EXPENSE: "EXPENSE";
+};
+
+export type TransactionFrequency = "WEEKLY" | "BIWEEKLY" | "MONTHLY" | "SEMI_MONTHLY" | "ANNUALLY" | "IRREGULAR" | "UNKNOWN";
+
+export declare const TransactionFrequency: {
+  readonly WEEKLY: "WEEKLY";
+  readonly BIWEEKLY: "BIWEEKLY";
+  readonly MONTHLY: "MONTHLY";
+  readonly SEMI_MONTHLY: "SEMI_MONTHLY";
+  readonly ANNUALLY: "ANNUALLY";
+  readonly IRREGULAR: "IRREGULAR";
+  readonly UNKNOWN: "UNKNOWN";
+};
+
 declare global {
   export type TSession = Session;
   export type TOauthAccount = OauthAccount;
@@ -452,10 +974,31 @@ declare global {
   export type TBankConnection = BankConnection;
   export type TBankAccount = BankAccount;
   export type TTransaction = Transaction;
+  export type TRecurringTransaction = RecurringTransaction;
   export type TAttachment = Attachment;
   export type TUserActivity = UserActivity;
   export type TNotification = Notification;
   export type TSpendingInsight = SpendingInsight;
+  export type TTeam = Team;
+  export type TUsersOnTeam = UsersOnTeam;
+  export type TUserInvite = UserInvite;
+  export type TCustomer = Customer;
+  export type TTag = Tag;
+  export type TCustomerTag = CustomerTag;
+  export type TTransactionTag = TransactionTag;
+  export type TCustomTransactionCategory = CustomTransactionCategory;
+  export type TTransactionEnrichment = TransactionEnrichment;
+  export type TInvoice = Invoice;
+  export type TInvoiceTemplate = InvoiceTemplate;
+  export type TTrackerProject = TrackerProject;
+  export type TTrackerProjectTag = TrackerProjectTag;
+  export type TTrackerEntry = TrackerEntry;
+  export type TTrackerReport = TrackerReport;
+  export type TReport = Report;
+  export type TExchangeRate = ExchangeRate;
+  export type TInbox = Inbox;
+  export type TTransactionAttachment = TransactionAttachment;
+  export type TApp = App;
   export type TBankConnectionStatus = BankConnectionStatus;
   export type TSyncStatus = SyncStatus;
   export type TAccountType = AccountType;
@@ -467,5 +1010,14 @@ declare global {
   export type TUserRole = UserRole;
   export type TTextStyle = TextStyle;
   export type TSpendingTimeframe = SpendingTimeframe;
+  export type TTeamRole = TeamRole;
+  export type TInvoiceStatus = InvoiceStatus;
+  export type TInvoiceDeliveryType = InvoiceDeliveryType;
+  export type TInvoiceSize = InvoiceSize;
+  export type TTrackerStatus = TrackerStatus;
+  export type TInboxType = InboxType;
+  export type TInboxStatus = InboxStatus;
+  export type TReportType = ReportType;
+  export type TTransactionFrequency = TransactionFrequency;
 }
 
