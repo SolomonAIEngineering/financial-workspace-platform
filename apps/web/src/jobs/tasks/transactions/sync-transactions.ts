@@ -11,9 +11,7 @@ import {
 
 import { client } from '../../client';
 import { TRANSACTION_JOBS } from '../constants';
-import {
-  getTransactionDateRange,
-} from '../../utils/helpers';
+import { getTransactionDateRange } from '../../utils/helpers';
 import { updateConnectionSyncStatus } from '../../utils/update-connection-sync';
 import { getConnectionsForSync } from '../../utils/get-connections-sync';
 

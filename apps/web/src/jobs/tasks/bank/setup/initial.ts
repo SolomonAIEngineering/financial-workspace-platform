@@ -13,41 +13,44 @@ import { client } from '../../../client';
 import { BANK_JOBS } from '../../constants';
 
 /**
- * @file Bank Connection Initial Setup Job
- * @description This job handles the complete initial setup process when a user connects
- * a financial institution through Plaid Link or similar services.
- * 
+ * This job handles the complete initial setup process when a user connects a
+ * financial institution through Plaid Link or similar services.
+ *
  * Key responsibilities:
+ *
  * - Fetches institution details from Plaid (name, logo, colors)
  * - Creates a bank connection record in the database
  * - Retrieves all available accounts from the external provider
  * - Creates bank account records for each connected account
- * - Triggers staggered initial sync jobs for all accounts (with delays to avoid rate limits)
+ * - Triggers staggered initial sync jobs for all accounts (with delays to avoid
+ *   rate limits)
  * - Records the connection activity in the user history
- * 
- * This job is a critical part of the user onboarding flow for financial data integration,
- * converting raw Plaid credentials into structured data in our system.
- * 
+ *
+ * This job is a critical part of the user onboarding flow for financial data
+ * integration, converting raw Plaid credentials into structured data in our
+ * system.
+ *
+ * @file Bank Connection Initial Setup Job
  * @example
- * // Trigger the initial setup job after Plaid Link success:
- * await client.sendEvent({
- *   name: "initial-setup",
- *   payload: {
- *     userId: "user_123abc",
- *     accessToken: "access-token-from-plaid",
- *     itemId: "item-id-from-plaid",
- *     institutionId: "ins_123456",
- *     publicToken: "public-token-from-plaid"
- *   }
- * });
- * 
+ *   // Trigger the initial setup job after Plaid Link success:
+ *   await client.sendEvent({
+ *     name: 'initial-setup',
+ *     payload: {
+ *       userId: 'user_123abc',
+ *       accessToken: 'access-token-from-plaid',
+ *       itemId: 'item-id-from-plaid',
+ *       institutionId: 'ins_123456',
+ *       publicToken: 'public-token-from-plaid',
+ *     },
+ *   });
+ *
  * @example
- * // The job returns a summary on success:
- * {
+ *   // The job returns a summary on success:
+ *   {
  *   status: "success",
  *   bankConnectionId: "conn_abc123",
  *   accountCount: 5
- * }
+ *   }
  */
 export const initialSetupJob = client.defineJob({
   id: BANK_JOBS.INITIAL_SETUP,
@@ -58,15 +61,19 @@ export const initialSetupJob = client.defineJob({
   version: '1.0.0',
   /**
    * Main job execution function that sets up a new bank connection
-   * 
+   *
    * @param payload - The job payload containing connection details
-   * @param payload.accessToken - The access token received from Plaid or other provider
+   * @param payload.accessToken - The access token received from Plaid or other
+   *   provider
    * @param payload.institutionId - The ID of the financial institution
    * @param payload.itemId - The item ID from Plaid
-   * @param payload.publicToken - The public token from Plaid (may be used for token exchange)
+   * @param payload.publicToken - The public token from Plaid (may be used for
+   *   token exchange)
    * @param payload.userId - The ID of the user who owns this connection
-   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
-   * @returns A result object containing the connection ID, account count, and status
+   * @param io - The I/O context provided by Trigger.dev for logging, running
+   *   tasks, etc.
+   * @returns A result object containing the connection ID, account count, and
+   *   status
    * @throws Error if any part of the setup process fails
    */
   run: async (payload, io) => {
@@ -228,9 +235,11 @@ export const initialSetupJob = client.defineJob({
 
 /**
  * Maps Plaid account types to internal AccountType enum values
- * 
- * @param type - The account type string from Plaid (e.g., 'depository', 'credit')
- * @param subtype - Optional account subtype from Plaid (e.g., 'checking', 'savings')
+ *
+ * @param type - The account type string from Plaid (e.g., 'depository',
+ *   'credit')
+ * @param subtype - Optional account subtype from Plaid (e.g., 'checking',
+ *   'savings')
  * @returns The appropriate AccountType enum value for our database
  */
 function mapPlaidAccountType(type: string, subtype?: string): AccountType {

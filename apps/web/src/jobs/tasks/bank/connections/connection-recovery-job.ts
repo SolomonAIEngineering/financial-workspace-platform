@@ -6,60 +6,62 @@ import { prisma } from '@/server/db';
 import { z } from 'zod';
 
 /**
- * @file Bank Connection Recovery Job
- * @description This job implements an intelligent recovery mechanism for failed bank connections.
- * It uses an exponential backoff strategy to retry failed connections, checks their status
- * with the respective provider APIs, and handles appropriate recovery actions.
- * 
+ * This job implements an intelligent recovery mechanism for failed bank
+ * connections. It uses an exponential backoff strategy to retry failed
+ * connections, checks their status with the respective provider APIs, and
+ * handles appropriate recovery actions.
+ *
  * Key features:
+ *
  * - Attempts to recover connections that have entered an error state
  * - Implements exponential backoff for retries (15min, 30min, 60min)
  * - Supports multiple banking providers (Plaid, Teller, GoCardless)
  * - Automatically syncs data once a connection is recovered
  * - Notifies users when a connection cannot be automatically recovered
- * 
+ *
+ * @file Bank Connection Recovery Job
  * @example
- * // Trigger a recovery attempt for a connection
- * await client.sendEvent({
- *   name: "connection-recovery",
- *   payload: {
- *     connectionId: "conn_123abc",
- *     provider: "plaid",
- *     accessToken: "access-token-xyz",
- *     retryCount: 0 // Optional, defaults to 0
- *   }
- * });
- * 
+ *   // Trigger a recovery attempt for a connection
+ *   await client.sendEvent({
+ *     name: 'connection-recovery',
+ *     payload: {
+ *       connectionId: 'conn_123abc',
+ *       provider: 'plaid',
+ *       accessToken: 'access-token-xyz',
+ *       retryCount: 0, // Optional, defaults to 0
+ *     },
+ *   });
+ *
  * @example
- * // The job returns different result objects based on the recovery status:
- * 
- * // When recovery is successful:
- * {
+ *   // The job returns different result objects based on the recovery status:
+ *
+ *   // When recovery is successful:
+ *   {
  *   success: true,
  *   recovered: true
- * }
- * 
- * // When a retry is scheduled:
- * {
+ *   }
+ *
+ *   // When a retry is scheduled:
+ *   {
  *   success: true,
  *   recovered: false,
  *   scheduled: true,
  *   nextAttempt: "in 30 minutes"
- * }
- * 
- * // When max retries are exceeded:
- * {
+ *   }
+ *
+ *   // When max retries are exceeded:
+ *   {
  *   success: true,
  *   recovered: false,
  *   scheduled: false,
  *   maxRetriesExceeded: true
- * }
- * 
- * // When an unexpected error occurs:
- * {
+ *   }
+ *
+ *   // When an unexpected error occurs:
+ *   {
  *   success: false,
  *   error: "Error message details"
- * }
+ *   }
  */
 export const connectionRecoveryJob = client.defineJob({
   id: BANK_JOBS.CONNECTION_RECOVERY,
@@ -76,13 +78,16 @@ export const connectionRecoveryJob = client.defineJob({
   version: '1.0.0',
   /**
    * Main job execution function that attempts to recover a failed connection
-   * 
+   *
    * @param payload - The job payload containing connection details
-   * @param payload.connectionId - The unique ID of the bank connection to recover
-   * @param payload.provider - The provider type ('plaid', 'teller', or 'gocardless')
+   * @param payload.connectionId - The unique ID of the bank connection to
+   *   recover
+   * @param payload.provider - The provider type ('plaid', 'teller', or
+   *   'gocardless')
    * @param payload.accessToken - The current access token for the connection
    * @param payload.retryCount - The current retry attempt count (defaults to 0)
-   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
+   * @param io - The I/O context provided by Trigger.dev for logging, running
+   *   tasks, etc.
    * @returns A result object containing success status and recovery information
    */
   run: async (payload, io) => {
@@ -98,30 +103,38 @@ export const connectionRecoveryJob = client.defineJob({
       // Check connection status
       let status = { valid: false, error: null };
 
-      if (provider === 'plaid') {
-        const itemDetails = await io.runTask(
-          'check-plaid-connection',
-          async () => {
-            return await getItemDetails(accessToken);
-          }
-        );
+      switch (provider) {
+        case 'plaid': {
+          const itemDetails = await io.runTask(
+            'check-plaid-connection',
+            async () => {
+              return await getItemDetails(accessToken);
+            }
+          );
 
-        status.valid = itemDetails.status === 'HEALTHY';
-        status.error = itemDetails.status;
-      } else if (provider === 'teller') {
-        // Simulate Teller connection check
-        status = await io.runTask('check-teller-connection', async () => {
-          // For demo purposes, we'll simulate a valid connection
-          return { valid: true, error: null };
-        });
-      } else if (provider === 'gocardless') {
-        // Simulate GoCardless connection check
-        status = await io.runTask('check-gocardless-connection', async () => {
-          // For demo purposes, we'll simulate a valid connection
-          return { valid: true, error: null };
-        });
-      } else {
-        throw new Error(`Unsupported provider: ${provider}`);
+          status.valid = itemDetails.status === 'HEALTHY';
+          status.error = itemDetails.status;
+          break;
+        }
+        case 'teller': {
+          // Simulate Teller connection check
+          status = await io.runTask('check-teller-connection', async () => {
+            // For demo purposes, we'll simulate a valid connection
+            return { valid: true, error: null };
+          });
+          break;
+        }
+        case 'gocardless': {
+          // Simulate GoCardless connection check
+          status = await io.runTask('check-gocardless-connection', async () => {
+            // For demo purposes, we'll simulate a valid connection
+            return { valid: true, error: null };
+          });
+          break;
+        }
+        default: {
+          throw new Error(`Unsupported provider: ${provider}`);
+        }
       }
 
       if (status.valid) {

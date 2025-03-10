@@ -8,55 +8,55 @@ import { getTransactions } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
 
 /**
- * @file Transaction Upsert Job
- * @description This job handles syncing financial transactions from external providers 
- * (primarily Plaid) into the application's database. It performs intelligent transaction 
- * synchronization with the following features:
- * 
+ * This job handles syncing financial transactions from external providers
+ * (primarily Plaid) into the application's database. It performs intelligent
+ * transaction synchronization with the following features:
+ *
  * - Batch processing to handle large transaction volumes efficiently
  * - Smart date range determination based on last sync time
  * - Duplicate detection to prevent transaction duplication
  * - Transaction categorization using Plaid's categories
  * - Handling of pending transactions
  * - Updates to existing transactions when details change
- * 
- * The job is a critical component in keeping financial data up-to-date, maintaining 
- * transaction history, and ensuring users have accurate financial information for 
- * budgeting and analysis.
- * 
+ *
+ * The job is a critical component in keeping financial data up-to-date,
+ * maintaining transaction history, and ensuring users have accurate financial
+ * information for budgeting and analysis.
+ *
+ * @file Transaction Upsert Job
  * @example
- * // Trigger a transaction upsert with default date range
- * await client.sendEvent({
- *   name: "upsert-transactions",
- *   payload: {
- *     bankAccountId: "acct_123abc",
- *     accessToken: "access-token-from-plaid", 
- *     userId: "user_456def"
- *     // startDate and endDate are optional
- *   }
- * });
- * 
+ *   // Trigger a transaction upsert with default date range
+ *   await client.sendEvent({
+ *     name: 'upsert-transactions',
+ *     payload: {
+ *       bankAccountId: 'acct_123abc',
+ *       accessToken: 'access-token-from-plaid',
+ *       userId: 'user_456def',
+ *       // startDate and endDate are optional
+ *     },
+ *   });
+ *
  * @example
- * // Trigger a transaction upsert with specific date range
- * await client.sendEvent({
- *   name: "upsert-transactions",
- *   payload: {
- *     bankAccountId: "acct_123abc",
- *     accessToken: "access-token-from-plaid",
- *     userId: "user_456def",
- *     startDate: "2023-01-01",
- *     endDate: "2023-01-31"
- *   }
- * });
- * 
+ *   // Trigger a transaction upsert with specific date range
+ *   await client.sendEvent({
+ *     name: 'upsert-transactions',
+ *     payload: {
+ *       bankAccountId: 'acct_123abc',
+ *       accessToken: 'access-token-from-plaid',
+ *       userId: 'user_456def',
+ *       startDate: '2023-01-01',
+ *       endDate: '2023-01-31',
+ *     },
+ *   });
+ *
  * @example
- * // The job returns a summary of its actions:
- * {
+ *   // The job returns a summary of its actions:
+ *   {
  *   status: "success",
  *   totalTransactions: 125,     // Total transactions processed
  *   newTransactions: 15,        // New transactions created
  *   updatedTransactions: 5      // Existing transactions updated
- * }
+ *   }
  */
 export const upsertTransactionsJob = client.defineJob({
   id: BANK_JOBS.UPSERT_TRANSACTIONS,
@@ -67,16 +67,23 @@ export const upsertTransactionsJob = client.defineJob({
   version: '1.0.0',
   /**
    * Main job execution function that syncs transactions for a bank account
-   * 
+   *
    * @param payload - The job payload containing transaction sync details
-   * @param payload.accessToken - The access token for the financial data provider
-   * @param payload.bankAccountId - The ID of the bank account to sync transactions for
-   * @param payload.endDate - Optional end date for the transaction range (defaults to tomorrow)
-   * @param payload.startDate - Optional start date for the transaction range (defaults to 5 days before last update or 90 days ago for initial sync)
+   * @param payload.accessToken - The access token for the financial data
+   *   provider
+   * @param payload.bankAccountId - The ID of the bank account to sync
+   *   transactions for
+   * @param payload.endDate - Optional end date for the transaction range
+   *   (defaults to tomorrow)
+   * @param payload.startDate - Optional start date for the transaction range
+   *   (defaults to 5 days before last update or 90 days ago for initial sync)
    * @param payload.userId - The ID of the user who owns the account
-   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
-   * @returns A result object containing counts of transactions processed and status
-   * @throws Error if the transaction sync fails or if the account cannot be found
+   * @param io - The I/O context provided by Trigger.dev for logging, running
+   *   tasks, etc.
+   * @returns A result object containing counts of transactions processed and
+   *   status
+   * @throws Error if the transaction sync fails or if the account cannot be
+   *   found
    */
   run: async (payload, io) => {
     const { accessToken, bankAccountId, endDate, startDate, userId } = payload;
@@ -289,13 +296,15 @@ export const upsertTransactionsJob = client.defineJob({
 
 /**
  * Maps Plaid category strings to internal TransactionCategory enum values
- * 
- * This mapping function converts Plaid's category strings into our application's
- * standardized transaction categories, allowing for consistent categorization
- * regardless of the data source.
- * 
- * @param plaidCategory - The category string from Plaid (e.g., 'Food and Drink', 'Transportation')
- * @returns The appropriate TransactionCategory enum value, or TransactionCategory.OTHER if no match is found
+ *
+ * This mapping function converts Plaid's category strings into our
+ * application's standardized transaction categories, allowing for consistent
+ * categorization regardless of the data source.
+ *
+ * @param plaidCategory - The category string from Plaid (e.g., 'Food and
+ *   Drink', 'Transportation')
+ * @returns The appropriate TransactionCategory enum value, or
+ *   TransactionCategory.OTHER if no match is found
  */
 function mapPlaidCategoryToTransactionCategory(
   plaidCategory: string

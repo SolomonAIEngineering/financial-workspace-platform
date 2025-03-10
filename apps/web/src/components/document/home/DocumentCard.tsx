@@ -126,7 +126,6 @@ export function DocumentCard({
   // Track hover state for animations
   const [isHovered, setIsHovered] = useState(false);
 
-
   // Render list view
   if (viewMode === 'list') {
     return (
@@ -169,8 +168,7 @@ export function DocumentCard({
                   <span
                     className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[status].bg} ${STATUS_COLORS[status].text}`}
                   >
-                    {status.charAt(0).toUpperCase() +
-                      status.slice(1)}
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
                   </span>
                 </div>
               </div>
@@ -223,10 +221,10 @@ export function DocumentCard({
               style={
                 doc?.coverImage
                   ? {
-                    backgroundImage: `url(${doc?.coverImage})`,
-                    backgroundPosition: 'center',
-                    backgroundSize: 'cover',
-                  }
+                      backgroundImage: `url(${doc?.coverImage})`,
+                      backgroundPosition: 'center',
+                      backgroundSize: 'cover',
+                    }
                   : undefined
               }
             >

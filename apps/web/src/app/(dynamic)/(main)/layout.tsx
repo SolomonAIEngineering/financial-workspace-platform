@@ -31,7 +31,6 @@ export default async function MainLayout({ children }: LayoutProps) {
     ? JSON.parse(rightPanelTypeCookie)
     : RightPanelType.comment;
 
-
   return (
     <div className="flex h-full min-h-dvh dark:bg-[#1F1F1F]">
       <PlateProvider>

@@ -739,8 +739,8 @@ export const bankAccountsRouter = createRouter({
             id: '2',
             name: 'Savings Account',
             type: 'SAVINGS',
-            balance: 10000,
             currency: 'USD',
+            balance: 100_000,
             enabled: true,
             manual: false,
             bank: {

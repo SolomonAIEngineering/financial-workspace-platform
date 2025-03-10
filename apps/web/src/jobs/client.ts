@@ -23,7 +23,7 @@ export const client = new TriggerClient({
   id: process.env.TRIGGER_CLIENT_ID || 'smb-financial-management-platform',
   apiKey: process.env.TRIGGER_API_KEY || '',
   // More verbose logging in development, minimal in production
-  logLevel: isDevelopment ? 'debug' : (isTest ? 'error' : 'info'),
+  logLevel: isDevelopment ? 'debug' : isTest ? 'error' : 'info',
   // Optional: custom endpoint URL if needed
   apiUrl: process.env.TRIGGER_API_URL,
 });

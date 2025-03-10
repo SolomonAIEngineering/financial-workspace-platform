@@ -16,8 +16,8 @@ import { getInstitutionsSchema } from './schema';
  * Parameters for retrieving financial institutions.
  */
 type GetAccountParams = {
-    countryCode: string;
-    query?: string;
+  countryCode: string;
+  query?: string;
 };
 
 /**
@@ -50,23 +50,28 @@ type GetAccountParams = {
  * to help users find specific institutions.
  */
 export const getInstitutionsAction = authActionClient
-    .schema(getInstitutionsSchema)
-    .action(async ({ parsedInput: { countryCode, query } }): Promise<APIInstitutions.Institution[]> => {
-        try {
-            const { data } = await engine.apiInstitutions.list({
-                countryCode: countryCode as APIInstitutions.APIInstitutionListParams['countryCode'],
-                q: query,
-                limit: '10',
-            });
+  .schema(getInstitutionsSchema)
+  .action(
+    async ({
+      parsedInput: { countryCode, query },
+    }): Promise<APIInstitutions.Institution[]> => {
+      try {
+        const { data } = await engine.apiInstitutions.list({
+          countryCode:
+            countryCode as APIInstitutions.APIInstitutionListParams['countryCode'],
+          q: query,
+          limit: '10',
+        });
 
-            return data;
-        } catch (error) {
-            console.error('Error in getInstitutionsAction:', error);
-            console.error('Error details:', {
-                message: error instanceof Error ? error.message : String(error),
-                status: (error as any)?.status || 'unknown',
-                response: (error as any)?.response || 'unknown',
-            });
-            return [];
-        }
-    });
+        return data;
+      } catch (error) {
+        console.error('Error in getInstitutionsAction:', error);
+        console.error('Error details:', {
+          message: error instanceof Error ? error.message : String(error),
+          status: (error as any)?.status || 'unknown',
+          response: (error as any)?.response || 'unknown',
+        });
+        return [];
+      }
+    }
+  );

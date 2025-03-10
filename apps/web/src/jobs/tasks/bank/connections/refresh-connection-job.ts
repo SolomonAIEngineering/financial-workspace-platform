@@ -6,45 +6,47 @@ import { prisma } from '@/server/db';
 import { z } from 'zod';
 
 /**
- * @file Bank Connection Token Refresh Job
- * @description This job handles the token refresh process for bank connections across different providers.
- * It's triggered when a connection's access token needs to be renewed, handling the renewal process
- * specific to each provider (Plaid, Teller, GoCardless).
- * 
+ * This job handles the token refresh process for bank connections across
+ * different providers. It's triggered when a connection's access token needs to
+ * be renewed, handling the renewal process specific to each provider (Plaid,
+ * Teller, GoCardless).
+ *
  * Key responsibilities:
+ *
  * - Refreshes access tokens before they expire
  * - Updates connection status during refresh processes
  * - Handles provider-specific refresh flows
  * - Triggers verification syncs after refreshes
  * - Sends notifications to users when manual intervention is needed
- * 
+ *
+ * @file Bank Connection Token Refresh Job
  * @example
- * // Trigger a token refresh for a Plaid connection
- * await client.sendEvent({
- *   name: "refresh-connection",
- *   payload: {
- *     connectionId: "conn_123abc",
- *     accessToken: "current-access-token",
- *     refreshToken: "current-refresh-token",
- *     provider: "plaid",
- *     userId: "user_456def"
- *   }
- * });
- * 
+ *   // Trigger a token refresh for a Plaid connection
+ *   await client.sendEvent({
+ *     name: 'refresh-connection',
+ *     payload: {
+ *       connectionId: 'conn_123abc',
+ *       accessToken: 'current-access-token',
+ *       refreshToken: 'current-refresh-token',
+ *       provider: 'plaid',
+ *       userId: 'user_456def',
+ *     },
+ *   });
+ *
  * @example
- * // The job returns a result object with the new tokens on success:
- * {
+ *   // The job returns a result object with the new tokens on success:
+ *   {
  *   success: true,
  *   newAccessToken: "new-access-token-123",
  *   newRefreshToken: "new-refresh-token-456",
  *   expiresAt: "2023-05-15T10:30:00.000Z"
- * }
- * 
- * // Or an error message on failure:
- * {
+ *   }
+ *
+ *   // Or an error message on failure:
+ *   {
  *   success: false,
  *   error: "Invalid refresh token"
- * }
+ *   }
  */
 export const refreshConnectionJob = client.defineJob({
   id: BANK_JOBS.REFRESH_CONNECTION,
@@ -61,16 +63,21 @@ export const refreshConnectionJob = client.defineJob({
   }),
   version: '1.0.0',
   /**
-   * Main job execution function that refreshes tokens for a specific bank connection
-   * 
+   * Main job execution function that refreshes tokens for a specific bank
+   * connection
+   *
    * @param payload - The job payload containing connection details and tokens
-   * @param payload.connectionId - The unique ID of the bank connection to refresh
+   * @param payload.connectionId - The unique ID of the bank connection to
+   *   refresh
    * @param payload.accessToken - The current access token for the connection
    * @param payload.refreshToken - The current refresh token for the connection
-   * @param payload.provider - The provider type ('plaid', 'teller', or 'gocardless')
+   * @param payload.provider - The provider type ('plaid', 'teller', or
+   *   'gocardless')
    * @param payload.userId - The ID of the user who owns the connection
-   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
-   * @returns A result object containing success status and new token information
+   * @param io - The I/O context provided by Trigger.dev for logging, running
+   *   tasks, etc.
+   * @returns A result object containing success status and new token
+   *   information
    */
   run: async (payload, io) => {
     const { connectionId, accessToken, refreshToken, provider, userId } =
@@ -96,45 +103,56 @@ export const refreshConnectionJob = client.defineJob({
       // Perform provider-specific token refresh
       let refreshResult;
 
-      if (provider === 'plaid') {
-        refreshResult = await io.runTask('refresh-plaid-tokens', async () => {
-          // In a real implementation, you would call the Plaid API to refresh tokens
-          // For now, we'll simulate a successful refresh
-          return {
-            access_token: `new_${accessToken}`,
-            refresh_token: `new_${refreshToken}`,
-            expires_at: new Date(
-              Date.now() + 30 * 24 * 60 * 60 * 1000
-            ).toISOString(), // 30 days from now
-          };
-        });
-      } else if (provider === 'teller') {
-        refreshResult = await io.runTask('refresh-teller-tokens', async () => {
-          // Simulate Teller token refresh
-          return {
-            access_token: `new_${accessToken}`,
-            refresh_token: `new_${refreshToken}`,
-            expires_at: new Date(
-              Date.now() + 90 * 24 * 60 * 60 * 1000
-            ).toISOString(), // 90 days from now
-          };
-        });
-      } else if (provider === 'gocardless') {
-        refreshResult = await io.runTask(
-          'refresh-gocardless-tokens',
-          async () => {
-            // Simulate GoCardless token refresh
+      switch (provider) {
+        case 'plaid': {
+          refreshResult = await io.runTask('refresh-plaid-tokens', async () => {
+            // In a real implementation, you would call the Plaid API to refresh tokens
+            // For now, we'll simulate a successful refresh
             return {
               access_token: `new_${accessToken}`,
               refresh_token: `new_${refreshToken}`,
               expires_at: new Date(
-                Date.now() + 60 * 24 * 60 * 60 * 1000
-              ).toISOString(), // 60 days from now
+                Date.now() + 30 * 24 * 60 * 60 * 1000
+              ).toISOString(), // 30 days from now
             };
-          }
-        );
-      } else {
-        throw new Error(`Unsupported provider: ${provider}`);
+          });
+          break;
+        }
+        case 'teller': {
+          refreshResult = await io.runTask(
+            'refresh-teller-tokens',
+            async () => {
+              // Simulate Teller token refresh
+              return {
+                access_token: `new_${accessToken}`,
+                refresh_token: `new_${refreshToken}`,
+                expires_at: new Date(
+                  Date.now() + 90 * 24 * 60 * 60 * 1000
+                ).toISOString(), // 90 days from now
+              };
+            }
+          );
+          break;
+        }
+        case 'gocardless': {
+          refreshResult = await io.runTask(
+            'refresh-gocardless-tokens',
+            async () => {
+              // Simulate GoCardless token refresh
+              return {
+                access_token: `new_${accessToken}`,
+                refresh_token: `new_${refreshToken}`,
+                expires_at: new Date(
+                  Date.now() + 60 * 24 * 60 * 60 * 1000
+                ).toISOString(), // 60 days from now
+              };
+            }
+          );
+          break;
+        }
+        default: {
+          throw new Error(`Unsupported provider: ${provider}`);
+        }
       }
 
       // Extract new tokens from result

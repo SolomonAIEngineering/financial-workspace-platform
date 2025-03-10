@@ -76,7 +76,7 @@ export function ConnectBankProvider({
           onClick={async () => {
             await updateUsage();
 
-            // Just call openPlaid directly - all the cleanup is now handled 
+            // Just call openPlaid directly - all the cleanup is now handled
             // in the ConnectTransactionsModal component's handleOpenPlaid
             openPlaid();
           }}

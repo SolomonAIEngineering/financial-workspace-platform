@@ -7,37 +7,40 @@ import { cronTrigger } from '@trigger.dev/sdk';
 import { prisma } from '@/server/db';
 
 /**
- * @file Expiring Bank Connections Scheduler
- * @description This job proactively identifies bank connections that may be approaching expiration
- * due to inactivity. Many banking integrations (like Plaid) will expire user access tokens after
- * a period of inactivity (typically 30 days).
- * 
+ * This job proactively identifies bank connections that may be approaching
+ * expiration due to inactivity. Many banking integrations (like Plaid) will
+ * expire user access tokens after a period of inactivity (typically 30 days).
+ *
  * The job performs these key functions:
- * 
- * 1. Finds connections that haven't been accessed in 20+ days (approaching expiration)
- * 2. Sends proactive notifications to users to remind them to use their connections
- * 3. Automatically marks connections as requiring attention if they've been inactive for 30+ days
- *    (likely already expired)
- * 
- * This job helps maintain uninterrupted access to financial data by proactively alerting users
- * before their connections expire, reducing service disruptions.
- * 
+ *
+ * 1. Finds connections that haven't been accessed in 20+ days (approaching
+ *    expiration)
+ * 2. Sends proactive notifications to users to remind them to use their
+ *    connections
+ * 3. Automatically marks connections as requiring attention if they've been
+ *    inactive for 30+ days (likely already expired)
+ *
+ * This job helps maintain uninterrupted access to financial data by proactively
+ * alerting users before their connections expire, reducing service
+ * disruptions.
+ *
+ * @file Expiring Bank Connections Scheduler
  * @example
- * // The job runs automatically every day at 10 AM, but can be triggered manually:
- * await client.sendEvent({
- *   name: "run-job",
- *   payload: {
- *     jobId: "expiring-scheduler-job"
- *   }
- * });
- * 
+ *   // The job runs automatically every day at 10 AM, but can be triggered manually:
+ *   await client.sendEvent({
+ *     name: 'run-job',
+ *     payload: {
+ *       jobId: 'expiring-scheduler-job',
+ *     },
+ *   });
+ *
  * @example
- * // The job returns a summary of its actions:
- * {
+ *   // The job returns a summary of its actions:
+ *   {
  *   connectionsProcessed: 15,   // Number of expiring connections found
  *   notificationsSent: 12,      // Number of notifications sent to users
  *   markedForAttention: 7       // Number of connections marked as requiring attention
- * }
+ *   }
  */
 export const expiringSchedulerJob = client.defineJob({
   id: BANK_JOBS.EXPIRING_SCHEDULER,
@@ -47,12 +50,14 @@ export const expiringSchedulerJob = client.defineJob({
   }),
   version: '1.0.0',
   /**
-   * Main job execution function that processes connections approaching expiration
-   * 
+   * Main job execution function that processes connections approaching
+   * expiration
+   *
    * @param payload - The job payload (empty for cron jobs)
-   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
-   * @returns A result object containing counts of connections processed, notifications sent,
-   *          and connections marked as requiring attention
+   * @param io - The I/O context provided by Trigger.dev for logging, running
+   *   tasks, etc.
+   * @returns A result object containing counts of connections processed,
+   *   notifications sent, and connections marked as requiring attention
    */
   run: async (payload, io) => {
     await io.logger.info('Starting expiring connections scheduler');

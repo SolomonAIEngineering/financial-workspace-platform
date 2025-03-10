@@ -1,7 +1,7 @@
 import {
   getAccounts,
   getItemDetails,
-  getTransactions
+  getTransactions,
 } from '@/server/services/plaid';
 
 import { SyncStatus } from '@prisma/client';
@@ -36,67 +36,76 @@ client.defineJob({
     });
 
     // 1. Fetch all active bank connections that need syncing
-    const connections = await io.runTask('get-connections-for-sync', async () => {
-      return await getConnectionsForSync();
-    });
+    const connections = await io.runTask(
+      'get-connections-for-sync',
+      async () => {
+        return await getConnectionsForSync();
+      }
+    );
 
     await io.logger.info(`Found ${connections.length} connections to sync`);
 
     // 2 & 3 & 4. Process each connection - get transactions, store them, and update timestamps
     const results: SyncResult[] = [];
     for (const connection of connections) {
-      const result = await io.runTask(`sync-connection-${connection.id}`, async () => {
-        try {
-          // Update connection status to SYNCING
-          await updateConnectionSyncStatus(connection.id, SyncStatus.SYNCING);
+      const result = await io.runTask(
+        `sync-connection-${connection.id}`,
+        async () => {
+          try {
+            // Update connection status to SYNCING
+            await updateConnectionSyncStatus(connection.id, SyncStatus.SYNCING);
 
-          // Sync transactions for this connection
-          const syncResult = await syncBankConnectionTransactions(connection, io);
+            // Sync transactions for this connection
+            const syncResult = await syncBankConnectionTransactions(
+              connection,
+              io
+            );
 
-          // Update connection status back to IDLE
-          await updateConnectionSyncStatus(connection.id, SyncStatus.IDLE);
+            // Update connection status back to IDLE
+            await updateConnectionSyncStatus(connection.id, SyncStatus.IDLE);
 
-          // Update the lastSyncedAt timestamp
-          await prisma.bankConnection.update({
-            where: { id: connection.id },
-            data: { lastSyncedAt: new Date() }
-          });
+            // Update the lastSyncedAt timestamp
+            await prisma.bankConnection.update({
+              where: { id: connection.id },
+              data: { lastSyncedAt: new Date() },
+            });
 
-          return {
-            connectionId: connection.id,
-            status: 'success' as const,
-            ...syncResult
-          };
-        } catch (error) {
-          // Handle errors and mark connection as failed
-          await updateConnectionSyncStatus(connection.id, SyncStatus.FAILED);
+            return {
+              connectionId: connection.id,
+              status: 'success' as const,
+              ...syncResult,
+            };
+          } catch (error) {
+            // Handle errors and mark connection as failed
+            await updateConnectionSyncStatus(connection.id, SyncStatus.FAILED);
 
-          await io.logger.error(`Error syncing connection ${connection.id}`, {
-            error: error instanceof Error ? error.message : String(error),
-            connectionId: connection.id
-          });
+            await io.logger.error(`Error syncing connection ${connection.id}`, {
+              error: error instanceof Error ? error.message : String(error),
+              connectionId: connection.id,
+            });
 
-          return {
-            connectionId: connection.id,
-            status: 'error' as const,
-            error: error instanceof Error ? error.message : String(error)
-          };
+            return {
+              connectionId: connection.id,
+              status: 'error' as const,
+              error: error instanceof Error ? error.message : String(error),
+            };
+          }
         }
-      });
+      );
 
       results.push(result);
     }
 
     await io.logger.info('Bank transaction sync completed', {
       timestamp: new Date().toISOString(),
-      successCount: results.filter(r => r.status === 'success').length,
-      errorCount: results.filter(r => r.status === 'error').length
+      successCount: results.filter((r) => r.status === 'success').length,
+      errorCount: results.filter((r) => r.status === 'error').length,
     });
 
     return {
       message: 'Bank transaction sync completed successfully',
       timestamp: new Date().toISOString(),
-      results
+      results,
     };
   },
 });

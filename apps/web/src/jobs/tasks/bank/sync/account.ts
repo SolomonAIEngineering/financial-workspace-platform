@@ -11,52 +11,52 @@ import { getAccounts } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
 
 /**
- * @file Bank Account Data Synchronization Job
- * @description This job synchronizes data for a specific bank account with the latest
- * information from Plaid or another financial data provider. It updates critical account
- * information such as:
- * 
+ * This job synchronizes data for a specific bank account with the latest
+ * information from Plaid or another financial data provider. It updates
+ * critical account information such as:
+ *
  * - Current and available balances
  * - Account name and mask
  * - Account status and type
  * - Currency and limit information
- * 
- * The job can be triggered automatically as part of a scheduled sync, manually by the user,
- * or as part of a connection-wide synchronization process.
- * 
- * When run with the `manualSync` flag, it will also trigger a transaction sync to ensure
- * complete data freshness.
- * 
+ *
+ * The job can be triggered automatically as part of a scheduled sync, manually
+ * by the user, or as part of a connection-wide synchronization process.
+ *
+ * When run with the `manualSync` flag, it will also trigger a transaction sync
+ * to ensure complete data freshness.
+ *
+ * @file Bank Account Data Synchronization Job
  * @example
- * // Trigger an account sync
- * await client.sendEvent({
- *   name: "sync-account",
- *   payload: {
- *     bankAccountId: "acct_123abc",
- *     accessToken: "access-token-from-provider",
- *     userId: "user_456def",
- *     manualSync: false  // Optional, defaults to false
- *   }
- * });
- * 
+ *   // Trigger an account sync
+ *   await client.sendEvent({
+ *     name: 'sync-account',
+ *     payload: {
+ *       bankAccountId: 'acct_123abc',
+ *       accessToken: 'access-token-from-provider',
+ *       userId: 'user_456def',
+ *       manualSync: false, // Optional, defaults to false
+ *     },
+ *   });
+ *
  * @example
- * // The job returns different results based on the outcome:
- * 
- * // Successful sync:
- * {
+ *   // The job returns different results based on the outcome:
+ *
+ *   // Successful sync:
+ *   {
  *   status: "success",
  *   accountId: "acct_123abc",
  *   balance: {
- *     available: 1250.75,
- *     current: 1350.25
+ *   available: 1250.75,
+ *   current: 1350.25
  *   }
- * }
- * 
- * // Account skipped:
- * {
+ *   }
+ *
+ *   // Account skipped:
+ *   {
  *   status: "skipped",
  *   reason: "Account not active"
- * }
+ *   }
  */
 export const syncAccountJob = client.defineJob({
   id: BANK_JOBS.SYNC_ACCOUNT,
@@ -67,14 +67,18 @@ export const syncAccountJob = client.defineJob({
   version: '1.0.0',
   /**
    * Main job execution function that syncs a bank account's data
-   * 
+   *
    * @param payload - The job payload containing account details
-   * @param payload.accessToken - The access token for the financial data provider
+   * @param payload.accessToken - The access token for the financial data
+   *   provider
    * @param payload.bankAccountId - The ID of the bank account to sync
-   * @param payload.manualSync - Whether this is a manual sync initiated by the user
+   * @param payload.manualSync - Whether this is a manual sync initiated by the
+   *   user
    * @param payload.userId - The ID of the user who owns the account
-   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
-   * @returns A result object containing the account ID, balance information, and status
+   * @param io - The I/O context provided by Trigger.dev for logging, running
+   *   tasks, etc.
+   * @returns A result object containing the account ID, balance information,
+   *   and status
    * @throws Error if the account sync fails or if the account cannot be found
    */
   run: async (payload, io) => {
@@ -218,9 +222,11 @@ export const syncAccountJob = client.defineJob({
 
 /**
  * Maps Plaid account types to internal AccountType enum values
- * 
- * @param type - The account type string from Plaid (e.g., 'depository', 'credit')
- * @param subtype - Optional account subtype from Plaid (e.g., 'checking', 'savings')
+ *
+ * @param type - The account type string from Plaid (e.g., 'depository',
+ *   'credit')
+ * @param subtype - Optional account subtype from Plaid (e.g., 'checking',
+ *   'savings')
  * @returns The appropriate AccountType enum value for our database
  */
 function mapPlaidAccountType(type: string, subtype?: string): AccountType {

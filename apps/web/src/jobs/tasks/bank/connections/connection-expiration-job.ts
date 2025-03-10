@@ -6,43 +6,47 @@ import { prisma } from '@/server/db';
 
 /**
  * Constants defining the thresholds for connection expiration notifications.
- * WARNING_DAYS is when users get their first notification.
- * CRITICAL_DAYS is when users get a more urgent notification.
+ * WARNING_DAYS is when users get their first notification. CRITICAL_DAYS is
+ * when users get a more urgent notification.
  */
 const WARNING_DAYS = 14;
 const CRITICAL_DAYS = 3;
 
 /**
- * @file Connection Expiration Monitoring Job
- * @description This job monitors bank connections that are approaching expiration and proactively 
- * notifies users to reconnect their accounts, helping prevent disruption of financial data syncing.
- * 
+ * This job monitors bank connections that are approaching expiration and
+ * proactively notifies users to reconnect their accounts, helping prevent
+ * disruption of financial data syncing.
+ *
  * The job sends two types of notifications based on expiration timeframes:
- * - Warning notifications: Sent when a connection will expire within {@link WARNING_DAYS} days
- * - Critical notifications: Sent when a connection will expire within {@link CRITICAL_DAYS} days
- * 
+ *
+ * - Warning notifications: Sent when a connection will expire within
+ *   {@link WARNING_DAYS} days
+ * - Critical notifications: Sent when a connection will expire within
+ *   {@link CRITICAL_DAYS} days
+ *
+ * @file Connection Expiration Monitoring Job
  * @example
- * // Manually trigger the connection expiration job
- * await client.sendEvent({
- *   name: "run-job",
- *   payload: {
- *     jobId: BANK_JOBS.CONNECTION_EXPIRATION
- *   }
- * });
- * 
+ *   // Manually trigger the connection expiration job
+ *   await client.sendEvent({
+ *     name: 'run-job',
+ *     payload: {
+ *       jobId: BANK_JOBS.CONNECTION_EXPIRATION,
+ *     },
+ *   });
+ *
  * @example
- * // The job result structure will be:
- * {
+ *   // The job result structure will be:
+ *   {
  *   success: true,
  *   warningCount: 5,  // Number of warning notifications sent
  *   criticalCount: 2  // Number of critical notifications sent
- * }
- * 
- * // Or if there was an error:
- * {
+ *   }
+ *
+ *   // Or if there was an error:
+ *   {
  *   success: false,
  *   error: "Database connection failed"
- * }
+ *   }
  */
 export const connectionExpirationJob = client.defineJob({
   id: BANK_JOBS.CONNECTION_EXPIRATION,
@@ -52,10 +56,12 @@ export const connectionExpirationJob = client.defineJob({
   }),
   version: '1.0.0',
   /**
-   * Main job execution function that checks for expiring connections and sends notifications
-   * 
+   * Main job execution function that checks for expiring connections and sends
+   * notifications
+   *
    * @param payload - The job payload (empty for cron jobs)
-   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
+   * @param io - The I/O context provided by Trigger.dev for logging, running
+   *   tasks, etc.
    * @returns A result object containing success status and notification counts
    */
   run: async (payload, io) => {

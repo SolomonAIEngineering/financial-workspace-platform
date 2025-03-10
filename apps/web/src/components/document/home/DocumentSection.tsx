@@ -76,7 +76,7 @@ export function DocumentSection({
 
   return (
     <motion.div
-      className="flex flex-col gap-5 mb-6"
+      className="mb-6 flex flex-col gap-5"
       animate={{ opacity: 1 }}
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}

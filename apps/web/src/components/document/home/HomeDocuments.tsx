@@ -113,9 +113,7 @@ function applyFilters(docs: Document[], filters: FilterState): Document[] {
     });
 }
 
-/**
- * Category filter component optimized for mobile
- */
+/** Category filter component optimized for mobile */
 function CategoryFilters({
   activeCategory,
   setActiveCategory,
@@ -126,28 +124,31 @@ function CategoryFilters({
   return (
     <div className="flex w-full overflow-x-auto overflow-y-hidden rounded-md border border-gray-200 dark:border-gray-800">
       <button
-        className={`whitespace-nowrap px-3 py-1.5 text-sm ${activeCategory === 'all'
-          ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
-          : 'bg-transparent text-gray-600 dark:text-gray-400'
-          }`}
+        className={`px-3 py-1.5 text-sm whitespace-nowrap ${
+          activeCategory === 'all'
+            ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
+            : 'bg-transparent text-gray-600 dark:text-gray-400'
+        }`}
         onClick={() => setActiveCategory('all')}
       >
         All Documents
       </button>
       <button
-        className={`whitespace-nowrap px-3 py-1.5 text-sm ${activeCategory === 'recent'
-          ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
-          : 'bg-transparent text-gray-600 dark:text-gray-400'
-          }`}
+        className={`px-3 py-1.5 text-sm whitespace-nowrap ${
+          activeCategory === 'recent'
+            ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
+            : 'bg-transparent text-gray-600 dark:text-gray-400'
+        }`}
         onClick={() => setActiveCategory('recent')}
       >
         Recent
       </button>
       <button
-        className={`whitespace-nowrap px-3 py-1.5 text-sm ${activeCategory === 'templates'
-          ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
-          : 'bg-transparent text-gray-600 dark:text-gray-400'
-          }`}
+        className={`px-3 py-1.5 text-sm whitespace-nowrap ${
+          activeCategory === 'templates'
+            ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
+            : 'bg-transparent text-gray-600 dark:text-gray-400'
+        }`}
         onClick={() => setActiveCategory('templates')}
       >
         Templates
@@ -270,7 +271,10 @@ export function HomeDocuments({
               <div className="flex flex-col space-y-6 pt-6">
                 <div className="space-y-2">
                   <h3 className="text-sm font-medium">View Mode</h3>
-                  <ViewModeToggle setViewMode={setViewMode} viewMode={viewMode} />
+                  <ViewModeToggle
+                    setViewMode={setViewMode}
+                    viewMode={viewMode}
+                  />
                 </div>
 
                 <div className="space-y-2">
