@@ -27,14 +27,12 @@ export const getAccountsAction = authActionClient
   .action(
     async ({ parsedInput: { id, provider, accessToken, institutionId } }) => {
       try {
-        const accountsResponse = await engine.accounts.list({
+        const { data } = await engine.apiFinancialAccounts.list({
           id,
           provider,
           accessToken,
           institutionId,
         });
-
-        const { data } = await accountsResponse;
 
         return {
           data: data.sort((a, b) => b.balance.amount - a.balance.amount),

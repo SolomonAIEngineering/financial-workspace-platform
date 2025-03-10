@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/registry/default/potion-ui/button';
 import { Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { manualSyncTransactionsAction } from '@/actions/bank-sync';
+import { manualSyncBankAccountAction } from '@/actions/bank/manual-sync-bank-account-action';
 
 interface SyncStatusProps {
   bankAccount: {
@@ -37,7 +37,7 @@ export function SyncStatus({ bankAccount }: SyncStatusProps) {
     };
 
     updateSyncText();
-    const interval = setInterval(updateSyncText, 60000); // Update every minute
+    const interval = setInterval(updateSyncText, 600_000); // Update every 10 minutes
 
     return () => clearInterval(interval);
   }, [bankAccount.lastTransactionSync]);
@@ -47,10 +47,16 @@ export function SyncStatus({ bankAccount }: SyncStatusProps) {
     setSyncResult({});
 
     try {
-      const result = await manualSyncTransactionsAction(
-        bankAccount.bankConnectionId
-      );
-      setSyncResult(result);
+      const result = await manualSyncBankAccountAction({
+        connectionId: bankAccount.bankConnectionId,
+      });
+
+      if (result?.data?.success) {
+        setSyncResult({
+          success: true,
+          message: 'Sync started',
+        });
+      }
     } catch (error) {
       setSyncResult({
         success: false,
@@ -66,9 +72,8 @@ export function SyncStatus({ bankAccount }: SyncStatusProps) {
     <div className="flex flex-col space-y-2">
       <div className="flex items-center gap-2">
         <div
-          className={`h-2 w-2 rounded-full ${
-            bankAccount.lastTransactionSync ? 'bg-green-500' : 'bg-amber-500'
-          }`}
+          className={`h-2 w-2 rounded-full ${bankAccount.lastTransactionSync ? 'bg-green-500' : 'bg-amber-500'
+            }`}
         />
         <span className="text-sm text-gray-600">{lastSyncText}</span>
       </div>

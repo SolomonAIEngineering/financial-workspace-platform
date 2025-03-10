@@ -41,8 +41,8 @@ export function AddAccountButton() {
    * Handler for opening the connect modal Sets the 'step' URL parameter to
    * 'connect', which triggers the ConnectTransactionsModal to open
    */
-  const handleOpenConnectModal = () => {
-    setParams({ step: 'connect' });
+  const handleOpenConnectModal = async () => {
+    await setParams({ step: 'connect' });
   };
 
   return (

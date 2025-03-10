@@ -74,16 +74,14 @@ export const reconnectGoCardLessLinkAction = authActionClient
       }
 
       try {
-        const agreementResponse = await engine.auth.gocardless.agreement.create(
+        const { data: agreementData } = await engine.apiGocardless.createAgreement(
           {
             institutionId,
             transactionTotalDays: availableHistory,
           }
         );
 
-        const { data: agreementData } = await agreementResponse;
-
-        const linkResponse = await engine.auth.gocardless.link({
+        const { data: linkData } = await engine.apiGocardless.createLink({
           agreement: agreementData.id,
           institutionId,
           redirect: link.toString(),
@@ -92,9 +90,7 @@ export const reconnectGoCardLessLinkAction = authActionClient
           // reference,
         });
 
-        const { data: linkData } = await linkResponse;
-
-        if (!linkData || !linkData.link) {
+        if (!linkData?.link) {
           throw new Error('Failed to create link');
         }
 

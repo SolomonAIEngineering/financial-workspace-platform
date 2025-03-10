@@ -54,7 +54,7 @@ export const createGoCardLessLinkAction = authActionClient
       },
       ctx: { user },
     }) => {
-      await engine.institutions[':id'].usage.$put({
+      await engine.apiInstitutions[':id'].usage.$put({
         param: {
           id: institutionId,
         },
@@ -66,22 +66,19 @@ export const createGoCardLessLinkAction = authActionClient
       redirectTo.searchParams.append('provider', 'gocardless');
 
       try {
-        const agreementResponse = await engine.auth.gocardless.agreement.create(
+        const { data: agreementData } = await engine.apiGocardless.createAgreement(
           {
             institutionId,
             transactionTotalDays: availableHistory,
           }
         );
 
-        const { data: agreementData } = await agreementResponse;
 
-        const linkResponse = await engine.auth.gocardless.link({
+        const { data: linkData } = await engine.apiGocardless.createLink({
           agreement: agreementData.id,
           institutionId,
           redirect: redirectTo.toString(),
         });
-
-        const { data: linkData } = await linkResponse;
 
         return redirect(linkData.link);
       } catch (error) {

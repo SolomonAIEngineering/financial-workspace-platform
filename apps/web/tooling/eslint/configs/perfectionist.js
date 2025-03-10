@@ -1,19 +1,18 @@
-import perfectionist from 'eslint-plugin-perfectionist';
-
 import { defineConfig } from '../utils.js';
+import perfectionist from 'eslint-plugin-perfectionist';
 
 export default defineConfig(perfectionist.configs['recommended-natural'], {
   rules: {
     '@typescript-eslint/adjacent-overload-signatures': 'off',
     'perfectionist/sort-array-includes': [
-      'warn',
+      'off',
       {
         groupKind: 'literals-first',
         type: 'natural',
       },
     ],
     'perfectionist/sort-classes': [
-      'warn',
+      'off',
       {
         groups: [
           'index-signature',
@@ -34,34 +33,34 @@ export default defineConfig(perfectionist.configs['recommended-natural'], {
       },
     ],
     'perfectionist/sort-decorators': [
-      'warn',
+      'off',
       {
         type: 'natural',
       },
     ],
     'perfectionist/sort-enums': [
-      'warn',
+      'off',
       {
         sortByValue: true,
         type: 'natural',
       },
     ],
     'perfectionist/sort-exports': [
-      'warn',
+      'off',
       {
         groupKind: 'types-first',
         type: 'natural',
       },
     ],
     'perfectionist/sort-heritage-clauses': [
-      'warn',
+      'off',
       {
         type: 'natural',
       },
     ],
     'perfectionist/sort-imports': [
       // 'off',
-      'warn',
+      'off',
       {
         customGroups: {
           type: {
@@ -91,7 +90,7 @@ export default defineConfig(perfectionist.configs['recommended-natural'], {
       },
     ],
     'perfectionist/sort-interfaces': [
-      'warn',
+      'off',
       {
         customGroups: {
           key: ['^key$', '^keys$'],
@@ -112,7 +111,7 @@ export default defineConfig(perfectionist.configs['recommended-natural'], {
     // breaking: ordering matters
     'perfectionist/sort-intersection-types': 'off',
     'perfectionist/sort-jsx-props': [
-      'warn',
+      'off',
       {
         customGroups: {
           key: ['^key$', '^keys$'],
@@ -163,7 +162,7 @@ export default defineConfig(perfectionist.configs['recommended-natural'], {
       },
     ],
     'perfectionist/sort-modules': [
-      'warn',
+      'off',
       {
         groups: [
           'declare-enum',
@@ -186,21 +185,21 @@ export default defineConfig(perfectionist.configs['recommended-natural'], {
       },
     ],
     'perfectionist/sort-named-exports': [
-      'warn',
+      'off',
       {
         groupKind: 'types-first',
         type: 'natural',
       },
     ],
     'perfectionist/sort-named-imports': [
-      'warn',
+      'off',
       {
         groupKind: 'types-first',
         type: 'natural',
       },
     ],
     'perfectionist/sort-object-types': [
-      'warn',
+      'off',
       {
         customGroups: {
           key: ['^key$', '^keys$'],
@@ -221,7 +220,7 @@ export default defineConfig(perfectionist.configs['recommended-natural'], {
       },
     ],
     'perfectionist/sort-objects': [
-      'warn',
+      'off',
       {
         customGroups: {
           key: ['^key$', '^keys$'],
@@ -241,19 +240,19 @@ export default defineConfig(perfectionist.configs['recommended-natural'], {
       },
     ],
     'perfectionist/sort-sets': [
-      'warn',
+      'off',
       {
         type: 'natural',
       },
     ],
     'perfectionist/sort-switch-case': [
-      'warn',
+      'off',
       {
         type: 'natural',
       },
     ],
     'perfectionist/sort-union-types': [
-      'warn',
+      'off',
       {
         groups: [
           'conditional',
@@ -273,7 +272,7 @@ export default defineConfig(perfectionist.configs['recommended-natural'], {
       },
     ],
     'perfectionist/sort-variable-declarations': [
-      'warn',
+      'off',
       {
         type: 'natural',
       },
