@@ -1,4 +1,7 @@
-import { handleError, handleZodError } from '@/errors'
+import {
+  AuthenticationRequiredRoutes,
+  CachedRoutes,
+} from '@/route-definitions/routes'
 import {
   authMiddleware,
   cacheMiddleware,
@@ -7,21 +10,19 @@ import {
   jsonFormattingMiddleware,
   loggingMiddleware,
 } from '@/middleware/index'
+import { handleError, handleZodError } from '@/errors'
+
+import type { Context as GenericContext } from 'hono'
+import type { HonoEnv } from './env'
+import { OpenAPIHono } from '@hono/zod-openapi'
 import { init } from '@/middleware/init'
 import { metrics } from '@/middleware/metrics'
-import { rateLimit } from '@/middleware/ratelimit'
-import {
-  AuthenticationRequiredRoutes,
-  CachedRoutes,
-} from '@/route-definitions/routes'
-import { swaggerUI } from '@hono/swagger-ui'
-import { OpenAPIHono } from '@hono/zod-openapi'
-import type { Context as GenericContext } from 'hono'
 import { prettyJSON } from 'hono/pretty-json'
+import { rateLimit } from '@/middleware/ratelimit'
 import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
+import { swaggerUI } from '@hono/swagger-ui'
 import { timing } from 'hono/timing'
-import type { HonoEnv } from './env'
 
 /**
  * Creates and configures a new OpenAPIHono application.
@@ -149,8 +150,8 @@ function setupSwagger(app: OpenAPIHono<HonoEnv>) {
         email: 'engineering@solomon-ai.co',
       },
       license: {
-        name: 'AGPL-3.0-or-later',
-        url: 'https://www.gnu.org/licenses/agpl-3.0.en.html',
+        name: 'MIT',
+        url: 'https://opensource.org/licenses/MIT',
       },
     },
     servers: [
