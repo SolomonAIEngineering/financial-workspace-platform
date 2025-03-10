@@ -1,8 +1,7 @@
 import { expect, test } from 'vitest'
 
-import { newId } from '@repo/id'
+import { newId } from '@solomonai/id'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
 import type { V1IdentitiesGetIdentityResponse } from './v1_identities_getIdentity'
 
 test('identity does not exist', async (t) => {

@@ -4,10 +4,10 @@ import { insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
 import { openApiErrorResponses } from '@/pkg/errors'
 import type { App } from '@/pkg/hono/app'
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { buildUnkeyQuery } from '@repo/rbac'
-import { validation } from '@repo/validation'
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { buildUnkeyQuery } from '@solomonai/rbac'
+import { validation } from '@solomonai/validation'
 
 const route = createRoute({
   tags: ['permissions'],

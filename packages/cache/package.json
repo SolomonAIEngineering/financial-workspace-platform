@@ -1,5 +1,5 @@
 {
-  "name": "@repo/cache",
+  "name": "@solomonai/cache",
   "version": "1.5.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@opentelemetry/api": "1.8.0",
-    "@polar/error": "workspace:*",
+    "@solomonai/error": "workspace:*",
     "superjson": "^2.2.1"
   }
 }

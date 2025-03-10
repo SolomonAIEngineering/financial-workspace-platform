@@ -1,5 +1,6 @@
-import { sha256 } from '@repo/hash'
 import { expect, test } from 'vitest'
+
+import { sha256 } from '@solomonai/hash'
 import { newKey } from './util'
 import { KeyV1 } from './v1'
 

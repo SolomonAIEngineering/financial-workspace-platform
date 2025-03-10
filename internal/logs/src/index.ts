@@ -1,4 +1,4 @@
-import { metricSchema } from '@repo/metrics'
+import { metricSchema } from '@solomonai/metrics'
 import { z } from 'zod'
 
 /**

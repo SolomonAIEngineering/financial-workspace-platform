@@ -9,7 +9,7 @@ import {
   DotFilledIcon,
 } from '@radix-ui/react-icons'
 
-import { cn } from '@repo/design-system/lib/utils'
+import { cn } from '@solomonai/design-system/lib/utils'
 
 const MenubarMenu: React.ComponentType<
   React.ComponentPropsWithoutRef<typeof MenubarPrimitive.Menu>

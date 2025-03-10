@@ -1,16 +1,14 @@
 import { expect, test } from 'vitest'
-
-import { schema } from '@repo/db'
-import { sha256 } from '@repo/hash'
-import { newId } from '@repo/id'
-import { KeyV1 } from '@repo/keys'
-
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
 import type {
   V1KeysDeleteKeyRequest,
   V1KeysDeleteKeyResponse,
 } from './v1_keys_deleteKey'
+
+import { schema } from '@solomonai/db'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('soft deletes key', async (t) => {
   const h = await IntegrationHarness.init(t)

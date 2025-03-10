@@ -1,5 +1,5 @@
 {
-  "name": "@repo/env",
+  "name": "@solomonai/env",
   "version": "0.0.0",
   "private": true,
   "dependencies": {

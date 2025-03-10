@@ -1,4 +1,4 @@
-import { Err, Ok, type Result } from '@polar/error'
+import { Err, Ok, type Result } from '@solomonai/error'
 import superjson from 'superjson'
 import { CacheError } from '../errors'
 import type { Entry, Store } from './interface'

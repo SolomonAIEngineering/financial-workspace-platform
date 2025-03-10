@@ -1,9 +1,9 @@
-import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Check, Copy } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
 import { composeRefs } from "@/lib/compose-refs";
+import { cn } from "@/lib/utils";
+import { Check, Copy } from "lucide-react";
+import * as React from "react";
 
 const CopyToClipboardContainer = React.forwardRef<
   HTMLDivElement,
@@ -18,7 +18,7 @@ const CopyToClipboardContainer = React.forwardRef<
   };
 
   return (
-    <div className="relative group text-left">
+    <div className="group relative text-left">
       <div
         ref={composeRefs(ref, innerRef)}
         className={cn("peer", className)}
@@ -29,7 +29,7 @@ const CopyToClipboardContainer = React.forwardRef<
       <Button
         variant="outline"
         size="icon"
-        className="absolute top-2 right-2 w-6 h-6 opacity-0 group-hover:opacity-100 peer-focus:opacity-100 focus:opacity-100"
+        className="absolute right-2 top-2 h-6 w-6 opacity-0 focus:opacity-100 group-hover:opacity-100 peer-focus:opacity-100"
         onClick={onClick}
       >
         {!isCopied ? (

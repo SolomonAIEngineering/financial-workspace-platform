@@ -1,6 +1,6 @@
 import type { Entry, Store } from '../stores'
 
-import type { Result } from '@polar/error'
+import type { Result } from '@solomonai/error'
 import type { CacheError } from '../errors'
 import type { Metrics } from '../metrics'
 import type { StoreMiddleware } from './interface'

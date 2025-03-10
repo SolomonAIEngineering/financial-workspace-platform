@@ -1,12 +1,12 @@
 {
-  "name": "@repo/ai",
+  "name": "@solomonai/ai",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
     "@ai-sdk/openai": "^1.0.7",
     "@nanostores/react": "0.8.4",
-    "@repo/env": "workspace:*",
-    "@repo/tailwind-config": "workspace:*",
+    "@solomonai/env": "workspace:*",
+    "@solomonai/tailwind-config": "workspace:*",
     "@t3-oss/env-nextjs": "^0.12.0",
     "@vitejs/plugin-react": "^4.3.4",
     "ai": "^4.0.13",

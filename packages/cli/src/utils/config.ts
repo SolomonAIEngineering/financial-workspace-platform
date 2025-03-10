@@ -3,7 +3,7 @@ import { oauthClient } from '@/utils/oauth'
 import Configstore from 'configstore'
 
 export async function getConfig(): Promise<DubConfig> {
-  const configStore = new Configstore('@repo/smb-cli')
+  const configStore = new Configstore('@solomonai/smb-cli')
 
   if (!configStore.size) {
     throw new Error(
@@ -34,7 +34,7 @@ export async function getConfig(): Promise<DubConfig> {
 export async function setConfig(
   newConfig: Partial<DubConfig>,
 ): Promise<DubConfig> {
-  const configStore = new Configstore('@repo/smb-cli')
+  const configStore = new Configstore('@solomonai/smb-cli')
   const existingConfig: DubConfig = configStore.all
 
   const updatedConfig: DubConfig = {

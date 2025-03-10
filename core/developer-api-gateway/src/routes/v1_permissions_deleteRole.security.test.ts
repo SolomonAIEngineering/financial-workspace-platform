@@ -1,14 +1,14 @@
-import { runCommonRouteTests } from '@/pkg/testutil/common-tests'
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
 import { describe, expect, test } from 'vitest'
 import type {
   V1PermissionsDeleteRoleRequest,
   V1PermissionsDeleteRoleResponse,
 } from './v1_permissions_deleteRole'
+
+import { runCommonRouteTests } from '@/pkg/testutil/common-tests'
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 runCommonRouteTests<V1PermissionsDeleteRoleRequest>({
   prepareRequest: async (rh) => {

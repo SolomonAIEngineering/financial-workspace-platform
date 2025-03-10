@@ -14,7 +14,7 @@ import type { SolomonAIOptions } from './client'
  * @example
  * ```typescript
  * const telemetry: Telemetry = {
- *   sdkVersions: ['@repo/api@1.0.0', 'custom-wrapper@2.0.0'],
+ *   sdkVersions: ['@solomonai/api@1.0.0', 'custom-wrapper@2.0.0'],
  *   platform: 'vercel',
  *   runtime: 'node@v18.12.0'
  * };
@@ -25,7 +25,7 @@ export type Telemetry = {
    * Array of SDK versions in use.
    * Includes the core SDK version and any wrapper SDK versions.
    *
-   * @example ['@repo/api@v1.1.1', 'custom-wrapper@2.0.0']
+   * @example ['@solomonai/api@v1.1.1', 'custom-wrapper@2.0.0']
    */
   sdkVersions: string[]
 
@@ -62,16 +62,16 @@ export type Telemetry = {
  * });
  *
  * if (telemetry) {
- *   console.log('Running on:', telemetry.platform);
- *   console.log('Runtime:', telemetry.runtime);
- *   console.log('SDK Versions:', telemetry.sdkVersions);
+ *   console.info('Running on:', telemetry.platform);
+ *   console.info('Runtime:', telemetry.runtime);
+ *   console.info('SDK Versions:', telemetry.sdkVersions);
  * }
  * ```
  */
 export function getTelemetry(opts: SolomonAIOptions): Telemetry | null {
   let platform: string | undefined
   let runtime: string | undefined
-  const sdkVersions = [`@repo/api@${version}`]
+  const sdkVersions = [`@solomonai/api@${version}`]
 
   try {
     if (typeof process !== 'undefined') {

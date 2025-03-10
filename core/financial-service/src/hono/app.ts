@@ -7,13 +7,14 @@ import {
   jsonFormattingMiddleware,
   loggingMiddleware,
 } from '@/middleware/index'
-import { init } from '@/middleware/init'
-import { metrics } from '@/middleware/metrics'
-import { rateLimit } from '@/middleware/ratelimit'
 import {
   AuthenticationRequiredRoutes,
   CachedRoutes,
 } from '@/route-definitions/routes'
+
+import { init } from '@/middleware/init'
+import { metrics } from '@/middleware/metrics'
+import { rateLimit } from '@/middleware/ratelimit'
 import { swaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono } from '@hono/zod-openapi'
 import type { Context as GenericContext } from 'hono'
@@ -149,8 +150,8 @@ function setupSwagger(app: OpenAPIHono<HonoEnv>) {
         email: 'engineering@solomon-ai.co',
       },
       license: {
-        name: 'AGPL-3.0-or-later',
-        url: 'https://www.gnu.org/licenses/agpl-3.0.en.html',
+        name: 'MIT',
+        url: 'https://opensource.org/licenses/MIT',
       },
     },
     servers: [

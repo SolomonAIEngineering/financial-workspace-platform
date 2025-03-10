@@ -108,9 +108,9 @@ export async function fetchRoute<
 ): Promise<StepResponse<TResponseBody>> {
   const eCtx: ExecutionContext = {
     waitUntil: (promise: Promise<any>) => {
-      promise.catch(() => { })
+      promise.catch(() => {})
     },
-    passThroughOnException: () => { },
+    passThroughOnException: () => {},
     props: {
       requestId: 'test',
     },

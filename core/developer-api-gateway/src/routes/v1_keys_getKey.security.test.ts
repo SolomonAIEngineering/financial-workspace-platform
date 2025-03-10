@@ -1,12 +1,12 @@
+import { describe, expect, test } from 'vitest'
+
 import { runCommonRouteTests } from '@/pkg/testutil/common-tests'
-import { schema } from '@repo/db'
-import { sha256 } from '@repo/hash'
-import { newId } from '@repo/id'
-import { KeyV1 } from '@repo/keys'
+import { schema } from '@solomonai/db'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
 import { randomUUID } from 'node:crypto'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import { describe, expect, test } from 'vitest'
 import type { V1KeysGetKeyResponse } from './v1_keys_getKey'
 
 runCommonRouteTests({

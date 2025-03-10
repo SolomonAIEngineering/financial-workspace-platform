@@ -1,5 +1,3 @@
-import type { Subscriptions } from '@repo/billing'
-import { relations } from 'drizzle-orm'
 import {
   boolean,
   datetime,
@@ -9,6 +7,11 @@ import {
   uniqueIndex,
   varchar,
 } from 'drizzle-orm/mysql-core'
+import { permissions, roles } from './rbac'
+import { vercelBindings, vercelIntegrations } from './vercel_integration'
+
+import type { Subscriptions } from '@solomonai/billing'
+import { relations } from 'drizzle-orm'
 import { apis } from './apis'
 import { auditLogBucket } from './audit_logs'
 import { gateways } from './gateway'
@@ -18,10 +21,8 @@ import { keys } from './keys'
 import { llmGateways } from './llm-gateway'
 import { verificationMonitors } from './monitor_verifications'
 import { ratelimitNamespaces } from './ratelimit'
-import { permissions, roles } from './rbac'
 import { secrets } from './secrets'
 import { deleteProtection } from './util/delete_protection'
-import { vercelBindings, vercelIntegrations } from './vercel_integration'
 import { webhooks } from './webhooks'
 
 export const workspaces = mysqlTable(

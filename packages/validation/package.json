@@ -1,5 +1,5 @@
 {
-  "name": "@repo/validation",
+  "name": "@solomonai/validation",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",

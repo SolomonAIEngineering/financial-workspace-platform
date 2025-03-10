@@ -1,9 +1,8 @@
 import { expect, test } from 'vitest'
 
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
 import type { V1ApisGetApiResponse } from './v1_apis_getApi'
 
 test('return the api', async (t) => {

@@ -1,10 +1,10 @@
 {
-  "name": "@repo/analytics",
+  "name": "@solomonai/analytics",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
     "@next/third-parties": "^15.0.4",
-    "@repo/env": "workspace:*",
+    "@solomonai/env": "workspace:*",
     "@vercel/analytics": "^1.4.1",
     "posthog-js": "^1.194.5",
     "posthog-node": "^4.3.1",

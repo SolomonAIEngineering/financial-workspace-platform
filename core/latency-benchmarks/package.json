@@ -1,5 +1,5 @@
 {
-  "name": "@polar-core/latency-benchmarks",
+  "name": "@solomonai-core/latency-benchmarks",
   "version": "0.0.0",
   "private": true,
   "scripts": {

@@ -6,8 +6,8 @@ import {
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
 import type { App } from '@/pkg/hono/app'
-import { SchemaError } from '@polar/error'
-import { permissionQuerySchema } from '@repo/rbac'
+import { SchemaError } from '@solomonai/error'
+import { permissionQuerySchema } from '@solomonai/rbac'
 
 const route = createRoute({
   tags: ['keys'],

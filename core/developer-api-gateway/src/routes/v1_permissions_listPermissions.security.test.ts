@@ -1,10 +1,10 @@
+import { describe, expect, test } from 'vitest'
+
 import { runCommonRouteTests } from '@/pkg/testutil/common-tests'
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
 import { randomUUID } from 'node:crypto'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import { describe, expect, test } from 'vitest'
 import type { V1PermissionsListPermissionsResponse } from './v1_permissions_listPermissions'
 
 runCommonRouteTests({

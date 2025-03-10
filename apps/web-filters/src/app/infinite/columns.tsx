@@ -1,10 +1,15 @@
 "use client";
 
-import type { ColumnDef } from "@tanstack/react-table";
-import { Minus } from "lucide-react";
-import type { ColumnSchema } from "./schema";
-import { getStatusColor } from "@/lib/request/status-code";
+import { TextWithTooltip } from "@/components/custom/text-with-tooltip";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { LEVELS } from "@/constants/levels";
 import { regions } from "@/constants/region";
+import { getStatusColor } from "@/lib/request/status-code";
 import {
   getTimingColor,
   getTimingLabel,
@@ -12,17 +17,12 @@ import {
   timingPhases,
 } from "@/lib/request/timing";
 import { cn } from "@/lib/utils";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { TextWithTooltip } from "@/components/custom/text-with-tooltip";
-import { HoverCardTimestamp } from "./_components/hover-card-timestamp";
-import { LEVELS } from "@/constants/levels";
 import { HoverCardPortal } from "@radix-ui/react-hover-card";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Minus } from "lucide-react";
+import { HoverCardTimestamp } from "./_components/hover-card-timestamp";
 import { LevelIndicator } from "./_components/level-indicator";
+import type { ColumnSchema } from "./schema";
 
 export const columns: ColumnDef<ColumnSchema>[] = [
   {
@@ -188,7 +188,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
           return (
             <div className="whitespace-nowrap">
               <span>{value}</span>{" "}
-              <span className="text-muted-foreground text-xs">
+              <span className="text-xs text-muted-foreground">
                 {`${regions[value[0]]}`}
               </span>
             </div>
@@ -230,7 +230,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       return (
         <HoverCard openDelay={50} closeDelay={50}>
           <HoverCardTrigger
-            className="opacity-70 data-[state=open]:opacity-100 hover:opacity-100"
+            className="opacity-70 hover:opacity-100 data-[state=open]:opacity-100"
             asChild
           >
             <div className="flex">
@@ -239,7 +239,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
                   key={key}
                   className={cn(
                     getTimingColor(key as keyof typeof timing),
-                    "h-4"
+                    "h-4",
                   )}
                   style={{ width: `${(value / latency) * 100}%` }}
                 />
@@ -251,7 +251,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
             <HoverCardContent
               side="bottom"
               align="end"
-              className="p-2 w-auto z-10"
+              className="z-10 w-auto p-2"
             >
               <div className="flex flex-col gap-1">
                 {timingPhases.map((phase) => {
@@ -261,7 +261,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
                     <div key={phase} className="grid grid-cols-2 gap-4 text-xs">
                       <div className="flex items-center gap-2">
                         <div className={cn(color, "h-2 w-2 rounded-full")} />
-                        <div className="uppercase font-mono text-accent-foreground">
+                        <div className="font-mono uppercase text-accent-foreground">
                           {getTimingLabel(phase)}
                         </div>
                       </div>
@@ -412,7 +412,7 @@ function LatencyDisplay({ value }: { value: number }) {
   return (
     <div className="font-mono">
       {new Intl.NumberFormat("en-US", { maximumFractionDigits: 3 }).format(
-        value
+        value,
       )}
       <span className="text-muted-foreground">ms</span>
     </div>

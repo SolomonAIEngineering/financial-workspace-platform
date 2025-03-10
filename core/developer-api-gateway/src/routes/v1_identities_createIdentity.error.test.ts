@@ -1,12 +1,13 @@
-import type { ErrorResponse } from '@/pkg/errors'
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 import { describe, expect, test } from 'vitest'
 import type {
   V1IdentitiesCreateIdentityRequest,
   V1IdentitiesCreateIdentityResponse,
 } from './v1_identities_createIdentity'
+
+import type { ErrorResponse } from '@/pkg/errors'
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 describe.each([
   { name: 'empty externalId', externalId: '' },

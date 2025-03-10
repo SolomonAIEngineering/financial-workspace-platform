@@ -1,1 +1,1 @@
-# @repo/rbac
+# @solomonai/rbac

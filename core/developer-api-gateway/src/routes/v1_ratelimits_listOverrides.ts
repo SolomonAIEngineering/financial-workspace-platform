@@ -1,10 +1,10 @@
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
-import { and, eq, gt, isNull, schema, sql } from '@repo/db'
+import { and, eq, gt, isNull, schema, sql } from '@solomonai/db'
 
 import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
+import { buildUnkeyQuery } from '@solomonai/rbac'
 
 const route = createRoute({
   tags: ['ratelimit'],

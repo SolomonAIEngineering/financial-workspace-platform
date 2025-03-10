@@ -61,7 +61,10 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
                   {...props}
                 />
               ) : (
-                <code className={className} {...(props as React.HTMLAttributes<HTMLElement>)}>
+                <code
+                  className={className}
+                  {...(props as React.HTMLAttributes<HTMLElement>)}
+                >
                   {children}
                 </code>
               );

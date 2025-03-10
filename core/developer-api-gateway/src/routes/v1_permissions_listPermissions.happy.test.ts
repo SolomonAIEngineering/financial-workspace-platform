@@ -1,10 +1,9 @@
 import { expect, test } from 'vitest'
 
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
 import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 import type { V1PermissionsListPermissionsResponse } from './v1_permissions_listPermissions'
 
 test('return all permissions', async (t) => {

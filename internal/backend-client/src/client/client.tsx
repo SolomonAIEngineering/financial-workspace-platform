@@ -1,19 +1,19 @@
-import type { Middleware } from "client-typescript-sdk";
+import type { Middleware } from 'client-typescript-sdk'
 
 import {
-	AccountingServiceApi,
-	Configuration,
-	FinancialServiceApi,
-	SocialServiceApi,
-	UserServiceV2Api,
-	WorkspaceServiceApi,
-	WorkspaceServiceRestApi,
-} from "client-typescript-sdk";
+  AccountingServiceApi,
+  Configuration,
+  FinancialServiceApi,
+  SocialServiceApi,
+  UserServiceV2Api,
+  WorkspaceServiceApi,
+  WorkspaceServiceRestApi,
+} from 'client-typescript-sdk'
 
 import {
-	addCustomHeaderMiddleware,
-	errorHandlingMiddleware,
-} from "./middleware.ts";
+  addCustomHeaderMiddleware,
+  errorHandlingMiddleware,
+} from './middleware.ts'
 
 /**
  * Returns a Configuration object with the specified API URL, token, and
@@ -27,27 +27,27 @@ import {
  *   settings.
  */
 export function getConfiguration(
-	apiUrl: string,
-	token?: string,
-	middlewares: Middleware[] = [],
+  apiUrl: string,
+  token?: string,
+  middlewares: Middleware[] = [],
 ): Configuration {
-	const headers: Record<string, string> = {
-		"Content-Type": "application/json",
-	};
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  }
 
-	// Only set the Authorization header if a token is provided
-	if (token) {
-		headers["Authorization"] = `Bearer ${token}`;
-	}
+  // Only set the Authorization header if a token is provided
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
 
-	const config = new Configuration({
-		basePath: apiUrl,
-		accessToken: token ?? "", // Add type assertion here
-		headers: headers,
-		middleware: middlewares,
-	});
+  const config = new Configuration({
+    basePath: apiUrl,
+    accessToken: token ?? '', // Add type assertion here
+    headers: headers,
+    middleware: middlewares,
+  })
 
-	return config;
+  return config
 }
 
 /*
@@ -56,71 +56,71 @@ export function getConfiguration(
  * @class BackendClient
  * */
 export class BackendClient {
-	private token: string;
-	private apiUrl: string;
-	public configuration: Configuration;
-	public userServiceApi: UserServiceV2Api;
-	public accountingServiceApi: AccountingServiceApi;
-	public financialServiceApi: FinancialServiceApi;
-	public socialServiceApi: SocialServiceApi;
-	public workspaceServiceApi: WorkspaceServiceApi;
-	public workspaceServiceRestApi: WorkspaceServiceRestApi;
-	private static middleware: Middleware[] = [
-		addCustomHeaderMiddleware,
-		errorHandlingMiddleware,
-	];
+  private token: string
+  private apiUrl: string
+  public configuration: Configuration
+  public userServiceApi: UserServiceV2Api
+  public accountingServiceApi: AccountingServiceApi
+  public financialServiceApi: FinancialServiceApi
+  public socialServiceApi: SocialServiceApi
+  public workspaceServiceApi: WorkspaceServiceApi
+  public workspaceServiceRestApi: WorkspaceServiceRestApi
+  private static middleware: Middleware[] = [
+    addCustomHeaderMiddleware,
+    errorHandlingMiddleware,
+  ]
 
-	constructor(apiUrl: string, token: string) {
-		this.token = token;
-		this.apiUrl = apiUrl;
-		this.configuration = getConfiguration(
-			this.apiUrl,
-			token,
-			BackendClient.middleware,
-		);
-		this.userServiceApi = new UserServiceV2Api(this.configuration);
-		this.accountingServiceApi = new AccountingServiceApi(this.configuration);
-		this.financialServiceApi = new FinancialServiceApi(this.configuration);
-		this.socialServiceApi = new SocialServiceApi(this.configuration);
-		this.workspaceServiceApi = new WorkspaceServiceApi(this.configuration);
-		this.workspaceServiceRestApi = new WorkspaceServiceRestApi(
-			this.configuration,
-		);
-	}
+  constructor(apiUrl: string, token: string) {
+    this.token = token
+    this.apiUrl = apiUrl
+    this.configuration = getConfiguration(
+      this.apiUrl,
+      token,
+      BackendClient.middleware,
+    )
+    this.userServiceApi = new UserServiceV2Api(this.configuration)
+    this.accountingServiceApi = new AccountingServiceApi(this.configuration)
+    this.financialServiceApi = new FinancialServiceApi(this.configuration)
+    this.socialServiceApi = new SocialServiceApi(this.configuration)
+    this.workspaceServiceApi = new WorkspaceServiceApi(this.configuration)
+    this.workspaceServiceRestApi = new WorkspaceServiceRestApi(
+      this.configuration,
+    )
+  }
 
-	public setToken(token: string, apiUrl: string) {
-		this.token = token;
-		this.apiUrl = apiUrl;
-		this.configuration = getConfiguration(
-			this.apiUrl,
-			token,
-			BackendClient.middleware,
-		);
-	}
+  public setToken(token: string, apiUrl: string) {
+    this.token = token
+    this.apiUrl = apiUrl
+    this.configuration = getConfiguration(
+      this.apiUrl,
+      token,
+      BackendClient.middleware,
+    )
+  }
 
-	public getAccountingServiceApi() {
-		return this.accountingServiceApi;
-	}
+  public getAccountingServiceApi() {
+    return this.accountingServiceApi
+  }
 
-	public getFinancialServiceApi() {
-		return this.financialServiceApi;
-	}
+  public getFinancialServiceApi() {
+    return this.financialServiceApi
+  }
 
-	public getSocialServiceApi() {
-		return this.socialServiceApi;
-	}
+  public getSocialServiceApi() {
+    return this.socialServiceApi
+  }
 
-	public getUserServiceV2Api() {
-		return this.userServiceApi;
-	}
+  public getUserServiceV2Api() {
+    return this.userServiceApi
+  }
 
-	public getWorkspaceServiceApi() {
-		return this.workspaceServiceApi;
-	}
+  public getWorkspaceServiceApi() {
+    return this.workspaceServiceApi
+  }
 
-	public getToken = () => {
-		return this.token;
-	};
+  public getToken = () => {
+    return this.token
+  }
 }
 
 /**
@@ -130,65 +130,65 @@ export class BackendClient {
  * @export
  */
 export class SingletonHttpClient {
-	private static instance: BackendClient | null = null;
+  private static instance: BackendClient | null = null
 
-	// Method to initialize the singleton instance with a token
-	public static initialize(token: string, apiUrl: string): void {
-		// if (!token) {
-		//   console.error("Token is invalid or empty. Cannot initialize BackendClient.");
-		//   return;
-		// }
+  // Method to initialize the singleton instance with a token
+  public static initialize(token: string, apiUrl: string): void {
+    // if (!token) {
+    //   console.error("Token is invalid or empty. Cannot initialize BackendClient.");
+    //   return;
+    // }
 
-		if (this.instance) {
-			this.instance.setToken(token, apiUrl);
-		} else {
-			this.instance = new BackendClient(apiUrl, token);
-		}
-	}
+    if (this.instance) {
+      this.instance.setToken(token, apiUrl)
+    } else {
+      this.instance = new BackendClient(apiUrl, token)
+    }
+  }
 
-	public static setToken(token: string, apiUrl: string): void {
-		if (!this.instance) {
-			this.instance = new BackendClient(apiUrl, token);
-		} else {
-			this.instance.setToken(token, apiUrl);
-		}
-	}
+  public static setToken(token: string, apiUrl: string): void {
+    if (!this.instance) {
+      this.instance = new BackendClient(apiUrl, token)
+    } else {
+      this.instance.setToken(token, apiUrl)
+    }
+  }
 
-	public static getToken = () => {
-		if (!this.instance) {
-			throw new Error(
-				"SingletonHttpClient is not initialized. Call initialize(token) first.",
-			);
-		}
+  public static getToken = () => {
+    if (!this.instance) {
+      throw new Error(
+        'SingletonHttpClient is not initialized. Call initialize(token) first.',
+      )
+    }
 
-		return this.instance.getToken();
-	};
+    return this.instance.getToken()
+  }
 
-	// Static method to get the singleton instance
-	public static getInstance(): BackendClient {
-		if (!this.instance) {
-			throw new Error(
-				"SingletonHttpClient is not initialized. Call initialize(token) first.",
-			);
-		}
-		return this.instance;
-	}
+  // Static method to get the singleton instance
+  public static getInstance(): BackendClient {
+    if (!this.instance) {
+      throw new Error(
+        'SingletonHttpClient is not initialized. Call initialize(token) first.',
+      )
+    }
+    return this.instance
+  }
 
-	public static getInitOverrides(): RequestInit {
-		if (!this.instance) {
-			console.error("SingletonHttpClient is not initialized.");
-			throw new Error("SingletonHttpClient is not initialized.");
-		} else {
-			const token = this.instance.getToken();
-			if (!token) {
-				throw new Error("No token available");
-			}
+  public static getInitOverrides(): RequestInit {
+    if (!this.instance) {
+      console.error('SingletonHttpClient is not initialized.')
+      throw new Error('SingletonHttpClient is not initialized.')
+    } else {
+      const token = this.instance.getToken()
+      if (!token) {
+        throw new Error('No token available')
+      }
 
-			return {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			};
-		}
-	}
+      return {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    }
+  }
 }

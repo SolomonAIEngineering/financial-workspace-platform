@@ -1,5 +1,5 @@
 {
-  "name": "@polar-core/financial-service",
+  "name": "@solomonai-core/financial-service",
   "type": "module",
   "version": "0.0.1",
   "private": true,
@@ -45,7 +45,7 @@
     "@hono/swagger-ui": "^0.4.1",
     "@hono/zod-openapi": "^0.17.0",
     "@hono/zod-validator": "^0.2.2",
-    "@repo/keys": "workspace:*",
+    "@solomonai/keys": "workspace:*",
     "@types/stripe": "^8.0.417",
     "@unkey/api": "^0.26.2",
     "axios": "^1.7.9",

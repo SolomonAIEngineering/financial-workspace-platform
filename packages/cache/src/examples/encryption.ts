@@ -1,7 +1,8 @@
-// This example has relative imports to do type checks, you need to import from "@repo/cache"
-import { DefaultStatefulContext, Namespace, createCache } from '..' // @repo/cache
-import { withEncryption } from '../middleware' // @repo/cache/middleware
-import { CloudflareStore, MemoryStore } from '../stores' // @repo/cache/stores
+import { CloudflareStore, MemoryStore } from '../stores' // @solomonai/cache/stores
+// This example has relative imports to do type checks, you need to import from "@solomonai/cache"
+import { DefaultStatefulContext, Namespace, createCache } from '..' // @solomonai/cache
+
+import { withEncryption } from '../middleware' // @solomonai/cache/middleware
 
 /**
  * Define the type of your data, or perhaps generate the types from your database

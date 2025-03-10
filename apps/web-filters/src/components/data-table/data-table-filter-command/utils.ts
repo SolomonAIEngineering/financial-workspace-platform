@@ -3,8 +3,8 @@ import {
   RANGE_DELIMITER,
   SLIDER_DELIMITER,
 } from "@/lib/delimiters";
-import type { DataTableFilterField } from "../types";
 import { isArrayOfDates } from "@/lib/is-array";
+import type { DataTableFilterField } from "../types";
 
 /**
  * Extracts the word from the given string at the specified caret position.
@@ -85,7 +85,7 @@ export function getFieldOptions<TData>({
             .filter(notEmpty)
         : Array.from(
             { length: field.max - field.min + 1 },
-            (_, i) => field.min + i
+            (_, i) => field.min + i,
           ) || [];
     }
     default: {
@@ -204,7 +204,7 @@ export function getFieldValueByType<TData>({
 }
 
 export function notEmpty<TValue>(
-  value: TValue | null | undefined
+  value: TValue | null | undefined,
 ): value is TValue {
   return value !== null && value !== undefined;
 }

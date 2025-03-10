@@ -1,4 +1,4 @@
-import { BaseError } from '@polar/error'
+import { BaseError } from '@solomonai/error'
 export class InsertError extends BaseError {
   public readonly retry = true
   public readonly name = InsertError.name

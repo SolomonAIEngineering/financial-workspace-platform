@@ -1,6 +1,7 @@
-import { Liveblocks as LiveblocksNode } from '@liveblocks/node'
-import { env } from '@repo/env'
 import 'server-only'
+
+import { Liveblocks as LiveblocksNode } from '@liveblocks/node'
+import { env } from '@solomonai/env'
 
 type AuthenticateOptions = {
   userId: string

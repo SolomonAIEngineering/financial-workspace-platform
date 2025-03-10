@@ -1,6 +1,6 @@
 import type { InsertError, QueryError } from './error'
 
-import type { Result } from '@polar/error'
+import type { Result } from '@solomonai/error'
 import type { z } from 'zod'
 export interface Querier {
   query<TIn extends z.ZodSchema<any>, TOut extends z.ZodSchema<any>>(req: {

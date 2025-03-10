@@ -1,5 +1,5 @@
 {
-  "name": "@repo/api",
+  "name": "@solomonai/api",
   "version": "0.28.0",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
@@ -34,6 +34,6 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
-    "@repo/rbac": "workspace:^"
+    "@solomonai/rbac": "workspace:^"
   }
 }

@@ -1,4 +1,4 @@
-import { parseError } from '@repo/observability/error'
+import { parseError } from '@solomonai/observability/error'
 import type { ClassValue } from 'clsx'
 import { clsx } from 'clsx'
 import { toast } from 'sonner'

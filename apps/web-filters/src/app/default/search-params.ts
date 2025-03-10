@@ -1,3 +1,11 @@
+import { REGIONS } from "@/constants/region";
+import { TAGS } from "@/constants/tag";
+// Note: import from 'nuqs/server' to avoid the "use client" directive
+import {
+  ARRAY_DELIMITER,
+  RANGE_DELIMITER,
+  SLIDER_DELIMITER,
+} from "@/lib/delimiters";
 import {
   createParser,
   createSearchParamsCache,
@@ -8,14 +16,6 @@ import {
   parseAsStringLiteral,
   parseAsTimestamp,
 } from "nuqs/server";
-// Note: import from 'nuqs/server' to avoid the "use client" directive
-import {
-  ARRAY_DELIMITER,
-  RANGE_DELIMITER,
-  SLIDER_DELIMITER,
-} from "@/lib/delimiters";
-import { REGIONS } from "@/constants/region";
-import { TAGS } from "@/constants/tag";
 
 export const parseAsSort = createParser({
   parse(queryValue) {

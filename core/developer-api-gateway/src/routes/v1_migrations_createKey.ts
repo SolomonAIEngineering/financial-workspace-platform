@@ -12,10 +12,10 @@ import {
   type KeyPermission,
   type KeyRole,
   schema,
-} from '@repo/db'
-import { sha256 } from '@repo/hash'
-import { newId } from '@repo/id'
-import { buildUnkeyQuery } from '@repo/rbac'
+} from '@solomonai/db'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { buildUnkeyQuery } from '@solomonai/rbac'
 
 const route = createRoute({
   tags: ['migrations'],

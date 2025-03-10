@@ -1,4 +1,4 @@
-# @repo/db
+# @solomonai/db
 
 A database schema package providing type-safe database access using Drizzle ORM.
 
@@ -17,13 +17,13 @@ A database schema package providing type-safe database access using Drizzle ORM.
 ## Installation
 
 ```bash
-pnpm add @repo/db
+pnpm add @solomonai/db
 ```
 
 ## Usage
 
 ```typescript
-import { drizzle } from '@repo/db'
+import { drizzle } from '@solomonai/db'
 import { connect } from '@planetscale/database'
 const connection = connect({
   url: process.env.DATABASE_URL,

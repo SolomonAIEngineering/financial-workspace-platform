@@ -1,4 +1,4 @@
-import { Err, Ok, type Result, SchemaError } from '@polar/error'
+import { Err, Ok, type Result, SchemaError } from '@solomonai/error'
 import { z } from 'zod'
 
 export const billingTier = z.object({

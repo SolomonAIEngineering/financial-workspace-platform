@@ -1,6 +1,7 @@
-import { auth } from '@repo/auth/server'
-import { env } from '@repo/env'
 import 'server-only'
+
+import { auth } from '@solomonai/auth/server'
+import { env } from '@solomonai/env'
 import { Svix } from 'svix'
 
 export const send = async (eventType: string, payload: object) => {

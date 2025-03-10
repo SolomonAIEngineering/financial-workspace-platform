@@ -1,6 +1,7 @@
-import { Axiom } from '@axiomhq/js'
-import { logSchema } from '@repo/logs'
 import { decompressSync, strFromU8 } from 'fflate'
+
+import { Axiom } from '@axiomhq/js'
+import { logSchema } from '@solomonai/logs'
 import { Hono } from 'hono'
 import { z } from 'zod'
 

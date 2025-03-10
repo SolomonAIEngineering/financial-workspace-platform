@@ -20,7 +20,7 @@ import { registerV1RatelimitLimit } from './routes/v1_ratelimits_limit'
 // Legacy Routes
 import { cors, init, metrics } from '@/pkg/middleware'
 import type { MessageBatch } from '@cloudflare/workers-types'
-import { ConsoleLogger } from '@repo/worker-logging'
+import { ConsoleLogger } from '@solomonai/worker-logging'
 import { storeMigrationError } from './pkg/key_migration/dlq_handler'
 import { migrateKey } from './pkg/key_migration/handler'
 import type { MessageBody } from './pkg/key_migration/message'

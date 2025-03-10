@@ -1,5 +1,5 @@
 import { type ClickHouseClient, createClient } from '@clickhouse/client-web'
-import { Err, Ok, type Result } from '@polar/error'
+import { Err, Ok, type Result } from '@solomonai/error'
 import { z } from 'zod'
 import { InsertError, QueryError } from './error'
 import type { Inserter, Querier } from './interface'

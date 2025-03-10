@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      packages: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "pnpm"
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.15.0
+          run_install: false
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: pnpm release-packages
+          commit: "chore: release packages"
+          title: "chore: release packages"
+          createGithubReleases: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Extract package versions
+        if: steps.changesets.outputs.published == true
+        id: extract_versions
+        run: |
+          # Get the list of published packages and their versions
+          PUBLISHED_PACKAGES=$(echo "${{ steps.changesets.outputs.publishedPackages }}" | jq -r ".[] | \"\(.name)@\(.version)\"")
+          echo "Published packages: $PUBLISHED_PACKAGES"
+          
+          # Extract the root package version
+          ROOT_VERSION=$(node -p "require(\"./package.json\").version")
+          echo "Root version: $ROOT_VERSION"
+          
+          # Set outputs
+          echo "root_version=$ROOT_VERSION" >> $GITHUB_OUTPUT
+          echo "published_packages=$PUBLISHED_PACKAGES" >> $GITHUB_OUTPUT
+
+      - name: Create Git Tag for Root Package
+        if: steps.changesets.outputs.published == true
+        run: |
+          ROOT_VERSION="${{ steps.extract_versions.outputs.root_version }}"
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git tag -a "v$ROOT_VERSION" -m "Release v$ROOT_VERSION"
+          git push origin "v$ROOT_VERSION"
+
+      - name: Create GitHub Release
+        if: steps.changesets.outputs.published == true
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ steps.extract_versions.outputs.root_version }}"
+          name: "Release v${{ steps.extract_versions.outputs.root_version }}"
+          body: |
+            ## Changes in this Release
+            
+            ${{ steps.changesets.outputs.publishedPackages }}
+            
+            For more details, see the changelogs in each package.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

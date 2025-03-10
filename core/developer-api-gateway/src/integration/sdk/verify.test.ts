@@ -1,5 +1,5 @@
 import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
-import { type Flatten, SolomonAI, and, or } from '@repo/api/src/index' // use unbundled raw esm typescript
+import { type Flatten, SolomonAI, and, or } from '@solomonai/api/src/index' // use unbundled raw esm typescript
 import { describe } from 'node:test'
 import { expect, test } from 'vitest'
 

@@ -1,14 +1,12 @@
 import { describe, expect, test } from 'vitest'
-
-import { sha256 } from '@repo/hash'
-
-import type { ErrorResponse } from '@/pkg/errors'
-import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
-
 import type {
   LegacyKeysCreateKeyRequest,
   LegacyKeysCreateKeyResponse,
 } from './legacy_keys_createKey'
+
+import type { ErrorResponse } from '@/pkg/errors'
+import { IntegrationHarness } from '@/pkg/testutil/integration-harness'
+import { sha256 } from '@solomonai/hash'
 
 describe('simple', () => {
   test('creates key', async (t) => {

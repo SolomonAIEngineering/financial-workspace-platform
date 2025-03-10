@@ -1,5 +1,5 @@
-import { newId } from '@repo/id'
-import { type PermissionQuery, buildQuery } from '@repo/rbac'
+import { newId } from '@solomonai/id'
+import { type PermissionQuery, buildQuery } from '@solomonai/rbac'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 import { describe, expect, test } from 'vitest'

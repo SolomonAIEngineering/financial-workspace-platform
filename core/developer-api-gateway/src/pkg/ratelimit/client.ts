@@ -1,5 +1,5 @@
-import { Err, Ok, type Result } from '@polar/error'
-import type { Logger } from '@repo/worker-logging'
+import { Err, Ok, type Result } from '@solomonai/error'
+import type { Logger } from '@solomonai/worker-logging'
 import { cloudflareRatelimiter } from '../env'
 import type { Context } from '../hono/app'
 import type { Metrics } from '../metrics'

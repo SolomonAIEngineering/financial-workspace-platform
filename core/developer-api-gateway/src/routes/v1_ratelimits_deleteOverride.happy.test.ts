@@ -1,14 +1,13 @@
+import { isNull, schema } from '@solomonai/db'
 import { expect, test } from 'vitest'
-
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import { isNull, schema } from '@repo/db'
-import { newId } from '@repo/id'
 import type {
   V1RatelimitDeleteOverrideRequest,
   V1RatelimitDeleteOverrideResponse,
 } from './v1_ratelimits_deleteOverride'
+
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('deletes override', async (t) => {
   const h = await IntegrationHarness.init(t)

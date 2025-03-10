@@ -1,5 +1,5 @@
-import { Log, type LogSchema } from '@repo/logs'
-import type { Metric } from '@repo/metrics'
+import { Log, type LogSchema } from '@solomonai/logs'
+import type { Metric } from '@solomonai/metrics'
 import type { Metrics } from './interface'
 
 export class LogdrainMetrics implements Metrics {

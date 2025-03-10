@@ -1,16 +1,15 @@
 import { expect, test } from 'vitest'
-
-import { newId } from '@repo/id'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import type { ErrorResponse } from '@/pkg/errors'
-import { schema } from '@repo/db'
-import { sha256 } from '@repo/hash'
-import { KeyV1 } from '@repo/keys'
 import type {
   V1KeysUpdateKeyRequest,
   V1KeysUpdateKeyResponse,
 } from './v1_keys_updateKey'
+
+import type { ErrorResponse } from '@/pkg/errors'
+import { schema } from '@solomonai/db'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('when the key does not exist', async (t) => {
   const h = await IntegrationHarness.init(t)

@@ -1,11 +1,11 @@
 import { UnkeyApiError, openApiErrorResponses } from '@/pkg/errors'
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
-import { and, eq, inArray, schema } from '@repo/db'
+import { and, eq, inArray, schema } from '@solomonai/db'
 
 import { insertUnkeyAuditLog } from '@/pkg/audit'
 import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
-import { buildUnkeyQuery } from '@repo/rbac'
+import { buildUnkeyQuery } from '@solomonai/rbac'
 
 const route = createRoute({
   tags: ['keys'],

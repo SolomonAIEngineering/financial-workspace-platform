@@ -1,12 +1,12 @@
+import type { Percentile } from "@/lib/request/percentile";
+import { infiniteQueryOptions, keepPreviousData } from "@tanstack/react-query";
+import SuperJSON from "superjson";
 import type {
+  BaseChartSchema,
   ColumnSchema,
   FacetMetadataSchema,
-  BaseChartSchema,
 } from "./schema";
-import { type SearchParamsType, searchParamsSerializer } from "./search-params";
-import { infiniteQueryOptions, keepPreviousData } from "@tanstack/react-query";
-import type { Percentile } from "@/lib/request/percentile";
-import SuperJSON from "superjson";
+import { searchParamsSerializer, type SearchParamsType } from "./search-params";
 
 export type LogsMeta = {
   currentPercentiles: Record<Percentile, number>;

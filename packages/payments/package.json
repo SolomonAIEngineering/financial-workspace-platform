@@ -1,9 +1,9 @@
 {
-  "name": "@repo/payments",
+  "name": "@solomonai/payments",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@repo/env": "workspace:*",
+    "@solomonai/env": "workspace:*",
     "@stripe/agent-toolkit": "^0.2.0",
     "stripe": "^17.4.0"
   },

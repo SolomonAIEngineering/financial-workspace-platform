@@ -1,4 +1,4 @@
-import type { Metric } from '@repo/metrics'
+import type { Metric } from '@solomonai/metrics'
 import type { MiddlewareHandler } from 'hono'
 import type { HonoEnv } from '../hono/env'
 

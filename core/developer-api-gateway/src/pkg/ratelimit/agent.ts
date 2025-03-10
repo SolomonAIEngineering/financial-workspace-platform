@@ -1,4 +1,4 @@
-import type { Logger } from '@repo/worker-logging'
+import type { Logger } from '@solomonai/worker-logging'
 import type { Context } from '../hono/app'
 import type { Metrics } from '../metrics'
 import { instrumentedFetch } from '../util/instrument-fetch'

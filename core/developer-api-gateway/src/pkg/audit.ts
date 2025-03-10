@@ -2,10 +2,10 @@ import type { Context } from '@/pkg/hono/app'
 import {
   auditLogSchemaV1,
   unkeyAuditLogEvents,
-} from '@repo/auditlog/src/auditlog'
+} from '@solomonai/auditlog/src/auditlog'
 import { type Transaction, schema } from './db'
 
-import { newId } from '@repo/id'
+import { newId } from '@solomonai/id'
 import { z } from 'zod'
 
 const unkeyAuditLogSchema = auditLogSchemaV1.merge(

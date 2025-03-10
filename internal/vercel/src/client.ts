@@ -1,4 +1,4 @@
-import { Err, FetchError, Ok, type Result } from '@polar/error'
+import { Err, FetchError, Ok, type Result } from '@solomonai/error'
 import { z } from 'zod'
 
 /** Response structure for Vercel API errors */

@@ -1,5 +1,5 @@
-import { BaseError, Err, Ok, type Result } from '@polar/error'
-import { base64 } from '@repo/encoding'
+import { base64 } from '@solomonai/encoding'
+import { BaseError, Err, Ok, type Result } from '@solomonai/error'
 
 export class SerializationError extends BaseError {
   public readonly retry = false

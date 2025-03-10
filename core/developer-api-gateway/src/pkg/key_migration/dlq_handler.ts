@@ -1,6 +1,7 @@
-import { newId } from '@repo/id'
-import { ConsoleLogger } from '@repo/worker-logging'
 import { createConnection, schema } from '../db'
+
+import { newId } from '@solomonai/id'
+import { ConsoleLogger } from '@solomonai/worker-logging'
 import type { Env } from '../env'
 import type { MessageBody } from './message'
 

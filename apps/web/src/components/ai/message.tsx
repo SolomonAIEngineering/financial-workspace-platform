@@ -75,7 +75,10 @@ export function BotMessage({
                   {...props}
                 />
               ) : (
-                <code className={className} {...(props as React.HTMLAttributes<HTMLElement>)}>
+                <code
+                  className={className}
+                  {...(props as React.HTMLAttributes<HTMLElement>)}
+                >
                   {children}
                 </code>
               );

@@ -9,7 +9,7 @@ import { APIKeySchema, CreateAPIKeySchema } from './schema'
 import { CacheOptions } from '@/cache'
 import { App } from '@/hono/app'
 import { Routes } from '@/route-definitions/routes'
-import { newKey } from '@repo/keys'
+import { newKey } from '@solomonai/keys'
 
 /**
  * OpenAPI route definition for creating a new API key.

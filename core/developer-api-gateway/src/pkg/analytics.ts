@@ -1,4 +1,4 @@
-import { ClickHouse } from '@repo/clickhouse'
+import { ClickHouse } from '@solomonai/clickhouse'
 import { z } from 'zod'
 
 export class Analytics {

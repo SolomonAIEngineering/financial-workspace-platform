@@ -1,6 +1,10 @@
-import { type Cache as C, Namespace, createCache } from '@repo/cache'
-import { withMetrics } from '@repo/cache/middleware'
-import { CloudflareStore, MemoryStore, type Store } from '@repo/cache/stores'
+import { type Cache as C, Namespace, createCache } from '@solomonai/cache'
+import { withMetrics } from '@solomonai/cache/middleware'
+import {
+  CloudflareStore,
+  MemoryStore,
+  type Store,
+} from '@solomonai/cache/stores'
 
 import type { Context } from 'hono'
 import type { HonoEnv } from '../hono/env'

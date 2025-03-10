@@ -1,5 +1,5 @@
 {
-  "name": "@polar-sh/platform-config",
+  "name": "@solomonai/platform-config",
   "version": "1.0.0",
   "private": true,
   "sideEffects": false,

@@ -1,5 +1,7 @@
 "use client";
 
+import { Kbd } from "@/components/custom/kbd";
+import { useDataTable } from "@/components/data-table/data-table-provider";
 import {
   Command,
   CommandEmpty,
@@ -9,8 +11,16 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
+import { Separator } from "@/components/ui/separator";
+import { useHotKey } from "@/hooks/use-hot-key";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+import { formatCompactNumber } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
 import { LoaderCircle, Search, X } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import type { z } from "zod";
+import type { DataTableFilterField } from "../types";
 import { deserialize, serializeColumFilters } from "../utils";
 import {
   getFieldOptions,
@@ -18,17 +28,6 @@ import {
   getWordByCaretPosition,
   replaceInputByFieldType,
 } from "./utils";
-
-import type { DataTableFilterField } from "../types";
-import { Kbd } from "@/components/custom/kbd";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { formatCompactNumber } from "@/lib/format";
-import { formatDistanceToNow } from "date-fns";
-import { useDataTable } from "@/components/data-table/data-table-provider";
-import { useHotKey } from "@/hooks/use-hot-key";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import type { z } from "zod";
 
 // FIXME: there is an issue on cmdk if I wanna only set a single slider value...
 
@@ -156,7 +155,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
         filter={(value, search, keywords) =>
           getFilterValue({ value, search, keywords, currentWord })
         }
-      // loop
+        // loop
       >
         <CommandInput
           ref={inputRef as unknown as React.Ref<never>}

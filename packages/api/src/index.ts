@@ -4,7 +4,7 @@
  *
  * @example
  * ```typescript
- * import { SolomonAI, verifyKey, and, or } from '@repo/api';
+ * import { SolomonAI, verifyKey, and, or } from '@solomonai/api';
  *
  * // Initialize the SDK
  * const client = new SolomonAI({
@@ -26,10 +26,10 @@
  */
 
 /**
- * Re-export RBAC (Role-Based Access Control) utilities from @repo/rbac.
+ * Re-export RBAC (Role-Based Access Control) utilities from @solomonai/rbac.
  * These utilities help in constructing complex permission queries.
  */
-export { and, or, type Flatten } from '@repo/rbac'
+export { and, or, type Flatten } from '@solomonai/rbac'
 
 /**
  * Export core client functionality including the main SolomonAI client class

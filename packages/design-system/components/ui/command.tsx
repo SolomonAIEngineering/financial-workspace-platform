@@ -2,8 +2,11 @@
 
 import { type DialogProps } from '@radix-ui/react-dialog'
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons'
-import { Dialog, DialogContent } from '@repo/design-system/components/ui/dialog'
-import { cn } from '@repo/design-system/lib/utils'
+import {
+  Dialog,
+  DialogContent,
+} from '@solomonai/design-system/components/ui/dialog'
+import { cn } from '@solomonai/design-system/lib/utils'
 import { Command as CommandPrimitive } from 'cmdk'
 import * as React from 'react'
 

@@ -3,8 +3,8 @@ import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
 
 import { rootKeyAuth } from '@/pkg/auth/root_key'
 import type { App } from '@/pkg/hono/app'
-import { sha256 } from '@repo/hash'
-import { buildUnkeyQuery } from '@repo/rbac'
+import { sha256 } from '@solomonai/hash'
+import { buildUnkeyQuery } from '@solomonai/rbac'
 
 const route = createRoute({
   tags: ['keys'],

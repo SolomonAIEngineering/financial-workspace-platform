@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest'
 
 import type { ErrorResponse } from '@/pkg/errors'
-import { newId } from '@repo/id'
+import { newId } from '@solomonai/id'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('api not found', async (t) => {

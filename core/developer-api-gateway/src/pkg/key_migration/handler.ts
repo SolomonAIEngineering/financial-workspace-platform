@@ -1,7 +1,7 @@
-import { BaseError, Err, Ok, type Result } from '@polar/error'
+import { BaseError, Err, Ok, type Result } from '@solomonai/error'
 
-import { newId } from '@repo/id'
-import { ConsoleLogger } from '@repo/worker-logging'
+import { newId } from '@solomonai/id'
+import { ConsoleLogger } from '@solomonai/worker-logging'
 import { createConnection, schema } from '../db'
 import type { Env } from '../env'
 import type { MessageBody } from './message'

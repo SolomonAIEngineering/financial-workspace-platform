@@ -1,8 +1,7 @@
 import { expect, test } from 'vitest'
 
-import { newId } from '@repo/id'
+import { newId } from '@solomonai/id'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
 import type { V1ApisGetApiResponse } from './v1_apis_getApi'
 
 test('api does not exist', async (t) => {

@@ -1,5 +1,5 @@
-import { newId } from '@repo/id'
-import { ConsoleLogger } from '@repo/worker-logging'
+import { newId } from '@solomonai/id'
+import { ConsoleLogger } from '@solomonai/worker-logging'
 import type { MiddlewareHandler } from 'hono'
 
 import { Analytics } from '../analytics'

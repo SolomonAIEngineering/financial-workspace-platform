@@ -1,6 +1,6 @@
-import type { BaseError, Result } from '@polar/error'
+import type { BaseError, Result } from '@solomonai/error'
 
-import type { Logger } from '@repo/worker-logging'
+import type { Logger } from '@solomonai/worker-logging'
 
 export type RetryOptions = {
   logger: Logger

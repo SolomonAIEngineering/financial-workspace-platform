@@ -1,1 +1,1 @@
-# @polar/error
+# @solomonai/error

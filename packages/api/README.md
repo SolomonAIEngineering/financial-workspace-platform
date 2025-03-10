@@ -1,6 +1,6 @@
 <div align="center">
-    <h1 align="center">@repo/api</h1>
-    <h5>`@repo/api` is a TypeScript client for SolomonAI. If you prefer a typed experience over calling HTTP endpoints directly, this SDK is for you.</h5>
+    <h1 align="center">@solomonai/api</h1>
+    <h5>`@solomonai/api` is a TypeScript client for SolomonAI. If you prefer a typed experience over calling HTTP endpoints directly, this SDK is for you.</h5>
 </div>
 
 <div align="center">
@@ -11,7 +11,7 @@
 ## Installation
 
 ```bash
-npm install @repo/api
+npm install @solomonai/api
 ```
 
 ## Quickstart
@@ -20,7 +20,7 @@ npm install @repo/api
 2.  Use the root key to initialize the client:
 
 ```ts
-import { SolomonAI } from '@repo/api'
+import { SolomonAI } from '@solomonai/api'
 
 const solomonai = new SolomonAI({ rootKey: '<SOLOMONAI_ROOT_KEY>' })
 ```
@@ -32,7 +32,7 @@ const solomonai = new SolomonAI({ rootKey: '<SOLOMONAI_ROOT_KEY>' })
 ### Verifying a Key
 
 ```ts
-import { verifyKey } from '@repo/api'
+import { verifyKey } from '@solomonai/api'
 
 const { result, error } = await verifyKey('key_123')
 

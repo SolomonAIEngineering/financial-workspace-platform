@@ -1,8 +1,8 @@
 import { describe, expect, test } from 'vitest'
 
 import type { ErrorResponse } from '@/pkg/errors'
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
 import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 describe('with identity', () => {

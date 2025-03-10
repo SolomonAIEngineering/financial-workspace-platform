@@ -6,11 +6,11 @@ import type { App } from '@/pkg/hono/app'
 import { retry } from '@/pkg/util/retry'
 import { revalidateKeyCount } from '@/pkg/util/revalidate_key_count'
 import { RouteConfigToTypedResponse, createRoute, z } from '@hono/zod-openapi'
-import { schema } from '@repo/db'
-import { sha256 } from '@repo/hash'
-import { newId } from '@repo/id'
-import { KeyV1 } from '@repo/keys'
-import { buildUnkeyQuery } from '@repo/rbac'
+import { schema } from '@solomonai/db'
+import { sha256 } from '@solomonai/hash'
+import { newId } from '@solomonai/id'
+import { KeyV1 } from '@solomonai/keys'
+import { buildUnkeyQuery } from '@solomonai/rbac'
 
 const route = createRoute({
   tags: ['keys'],

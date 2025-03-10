@@ -1,5 +1,5 @@
 {
-  "name": "@repo/import",
+  "name": "@solomonai/import",
   "version": "2.0.0",
   "private": true,
   "main": "src/index.ts",

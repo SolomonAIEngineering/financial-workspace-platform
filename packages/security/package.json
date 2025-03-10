@@ -1,10 +1,10 @@
 {
-  "name": "@repo/security",
+  "name": "@solomonai/security",
   "version": "0.0.0",
   "private": true,
   "dependencies": {
     "@arcjet/next": "1.0.0-alpha.34",
-    "@repo/env": "workspace:*"
+    "@solomonai/env": "workspace:*"
   },
   "devDependencies": {
     "tsconfig": "workspace:*",

@@ -1,14 +1,13 @@
 import { expect, test } from 'vitest'
-
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import { schema } from '@repo/db'
-import { newId } from '@repo/id'
 import type {
   V1PermissionsDeletePermissionRequest,
   V1PermissionsDeletePermissionResponse,
 } from './v1_permissions_deletePermission'
+
+import { schema } from '@solomonai/db'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 test('deletes permission', async (t) => {
   const h = await IntegrationHarness.init(t)

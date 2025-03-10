@@ -1,14 +1,14 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { type ColumnSchema } from "./schema";
 import type {
   DataTableFilterField,
   Option,
 } from "@/components/data-table/types";
-import { subDays, subHours, subMinutes } from "date-fns";
-import { TAGS } from "@/constants/tag";
 import { REGIONS } from "@/constants/region";
+import { TAGS } from "@/constants/tag";
+import { cn } from "@/lib/utils";
+import { subDays, subHours, subMinutes } from "date-fns";
+import { type ColumnSchema } from "./schema";
 
 export const tagsColor = {
   api: {

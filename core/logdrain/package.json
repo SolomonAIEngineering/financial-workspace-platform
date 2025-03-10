@@ -1,5 +1,5 @@
 {
-  "name": "@polar-core/logdrain",
+  "name": "@solomonai-core/logdrain",
   "version": "0.0.1",
   "private": true,
   "module": "index.ts",
@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@axiomhq/js": "1.0.0-rc.2",
-    "@repo/logs": "workspace:^",
-    "@repo/metrics": "workspace:^",
+    "@solomonai/logs": "workspace:^",
+    "@solomonai/metrics": "workspace:^",
     "fflate": "^0.8.2",
     "hono": "^4.2.7",
     "zod": "^3.23.5"

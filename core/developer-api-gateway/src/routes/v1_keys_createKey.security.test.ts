@@ -1,15 +1,15 @@
-import { runCommonRouteTests } from '@/pkg/testutil/common-tests'
-import { eq, schema } from '@repo/db'
-import { newId } from '@repo/id'
-import { randomUUID } from 'node:crypto'
-import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
-
-import type { ErrorResponse } from '@repo/api/src'
+import { eq, schema } from '@solomonai/db'
 import { describe, expect, test } from 'vitest'
 import type {
   V1KeysCreateKeyRequest,
   V1KeysCreateKeyResponse,
 } from './v1_keys_createKey'
+
+import { runCommonRouteTests } from '@/pkg/testutil/common-tests'
+import type { ErrorResponse } from '@solomonai/api/src'
+import { newId } from '@solomonai/id'
+import { randomUUID } from 'node:crypto'
+import { IntegrationHarness } from 'src/pkg/testutil/integration-harness'
 
 runCommonRouteTests<V1KeysCreateKeyRequest>({
   prepareRequest: async (rh) => {
