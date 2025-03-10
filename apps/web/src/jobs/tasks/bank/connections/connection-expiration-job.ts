@@ -46,7 +46,7 @@ const CRITICAL_DAYS = 3;
  */
 export const connectionExpirationJob = client.defineJob({
   id: BANK_JOBS.CONNECTION_EXPIRATION,
-  name: 'Check Connection Expiration',
+  name: 'Connection Expiration Job',
   trigger: cronTrigger({
     cron: '0 9 * * *', // Run daily at 9 AM
   }),

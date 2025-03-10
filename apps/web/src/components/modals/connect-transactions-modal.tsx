@@ -24,6 +24,7 @@ import { createPlaidLinkTokenAction } from '@/actions/institution/create-link';
 import { exchangePublicTokenAction } from '@/actions/institution/exchange-public-token';
 import { getInstitutionsAction } from '@/actions/institution/get-institution';
 import { motion } from 'framer-motion';
+import { syncTransactionsAction } from '@/actions/transactions/sync-transactions-action';
 import { track } from '@v1/analytics/client';
 import { useConnectParams } from '@/lib/hooks/use-connect-params';
 import { usePlaidLink } from 'react-plaid-link';
@@ -404,23 +405,19 @@ export function ConnectTransactionsModal({
             });
 
             // Trigger background job to sync transactions, bank accounts, and connections
-            // Use the API endpoint to trigger the sync
-            const syncResponse = await fetch('/api/sync-transactions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
+            // Use the syncTransactionsAction to trigger the sync
+            try {
+                await syncTransactionsAction({
                     accessToken,
                     itemId,
                     institutionId,
                     userId
-                }),
-            });
+                });
 
-            if (!syncResponse.ok) {
-                const errorData = await syncResponse.json();
-                throw new Error(errorData.message || 'Failed to trigger sync job');
+                // If we get here, the action was successful
+            } catch (syncError) {
+                console.error('Error syncing transactions:', syncError);
+                throw new Error('Failed to trigger sync job');
             }
 
             // Mark sync as successful
