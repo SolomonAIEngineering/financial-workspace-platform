@@ -1,0 +1,39 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as CategoryHorizontalChart from "./category-horizontal-chart.stories";
+
+<Meta of={CategoryHorizontalChart} />
+
+# CategoryHorizontalChart Component
+
+The `CategoryHorizontalChart` is a visualization that displays categories as horizontal bars, making it easy to compare values across different categories. This chart is especially useful for ranking categories by value and when dealing with many categories or categories with long names.
+
+## Component Props
+
+<Canvas of={CategoryHorizontalChart.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `CategoryHorizontalChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <CategoryHorizontalChart 
+      data={[
+        { category: "Food & Dining", amount: 1250 },
+        { category: "Rent & Utilities", amount: 2100 },
+        { category: "Transportation", amount: 850 },
+        { category: "Entertainment", amount: 500 },
+        { category: "Healthcare", amount: 300 }
+      ]}
+      currency="USD"
+      locale="en-US"
+      height={350}
+      sortByValue={true}
+    />
+  </Story>
+</Canvas>
+``` 

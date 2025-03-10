@@ -1,0 +1,38 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as BarChart from "./bar-chart.stories";
+
+<Meta of={BarChart} />
+
+# BarChart Component
+
+The `BarChart` is a visualization component that uses vertical bars to represent data values. It is particularly useful for comparing discrete categories or showing changes over time. The component includes features like custom tooltips, responsive layout, and date range filtering.
+
+## Component Props
+
+<Canvas of={BarChart.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `BarChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <BarChart 
+      currency="USD"
+      data={[
+        { date: new Date(2023, 0, 1), value: 1000 },
+        { date: new Date(2023, 1, 1), value: 1500 },
+        { date: new Date(2023, 2, 1), value: 1200 },
+        { date: new Date(2023, 3, 1), value: 1800 }
+      ]}
+      height={300}
+      locale="en-US"
+      enableAssistantMode={false}
+    />
+  </Story>
+</Canvas>
+``` 

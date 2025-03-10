@@ -1,0 +1,43 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as RankedLocationBySpendingChart from "./ranked-location-by-spending-chart.stories";
+
+<Meta of={RankedLocationBySpendingChart} />
+
+# RankedLocationBySpendingChart Component
+
+The `RankedLocationBySpendingChart` provides a ranked visualization of spending across different geographic locations. This chart makes it easy to identify the highest and lowest spending locations, helping businesses focus their attention on key markets or address underperforming regions.
+
+## Component Props
+
+<Canvas of={RankedLocationBySpendingChart.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `RankedLocationBySpendingChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <RankedLocationBySpendingChart 
+      data={[
+        { location: "New York", amount: 85000 },
+        { location: "Chicago", amount: 62000 },
+        { location: "Los Angeles", amount: 78000 },
+        { location: "Houston", amount: 45000 },
+        { location: "Miami", amount: 53000 },
+        { location: "Seattle", amount: 49000 },
+        { location: "Boston", amount: 58000 },
+        { location: "Austin", amount: 42000 }
+      ]}
+      currency="USD"
+      locale="en-US"
+      height={500}
+      limit={8}
+      sortDirection="desc"
+    />
+  </Story>
+</Canvas>
+``` 

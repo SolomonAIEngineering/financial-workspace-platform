@@ -1,0 +1,36 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as ResourceTableCell from "./resource-table-cell.stories";
+
+<Meta of={ResourceTableCell} />
+
+# ResourceTableCell Component
+
+The `ResourceTableCell` component displays resource information in the planner's resource table column. It shows the resource name, optional icon or image, and additional metadata, creating a visual index for the resources displayed in the timeline. The component can be styled differently based on resource status or availability.
+
+## Component Props
+
+<Canvas of={ResourceTableCell.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `ResourceTableCell`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <ResourceTableCell
+      resource={{
+        id: "1",
+        title: "Conference Room A",
+        capacity: 12,
+        available: true
+      }}
+      onResourceClick={(resourceId) => console.log("Resource clicked:", resourceId)}
+      className="border p-2"
+    />
+  </Story>
+</Canvas>
+``` 

@@ -1,0 +1,56 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as MerchantSpendingOverTime from "./merchant-spending-over-time.stories";
+
+<Meta of={MerchantSpendingOverTime} />
+
+# MerchantSpendingOverTime Component
+
+The `MerchantSpendingOverTime` chart tracks spending patterns with specific merchants over time. This visualization helps businesses monitor their relationships with key vendors, identify changing spending trends, and make informed decisions about contract negotiations, vendor consolidation, or diversification strategies.
+
+## Component Props
+
+<Canvas of={MerchantSpendingOverTime.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `MerchantSpendingOverTime`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <MerchantSpendingOverTime 
+      data={[
+        { 
+          date: new Date(2023, 0, 1), 
+          vendorA: 15000, 
+          vendorB: 12000, 
+          vendorC: 8000 
+        },
+        { 
+          date: new Date(2023, 1, 1), 
+          vendorA: 16500, 
+          vendorB: 11000, 
+          vendorC: 9500 
+        },
+        { 
+          date: new Date(2023, 2, 1), 
+          vendorA: 14800, 
+          vendorB: 13200, 
+          vendorC: 10000 
+        }
+      ]}
+      merchants={["vendorA", "vendorB", "vendorC"]}
+      displayNames={{
+        vendorA: "Vendor A",
+        vendorB: "Vendor B",
+        vendorC: "Vendor C"
+      }}
+      currency="USD"
+      height={400}
+    />
+  </Story>
+</Canvas>
+``` 

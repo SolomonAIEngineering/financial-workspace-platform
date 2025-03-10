@@ -1,0 +1,43 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as MonthlyLocationGrowRate from "./monthly-location-grow-rate.stories";
+
+<Meta of={MonthlyLocationGrowRate} />
+
+# MonthlyLocationGrowRate Component
+
+The `MonthlyLocationGrowRate` chart visualizes the month-over-month growth rates of spending or revenue across different geographic locations. This visualization helps businesses identify which locations are experiencing the fastest growth or decline, enabling more targeted marketing, expansion, or cost-cutting strategies.
+
+## Component Props
+
+<Canvas of={MonthlyLocationGrowRate.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `MonthlyLocationGrowRate`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <MonthlyLocationGrowRate 
+      data={[
+        { month: "Jan", boston: 0, seattle: 0, denver: 0 },
+        { month: "Feb", boston: 5.2, seattle: 3.8, denver: 7.1 },
+        { month: "Mar", boston: 4.1, seattle: 4.5, denver: 6.8 },
+        { month: "Apr", boston: -1.2, seattle: 2.9, denver: 5.2 },
+        { month: "May", boston: 3.4, seattle: 1.8, denver: 4.7 }
+      ]}
+      locations={["boston", "seattle", "denver"]}
+      displayNames={{
+        boston: "Boston",
+        seattle: "Seattle",
+        denver: "Denver"
+      }}
+      height={400}
+      showAverageGrowth={true}
+    />
+  </Story>
+</Canvas>
+``` 

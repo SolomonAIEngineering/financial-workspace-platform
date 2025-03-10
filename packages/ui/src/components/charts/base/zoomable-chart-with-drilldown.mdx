@@ -1,0 +1,52 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as ZoomableChartWithDrilldown from "./zoomable-chart-with-drilldown.stories";
+
+<Meta of={ZoomableChartWithDrilldown} />
+
+# ZoomableChartWithDrilldown Component
+
+The `ZoomableChartWithDrilldown` extends the ZoomableChart with advanced drill-down capabilities, allowing users to click on chart elements to reveal more detailed information about specific data points. This multi-level exploration is ideal for complex datasets where hierarchical or nested information needs to be presented in a digestible format.
+
+## Component Props
+
+<Canvas of={ZoomableChartWithDrilldown.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `ZoomableChartWithDrilldown`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <ZoomableChartWithDrilldown 
+      data={[
+        { 
+          category: "Q1", 
+          value: 4500,
+          subData: [
+            { name: "January", value: 1500 },
+            { name: "February", value: 1200 },
+            { name: "March", value: 1800 }
+          ]
+        },
+        { 
+          category: "Q2", 
+          value: 5200,
+          subData: [
+            { name: "April", value: 1700 },
+            { name: "May", value: 1600 },
+            { name: "June", value: 1900 }
+          ]
+        }
+      ]}
+      width={800}
+      height={400}
+      drilldownEnabled={true}
+      onDrilldown={(data) => console.log("Drilled down to:", data)}
+    />
+  </Story>
+</Canvas>
+``` 

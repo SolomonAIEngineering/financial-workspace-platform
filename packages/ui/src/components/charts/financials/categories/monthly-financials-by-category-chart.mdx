@@ -1,0 +1,54 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as MonthlyFinancialsByCategoryChart from "./monthly-financials-by-category-chart.stories";
+
+<Meta of={MonthlyFinancialsByCategoryChart} />
+
+# MonthlyFinancialsByCategoryChart Component
+
+The `MonthlyFinancialsByCategoryChart` is a specialized visualization that breaks down financial data by spending categories on a monthly basis. This chart helps users understand their spending patterns and identify which categories consume the most resources over time.
+
+## Component Props
+
+<Canvas of={MonthlyFinancialsByCategoryChart.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `MonthlyFinancialsByCategoryChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <MonthlyFinancialsByCategoryChart 
+      data={[
+        { 
+          month: "Jan", 
+          food: 400, 
+          housing: 1200, 
+          transportation: 300, 
+          entertainment: 200 
+        },
+        { 
+          month: "Feb", 
+          food: 450, 
+          housing: 1200, 
+          transportation: 320, 
+          entertainment: 250 
+        },
+        { 
+          month: "Mar", 
+          food: 420, 
+          housing: 1200, 
+          transportation: 350, 
+          entertainment: 180 
+        }
+      ]}
+      categories={["food", "housing", "transportation", "entertainment"]}
+      currency="USD"
+      height={400}
+    />
+  </Story>
+</Canvas>
+``` 

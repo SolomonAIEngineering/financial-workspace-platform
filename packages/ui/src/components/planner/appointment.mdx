@@ -1,0 +1,44 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as Appointment from "./appointment.stories";
+
+<Meta of={Appointment} />
+
+# Appointment Component
+
+The `Appointment` component visualizes a single appointment or event within the planner. It displays key information like title, time, and optionally other details, while supporting interactions like selection, dragging, and context menus. The component's appearance can be customized based on the appointment's status, priority, or category.
+
+## Component Props
+
+<Canvas of={Appointment.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `Appointment`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <div style={{ height: "100px", position: "relative" }}>
+      <Appointment
+        data={{
+          id: "1",
+          title: "Project Kickoff Meeting",
+          startDate: new Date(2023, 5, 15, 10, 0),
+          endDate: new Date(2023, 5, 15, 11, 30),
+          location: "Conference Room A",
+          description: "Initial project planning and team introductions"
+        }}
+        selected={false}
+        onClick={() => console.log("Appointment clicked")}
+        onDoubleClick={() => console.log("Appointment double-clicked")}
+        draggable={true}
+        resizable={true}
+        style={{ position: "absolute", top: 0, left: 0, right: 0 }}
+      />
+    </div>
+  </Story>
+</Canvas>
+``` 

@@ -1,0 +1,35 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as Timeline from "./timeline.stories";
+
+<Meta of={Timeline} />
+
+# Timeline Component
+
+The `Timeline` component displays time slots in the planner, creating the horizontal time axis for the schedule view. It shows time markers at regular intervals and can adapt its display based on the current view (day/week/month) and zoom level, providing appropriate time granularity for different planning needs.
+
+## Component Props
+
+<Canvas of={Timeline.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `Timeline`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <Timeline
+      startTime={8}
+      endTime={18}
+      cellDuration={60}
+      currentTime={new Date()}
+      highlightCurrentTime={true}
+      viewType="day"
+      date={new Date(2023, 5, 15)}
+    />
+  </Story>
+</Canvas>
+``` 

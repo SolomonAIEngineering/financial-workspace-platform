@@ -1,0 +1,38 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as AccountBalanceChart from "./account-balance-chart.stories";
+
+<Meta of={AccountBalanceChart} />
+
+# AccountBalanceChart Component
+
+The `AccountBalanceChart` is a financial visualization component that displays account balance trends over time. It helps users track how their account balance has changed, identifying patterns and potential issues with cash flow. The chart supports interactive tooltips and responsive design.
+
+## Component Props
+
+<Canvas of={AccountBalanceChart.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `AccountBalanceChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <AccountBalanceChart 
+      data={[
+        { date: new Date(2023, 0, 1), balance: 5000 },
+        { date: new Date(2023, 1, 1), balance: 6200 },
+        { date: new Date(2023, 2, 1), balance: 5800 },
+        { date: new Date(2023, 3, 1), balance: 7500 },
+        { date: new Date(2023, 4, 1), balance: 8200 }
+      ]}
+      currency="USD"
+      locale="en-US"
+      height={300}
+    />
+  </Story>
+</Canvas>
+``` 

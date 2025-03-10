@@ -1,0 +1,41 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as HeroSection from "./hero-section.stories";
+
+<Meta of={HeroSection} />
+
+# HeroSection Component
+
+The `HeroSection` component serves as the primary introduction section on landing pages. It typically appears at the top of the page and includes a headline, supporting text, call-to-action buttons, and often a visual element like an image or animation. The hero section is designed to capture attention and communicate the core value proposition.
+
+## Component Props
+
+<Canvas of={HeroSection.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `HeroSection`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <HeroSection
+      headline="Simplify Your Financial Management"
+      subheadline="An all-in-one platform for small businesses to track expenses, manage cash flow, and make smarter financial decisions."
+      primaryCTA={{
+        text: "Start Free Trial",
+        href: "/signup"
+      }}
+      secondaryCTA={{
+        text: "Watch Demo",
+        href: "/demo"
+      }}
+      image="/images/dashboard-preview.png"
+      imageAlt="Platform dashboard preview"
+      backgroundStyle="gradient"
+    />
+  </Story>
+</Canvas>
+``` 

@@ -1,0 +1,31 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as CollapseMenuButton from "./collapse-menu-button.stories";
+
+<Meta of={CollapseMenuButton} />
+
+# CollapseMenuButton Component
+
+The `CollapseMenuButton` is a toggleable button component designed for collapsible navigation menus. It provides a user-friendly way to expand or collapse sidebar menus, helping to optimize screen space while maintaining easy access to navigation options.
+
+## Component Props
+
+<Canvas of={CollapseMenuButton.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `CollapseMenuButton`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <CollapseMenuButton
+      collapsed={false}
+      onClick={() => console.log("Toggle menu collapse")}
+      className="my-2"
+    />
+  </Story>
+</Canvas>
+``` 

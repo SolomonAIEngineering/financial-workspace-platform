@@ -1,0 +1,31 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as SidebarToggle from "./sidebar-toggle.stories";
+
+<Meta of={SidebarToggle} />
+
+# SidebarToggle Component
+
+The `SidebarToggle` component provides a button for toggling the expanded/collapsed state of a sidebar. It typically displays different icons based on the current state of the sidebar, making it clear to users what action will be performed when clicked.
+
+## Component Props
+
+<Canvas of={SidebarToggle.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `SidebarToggle`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <SidebarToggle
+      collapsed={false}
+      onClick={() => console.log("Toggle sidebar")}
+      className="mb-4"
+    />
+  </Story>
+</Canvas>
+``` 

@@ -1,0 +1,40 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as CallToActionSection from "./call-to-action-section.stories";
+
+<Meta of={CallToActionSection} />
+
+# CallToActionSection Component
+
+The `CallToActionSection` component is designed for landing pages, providing a prominent section that encourages visitors to take a specific action. It typically includes a compelling headline, supportive text, and prominent buttons or forms to drive user engagement and conversions.
+
+## Component Props
+
+<Canvas of={CallToActionSection.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `CallToActionSection`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <CallToActionSection
+      title="Ready to get started?"
+      subtitle="Join thousands of businesses already using our platform to manage their finances more effectively."
+      primaryAction={{
+        label: "Start Your Free Trial",
+        href: "/signup"
+      }}
+      secondaryAction={{
+        label: "Contact Sales",
+        href: "/contact"
+      }}
+      backgroundStyle="gradient"
+      alignment="center"
+    />
+  </Story>
+</Canvas>
+``` 

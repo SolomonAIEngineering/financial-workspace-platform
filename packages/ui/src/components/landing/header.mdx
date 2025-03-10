@@ -1,0 +1,40 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as Header from "./header.stories";
+
+<Meta of={Header} />
+
+# Header Component
+
+The `Header` component is designed for landing pages, providing a navigation header at the top of the page. It typically includes the company logo, navigation links, and call-to-action buttons like "Sign Up" or "Log In". The component is responsive and adapts to different screen sizes with mobile menu options.
+
+## Component Props
+
+<Canvas of={Header.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `Header`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <Header
+      logo="/logo.svg"
+      logoAlt="Company Logo"
+      navLinks={[
+        { label: "Features", href: "#features" },
+        { label: "Pricing", href: "#pricing" },
+        { label: "About", href: "#about" },
+        { label: "Contact", href: "#contact" }
+      ]}
+      callToAction={{
+        primary: { label: "Sign Up", href: "/signup" },
+        secondary: { label: "Log In", href: "/login" }
+      }}
+    />
+  </Story>
+</Canvas>
+``` 

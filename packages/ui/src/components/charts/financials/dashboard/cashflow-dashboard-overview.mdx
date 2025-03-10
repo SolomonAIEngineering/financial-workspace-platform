@@ -1,0 +1,48 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import * as CashflowDashboardOverview from "./cashflow-dashboard-overview.stories";
+
+<Meta of={CashflowDashboardOverview} />
+
+# CashflowDashboardOverview Component
+
+The `CashflowDashboardOverview` is a comprehensive dashboard component that provides a high-level view of an organization's cash flow. It combines multiple visualizations to show incoming and outgoing cash, balance trends, and overall financial health indicators in a single, easy-to-understand interface.
+
+## Component Props
+
+<Canvas of={CashflowDashboardOverview.Default} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `CashflowDashboardOverview`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <CashflowDashboardOverview 
+      incomingCashData={[
+        { date: new Date(2023, 0, 1), value: 25000 },
+        { date: new Date(2023, 1, 1), value: 27000 },
+        { date: new Date(2023, 2, 1), value: 23000 },
+        { date: new Date(2023, 3, 1), value: 29000 }
+      ]}
+      outgoingCashData={[
+        { date: new Date(2023, 0, 1), value: 21000 },
+        { date: new Date(2023, 1, 1), value: 22000 },
+        { date: new Date(2023, 2, 1), value: 20000 },
+        { date: new Date(2023, 3, 1), value: 24000 }
+      ]}
+      balanceData={[
+        { date: new Date(2023, 0, 1), value: 45000 },
+        { date: new Date(2023, 1, 1), value: 50000 },
+        { date: new Date(2023, 2, 1), value: 53000 },
+        { date: new Date(2023, 3, 1), value: 58000 }
+      ]}
+      currency="USD"
+      locale="en-US"
+    />
+  </Story>
+</Canvas>
+``` 
