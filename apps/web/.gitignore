@@ -3,6 +3,7 @@
 .wrangler
 .dev.*
 **/*.tsbuildinfo
+.trigger/*
 
 # dependencies
 node_modules
