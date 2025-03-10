@@ -16,8 +16,8 @@ import { getInstitutionsSchema } from './schema';
  * Parameters for retrieving financial institutions.
  */
 type GetAccountParams = {
-  countryCode: string;
-  query?: string;
+    countryCode: string;
+    query?: string;
 };
 
 /**
@@ -50,15 +50,30 @@ type GetAccountParams = {
  * to help users find specific institutions.
  */
 export const getInstitutionsAction = authActionClient
-  .schema(getInstitutionsSchema)
-  .action(async ({ parsedInput: { countryCode, query } }) => {
-    try {
-      return engine.institutions.list({
-        countryCode: countryCode as any,
-        q: query,
-      });
-    } catch (error) {
-      console.error(error instanceof Error ? error.message : String(error));
-      return { data: [] };
-    }
-  });
+    .schema(getInstitutionsSchema)
+    .action(async ({ parsedInput: { countryCode, query } }) => {
+        console.log('getInstitutionsAction called with params:', { countryCode, query });
+        try {
+            console.log('Calling engine.institutions.list with:', {
+                countryCode: countryCode as any,
+                q: query,
+            });
+            const data = await engine.institutions.list({
+                countryCode: countryCode as any,
+                q: query,
+            });
+            console.log('Successfully retrieved institutions data:', {
+                count: Array.isArray(data) ? data.length : 'data is not an array',
+                dataStructure: typeof data === 'object' ? Object.keys(data) : typeof data
+            });
+            return { data };
+        } catch (error) {
+            console.error('Error in getInstitutionsAction:', error);
+            console.error('Error details:', {
+                message: error instanceof Error ? error.message : String(error),
+                status: (error as any)?.status || 'unknown',
+                response: (error as any)?.response || 'unknown',
+            });
+            return { data: [] };
+        }
+    });
