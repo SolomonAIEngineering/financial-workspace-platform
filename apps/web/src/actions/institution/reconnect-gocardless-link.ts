@@ -74,12 +74,11 @@ export const reconnectGoCardLessLinkAction = authActionClient
       }
 
       try {
-        const { data: agreementData } = await engine.apiGocardless.createAgreement(
-          {
+        const { data: agreementData } =
+          await engine.apiGocardless.createAgreement({
             institutionId,
             transactionTotalDays: availableHistory,
-          }
-        );
+          });
 
         const { data: linkData } = await engine.apiGocardless.createLink({
           agreement: agreementData.id,

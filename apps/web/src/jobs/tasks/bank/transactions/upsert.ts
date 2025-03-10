@@ -112,6 +112,14 @@ export const upsertTransactionsJob = client.defineJob({
 
       throw new Error(`Bank account ${bankAccountId} not found`);
     }
+
+    // get the bank connection for the bank account
+    const bankConnection = await prisma.bankConnection.findUnique({
+      where: {
+        id: bankAccount.bankConnectionId,
+      },
+    });
+
     if (bankAccount.status !== 'ACTIVE') {
       await io.logger.info(
         `Bank account ${bankAccountId} is not active, skipping sync`
@@ -147,17 +155,6 @@ export const upsertTransactionsJob = client.defineJob({
       const startDateStr = format(start, 'yyyy-MM-dd');
       const endDateStr = format(end, 'yyyy-MM-dd');
 
-      // Get the bank connection for this account
-      const bankConnection = await prisma.bankConnection.findUnique({
-        where: { id: bankAccount.bankConnectionId },
-      });
-
-      if (!bankConnection) {
-        throw new Error(
-          `Bank connection not found for account ${bankAccountId}`
-        );
-      }
-
       // Get all accounts for this connection to pass to getTransactions
       const bankAccounts = await prisma.bankAccount.findMany({
         where: { bankConnectionId: bankAccount.bankConnectionId },
@@ -167,6 +164,12 @@ export const upsertTransactionsJob = client.defineJob({
       const plaidTransactions = await io.runTask(
         'fetch-plaid-transactions',
         async () => {
+          if (!bankConnection) {
+            throw new Error(
+              `Bank connection not found for account ${bankAccountId}`
+            );
+          }
+
           return await getTransactions(
             accessToken,
             bankConnection,
@@ -236,16 +239,13 @@ export const upsertTransactionsJob = client.defineJob({
                 data: {
                   amount: plaidTransaction.amount,
                   bankAccount: { connect: { id: bankAccountId } },
-                  bankConnection: {
-                    connect: { id: bankAccount.bankConnectionId },
-                  },
+                  userId: userId,
                   category: category,
                   date: new Date(plaidTransaction.date),
                   merchantName: plaidTransaction.merchantName || null,
                   name: plaidTransaction.name,
                   pending: plaidTransaction.pending,
                   plaidTransactionId: plaidTransaction.plaidTransactionId,
-                  user: { connect: { id: userId } },
                 },
               });
               newCount++;

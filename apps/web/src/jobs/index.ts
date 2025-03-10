@@ -2,7 +2,6 @@
 export { client } from './client';
 
 // Export all jobs
-export * from './tasks/sync-transactions';
 export * from './tasks/bank/monitor-connections';
 export * from './tasks/bank/update-balances';
 export * from './tasks/transactions/analyze-spending';
@@ -18,11 +17,10 @@ export * from './tasks/bank/notifications/expiring';
 export * from './tasks/bank/connections/refresh-connection-job';
 export * from './tasks/bank/connections/connection-expiration-job';
 
-// Import all job functions
 import {
   syncAllTransactionsJob,
   syncUserTransactionsJob,
-} from './tasks/sync-transactions';
+} from './tasks/transactions/sync-transactions';
 
 import { analyzeSpendingJob } from './tasks/transactions/analyze-spending';
 import { connectionExpirationJob } from './tasks/bank/connections/connection-expiration-job';

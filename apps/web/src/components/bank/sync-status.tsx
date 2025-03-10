@@ -72,8 +72,9 @@ export function SyncStatus({ bankAccount }: SyncStatusProps) {
     <div className="flex flex-col space-y-2">
       <div className="flex items-center gap-2">
         <div
-          className={`h-2 w-2 rounded-full ${bankAccount.lastTransactionSync ? 'bg-green-500' : 'bg-amber-500'
-            }`}
+          className={`h-2 w-2 rounded-full ${
+            bankAccount.lastTransactionSync ? 'bg-green-500' : 'bg-amber-500'
+          }`}
         />
         <span className="text-sm text-gray-600">{lastSyncText}</span>
       </div>
