@@ -1,8 +1,3 @@
-import React, { useState } from 'react';
-
-import type { Document, User } from '@/server/types/index';
-
-import { motion } from 'framer-motion';
 import {
   ArrowRightIcon,
   ClockIcon,
@@ -11,11 +6,14 @@ import {
   SettingsIcon,
   StarIcon,
 } from 'lucide-react';
-import Link from 'next/link';
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { WithSkeleton } from '@/components/ui/skeleton';
+import type { Document, User } from '@/server/types/index';
+import React, { useState } from 'react';
+
+import Link from 'next/link';
 import { UserAvatar } from '@/components/user-avatar';
+import { WithSkeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 import { routes } from '@/lib/navigation/routes';
 
 /**
@@ -69,6 +67,24 @@ export interface DocumentCardProps {
   variants: any;
   /** The current display mode, either grid or list */
   viewMode?: 'grid' | 'list';
+
+  // document status
+  status?: 'draft' | 'pending' | 'approved' | 'rejected';
+
+  // has comments
+  hasComments?: boolean;
+
+  // comment count
+  commentCount?: number;
+
+  // tags
+  tags?: string[];
+
+  // cover image
+  coverImage?: string;
+
+  // progress
+  progress?: number;
 }
 
 /**
@@ -100,16 +116,16 @@ export function DocumentCard({
   user,
   variants,
   viewMode = 'grid',
+  status = 'draft',
+  hasComments = false,
+  commentCount = 0,
+  tags = [],
+  coverImage,
+  progress,
 }: DocumentCardProps): React.ReactElement {
   // Track hover state for animations
   const [isHovered, setIsHovered] = useState(false);
 
-  // For demo, randomly assign a status
-  const randomStatus = STATUSES[Math.floor(Math.random() * STATUSES.length)];
-
-  // For demo, randomly decide if document has comments
-  const hasComments = Math.random() > 0.5;
-  const commentCount = hasComments ? Math.floor(Math.random() * 10) + 1 : 0;
 
   // Render list view
   if (viewMode === 'list') {
@@ -151,10 +167,10 @@ export function DocumentCard({
                     </span>
                   </span>
                   <span
-                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[randomStatus].bg} ${STATUS_COLORS[randomStatus].text}`}
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[status].bg} ${STATUS_COLORS[status].text}`}
                   >
-                    {randomStatus.charAt(0).toUpperCase() +
-                      randomStatus.slice(1)}
+                    {status.charAt(0).toUpperCase() +
+                      status.slice(1)}
                   </span>
                 </div>
               </div>
@@ -207,19 +223,19 @@ export function DocumentCard({
               style={
                 doc?.coverImage
                   ? {
-                      backgroundImage: `url(${doc?.coverImage})`,
-                      backgroundPosition: 'center',
-                      backgroundSize: 'cover',
-                    }
+                    backgroundImage: `url(${doc?.coverImage})`,
+                    backgroundPosition: 'center',
+                    backgroundSize: 'cover',
+                  }
                   : undefined
               }
             >
               {/* Status badge */}
               <div className="absolute top-3 right-3">
                 <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLORS[randomStatus].bg} ${STATUS_COLORS[randomStatus].text}`}
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLORS[status].bg} ${STATUS_COLORS[status].text}`}
                 >
-                  {randomStatus.charAt(0).toUpperCase() + randomStatus.slice(1)}
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
                 </span>
               </div>
 
@@ -271,17 +287,14 @@ export function DocumentCard({
             <CardContent className="px-4 pb-4">
               {/* Document tags */}
               <div className="mb-3 flex flex-wrap gap-1.5">
-                {/* Randomly generate some tags for demo purposes */}
-                {['Contract', 'Legal', 'Important']
-                  .slice(0, Math.floor(Math.random() * 3) + 1)
-                  .map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                {tags?.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
 
               <div className="flex items-center justify-between">
@@ -307,9 +320,9 @@ export function DocumentCard({
                 </div>
 
                 {/* Progress indicator for demo */}
-                {Math.random() > 0.5 && (
+                {progress && (
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">
-                    {Math.floor(Math.random() * 100)}%
+                    {progress}%
                   </div>
                 )}
               </div>
