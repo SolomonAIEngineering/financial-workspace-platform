@@ -1,8 +1,6 @@
-import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
-
+import { PrismaPg } from '@prisma/adapter-pg';
 import { env } from '@/env';
-
 import { pgPool } from './pg';
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
@@ -14,10 +12,10 @@ export const prisma =
     log:
       env.NODE_ENV === 'development'
         ? [
-            // 'query', 'info',
-            'error',
-            'warn',
-          ]
+          // 'query', 'info',
+          'error',
+          'warn',
+        ]
         : ['error'],
   });
 

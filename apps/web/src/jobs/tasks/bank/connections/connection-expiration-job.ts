@@ -1,23 +1,63 @@
+import { BANK_JOBS } from '../../constants';
 import { client } from '../../../client';
 import { cronTrigger } from '@trigger.dev/sdk';
 import { differenceInDays } from 'date-fns';
 import { prisma } from '@/server/db';
 
-// Constants for expiration thresholds
+/**
+ * Constants defining the thresholds for connection expiration notifications.
+ * WARNING_DAYS is when users get their first notification.
+ * CRITICAL_DAYS is when users get a more urgent notification.
+ */
 const WARNING_DAYS = 14;
 const CRITICAL_DAYS = 3;
 
 /**
- * This job checks for bank connections that are about to expire and sends
- * notifications to users to reconnect their accounts.
+ * @file Connection Expiration Monitoring Job
+ * @description This job monitors bank connections that are approaching expiration and proactively 
+ * notifies users to reconnect their accounts, helping prevent disruption of financial data syncing.
+ * 
+ * The job sends two types of notifications based on expiration timeframes:
+ * - Warning notifications: Sent when a connection will expire within {@link WARNING_DAYS} days
+ * - Critical notifications: Sent when a connection will expire within {@link CRITICAL_DAYS} days
+ * 
+ * @example
+ * // Manually trigger the connection expiration job
+ * await client.sendEvent({
+ *   name: "run-job",
+ *   payload: {
+ *     jobId: BANK_JOBS.CONNECTION_EXPIRATION
+ *   }
+ * });
+ * 
+ * @example
+ * // The job result structure will be:
+ * {
+ *   success: true,
+ *   warningCount: 5,  // Number of warning notifications sent
+ *   criticalCount: 2  // Number of critical notifications sent
+ * }
+ * 
+ * // Or if there was an error:
+ * {
+ *   success: false,
+ *   error: "Database connection failed"
+ * }
  */
 export const connectionExpirationJob = client.defineJob({
-  id: 'connection-expiration-job',
+  id: BANK_JOBS.CONNECTION_EXPIRATION,
   name: 'Check Connection Expiration',
   trigger: cronTrigger({
     cron: '0 9 * * *', // Run daily at 9 AM
   }),
   version: '1.0.0',
+  /**
+   * Main job execution function that checks for expiring connections and sends notifications
+   * 
+   * @param payload - The job payload (empty for cron jobs)
+   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
+   * @returns A result object containing success status and notification counts
+   */
   run: async (payload, io) => {
     await io.logger.info('Starting connection expiration check');
 

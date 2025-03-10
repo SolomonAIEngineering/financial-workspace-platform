@@ -1,21 +1,73 @@
+import { BANK_JOBS } from '../../constants';
+import { client } from '../../../client';
 import { eventTrigger } from '@trigger.dev/sdk';
+import { prisma } from '@/server/db';
 import { subDays } from 'date-fns';
 
-import { prisma } from '@/server/db';
-
-import { client } from '../../../client';
-
 /**
- * This job sends notifications to users about new transactions It groups
- * transactions by account and creates summaries
+ * @file Transaction Summary Notifications Job
+ * @description This job sends comprehensive transaction summary notifications to users,
+ * helping them stay informed about financial activity in their accounts.
+ * 
+ * Key features:
+ * - Aggregates new transactions since the last notification
+ * - Groups transactions by bank account for organized summaries
+ * - Highlights large transactions (over $100)
+ * - Calculates total spending across all accounts
+ * - Sends email notifications with detailed transaction data
+ * - Records notification activity in the user's history
+ * - Respects user notification preferences
+ * 
+ * The job is designed to provide users with a periodic overview of their spending
+ * without overwhelming them with individual transaction notifications.
+ * 
+ * @example
+ * // Trigger transaction notifications for a specific user
+ * await client.sendEvent({
+ *   name: "sync-transaction-notifications",
+ *   payload: {
+ *     userId: "user_123abc"
+ *   }
+ * });
+ * 
+ * @example
+ * // The job returns different results based on the outcome:
+ * 
+ * // When notifications are sent successfully:
+ * {
+ *   status: "success",
+ *   accountCount: 3,
+ *   transactionCount: 27
+ * }
+ * 
+ * // When notifications are skipped (user preference):
+ * {
+ *   status: "skipped",
+ *   reason: "Notifications disabled"
+ * }
+ * 
+ * // When there are no new transactions:
+ * {
+ *   status: "skipped",
+ *   reason: "No new transactions"
+ * }
  */
 export const transactionNotificationsJob = client.defineJob({
-  id: 'transaction-notifications-job',
+  id: BANK_JOBS.TRANSACTION_NOTIFICATIONS,
   name: 'Send Transaction Notifications',
   trigger: eventTrigger({
     name: 'sync-transaction-notifications',
   }),
   version: '1.0.0',
+  /**
+   * Main job execution function that processes and sends transaction notifications
+   * 
+   * @param payload - The job payload containing user identification
+   * @param payload.userId - The ID of the user to generate transaction notifications for
+   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
+   * @returns A result object containing status and transaction summary information
+   * @throws Error if the user is not found or if notification processing fails
+   */
   run: async (payload, io) => {
     const { userId } = payload;
 
@@ -139,7 +191,12 @@ export const transactionNotificationsJob = client.defineJob({
         .slice(0, 5); // Top 5
 
       const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
-      const accountSummaries = Object.values(accountTransactions).map(
+      const accountSummaries = (Object.values(accountTransactions) as Array<{
+        accountMask: string;
+        accountName: string;
+        total: number;
+        transactions: any[];
+      }>).map(
         (acct) => ({
           mask: acct.accountMask,
           name: acct.accountName,

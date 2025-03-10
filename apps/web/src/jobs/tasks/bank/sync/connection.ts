@@ -1,22 +1,67 @@
+import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@prisma/client';
-import { eventTrigger } from '@trigger.dev/sdk';
-
-import { prisma } from '@/server/db';
-import { getItemDetails } from '@/server/services/plaid';
-
 import { client } from '../../../client';
+import { eventTrigger } from '@trigger.dev/sdk';
+import { getItemDetails } from '@/server/services/plaid';
+import { prisma } from '@/server/db';
 
 /**
- * This job handles syncing a bank connection and all its accounts It's a
- * fan-out job that triggers sync-account for each account
+ * @file Bank Connection Synchronization Job
+ * @description This job manages the synchronization of an entire bank connection and all its 
+ * associated accounts. It acts as a fan-out orchestrator that:
+ * 
+ * 1. Verifies the connection status with the provider (e.g., Plaid)
+ * 2. Updates the connection status in our database
+ * 3. Triggers individual account syncs for all accounts under this connection
+ * 4. Optionally triggers transaction notifications for manual syncs
+ * 
+ * The job implements intelligent handling of connection errors, including detecting
+ * when a user needs to re-authenticate (LOGIN_REQUIRED) versus other types of errors.
+ * It also implements staggered scheduling to prevent rate limiting issues.
+ * 
+ * @example
+ * // Trigger a connection sync
+ * await client.sendEvent({
+ *   name: "sync-connection",
+ *   payload: {
+ *     connectionId: "conn_123abc",
+ *     manualSync: true  // Optional, defaults to false
+ *   }
+ * });
+ * 
+ * @example
+ * // The job returns different results based on the outcome:
+ * 
+ * // Successful sync:
+ * {
+ *   status: "success",
+ *   connectionId: "conn_123abc",
+ *   accountsSynced: 5
+ * }
+ * 
+ * // Connection error:
+ * {
+ *   status: "error",
+ *   error: "ITEM_LOGIN_REQUIRED"
+ * }
  */
 export const syncConnectionJob = client.defineJob({
-  id: 'sync-connection-job',
+  id: BANK_JOBS.SYNC_CONNECTION,
   name: 'Sync Bank Connection',
   trigger: eventTrigger({
     name: 'sync-connection',
   }),
   version: '1.0.0',
+  /**
+   * Main job execution function that syncs a bank connection and all its accounts
+   * 
+   * @param payload - The job payload containing connection details
+   * @param payload.connectionId - The ID of the bank connection to sync
+   * @param payload.manualSync - Whether this is a manual sync initiated by the user (defaults to false)
+   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
+   * @returns A result object containing the connection ID, number of accounts synced, and status
+   * @throws Error if the connection sync fails or if the connection cannot be found
+   */
   run: async (payload, io) => {
     const { connectionId, manualSync = false } = payload;
 

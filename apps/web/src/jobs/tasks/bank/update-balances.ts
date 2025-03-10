@@ -1,17 +1,16 @@
+import { BANK_JOBS } from '../constants';
 import { BankConnectionStatus } from '@prisma/client';
-import { cronTrigger } from '@trigger.dev/sdk';
-
-import { prisma } from '@/server/db';
-import { getAccounts } from '@/server/services/plaid';
-
 import { client } from '../../client';
+import { cronTrigger } from '@trigger.dev/sdk';
+import { getAccounts } from '@/server/services/plaid';
+import { prisma } from '@/server/db';
 
 /**
  * This job updates bank account balances on a frequent basis without pulling
  * full transaction history, providing more real-time balance data.
  */
 export const updateBalancesJob = client.defineJob({
-  id: 'update-bank-balances-job',
+  id: BANK_JOBS.UPDATE_BALANCES,
   name: 'Update Bank Balances',
   trigger: cronTrigger({
     cron: '0 */2 * * *', // Every 2 hours

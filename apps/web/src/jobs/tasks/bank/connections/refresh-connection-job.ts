@@ -1,14 +1,52 @@
+import { BANK_JOBS } from '../../constants';
 import { client } from '../../../client';
 import { eventTrigger } from '@trigger.dev/sdk';
 import { prisma } from '@/server/db';
 import { z } from 'zod';
 
 /**
- * This job handles refreshing tokens for bank connections. It's responsible for
- * managing token refresh processes for various providers.
+ * @file Bank Connection Token Refresh Job
+ * @description This job handles the token refresh process for bank connections across different providers.
+ * It's triggered when a connection's access token needs to be renewed, handling the renewal process
+ * specific to each provider (Plaid, Teller, GoCardless).
+ * 
+ * Key responsibilities:
+ * - Refreshes access tokens before they expire
+ * - Updates connection status during refresh processes
+ * - Handles provider-specific refresh flows
+ * - Triggers verification syncs after refreshes
+ * - Sends notifications to users when manual intervention is needed
+ * 
+ * @example
+ * // Trigger a token refresh for a Plaid connection
+ * await client.sendEvent({
+ *   name: "refresh-connection",
+ *   payload: {
+ *     connectionId: "conn_123abc",
+ *     accessToken: "current-access-token",
+ *     refreshToken: "current-refresh-token",
+ *     provider: "plaid",
+ *     userId: "user_456def"
+ *   }
+ * });
+ * 
+ * @example
+ * // The job returns a result object with the new tokens on success:
+ * {
+ *   success: true,
+ *   newAccessToken: "new-access-token-123",
+ *   newRefreshToken: "new-refresh-token-456",
+ *   expiresAt: "2023-05-15T10:30:00.000Z"
+ * }
+ * 
+ * // Or an error message on failure:
+ * {
+ *   success: false,
+ *   error: "Invalid refresh token"
+ * }
  */
 export const refreshConnectionJob = client.defineJob({
-  id: 'refresh-connection-job',
+  id: BANK_JOBS.REFRESH_CONNECTION,
   name: 'Refresh Bank Connection',
   trigger: eventTrigger({
     name: 'refresh-connection',
@@ -21,6 +59,18 @@ export const refreshConnectionJob = client.defineJob({
     }),
   }),
   version: '1.0.0',
+  /**
+   * Main job execution function that refreshes tokens for a specific bank connection
+   * 
+   * @param payload - The job payload containing connection details and tokens
+   * @param payload.connectionId - The unique ID of the bank connection to refresh
+   * @param payload.accessToken - The current access token for the connection
+   * @param payload.refreshToken - The current refresh token for the connection
+   * @param payload.provider - The provider type ('plaid', 'teller', or 'gocardless')
+   * @param payload.userId - The ID of the user who owns the connection
+   * @param io - The I/O context provided by Trigger.dev for logging, running tasks, etc.
+   * @returns A result object containing success status and new token information
+   */
   run: async (payload, io) => {
     const { connectionId, accessToken, refreshToken, provider, userId } =
       payload;
