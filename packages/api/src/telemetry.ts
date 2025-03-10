@@ -4,8 +4,8 @@
  * and SDK version tracking for monitoring and debugging purposes.
  */
 
-import type { SolomonAIOptions } from './client'
 import { version } from '../package.json'
+import type { SolomonAIOptions } from './client'
 
 /**
  * Represents telemetry data collected by the SDK.
@@ -95,7 +95,7 @@ export function getTelemetry(opts: SolomonAIOptions): Telemetry | null {
     if (opts.wrapperSdkVersion) {
       sdkVersions.push(opts.wrapperSdkVersion)
     }
-  } catch (_error) { }
+  } catch (_error) {}
 
   return { platform, runtime, sdkVersions }
 }

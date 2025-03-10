@@ -1,7 +1,4 @@
-import {
-  AuthenticationRequiredRoutes,
-  CachedRoutes,
-} from '@/route-definitions/routes'
+import { handleError, handleZodError } from '@/errors'
 import {
   authMiddleware,
   cacheMiddleware,
@@ -10,19 +7,22 @@ import {
   jsonFormattingMiddleware,
   loggingMiddleware,
 } from '@/middleware/index'
-import { handleError, handleZodError } from '@/errors'
+import {
+  AuthenticationRequiredRoutes,
+  CachedRoutes,
+} from '@/route-definitions/routes'
 
-import type { Context as GenericContext } from 'hono'
-import type { HonoEnv } from './env'
-import { OpenAPIHono } from '@hono/zod-openapi'
 import { init } from '@/middleware/init'
 import { metrics } from '@/middleware/metrics'
-import { prettyJSON } from 'hono/pretty-json'
 import { rateLimit } from '@/middleware/ratelimit'
+import { swaggerUI } from '@hono/swagger-ui'
+import { OpenAPIHono } from '@hono/zod-openapi'
+import type { Context as GenericContext } from 'hono'
+import { prettyJSON } from 'hono/pretty-json'
 import { requestId } from 'hono/request-id'
 import { secureHeaders } from 'hono/secure-headers'
-import { swaggerUI } from '@hono/swagger-ui'
 import { timing } from 'hono/timing'
+import type { HonoEnv } from './env'
 
 /**
  * Creates and configures a new OpenAPIHono application.
