@@ -80,30 +80,30 @@ function generateMonthlyCashFlowForecastData(
 
 describe('getMonthlyCashFlowForecast', () => {
     test('accurately retrieves monthly cash flow forecast', async (t) => {
-        console.log('Starting test...')
+        console.info('Starting test...')
 
         // Start a ClickHouse container
         const container = await ClickHouseContainer.start(t, { keepContainer: false })
-        console.log('ClickHouse container started')
+        console.info('ClickHouse container started')
 
         try {
             // Create a ClickHouse client
             const ch = new ClickHouse({
                 url: container.url(),
             })
-            console.log(`ClickHouse client created with URL: ${container.url()}`)
+            console.info(`ClickHouse client created with URL: ${container.url()}`)
 
             // Generate test IDs
             const userId = randomUUID()
             const teamId = randomUUID()
             const bankAccountId = randomUUID()
 
-            console.log('Generated test IDs:', { userId, teamId, bankAccountId })
+            console.info('Generated test IDs:', { userId, teamId, bankAccountId })
 
             // Generate sample forecast data for 6 months
             const forecastData = generateMonthlyCashFlowForecastData(6, userId, teamId, bankAccountId)
-            console.log('Generated sample forecast data:', forecastData.length)
-            console.log('Sample forecast data:', JSON.stringify(forecastData[0], null, 2))
+            console.info('Generated sample forecast data:', forecastData.length)
+            console.info('Sample forecast data:', JSON.stringify(forecastData[0], null, 2))
 
             // List databases to check if financials exists
             const databases = await ch.querier.query({
@@ -111,7 +111,7 @@ describe('getMonthlyCashFlowForecast', () => {
                 schema: z.object({ name: z.string() }),
             })({});
 
-            console.log('Databases:', databases.val?.map(db => db.name));
+            console.info('Databases:', databases.val?.map(db => db.name));
 
             // Create financials database if it doesn't exist
             await ch.querier.query({
@@ -125,7 +125,7 @@ describe('getMonthlyCashFlowForecast', () => {
                 schema: z.object({ name: z.string() }),
             })({});
 
-            console.log('Tables in financials:', tables.val?.map(table => table.name));
+            console.info('Tables in financials:', tables.val?.map(table => table.name));
 
             // Create monthly_cash_flow_forecast_mv_v1 table if it doesn't exist
             await ch.querier.query({
@@ -147,10 +147,10 @@ describe('getMonthlyCashFlowForecast', () => {
                 schema: z.object({}),
             })({});
 
-            console.log('Created monthly_cash_flow_forecast_mv_v1 table')
+            console.info('Created monthly_cash_flow_forecast_mv_v1 table')
 
             // Insert forecast data in batch
-            console.log('Inserting monthly cash flow forecast data in batch...')
+            console.info('Inserting monthly cash flow forecast data in batch...')
 
             // Create a Zod schema for the monthly cash flow forecast
             const monthlyCashFlowForecastSchema = z.object({
@@ -174,35 +174,35 @@ describe('getMonthlyCashFlowForecast', () => {
 
             const batchResult = await insertFn(forecastData);
 
-            console.log('Batch insertion result:', batchResult)
+            console.info('Batch insertion result:', batchResult)
 
             // Wait for data to be processed
-            console.log('Waiting for data to be processed...')
+            console.info('Waiting for data to be processed...')
             await new Promise(resolve => setTimeout(resolve, 1000))
 
             // Verify data insertion
-            console.log('Verifying data insertion...')
+            console.info('Verifying data insertion...')
             const countQuery = `SELECT count(*) as count FROM financials.monthly_cash_flow_forecast_mv_v1 WHERE user_id = '${userId}'`
-            console.log('Count query:', countQuery)
+            console.info('Count query:', countQuery)
 
             const count = await ch.querier.query({
                 query: countQuery,
                 schema: z.object({ count: z.number().int() }),
             })({})
 
-            console.log('Count result:', count)
+            console.info('Count result:', count)
 
             if (count.err) {
                 console.error('Error in count query:', count.err)
                 throw new Error('Error in count query: ' + count.err.message)
             } else {
-                console.log('Count value:', count.val)
+                console.info('Count value:', count.val)
                 // The test should fail if no data was inserted
                 expect(count.val!.at(0)!.count).toBeGreaterThan(0)
             }
 
             // Test the getMonthlyCashFlowForecast function
-            console.log('Testing getMonthlyCashFlowForecast function...')
+            console.info('Testing getMonthlyCashFlowForecast function...')
             const getMonthlyCashFlowForecastFn = getMonthlyCashFlowForecast(ch.querier)
 
             try {
@@ -214,7 +214,7 @@ describe('getMonthlyCashFlowForecast', () => {
                     limit: 100
                 })
 
-                console.log('getMonthlyCashFlowForecast result:', result)
+                console.info('getMonthlyCashFlowForecast result:', result)
 
                 if (result.err) {
                     console.error('Error in getMonthlyCashFlowForecast:', result.err)
@@ -265,7 +265,7 @@ describe('getMonthlyCashFlowForecast', () => {
 
         } finally {
             // Stop the container
-            console.log('Test completed, stopping container...')
+            console.info('Test completed, stopping container...')
             await container.stop()
         }
     })

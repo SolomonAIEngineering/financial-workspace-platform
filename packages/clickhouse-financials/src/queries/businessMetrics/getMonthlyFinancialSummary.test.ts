@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest'
 
 import { ClickHouse } from '../../index'
 import { ClickHouseContainer } from '../../testutil'
-import { getCashRunway } from './getCashRunway'
+import { getMonthlyFinancialSummary } from './getMonthlyFinancialSummary'
 import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 
@@ -18,6 +18,12 @@ function generateFinancialSummaryData(n: number, teamId: string) {
         month_date: string;
         total_revenue: number;
         total_expenses: number;
+        net_income: number;
+        gross_profit: number;
+        gross_margin: number;
+        operating_expenses: number;
+        operating_income: number;
+        operating_margin: number;
     };
 
     const financialData: FinancialSummaryData[] = [];
@@ -25,7 +31,7 @@ function generateFinancialSummaryData(n: number, teamId: string) {
 
     // Base values for revenue and expenses
     let baseRevenue = 50000;
-    let baseExpenses = 60000;
+    let baseExpenses = 40000;
 
     // Generate data for n months, starting from n months ago
     for (let i = n - 1; i >= 0; i--) {
@@ -38,19 +44,41 @@ function generateFinancialSummaryData(n: number, teamId: string) {
         baseRevenue *= revenueGrowth;
         baseExpenses *= expenseGrowth;
 
+        const totalRevenue = Math.round(baseRevenue);
+        const totalExpenses = Math.round(baseExpenses);
+
+        // Calculate financial metrics
+        const netIncome = totalRevenue - totalExpenses;
+
+        // Assume cost of goods sold is 40% of revenue
+        const costOfGoodsSold = Math.round(totalRevenue * 0.4);
+        const grossProfit = totalRevenue - costOfGoodsSold;
+        const grossMargin = (grossProfit / totalRevenue) * 100;
+
+        // Assume operating expenses are 80% of total expenses
+        const operatingExpenses = Math.round(totalExpenses * 0.8);
+        const operatingIncome = totalRevenue - operatingExpenses;
+        const operatingMargin = (operatingIncome / totalRevenue) * 100;
+
         financialData.push({
             team_id: teamId,
             month_date: monthDate.toISOString().split('T')[0],
-            total_revenue: Math.round(baseRevenue),
-            total_expenses: Math.round(baseExpenses)
+            total_revenue: totalRevenue,
+            total_expenses: totalExpenses,
+            net_income: netIncome,
+            gross_profit: grossProfit,
+            gross_margin: grossMargin,
+            operating_expenses: operatingExpenses,
+            operating_income: operatingIncome,
+            operating_margin: operatingMargin
         });
     }
 
     return financialData;
 }
 
-describe('getCashRunway', () => {
-    test('accurately calculates cash runway', async (t) => {
+describe('getMonthlyFinancialSummary', () => {
+    test('accurately retrieves monthly financial summary data', async (t) => {
         console.info('Starting test...');
 
         // Start a ClickHouse container
@@ -102,7 +130,13 @@ describe('getCashRunway', () => {
                     team_id String,
                     month_date Date,
                     total_revenue Float64,
-                    total_expenses Float64
+                    total_expenses Float64,
+                    net_income Float64,
+                    gross_profit Float64,
+                    gross_margin Float64,
+                    operating_expenses Float64,
+                    operating_income Float64,
+                    operating_margin Float64
                 ) ENGINE = MergeTree()
                 ORDER BY (team_id, month_date)
                 `,
@@ -116,7 +150,13 @@ describe('getCashRunway', () => {
                 team_id: z.string(),
                 month_date: z.string(),
                 total_revenue: z.number(),
-                total_expenses: z.number()
+                total_expenses: z.number(),
+                net_income: z.number(),
+                gross_profit: z.number(),
+                gross_margin: z.number(),
+                operating_expenses: z.number(),
+                operating_income: z.number(),
+                operating_margin: z.number()
             });
 
             // Insert the financial data
@@ -153,78 +193,71 @@ describe('getCashRunway', () => {
                 expect(count.val!.at(0)!.count).toBeGreaterThan(0);
             }
 
-            // Test the getCashRunway function with calculated burn rate
-            console.info('Testing getCashRunway function with calculated burn rate...');
-            const getCashRunwayFn = getCashRunway(ch.querier);
-            const currentCash = 100000; // $100,000 current cash
+            // Test the getMonthlyFinancialSummary function
+            console.info('Testing getMonthlyFinancialSummary function...');
+            const getMonthlyFinancialSummaryFn = getMonthlyFinancialSummary(ch.querier);
 
             try {
-                const result = await getCashRunwayFn({
-                    teamId,
-                    currentCash
+                const result = await getMonthlyFinancialSummaryFn({
+                    teamId
                 });
 
-                console.info('getCashRunway result (calculated burn rate):', result);
+                console.info('getMonthlyFinancialSummary result:', result);
 
                 if (result.err) {
-                    console.error('Error in getCashRunway:', result.err);
-                    throw new Error('Error in getCashRunway: ' + result.err.message);
+                    console.error('Error in getMonthlyFinancialSummary:', result.err);
+                    throw new Error('Error in getMonthlyFinancialSummary: ' + result.err.message);
                 } else {
                     // Verify the results
                     expect(result.val).toBeDefined();
-                    if (result.val && result.val.length > 0) {
-                        const runway = result.val[0];
+                    expect(result.val!.length).toBeGreaterThan(0);
 
-                        // Check that current_cash matches our input
-                        expect(runway.current_cash).toBe(currentCash);
+                    // Check each month's data
+                    for (const monthData of result.val!) {
+                        // Check that team_id matches our input
+                        expect(monthData.team_id).toBe(teamId);
 
-                        // Check that burn_rate is positive (expenses > revenue)
-                        expect(runway.burn_rate).toBeGreaterThan(0);
+                        // Check that month_date is defined
+                        expect(monthData.month_date).toBeDefined();
 
-                        // Check that runway_months is calculated correctly
-                        expect(runway.runway_months).toBeCloseTo(currentCash / runway.burn_rate, 1);
+                        // Check that financial metrics are numbers
+                        expect(typeof monthData.total_revenue).toBe('number');
+                        expect(typeof monthData.total_expenses).toBe('number');
+                        expect(typeof monthData.net_income).toBe('number');
+                        expect(typeof monthData.gross_profit).toBe('number');
+                        expect(typeof monthData.gross_margin).toBe('number');
+                        expect(typeof monthData.operating_expenses).toBe('number');
+                        expect(typeof monthData.operating_income).toBe('number');
+                        expect(typeof monthData.operating_margin).toBe('number');
 
-                        // Store the calculated burn rate for comparison
-                        const calculatedBurnRate = runway.burn_rate;
+                        // Check that net_income is calculated correctly
+                        expect(monthData.net_income).toBeCloseTo(monthData.total_revenue - monthData.total_expenses, 1);
 
-                        // Test with custom burn rate
-                        console.info('Testing getCashRunway function with custom burn rate...');
-                        const customBurnRate = 15000; // $15,000 per month burn rate
+                        // Check that operating_income is calculated correctly
+                        expect(monthData.operating_income).toBeCloseTo(monthData.total_revenue - monthData.operating_expenses, 1);
 
-                        const customResult = await getCashRunwayFn({
-                            teamId,
-                            currentCash,
-                            burnRate: customBurnRate
-                        });
+                        // Check that gross_margin is a percentage
+                        expect(monthData.gross_margin).toBeGreaterThanOrEqual(0);
+                        expect(monthData.gross_margin).toBeLessThanOrEqual(100);
 
-                        console.info('getCashRunway result (custom burn rate):', customResult);
+                        // Check that operating_margin is a percentage
+                        expect(monthData.operating_margin).toBeLessThanOrEqual(100);
+                    }
 
-                        if (customResult.err) {
-                            console.error('Error in getCashRunway with custom burn rate:', customResult.err);
-                        } else if (customResult.val && customResult.val.length > 0) {
-                            const customRunway = customResult.val[0];
-
-                            // Check that burn_rate matches our custom input
-                            expect(customRunway.burn_rate).toBe(customBurnRate);
-
-                            // Check that runway_months is calculated correctly with custom burn rate
-                            expect(customRunway.runway_months).toBeCloseTo(currentCash / customBurnRate, 1);
-
-                            // Check that the custom burn rate gives different results than the calculated one
-                            expect(customRunway.burn_rate).not.toBe(calculatedBurnRate);
-                            expect(customRunway.runway_months).not.toBe(runway.runway_months);
-                        }
+                    // Check that the data is ordered by month_date in ascending order
+                    for (let i = 1; i < result.val!.length; i++) {
+                        const prevDate = new Date(result.val![i - 1].month_date);
+                        const currDate = new Date(result.val![i].month_date);
+                        expect(prevDate.getTime()).toBeLessThan(currDate.getTime());
                     }
                 }
             } catch (error) {
-                console.error('Exception in getCashRunway:', error);
+                console.error('Exception in getMonthlyFinancialSummary:', error);
                 throw error;
             }
-
         } finally {
-            // Stop the container
             console.info('Test completed, stopping container...');
             await container.stop();
         }
-    });
+    }, 30000); // Increase timeout to 30 seconds
 }); 

@@ -164,30 +164,30 @@ function generateRecurringTransactionData(
 
 describe('getRecurringTransactions', () => {
     test('accurately retrieves recurring transactions', async (t) => {
-        console.log('Starting test...');
+        console.info('Starting test...');
 
         // Start a ClickHouse container for testing
         const container = await ClickHouseContainer.start(t, { keepContainer: false });
-        console.log('ClickHouse container started');
+        console.info('ClickHouse container started');
 
         try {
             // Create a ClickHouse client
             const ch = new ClickHouse({
                 url: container.url(),
             });
-            console.log(`ClickHouse client created with URL: ${container.url()}`);
+            console.info(`ClickHouse client created with URL: ${container.url()}`);
 
             // Generate test IDs
             const userId = randomUUID();
             const teamId = randomUUID();
             const bankAccountId = randomUUID();
 
-            console.log('Generated test IDs:', { userId, teamId, bankAccountId });
+            console.info('Generated test IDs:', { userId, teamId, bankAccountId });
 
             // Generate sample recurring transactions
             const recurringTransactions = generateRecurringTransactionData(50, userId, teamId, bankAccountId);
-            console.log(`Generated sample recurring transactions: ${recurringTransactions.length}`);
-            console.log('Sample recurring transaction:', JSON.stringify(recurringTransactions[0], null, 2));
+            console.info(`Generated sample recurring transactions: ${recurringTransactions.length}`);
+            console.info('Sample recurring transaction:', JSON.stringify(recurringTransactions[0], null, 2));
 
             // Check if the database exists
             const databases = await ch.querier.query({
@@ -195,7 +195,7 @@ describe('getRecurringTransactions', () => {
                 schema: z.object({ name: z.string() }),
             })({});
 
-            console.log('Databases:', databases.val!.map(db => db.name));
+            console.info('Databases:', databases.val!.map(db => db.name));
 
             // Create the financials database if it doesn't exist
             await ch.querier.query({
@@ -209,7 +209,7 @@ describe('getRecurringTransactions', () => {
                 schema: z.object({ name: z.string() }),
             })({});
 
-            console.log('Tables in financials:', tables.val!.map(table => table.name));
+            console.info('Tables in financials:', tables.val!.map(table => table.name));
 
             // Create the raw_recurring_transactions_v1 table if it doesn't exist
             try {
@@ -248,7 +248,7 @@ describe('getRecurringTransactions', () => {
           `,
                     schema: z.object({}),
                 })({});
-                console.log('Created raw_recurring_transactions_v1 table');
+                console.info('Created raw_recurring_transactions_v1 table');
             } catch (error) {
                 console.error('Error creating table:', error);
                 throw new Error('Failed to create table: ' + error.message);
@@ -263,10 +263,10 @@ describe('getRecurringTransactions', () => {
                 }),
             })({});
 
-            console.log('Table structure:', tableStructure.val);
+            console.info('Table structure:', tableStructure.val);
 
             // Insert the recurring transactions
-            console.log('Inserting recurring transactions in batch...');
+            console.info('Inserting recurring transactions in batch...');
 
             // Filter to only include active transactions with next_scheduled_date and days_to_next_execution
             const activeTransactions = recurringTransactions
@@ -277,7 +277,7 @@ describe('getRecurringTransactions', () => {
                     days_to_next_execution: t.days_to_next_execution as number  // We know it's not null from the filter
                 }));
 
-            console.log(`Filtered to ${activeTransactions.length} active transactions with next_scheduled_date`);
+            console.info(`Filtered to ${activeTransactions.length} active transactions with next_scheduled_date`);
 
             const inserter = ch.inserter.insert({
                 table: 'financials.raw_recurring_transactions_v1',
@@ -314,35 +314,35 @@ describe('getRecurringTransactions', () => {
 
             const insertResult = await inserter(activeTransactions);
 
-            console.log('Batch insertion result:', insertResult);
+            console.info('Batch insertion result:', insertResult);
 
             // Wait for data to be processed
-            console.log('Waiting for data to be processed...');
+            console.info('Waiting for data to be processed...');
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Verify data insertion
-            console.log('Verifying data insertion...');
+            console.info('Verifying data insertion...');
             const countQuery = `SELECT count(*) as count FROM financials.raw_recurring_transactions_v1 WHERE user_id = '${userId}'`;
-            console.log('Count query:', countQuery);
+            console.info('Count query:', countQuery);
 
             const count = await ch.querier.query({
                 query: countQuery,
                 schema: z.object({ count: z.number().int() }),
             })({});
 
-            console.log('Count result:', count);
+            console.info('Count result:', count);
 
             if (count.err) {
                 console.error('Error in count query:', count.err);
                 throw new Error('Error in count query: ' + count.err.message);
             } else {
-                console.log('Count value:', count.val);
+                console.info('Count value:', count.val);
                 // The test should fail if no data was inserted
                 expect(count.val!.at(0)!.count).toBeGreaterThan(0);
             }
 
             // Test the getRecurringTransactions function
-            console.log('Testing getRecurringTransactions function...');
+            console.info('Testing getRecurringTransactions function...');
             const getRecurringTransactionsFn = getRecurringTransactions(ch.querier);
 
             try {
@@ -354,7 +354,7 @@ describe('getRecurringTransactions', () => {
                     limit: 100,
                 });
 
-                console.log('getRecurringTransactions result:', result);
+                console.info('getRecurringTransactions result:', result);
 
                 if (result.err) {
                     console.error('Error in getRecurringTransactions:', result.err);
@@ -371,7 +371,7 @@ describe('getRecurringTransactions', () => {
                 // Test passes even with exception since we're just testing the function call
             }
         } finally {
-            console.log('Test completed, stopping container...');
+            console.info('Test completed, stopping container...');
             await container.stop();
         }
     });

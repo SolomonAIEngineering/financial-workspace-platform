@@ -164,28 +164,28 @@ describe('getCategorySpending', () => {
         'accurately retrieves category spending data',
         async (t) => {
             try {
-                console.log('Starting test...')
+                console.info('Starting test...')
 
                 // Start the ClickHouse container
                 const container = await ClickHouseContainer.start(t, { keepContainer: false })
-                console.log('ClickHouse container started')
+                console.info('ClickHouse container started')
 
                 // Create ClickHouse client
                 const ch = new ClickHouse({
                     url: container.url(),
                 })
-                console.log('ClickHouse client created with URL:', container.url())
+                console.info('ClickHouse client created with URL:', container.url())
 
                 // Generate test IDs
                 const userId = randomUUID()
                 const teamId = randomUUID()
                 const bankAccountId = randomUUID()
-                console.log('Generated test IDs:', { userId, teamId, bankAccountId })
+                console.info('Generated test IDs:', { userId, teamId, bankAccountId })
 
                 // Generate sample transactions with category spending patterns
                 const transactions = generateTransactionData(100, userId, teamId, bankAccountId)
-                console.log('Generated sample transactions:', transactions.length)
-                console.log('Sample transaction:', JSON.stringify(transactions[0], null, 2))
+                console.info('Generated sample transactions:', transactions.length)
+                console.info('Sample transaction:', JSON.stringify(transactions[0], null, 2))
 
                 // Check if the database and table exist using direct SQL
                 try {
@@ -194,14 +194,14 @@ describe('getCategorySpending', () => {
                         schema: z.object({ name: z.string() }),
                     })({})
 
-                    console.log('Databases:', dbExists.val?.map(db => db.name))
+                    console.info('Databases:', dbExists.val?.map(db => db.name))
 
                     const tableExists = await ch.querier.query({
                         query: 'SHOW TABLES FROM financials',
                         schema: z.object({ name: z.string() }),
                     })({})
 
-                    console.log('Tables in financials:', tableExists.val?.map(table => table.name))
+                    console.info('Tables in financials:', tableExists.val?.map(table => table.name))
 
                     // Check the table structure
                     const tableStructure = await ch.querier.query({
@@ -217,13 +217,13 @@ describe('getCategorySpending', () => {
                         }),
                     })({})
 
-                    console.log('Table structure:', tableStructure.val?.map(col => ({ name: col.name, type: col.type })))
+                    console.info('Table structure:', tableStructure.val?.map(col => ({ name: col.name, type: col.type })))
                 } catch (error) {
                     console.error('Error checking database/table:', error)
                 }
 
                 // Try to insert a single transaction first to test
-                console.log('Inserting a single test transaction...')
+                console.info('Inserting a single test transaction...')
                 let insertionSuccessful = false;
 
                 try {
@@ -253,7 +253,7 @@ describe('getCategorySpending', () => {
                     })
 
                     const result = await inserter(testTransaction)
-                    console.log('Insertion result:', result)
+                    console.info('Insertion result:', result)
 
                     if (result.err) {
                         console.error('Error inserting test transaction:', result.err)
@@ -267,11 +267,11 @@ describe('getCategorySpending', () => {
                 }
 
                 if (!insertionSuccessful) {
-                    console.log('Skipping batch insertion due to test insertion failure')
+                    console.info('Skipping batch insertion due to test insertion failure')
                     throw new Error('Test insertion failed, cannot proceed with batch insertion');
                 } else {
                     // Insert transactions using the batch insert method
-                    console.log('Inserting transactions in batch...')
+                    console.info('Inserting transactions in batch...')
                     try {
                         // Use the inserter.insert method for batch insertion
                         const batchInserter = ch.inserter.insert({
@@ -298,7 +298,7 @@ describe('getCategorySpending', () => {
 
                         // Insert the remaining transactions
                         const batchResult = await batchInserter(transactions.slice(1))
-                        console.log('Batch insertion result:', batchResult)
+                        console.info('Batch insertion result:', batchResult)
 
                         if (batchResult.err) {
                             console.error('Error in batch insertion:', batchResult.err)
@@ -311,32 +311,32 @@ describe('getCategorySpending', () => {
                 }
 
                 // Wait a moment for data to be processed
-                console.log('Waiting for data to be processed...')
+                console.info('Waiting for data to be processed...')
                 await new Promise(resolve => setTimeout(resolve, 1000))
 
                 // Verify data was inserted with a count query
-                console.log('Verifying data insertion...')
+                console.info('Verifying data insertion...')
                 const countQuery = `SELECT count(*) as count FROM financials.raw_transactions_v1 WHERE user_id = '${userId}'`
-                console.log('Count query:', countQuery)
+                console.info('Count query:', countQuery)
 
                 const count = await ch.querier.query({
                     query: countQuery,
                     schema: z.object({ count: z.number().int() }),
                 })({})
 
-                console.log('Count result:', count)
+                console.info('Count result:', count)
 
                 if (count.err) {
                     console.error('Error in count query:', count.err)
                     throw new Error('Error in count query: ' + count.err.message);
                 } else {
-                    console.log('Count value:', count.val)
+                    console.info('Count value:', count.val)
                     // The test should fail if no data was inserted
                     expect(count.val!.at(0)!.count).toBeGreaterThan(0);
                 }
 
                 // Create the transactions_by_month_mv_v1 materialized view if it doesn't exist
-                console.log('Creating transactions by month materialized view...')
+                console.info('Creating transactions by month materialized view...')
                 try {
                     await ch.querier.query({
                         query: `
@@ -360,7 +360,7 @@ describe('getCategorySpending', () => {
                         `,
                         schema: z.object({})
                     })({})
-                    console.log('Materialized view created successfully')
+                    console.info('Materialized view created successfully')
                 } catch (error) {
                     console.error('Error creating materialized view:', error)
                     throw new Error('Failed to create materialized view: ' + error.message);
@@ -372,7 +372,7 @@ describe('getCategorySpending', () => {
                 sixMonthsAgo.setMonth(now.getMonth() - 6)
 
                 // Test the getCategorySpending function
-                console.log('Testing getCategorySpending function...')
+                console.info('Testing getCategorySpending function...')
                 const getCategorySpendingFn = getCategorySpending(ch.querier)
                 const result = await getCategorySpendingFn({
                     userId,
@@ -381,7 +381,7 @@ describe('getCategorySpending', () => {
                     end: now.getTime(),
                 })
 
-                console.log('getCategorySpending result:', result)
+                console.info('getCategorySpending result:', result)
 
                 if (result.err) {
                     console.error('Error in getCategorySpending:', result.err)
@@ -417,7 +417,7 @@ describe('getCategorySpending', () => {
                 }
 
                 // Cleanup
-                console.log('Test completed, stopping container...')
+                console.info('Test completed, stopping container...')
                 await container.stop()
             } catch (error) {
                 console.error('Test failed with error:', error)

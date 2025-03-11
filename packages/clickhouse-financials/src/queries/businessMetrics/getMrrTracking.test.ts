@@ -93,27 +93,27 @@ function generateMrrTrackingData(n: number, teamId: string) {
 
 describe('getMrrTracking', () => {
     test('accurately retrieves MRR tracking data', async (t) => {
-        console.log('Starting test...');
+        console.info('Starting test...');
 
         // Start a ClickHouse container for testing
         const container = await ClickHouseContainer.start(t, { keepContainer: false });
-        console.log('ClickHouse container started');
+        console.info('ClickHouse container started');
 
         try {
             // Create a ClickHouse client
             const ch = new ClickHouse({
                 url: container.url(),
             });
-            console.log(`ClickHouse client created with URL: ${container.url()}`);
+            console.info(`ClickHouse client created with URL: ${container.url()}`);
 
             // Generate test IDs
             const teamId = randomUUID();
-            console.log('Generated test IDs:', { teamId });
+            console.info('Generated test IDs:', { teamId });
 
             // Generate sample MRR tracking data
             const mrrTrackingData = generateMrrTrackingData(12, teamId); // 12 months of data
-            console.log(`Generated sample MRR tracking data: ${mrrTrackingData.length} records`);
-            console.log('Sample MRR tracking record:', JSON.stringify(mrrTrackingData[0], null, 2));
+            console.info(`Generated sample MRR tracking data: ${mrrTrackingData.length} records`);
+            console.info('Sample MRR tracking record:', JSON.stringify(mrrTrackingData[0], null, 2));
 
             // Check if the database exists
             const databases = await ch.querier.query({
@@ -121,7 +121,7 @@ describe('getMrrTracking', () => {
                 schema: z.object({ name: z.string() }),
             })({});
 
-            console.log('Databases:', databases.val?.map(db => db.name));
+            console.info('Databases:', databases.val?.map(db => db.name));
 
             // Create financials database if it doesn't exist
             await ch.querier.query({
@@ -135,7 +135,7 @@ describe('getMrrTracking', () => {
                 schema: z.object({ name: z.string() }),
             })({});
 
-            console.log('Tables in financials:', tables.val?.map(table => table.name));
+            console.info('Tables in financials:', tables.val?.map(table => table.name));
 
             // Create mrr_tracking_mv_v1 table if it doesn't exist
             await ch.querier.query({
@@ -160,7 +160,7 @@ describe('getMrrTracking', () => {
                 schema: z.object({}),
             })({});
 
-            console.log('Created mrr_tracking_mv_v1 table');
+            console.info('Created mrr_tracking_mv_v1 table');
 
             // Get the table structure
             const tableStructure = await ch.querier.query({
@@ -171,10 +171,10 @@ describe('getMrrTracking', () => {
                 }),
             })({});
 
-            console.log('Table structure:', tableStructure.val);
+            console.info('Table structure:', tableStructure.val);
 
             // Insert the MRR tracking data
-            console.log('Inserting MRR tracking data in batch...');
+            console.info('Inserting MRR tracking data in batch...');
 
             const inserter = ch.inserter.insert({
                 table: 'financials.mrr_tracking_mv_v1',
@@ -196,35 +196,35 @@ describe('getMrrTracking', () => {
             });
 
             const insertResult = await inserter(mrrTrackingData);
-            console.log('Batch insertion result:', insertResult);
+            console.info('Batch insertion result:', insertResult);
 
             // Wait for data to be processed
-            console.log('Waiting for data to be processed...');
+            console.info('Waiting for data to be processed...');
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             // Verify data insertion
-            console.log('Verifying data insertion...');
+            console.info('Verifying data insertion...');
             const countQuery = `SELECT count(*) as count FROM financials.mrr_tracking_mv_v1 WHERE team_id = '${teamId}'`;
-            console.log('Count query:', countQuery);
+            console.info('Count query:', countQuery);
 
             const count = await ch.querier.query({
                 query: countQuery,
                 schema: z.object({ count: z.number().int() }),
             })({});
 
-            console.log('Count result:', count);
+            console.info('Count result:', count);
 
             if (count.err) {
                 console.error('Error in count query:', count.err);
                 throw new Error('Error in count query: ' + count.err.message);
             } else {
-                console.log('Count value:', count.val);
+                console.info('Count value:', count.val);
                 // The test should fail if no data was inserted
                 expect(count.val![0].count).toBeGreaterThan(0);
             }
 
             // Test the getMrrTracking function
-            console.log('Testing getMrrTracking function...');
+            console.info('Testing getMrrTracking function...');
             const getMrrTrackingFn = getMrrTracking(ch.querier);
 
             try {
@@ -235,7 +235,7 @@ describe('getMrrTracking', () => {
                     limit: 100,
                 });
 
-                console.log('getMrrTracking result:', result);
+                console.info('getMrrTracking result:', result);
 
                 if (result.err) {
                     console.error('Error in getMrrTracking:', result.err);
@@ -261,7 +261,7 @@ describe('getMrrTracking', () => {
                 throw error;
             }
         } finally {
-            console.log('Test completed, stopping container...');
+            console.info('Test completed, stopping container...');
             await container.stop();
         }
     }, 30000); // Increase timeout to 30 seconds

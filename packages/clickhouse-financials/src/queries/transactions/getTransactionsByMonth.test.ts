@@ -77,28 +77,28 @@ describe('getTransactionsByMonth', () => {
         'accurately retrieves transactions aggregated by month',
         async (t) => {
             try {
-                console.log('Starting test...')
+                console.info('Starting test...')
 
                 // Start the ClickHouse container with keepContainer option to reuse network
                 const container = await ClickHouseContainer.start(t, { keepContainer: false })
-                console.log('ClickHouse container started')
+                console.info('ClickHouse container started')
 
                 // Create ClickHouse client
                 const ch = new ClickHouse({
                     url: container.url(),
                 })
-                console.log('ClickHouse client created with URL:', container.url())
+                console.info('ClickHouse client created with URL:', container.url())
 
                 // Generate test IDs
                 const userId = randomUUID()
                 const teamId = randomUUID()
                 const bankAccountId = randomUUID()
-                console.log('Generated test IDs:', { userId, teamId, bankAccountId })
+                console.info('Generated test IDs:', { userId, teamId, bankAccountId })
 
                 // Generate 100 sample transactions
                 const transactions = generateTransactionData(100, userId, teamId, bankAccountId)
-                console.log('Generated sample transactions:', transactions.length)
-                console.log('Sample transaction:', JSON.stringify(transactions[0], null, 2))
+                console.info('Generated sample transactions:', transactions.length)
+                console.info('Sample transaction:', JSON.stringify(transactions[0], null, 2))
 
                 // Check if the database and table exist using direct SQL
                 try {
@@ -107,14 +107,14 @@ describe('getTransactionsByMonth', () => {
                         schema: z.object({ name: z.string() }),
                     })({})
 
-                    console.log('Databases:', dbExists.val?.map(db => db.name))
+                    console.info('Databases:', dbExists.val?.map(db => db.name))
 
                     const tableExists = await ch.querier.query({
                         query: 'SHOW TABLES FROM financials',
                         schema: z.object({ name: z.string() }),
                     })({})
 
-                    console.log('Tables in financials:', tableExists.val?.map(table => table.name))
+                    console.info('Tables in financials:', tableExists.val?.map(table => table.name))
 
                     // Check the table structure
                     const tableStructure = await ch.querier.query({
@@ -130,13 +130,13 @@ describe('getTransactionsByMonth', () => {
                         }),
                     })({})
 
-                    console.log('Table structure:', tableStructure.val?.map(col => ({ name: col.name, type: col.type })))
+                    console.info('Table structure:', tableStructure.val?.map(col => ({ name: col.name, type: col.type })))
                 } catch (error) {
                     console.error('Error checking database/table:', error)
                 }
 
                 // Try to insert a single transaction first to test
-                console.log('Inserting a single test transaction...')
+                console.info('Inserting a single test transaction...')
                 let insertionSuccessful = false;
 
                 try {
@@ -166,7 +166,7 @@ describe('getTransactionsByMonth', () => {
                     })
 
                     const result = await inserter(testTransaction)
-                    console.log('Insertion result:', result)
+                    console.info('Insertion result:', result)
 
                     if (result.err) {
                         console.error('Error inserting test transaction:', result.err)
@@ -178,7 +178,7 @@ describe('getTransactionsByMonth', () => {
                     console.error('Error inserting test transaction:', error);
 
                     // Try a simpler approach with fewer fields
-                    console.log('Trying simpler insertion approach...')
+                    console.info('Trying simpler insertion approach...')
                     try {
                         const testTransaction = transactions[0]
 
@@ -220,7 +220,7 @@ describe('getTransactionsByMonth', () => {
                             category: testTransaction.category
                         })
 
-                        console.log('Simple insertion result:', simpleResult)
+                        console.info('Simple insertion result:', simpleResult)
 
                         if (simpleResult.err) {
                             console.error('Error with simple insertion:', simpleResult.err)
@@ -235,10 +235,10 @@ describe('getTransactionsByMonth', () => {
                 }
 
                 if (!insertionSuccessful) {
-                    console.log('Skipping batch insertion due to test insertion failure')
+                    console.info('Skipping batch insertion due to test insertion failure')
                 } else {
                     // Insert transactions using the batch insert method
-                    console.log('Inserting transactions in batch...')
+                    console.info('Inserting transactions in batch...')
                     try {
                         // Use the inserter.insert method for batch insertion
                         const batchInserter = ch.inserter.insert({
@@ -264,7 +264,7 @@ describe('getTransactionsByMonth', () => {
                         })
 
                         const batchResult = await batchInserter(transactions)
-                        console.log('Batch insertion result:', batchResult)
+                        console.info('Batch insertion result:', batchResult)
 
                         if (batchResult.err) {
                             console.error('Error with batch insertion:', batchResult.err)
@@ -274,7 +274,7 @@ describe('getTransactionsByMonth', () => {
                         console.error('Error inserting transactions batch:', error)
 
                         // Fallback to inserting one by one if batch fails
-                        console.log('Falling back to inserting transactions one by one...')
+                        console.info('Falling back to inserting transactions one by one...')
                         let successCount = 0
 
                         for (const transaction of transactions) {
@@ -307,7 +307,7 @@ describe('getTransactionsByMonth', () => {
                                     console.error('Error inserting transaction:', singleResult.err)
                                 } else {
                                     successCount++
-                                    console.log(`Inserted transaction ${transaction.id} (${successCount}/${transactions.length})`)
+                                    console.info(`Inserted transaction ${transaction.id} (${successCount}/${transactions.length})`)
                                 }
                             } catch (error) {
                                 console.error('Error inserting transaction:', error)
@@ -315,7 +315,7 @@ describe('getTransactionsByMonth', () => {
                             }
                         }
 
-                        console.log(`Successfully inserted ${successCount}/${transactions.length} transactions one by one`)
+                        console.info(`Successfully inserted ${successCount}/${transactions.length} transactions one by one`)
 
                         if (successCount === 0) {
                             throw new Error('Failed to insert any transactions')
@@ -324,26 +324,26 @@ describe('getTransactionsByMonth', () => {
                 }
 
                 // Wait for data to be fully inserted and materialized view to be populated
-                console.log('Waiting for data to be processed...')
+                console.info('Waiting for data to be processed...')
                 await new Promise((r) => setTimeout(r, 5000)) // Increased wait time
 
                 // Verify data was inserted correctly with direct SQL
-                console.log('Verifying data insertion...')
+                console.info('Verifying data insertion...')
                 const countQuery = `SELECT count(*) as count FROM financials.raw_transactions_v1 WHERE user_id = '${userId}'`
-                console.log('Count query:', countQuery)
+                console.info('Count query:', countQuery)
 
                 const count = await ch.querier.query({
                     query: countQuery,
                     schema: z.object({ count: z.number().int() }),
                 })({})
 
-                console.log('Count result:', count)
+                console.info('Count result:', count)
 
                 if (count.err) {
                     console.error('Error in count query:', count.err)
                     throw new Error('Error in count query: ' + count.err.message);
                 } else {
-                    console.log('Count value:', count.val)
+                    console.info('Count value:', count.val)
                     // The test should fail if no data was inserted
                     expect(count.val!.at(0)!.count).toBeGreaterThan(0);
                 }
@@ -354,7 +354,7 @@ describe('getTransactionsByMonth', () => {
                 sixMonthsAgo.setMonth(now.getMonth() - 6)
 
                 // Test the getTransactionsByMonth function
-                console.log('Testing getTransactionsByMonth function...')
+                console.info('Testing getTransactionsByMonth function...')
                 const transactionsByMonthFn = getTransactionsByMonth(ch.querier)
                 const result = await transactionsByMonthFn({
                     userId,
@@ -363,7 +363,7 @@ describe('getTransactionsByMonth', () => {
                     end: now.getTime(),
                 })
 
-                console.log('getTransactionsByMonth result:', result)
+                console.info('getTransactionsByMonth result:', result)
 
                 if (result.err) {
                     console.error('Error in getTransactionsByMonth:', result.err)
@@ -410,7 +410,7 @@ describe('getTransactionsByMonth', () => {
                 }
 
                 // Cleanup
-                console.log('Test completed, stopping container...')
+                console.info('Test completed, stopping container...')
                 await container.stop()
             } catch (error) {
                 console.error('Test failed with error:', error)
