@@ -4275,9 +4275,6 @@ importers:
       remark-math:
         specifier: ^6.0.0
         version: 6.0.0
-      root:
-        specifier: github:tanstack/react-query
-        version: git+https://git@github.com:tanstack/react-query.git#79608f306991cfea026107714b5b5368e29172d2
       solomon-ai-typescript-sdk:
         specifier: ^1.40.0
         version: 1.40.0(semantic-release@24.2.3(typescript@5.8.2))
@@ -21699,10 +21696,6 @@ packages:
     resolution: {integrity: sha512-nF5XYqWWp9hx/LrpC8sZvvvmq0TeTjQgaZHYmAgwysT9nh8sWnZhBnM8ZyVbbJFIQBLwHDNoMqsBZBbUo4U8sQ==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
-
-  root@git+https://git@github.com:tanstack/react-query.git#79608f306991cfea026107714b5b5368e29172d2:
-    resolution: {commit: 79608f306991cfea026107714b5b5368e29172d2, repo: git@github.com:tanstack/react-query.git, type: git}
-    version: 0.0.0
 
   rou3@0.5.1:
     resolution: {integrity: sha512-OXMmJ3zRk2xeXFGfA3K+EOPHC5u7RDFG7lIOx0X1pdnhUkI8MdVrbV+sNsD80ElpUZ+MRHdyxPnFthq9VHs8uQ==}
@@ -49814,8 +49807,6 @@ snapshots:
       '@rollup/rollup-win32-ia32-msvc': 4.34.9
       '@rollup/rollup-win32-x64-msvc': 4.34.9
       fsevents: 2.3.3
-
-  root@git+https://git@github.com:tanstack/react-query.git#79608f306991cfea026107714b5b5368e29172d2: {}
 
   rou3@0.5.1: {}
 
