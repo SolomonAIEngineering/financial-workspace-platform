@@ -104,7 +104,8 @@ export function PageSkeleton({
         className="relative border-b border-border/30 bg-card/75 px-4 py-3.5 backdrop-blur-xl sm:px-6"
         variants={itemVariants}
         style={{
-          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px 0 rgba(0, 0, 0, 0.01)',
+          boxShadow:
+            '0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px 0 rgba(0, 0, 0, 0.01)',
         }}
       >
         {/* Decorative accent line */}
@@ -124,7 +125,7 @@ export function PageSkeleton({
                     <BreadcrumbItem key={crumb.href}>
                       <BreadcrumbLink
                         href={crumb.href}
-                        className="text-xs font-medium text-muted-foreground/80 hover:text-foreground transition-colors duration-200"
+                        className="text-xs font-medium text-muted-foreground/80 transition-colors duration-200 hover:text-foreground"
                       >
                         {crumb.label}
                       </BreadcrumbLink>
@@ -143,14 +144,14 @@ export function PageSkeleton({
                 variants={itemVariants}
                 style={{
                   letterSpacing: '-0.01em',
-                  textShadow: '0 0 transparent'
+                  textShadow: '0 0 transparent',
                 }}
               >
                 {title}
               </motion.h1>
               {description && (
                 <motion.p
-                  className="text-sm leading-relaxed text-muted-foreground/90 max-w-2xl"
+                  className="max-w-2xl text-sm leading-relaxed text-muted-foreground/90"
                   variants={itemVariants}
                 >
                   {description}
@@ -183,7 +184,7 @@ export function PageSkeleton({
                   <motion.button
                     key={tab.id}
                     className={cn(
-                      'group relative px-1 pb-2.5 pt-1 text-sm font-medium tracking-wide transition-all duration-200',
+                      'group relative px-1 pt-1 pb-2.5 text-sm font-medium tracking-wide transition-all duration-200',
                       tab.isActive
                         ? 'text-foreground'
                         : 'text-muted-foreground/70 hover:text-foreground/90'
@@ -227,7 +228,8 @@ export function PageSkeleton({
         variants={itemVariants}
         transition={{ delay: 0.12 }}
         style={{
-          backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(var(--primary-rgb), 0.01), transparent 700px)'
+          backgroundImage:
+            'radial-gradient(circle at 50% 0%, rgba(var(--primary-rgb), 0.01), transparent 700px)',
         }}
       >
         <AnimatePresence mode="wait">
@@ -252,7 +254,7 @@ export function PageSkeleton({
                     <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-background to-background/70"></div>
                     <div className="absolute inset-0 animate-pulse rounded-full bg-primary/5 opacity-75"></div>
                     <div className="absolute inset-1 animate-spin rounded-full border border-muted-foreground/5 border-t-primary/60"></div>
-                    <div className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/70 shadow-sm shadow-primary/20"></div>
+                    <div className="absolute top-1/2 left-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/70 shadow-sm shadow-primary/20"></div>
 
                     {/* Decorative orbital accent */}
                     <div className="absolute inset-0 rounded-full border border-primary/10 opacity-80"></div>

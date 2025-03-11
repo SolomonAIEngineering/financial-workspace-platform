@@ -129,34 +129,31 @@ export const transactionNotificationsJob = client.defineJob({
         [key: string]: any;
       }[] = [];
 
-      await io.runTask(
-        'get-new-transactions',
-        async (task, io) => {
-          const result = await prisma.transaction.findMany({
-            include: {
-              bankAccount: {
-                select: {
-                  mask: true,
-                  name: true,
-                },
+      await io.runTask('get-new-transactions', async (task, io) => {
+        const result = await prisma.transaction.findMany({
+          include: {
+            bankAccount: {
+              select: {
+                mask: true,
+                name: true,
               },
             },
-            orderBy: {
-              createdAt: 'desc',
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          where: {
+            amount: { gt: 0 }, // Only include expenses
+            createdAt: {
+              gt: lastNotification,
             },
-            where: {
-              amount: { gt: 0 }, // Only include expenses
-              createdAt: {
-                gt: lastNotification,
-              },
-              pending: false, // Skip pending transactions
-              userId,
-            },
-          });
-          transactions = result;
-          return { success: true };
-        }
-      );
+            pending: false, // Skip pending transactions
+            userId,
+          },
+        });
+        transactions = result;
+        return { success: true };
+      });
 
       if (transactions.length === 0) {
         await io.logger.info(

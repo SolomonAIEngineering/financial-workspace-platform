@@ -26,22 +26,19 @@ export const categorizationJob = client.defineJob({
       [key: string]: any;
     }[] = [];
 
-    await io.runTask(
-      'get-uncategorized-transactions',
-      async (task, io) => {
-        const result = await prisma.transaction.findMany({
-          take: 1000, // Process in batches
-          where: {
-            category: null,
-            // Only process transactions from the last 90 days
-            date: { gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) },
-          },
-        });
+    await io.runTask('get-uncategorized-transactions', async (task, io) => {
+      const result = await prisma.transaction.findMany({
+        take: 1000, // Process in batches
+        where: {
+          category: null,
+          // Only process transactions from the last 90 days
+          date: { gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) },
+        },
+      });
 
-        uncategorizedTransactions = result;
-        return { success: true };
-      }
-    );
+      uncategorizedTransactions = result;
+      return { success: true };
+    });
 
     await io.logger.info(
       `Found ${uncategorizedTransactions.length} transactions to categorize`

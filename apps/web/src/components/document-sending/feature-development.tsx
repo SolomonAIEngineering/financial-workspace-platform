@@ -65,7 +65,7 @@ export function FeatureDevelopment({
         {/* Animated Feature Icon with Particles */}
         <div className="relative mb-12">
           <motion.div
-            className="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-background/90 to-background border border-border/50 backdrop-blur-xl"
+            className="flex h-28 w-28 items-center justify-center rounded-2xl border border-border/50 bg-gradient-to-br from-background/90 to-background backdrop-blur-xl"
             animate={{
               boxShadow: [
                 '0 0 0 rgba(0,0,0,0)',
@@ -90,7 +90,7 @@ export function FeatureDevelopment({
 
             {/* Decorative particles */}
             <motion.div
-              className="absolute -right-2 -top-2 h-3 w-3 rounded-full bg-primary/80"
+              className="absolute -top-2 -right-2 h-3 w-3 rounded-full bg-primary/80"
               animate={{
                 opacity: [0.4, 1, 0.4],
                 scale: [0.8, 1.2, 0.8],
@@ -98,7 +98,7 @@ export function FeatureDevelopment({
               transition={{ duration: 3, repeat: Infinity }}
             />
             <motion.div
-              className="absolute right-8 -top-5 h-2 w-2 rounded-full bg-primary/50"
+              className="absolute -top-5 right-8 h-2 w-2 rounded-full bg-primary/50"
               animate={{
                 opacity: [0.3, 0.8, 0.3],
                 scale: [1, 1.3, 1],
@@ -106,7 +106,7 @@ export function FeatureDevelopment({
               transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
             />
             <motion.div
-              className="absolute -left-4 top-10 h-2.5 w-2.5 rounded-full bg-primary/60"
+              className="absolute top-10 -left-4 h-2.5 w-2.5 rounded-full bg-primary/60"
               animate={{
                 opacity: [0.5, 1, 0.5],
                 scale: [1, 1.4, 1],
@@ -166,7 +166,7 @@ export function FeatureDevelopment({
 
         {/* Estimated time badge with hover effect */}
         <motion.div
-          className="flex items-center gap-2 rounded-full border border-border/50 bg-background/50 px-5 py-2.5 text-sm font-medium backdrop-blur-xl shadow-sm"
+          className="flex items-center gap-2 rounded-full border border-border/50 bg-background/50 px-5 py-2.5 text-sm font-medium shadow-sm backdrop-blur-xl"
           animate={{ opacity: 1, y: 0 }}
           initial={{ opacity: 0, y: 10 }}
           transition={{ delay: 0.6 }}
@@ -182,7 +182,7 @@ export function FeatureDevelopment({
 
         {/* Feature cards with enhanced animations */}
         <motion.div
-          className="mt-14 w-full grid grid-cols-1 gap-4 sm:grid-cols-3"
+          className="mt-14 grid w-full grid-cols-1 gap-4 sm:grid-cols-3"
           animate={{ opacity: 1 }}
           initial={{ opacity: 0 }}
           transition={{ delay: 0.8 }}
@@ -205,7 +205,9 @@ export function FeatureDevelopment({
                 <feature.icon className="h-6 w-6 text-primary" />
               </div>
               <div className="flex-1 text-center">
-                <h3 className="text-lg font-semibold text-foreground mb-1">{feature.title}</h3>
+                <h3 className="mb-1 text-lg font-semibold text-foreground">
+                  {feature.title}
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   {feature.description}
                 </p>
@@ -216,7 +218,7 @@ export function FeatureDevelopment({
 
         {/* Decorative divider with pulse effect */}
         <motion.div
-          className="mt-16 relative h-0.5 w-24"
+          className="relative mt-16 h-0.5 w-24"
           animate={{ opacity: 1 }}
           initial={{ opacity: 0 }}
           transition={{ delay: 1.2 }}
@@ -225,20 +227,20 @@ export function FeatureDevelopment({
             className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-primary/30 to-transparent"
             animate={{
               opacity: [0.5, 1, 0.5],
-              width: ["100%", "120%", "100%"],
-              left: ["0%", "-10%", "0%"]
+              width: ['100%', '120%', '100%'],
+              left: ['0%', '-10%', '0%'],
             }}
             transition={{
               duration: 3,
               repeat: Infinity,
-              ease: "easeInOut"
+              ease: 'easeInOut',
             }}
           />
         </motion.div>
 
         {/* Coming soon label */}
         <motion.div
-          className="mt-6 text-xs uppercase tracking-widest text-muted-foreground/70 flex items-center gap-1.5"
+          className="mt-6 flex items-center gap-1.5 text-xs tracking-widest text-muted-foreground/70 uppercase"
           animate={{ opacity: 1 }}
           initial={{ opacity: 0 }}
           transition={{ delay: 1.4 }}

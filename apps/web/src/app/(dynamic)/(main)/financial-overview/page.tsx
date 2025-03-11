@@ -9,7 +9,10 @@ import {
   PresentationChartLineIcon,
 } from '@heroicons/react/24/outline';
 
-import { FeatureDevelopment, type FeatureCard } from '@/components/document-sending/feature-development';
+import {
+  FeatureDevelopment,
+  type FeatureCard,
+} from '@/components/document-sending/feature-development';
 // Document signing components
 import {
   type Document,
@@ -29,6 +32,8 @@ import { demoDocuments } from '@/components/document-signing/demo-data';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 // Feature flags
 import { isFeatureEnabled } from '@/lib/feature-flags';
+// Waitlist functionality
+import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
 
 export default function FinancialOverviewPage() {
   // Check if the feature is enabled
@@ -41,6 +46,8 @@ export default function FinancialOverviewPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'date' | 'name' | 'priority'>('date');
   const [isAscending, setIsAscending] = useState(false);
+
+  const featureName = 'Financial Overview';
 
   // Advanced filter states
   const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false);
@@ -78,28 +85,26 @@ export default function FinancialOverviewPage() {
           { href: '/financial-overview', label: 'Financial Overview' },
         ]}
         actions={
-          <motion.div
-            className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-background/80 px-3.5 py-2 text-sm font-medium shadow-sm backdrop-blur-md transition-all duration-200"
-            whileHover={{ scale: 1.02, borderColor: 'rgba(var(--primary-rgb), 0.3)' }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <ChartBarSquareIcon className="h-4 w-4 text-primary/80" />
-            <span>Join Waitlist</span>
-          </motion.div>
+          <WaitlistFeature
+            featureName={featureName}
+            buttonIcon={ChartBarSquareIcon}
+          />
         }
       >
         <FeatureDevelopment
           description="We're building a comprehensive financial overview dashboard that combines real-time analytics, cash flow visualization, and predictive insights. Get a complete picture of your business's financial health in one unified interface."
           title="Financial Overview Experience"
-          estimatedTime="Expected release: Q3 2023"
+          estimatedTime="Expected release: Q3 2025"
           featureCards={[
             {
-              description: 'See all key financial metrics in one unified dashboard',
+              description:
+                'See all key financial metrics in one unified dashboard',
               icon: ChartPieIcon,
               title: 'Complete Picture',
             },
             {
-              description: 'Monitor cash flow and understand your company\'s financial trends',
+              description:
+                "Monitor cash flow and understand your company's financial trends",
               icon: PresentationChartLineIcon,
               title: 'Trend Analysis',
             },
