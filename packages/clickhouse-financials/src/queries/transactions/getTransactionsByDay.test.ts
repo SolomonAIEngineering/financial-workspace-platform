@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest'
 
 import { ClickHouse } from '../../index'
 import { ClickHouseContainer } from '../../testutil'
-import { getTransactionsByMonth } from './getTransactionsByMonth'
+import { getTransactionsByDay } from './getTransactionsByDay'
 import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 
@@ -21,8 +21,8 @@ function generateTransactionData(
     bankAccountId: string
 ) {
     const now = new Date()
-    const sixMonthsAgo = new Date()
-    sixMonthsAgo.setMonth(now.getMonth() - 6)
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(now.getDate() - 30)
 
     // Categories for test data
     const categories = [
@@ -37,9 +37,9 @@ function generateTransactionData(
     ]
 
     return Array.from({ length: n }).map(() => {
-        // Random date between now and 6 months ago
+        // Random date between now and 30 days ago
         const date = new Date(
-            sixMonthsAgo.getTime() + Math.random() * (now.getTime() - sixMonthsAgo.getTime())
+            thirtyDaysAgo.getTime() + Math.random() * (now.getTime() - thirtyDaysAgo.getTime())
         )
 
         // Format date as YYYY-MM-DD HH:MM:SS for ClickHouse
@@ -72,9 +72,9 @@ function generateTransactionData(
     })
 }
 
-describe('getTransactionsByMonth', () => {
+describe('getTransactionsByDay', () => {
     test(
-        'accurately retrieves transactions aggregated by month',
+        'accurately retrieves transactions aggregated by day',
         async (t) => {
             try {
                 console.log('Starting test...')
@@ -350,23 +350,23 @@ describe('getTransactionsByMonth', () => {
 
                 // Get the start and end dates for the query
                 const now = new Date()
-                const sixMonthsAgo = new Date()
-                sixMonthsAgo.setMonth(now.getMonth() - 6)
+                const thirtyDaysAgo = new Date()
+                thirtyDaysAgo.setDate(now.getDate() - 30)
 
-                // Test the getTransactionsByMonth function
-                console.log('Testing getTransactionsByMonth function...')
-                const transactionsByMonthFn = getTransactionsByMonth(ch.querier)
-                const result = await transactionsByMonthFn({
+                // Test the getTransactionsByDay function
+                console.log('Testing getTransactionsByDay function...')
+                const transactionsByDayFn = getTransactionsByDay(ch.querier)
+                const result = await transactionsByDayFn({
                     userId,
                     teamId,
-                    start: sixMonthsAgo.getTime(),
+                    start: thirtyDaysAgo.getTime(),
                     end: now.getTime(),
                 })
 
-                console.log('getTransactionsByMonth result:', result)
+                console.log('getTransactionsByDay result:', result)
 
                 if (result.err) {
-                    console.error('Error in getTransactionsByMonth:', result.err)
+                    console.error('Error in getTransactionsByDay:', result.err)
                 } else {
                     // Verify the results
                     expect(result.val).toBeDefined()
@@ -375,7 +375,7 @@ describe('getTransactionsByMonth', () => {
                     if (result.val && result.val.length > 0) {
                         // Verify the structure of the results
                         const firstResult = result.val[0]
-                        expect(firstResult).toHaveProperty('month_start')
+                        expect(firstResult).toHaveProperty('day')
                         expect(firstResult).toHaveProperty('category')
                         expect(firstResult).toHaveProperty('transaction_count')
                         expect(firstResult).toHaveProperty('total_amount')
@@ -384,25 +384,25 @@ describe('getTransactionsByMonth', () => {
                         expect(firstResult).toHaveProperty('average_amount')
 
                         // Verify that the total_expenses and total_income are calculated correctly
-                        for (const monthData of result.val) {
-                            if (monthData.total_amount < 0) {
-                                expect(monthData.total_expenses).toBeGreaterThan(0)
-                                // Some categories might have both income and expenses in the same month
+                        for (const dayData of result.val!) {
+                            if (dayData.total_amount < 0) {
+                                expect(dayData.total_expenses).toBeGreaterThan(0)
+                                // Some categories might have both income and expenses on the same day
                                 // So we can't strictly assert that total_income is 0
-                            } else if (monthData.total_amount > 0) {
-                                expect(monthData.total_income).toBeGreaterThan(0)
-                                // Some categories might have both income and expenses in the same month
+                            } else if (dayData.total_amount > 0) {
+                                expect(dayData.total_income).toBeGreaterThan(0)
+                                // Some categories might have both income and expenses on the same day
                                 // So we can't strictly assert that total_expenses is 0
                             }
 
                             // Verify that the total amount is the difference between income and expenses
-                            expect(monthData.total_amount).toBeCloseTo(monthData.total_income - monthData.total_expenses, 2)
+                            expect(dayData.total_amount).toBeCloseTo(dayData.total_income - dayData.total_expenses, 2)
 
                             // Verify that average_amount is calculated correctly
-                            expect(monthData.average_amount).toBeCloseTo(monthData.total_amount / monthData.transaction_count, 2)
+                            expect(dayData.average_amount).toBeCloseTo(dayData.total_amount / dayData.transaction_count, 2)
                         }
                     } else {
-                        console.warn('No results returned from getTransactionsByMonth')
+                        console.warn('No results returned from getTransactionsByDay')
                         // Make the test pass even if no results are returned
                         // This is just to test the function signature and basic functionality
                         expect(true).toBe(true)
