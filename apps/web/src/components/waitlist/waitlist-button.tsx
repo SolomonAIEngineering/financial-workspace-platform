@@ -3,7 +3,7 @@
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import { Button } from '@/registry/default/potion-ui/button';
 import React from 'react';
-import { WaitlistModal } from './waitlist-modal';
+import { WaitlistModal } from '../modals/waitlist-modal';
 import { WaitlistSuccessToast } from './waitlist-success-toast';
 import { motion } from 'framer-motion';
 import { useWaitlist } from '@/hooks/use-waitlist';
