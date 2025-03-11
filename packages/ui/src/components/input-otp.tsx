@@ -5,7 +5,9 @@ import { OTPInput, type SlotProps } from 'input-otp'
 import * as React from 'react'
 import { cn } from '../utils'
 
-const InputOTP = React.forwardRef<
+const InputOTP: React.ForwardRefExoticComponent<
+  React.ComponentPropsWithoutRef<typeof OTPInput> & React.RefAttributes<React.ElementRef<typeof OTPInput>>
+> = React.forwardRef<
   React.ElementRef<typeof OTPInput>,
   React.ComponentPropsWithoutRef<typeof OTPInput>
 >(({ className, ...props }, ref) => (

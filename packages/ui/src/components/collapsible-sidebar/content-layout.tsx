@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { Group } from '../../types/menu'
 import { Navbar } from './navbar'
-import { cn } from '@/utils/cn'
+import { cn } from '../../utils'
 
 interface ContentLayoutProps {
   title: string

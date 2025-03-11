@@ -1,8 +1,8 @@
 'use client'
 
-import { DragHandleDots2Icon } from '@radix-ui/react-icons'
 import * as ResizablePrimitive from 'react-resizable-panels'
 
+import { DragHandleDots2Icon } from '@radix-ui/react-icons'
 import { cn } from '../utils/cn'
 
 const ResizablePanelGroup = ({
@@ -18,7 +18,7 @@ const ResizablePanelGroup = ({
   />
 )
 
-const ResizablePanel = ResizablePrimitive.Panel
+const ResizablePanel: typeof ResizablePrimitive.Panel = ResizablePrimitive.Panel
 
 const ResizableHandle = ({
   withHandle,

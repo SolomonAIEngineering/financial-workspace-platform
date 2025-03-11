@@ -1,8 +1,9 @@
 'use client'
 
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
-import Image from 'next/image'
 import * as React from 'react'
+
+import Image from 'next/image'
 import { cn } from '../utils'
 
 const Avatar = React.forwardRef<
@@ -20,7 +21,9 @@ const Avatar = React.forwardRef<
 ))
 Avatar.displayName = AvatarPrimitive.Root.displayName
 
-export const AvatarImageNext = React.forwardRef<
+export const AvatarImageNext: React.ForwardRefExoticComponent<
+  React.ComponentPropsWithoutRef<typeof Image> & React.RefAttributes<React.ElementRef<typeof Image>>
+> = React.forwardRef<
   React.ElementRef<typeof Image>,
   React.ComponentPropsWithoutRef<typeof Image>
 >(({ className, onError, ...props }, ref) => {

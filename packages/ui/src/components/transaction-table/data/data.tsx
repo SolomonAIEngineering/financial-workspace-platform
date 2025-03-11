@@ -9,7 +9,19 @@ import {
   StopwatchIcon,
 } from '@radix-ui/react-icons'
 
-export const labels = [
+import { ComponentType } from 'react'
+
+// Define interfaces for our data structures
+interface Item {
+  value: string
+  label: string
+}
+
+interface ItemWithIcon extends Item {
+  icon: ComponentType
+}
+
+export const labels: Item[] = [
   {
     value: 'bug',
     label: 'Bug',
@@ -24,7 +36,7 @@ export const labels = [
   },
 ]
 
-export const statuses = [
+export const statuses: ItemWithIcon[] = [
   {
     value: 'backlog',
     label: 'Backlog',
@@ -52,7 +64,7 @@ export const statuses = [
   },
 ]
 
-export const priorities = [
+export const priorities: ItemWithIcon[] = [
   {
     label: 'Low',
     value: 'low',

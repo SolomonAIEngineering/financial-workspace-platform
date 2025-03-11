@@ -1,7 +1,6 @@
-import { cn } from '@/utils/cn'
-import { ChevronLeft } from 'lucide-react'
-
 import { Button } from '../button'
+import { ChevronLeft } from 'lucide-react'
+import { cn } from '../../utils'
 
 interface SidebarToggleProps {
   isOpen: boolean | undefined

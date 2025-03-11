@@ -18,10 +18,9 @@ type AnimatedSizeContainerProps = PropsWithChildren<{
 /**
  * A container with animated width and height (each optional) based on children dimensions
  */
-const AnimatedSizeContainer = forwardRef<
-  HTMLDivElement,
-  AnimatedSizeContainerProps
->(
+const AnimatedSizeContainer: React.ForwardRefExoticComponent<
+  AnimatedSizeContainerProps & React.RefAttributes<HTMLDivElement>
+> = forwardRef<HTMLDivElement, AnimatedSizeContainerProps>(
   (
     {
       width = false,

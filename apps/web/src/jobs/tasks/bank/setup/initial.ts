@@ -119,9 +119,11 @@ export const initialSetupJob = client.defineJob({
       await io.logger.info(`Found ${plaidAccounts.length} accounts`);
 
       // Create bank accounts
-      const bankAccounts = await io.runTask(
+      let bankAccounts: BankAccount[] = [];
+
+      await io.runTask(
         'create-bank-accounts',
-        async () => {
+        async (task, io) => {
           // Properly type the accounts array
           const accounts: BankAccount[] = [];
 
@@ -152,7 +154,8 @@ export const initialSetupJob = client.defineJob({
             accounts.push(account);
           }
 
-          return accounts;
+          bankAccounts = accounts;
+          return { success: true };
         }
       );
 
