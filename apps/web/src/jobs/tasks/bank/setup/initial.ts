@@ -121,43 +121,40 @@ export const initialSetupJob = client.defineJob({
       // Create bank accounts
       let bankAccounts: BankAccount[] = [];
 
-      await io.runTask(
-        'create-bank-accounts',
-        async (task, io) => {
-          // Properly type the accounts array
-          const accounts: BankAccount[] = [];
+      await io.runTask('create-bank-accounts', async (task, io) => {
+        // Properly type the accounts array
+        const accounts: BankAccount[] = [];
 
-          for (const plaidAccount of plaidAccounts) {
-            const account = await prisma.bankAccount.create({
-              data: {
-                availableBalance: plaidAccount.availableBalance,
-                bankConnectionId: bankConnection.id,
-                createdAt: new Date(),
-                currentBalance: plaidAccount.currentBalance,
-                enabled: true,
-                isoCurrencyCode: plaidAccount.isoCurrencyCode,
-                limit: plaidAccount.limit,
-                mask: plaidAccount.mask,
-                name: plaidAccount.name,
-                officialName: plaidAccount.officialName,
-                plaidAccountId: plaidAccount.plaidAccountId,
-                status: AccountStatus.ACTIVE,
-                subtype: plaidAccount.subtype,
-                type: mapPlaidAccountType(
-                  plaidAccount.type,
-                  plaidAccount.subtype
-                ),
-                updatedAt: new Date(),
-                userId,
-              },
-            });
-            accounts.push(account);
-          }
-
-          bankAccounts = accounts;
-          return { success: true };
+        for (const plaidAccount of plaidAccounts) {
+          const account = await prisma.bankAccount.create({
+            data: {
+              availableBalance: plaidAccount.availableBalance,
+              bankConnectionId: bankConnection.id,
+              createdAt: new Date(),
+              currentBalance: plaidAccount.currentBalance,
+              enabled: true,
+              isoCurrencyCode: plaidAccount.isoCurrencyCode,
+              limit: plaidAccount.limit,
+              mask: plaidAccount.mask,
+              name: plaidAccount.name,
+              officialName: plaidAccount.officialName,
+              plaidAccountId: plaidAccount.plaidAccountId,
+              status: AccountStatus.ACTIVE,
+              subtype: plaidAccount.subtype,
+              type: mapPlaidAccountType(
+                plaidAccount.type,
+                plaidAccount.subtype
+              ),
+              updatedAt: new Date(),
+              userId,
+            },
+          });
+          accounts.push(account);
         }
-      );
+
+        bankAccounts = accounts;
+        return { success: true };
+      });
 
       await io.logger.info(`Created ${bankAccounts.length} bank accounts`);
 

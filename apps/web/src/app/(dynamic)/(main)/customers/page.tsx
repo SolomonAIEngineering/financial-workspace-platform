@@ -1,20 +1,57 @@
-import { FeatureDevelopment } from '@/components/document-sending/feature-development';
-import { PageSkeleton } from '@/components/ui/page-skeleton';
+'use client';
 
-export default function DocumentSigningPage() {
+import {
+  ChartBarIcon,
+  FunnelIcon,
+  UserCircleIcon,
+  UserGroupIcon,
+} from '@heroicons/react/24/outline';
+
+import {
+  FeatureDevelopment
+} from '@/components/document-sending/feature-development';
+import { PageSkeleton } from '@/components/ui/page-skeleton';
+import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
+
+export default function CustomersPage() {
+  const featureName = 'Customer Intelligence Platform';
+
   return (
     <PageSkeleton
-      description="Analyze your customers and gain valuable insights."
+      description="Manage your customer relationships and gain actionable insights into customer behavior."
       title="Merchant Management"
       breadcrumbs={[
         { href: '/dashboard', label: 'Dashboard' },
         { href: '/customers', label: 'Merchant Management' },
       ]}
+      actions={
+        <WaitlistFeature featureName={featureName} buttonIcon={UserGroupIcon} />
+      }
     >
       <FeatureDevelopment
-        description="We're building a comprehensive customers dashboard to help you make data-driven decisions. Stay tuned for updates on this feature."
-        title="Merchant Management Coming Soon"
+        description="Our merchant management platform helps you build stronger relationships with comprehensive customer profiles, advanced segmentation, and behavior analytics. Understand your customers better and create targeted strategies to improve retention and growth."
+        title={featureName}
         estimatedTime="Expected release: Q3 2025"
+        featureCards={[
+          {
+            description:
+              'Comprehensive customer profiles with interaction history',
+            icon: UserCircleIcon,
+            title: 'Customer 360°',
+          },
+          {
+            description:
+              'Create custom segments based on behavior and preferences',
+            icon: FunnelIcon,
+            title: 'Smart Segmentation',
+          },
+          {
+            description:
+              'Track key customer metrics and identify growth opportunities',
+            icon: ChartBarIcon,
+            title: 'Behavioral Analytics',
+          },
+        ]}
       />
     </PageSkeleton>
   );

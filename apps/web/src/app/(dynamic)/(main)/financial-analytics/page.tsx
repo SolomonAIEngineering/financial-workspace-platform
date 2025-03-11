@@ -1,21 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
-
 import {
+  ArrowPathIcon,
+  ChartPieIcon,
   Squares2X2Icon as GridIcon,
+  LightBulbIcon,
   ListBulletIcon,
   MagnifyingGlassIcon,
+  PresentationChartBarIcon,
 } from '@heroicons/react/24/outline';
+
+import { DocumentCard } from '@/components/document-sending/document-card';
+import { DocumentSendingActions } from '@/components/document-sending/action-buttons';
+import { EmptyState } from '@/components/document-sending/empty-state';
+import {
+  FeatureDevelopment
+} from '@/components/document-sending/feature-development';
+import { PageSkeleton } from '@/components/ui/page-skeleton';
+import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
 import { cn } from '@udecode/cn';
 import { motion } from 'framer-motion';
-
-import { DocumentSendingActions } from '@/components/document-sending/action-buttons';
-import { DocumentCard } from '@/components/document-sending/document-card';
-import { EmptyState } from '@/components/document-sending/empty-state';
-import { FeatureDevelopment } from '@/components/document-sending/feature-development';
-import { PageSkeleton } from '@/components/ui/page-skeleton';
-import { isFeatureEnabled } from '@/lib/feature-flags';
+import { useState } from 'react';
 
 // Demo data
 const demoDocuments = [
@@ -84,30 +89,58 @@ const demoDocuments = [
 type FilterMode = 'all' | 'completed' | 'draft' | 'sent' | 'viewed';
 type ViewMode = 'grid' | 'list';
 
-export default function DocumentSendingPage() {
+export default function FinancialAnalyticsPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showDemoData, setShowDemoData] = useState(true); // Toggle to show empty state
+  const [showDemoData, setShowDemoData] = useState(true);
 
-  // Check if the document sending feature is enabled
-  const isDocumentSendingEnabled = isFeatureEnabled('DOCUMENT_SENDING_ENABLED');
+  const featureName = 'Financial Analytics';
+
+  // Feature flag check - change to false to see the coming soon state
+  const featureFlag = false;
 
   // If feature is not enabled, show the development notice
-  if (!isDocumentSendingEnabled) {
+  if (!featureFlag) {
     return (
       <PageSkeleton
-        description="Generate financial reports and track approval workflows for financial documents."
+        description="Gain deeper insights into your financial data with advanced analytics and reporting."
         title="Financial Analytics"
         breadcrumbs={[
           { href: '/dashboard', label: 'Dashboard' },
           { href: '/financial-analytics', label: 'Financial Analytics' },
         ]}
+        actions={
+          <WaitlistFeature
+            featureName={featureName}
+            buttonIcon={PresentationChartBarIcon}
+            buttonText="Early Access"
+          />
+        }
       >
         <FeatureDevelopment
-          description="We're working hard to bring you the best financial analytics experience. This feature is currently in development."
-          title="Financial Analytics Coming Soon"
-          estimatedTime="Expected release: Q3 2025"
+          description="We're developing powerful financial analytics tools with interactive visualizations, trend analysis, and AI-powered insights. Transform your raw financial data into actionable business intelligence."
+          title="Advanced Analytics Platform"
+          estimatedTime="Expected release: Q4 2025"
+          featureCards={[
+            {
+              description:
+                'Interactive data visualizations to explore financial patterns',
+              icon: ChartPieIcon,
+              title: 'Visual Insights',
+            },
+            {
+              description: 'Real-time analytics with automatic data refreshing',
+              icon: ArrowPathIcon,
+              title: 'Live Updates',
+            },
+            {
+              description:
+                'AI-powered recommendations for financial decision making',
+              icon: LightBulbIcon,
+              title: 'Smart Suggestions',
+            },
+          ]}
         />
       </PageSkeleton>
     );
@@ -118,7 +151,7 @@ export default function DocumentSendingPage() {
     {
       id: 'all',
       isActive: filterMode === 'all',
-      label: 'All Documents',
+      label: 'All Reports',
       onClick: () => setFilterMode('all'),
     },
     {
@@ -130,13 +163,13 @@ export default function DocumentSendingPage() {
     {
       id: 'sent',
       isActive: filterMode === 'sent',
-      label: 'Sent',
+      label: 'Recent',
       onClick: () => setFilterMode('sent'),
     },
     {
       id: 'completed',
       isActive: filterMode === 'completed',
-      label: 'Completed',
+      label: 'Favorites',
       onClick: () => setFilterMode('completed'),
     },
   ];
@@ -156,15 +189,15 @@ export default function DocumentSendingPage() {
 
   // Custom header content for the search
   const headerContent = (
-    <div className="relative">
+    <div className="relative w-full max-w-md">
       <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
         <MagnifyingGlassIcon className="h-4 w-4 text-muted-foreground" />
       </div>
       <input
-        className="block w-full rounded-md border border-input bg-background py-1.5 pr-3 pl-10 text-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:outline-none"
+        className="block w-full rounded-md border border-border/50 bg-background/80 py-1.5 pr-3 pl-10 text-sm transition-all duration-200 placeholder:text-muted-foreground/70 focus:ring-2 focus:ring-primary/50 focus:outline-none"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search documents or recipients..."
+        placeholder="Search analytics reports..."
         type="text"
       />
     </div>
@@ -172,29 +205,33 @@ export default function DocumentSendingPage() {
 
   // Custom right-side actions
   const layoutToggleActions = (
-    <div className="flex items-center gap-1 rounded-md border bg-muted/50 p-0.5">
-      <button
+    <div className="flex items-center gap-1 rounded-md border border-border/50 bg-background/70 p-0.5 backdrop-blur-md">
+      <motion.button
         className={cn(
           'flex h-7 w-7 items-center justify-center rounded',
           viewMode === 'grid'
-            ? 'bg-background shadow-sm'
-            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+            ? 'bg-card shadow-sm'
+            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
         )}
         onClick={() => setViewMode('grid')}
+        whileHover={viewMode !== 'grid' ? { scale: 1.05 } : {}}
+        whileTap={viewMode !== 'grid' ? { scale: 0.95 } : {}}
       >
         <GridIcon className="h-4 w-4" />
-      </button>
-      <button
+      </motion.button>
+      <motion.button
         className={cn(
           'flex h-7 w-7 items-center justify-center rounded',
           viewMode === 'list'
-            ? 'bg-background shadow-sm'
-            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+            ? 'bg-card shadow-sm'
+            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
         )}
         onClick={() => setViewMode('list')}
+        whileHover={viewMode !== 'list' ? { scale: 1.05 } : {}}
+        whileTap={viewMode !== 'list' ? { scale: 0.95 } : {}}
       >
         <ListBulletIcon className="h-4 w-4" />
-      </button>
+      </motion.button>
     </div>
   );
 
@@ -208,8 +245,8 @@ export default function DocumentSendingPage() {
 
   return (
     <PageSkeleton
-      description="Create, manage, and track the documents you send for signature."
-      title="Document Sending"
+      description="Analyze your financial data with interactive reports and visualizations."
+      title="Financial Analytics"
       actions={actions}
       breadcrumbs={[
         { href: '/dashboard', label: 'Dashboard' },
@@ -222,22 +259,26 @@ export default function DocumentSendingPage() {
         <div
           className={cn(
             viewMode === 'grid'
-              ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-              : 'flex flex-col gap-3'
+              ? 'grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+              : 'flex flex-col gap-4'
           )}
         >
           {filteredDocuments.map((doc) => (
             <motion.div
               key={doc.id}
               animate={{ opacity: 1, y: 0 }}
-              initial={{ opacity: 0, y: 20 }}
-              transition={{ type: 'spring' }}
+              initial={{ opacity: 0, y: 15 }}
+              transition={{ type: 'spring', stiffness: 350, damping: 25 }}
               layout
+              whileHover={{ y: -3, transition: { duration: 0.2 } }}
             >
               <DocumentCard
                 id={doc.id}
-                className={viewMode === 'list' ? 'max-w-full' : ''}
-                onClick={() => {}}
+                className={cn(
+                  'h-full transition-shadow duration-200 hover:shadow-md',
+                  viewMode === 'list' ? 'max-w-full' : ''
+                )}
+                onClick={() => { }}
                 title={doc.title}
                 recipients={doc.recipients}
                 status={doc.status}

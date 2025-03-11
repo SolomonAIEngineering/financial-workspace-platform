@@ -44,8 +44,8 @@ import { prisma } from '@/server/db';
  *       bankAccountId: 'acct_123abc',
  *       accessToken: 'access-token-from-plaid',
  *       userId: 'user_456def',
- *       startDate: '2023-01-01',
- *       endDate: '2023-01-31',
+ *       startDate: '2025-01-01',
+ *       endDate: '2025-01-31',
  *     },
  *   });
  *

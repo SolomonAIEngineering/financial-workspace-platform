@@ -10,8 +10,8 @@ import type { AccountStatus, User } from '../types/account-types';
  * Formats a date into a readable string
  *
  * @example
- *   // Returns "January 1, 2023"
- *   formatDate(new Date('2023-01-01'));
+ *   // Returns "January 1, 2025"
+ *   formatDate(new Date('2025-01-01'));
  *
  * @param date - Date to format
  * @returns Formatted date string in the format "Month Day, Year"

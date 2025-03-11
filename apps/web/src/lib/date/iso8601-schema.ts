@@ -10,5 +10,5 @@ export const iso8601Schema = z
   })
   .or(z.literal(''))
   .describe(
-    'Similar to the standard date type, but each section after the year is optional. e.g. 2014-06-29 or 2023-04'
+    'Similar to the standard date type, but each section after the year is optional. e.g. 2014-06-29 or 2025-04'
   );
