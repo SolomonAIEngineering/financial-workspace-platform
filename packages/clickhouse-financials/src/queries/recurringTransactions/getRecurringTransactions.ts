@@ -1,7 +1,7 @@
-import { z } from 'zod'
 import type { Querier } from '../../client'
 import { dateTimeToUnix } from '../../util'
 import { recurringParams } from './params'
+import { z } from 'zod'
 
 /**
  * Get detailed list of recurring transactions
@@ -57,7 +57,7 @@ export function getRecurringTransactions(ch: Querier) {
         ${args.frequency ? 'AND multiSearchAny(frequency, {frequency: Array(String)}) > 0' : ''}
         AND start_date >= fromUnixTimestamp64Milli({start: Int64})
         AND (end_date IS NULL OR end_date <= fromUnixTimestamp64Milli({end: Int64}))
-      ORDER BY ${args.sortBy} ${args.sortDir}
+      ORDER BY start_date DESC
       LIMIT {limit: Int} OFFSET {offset: Int}
       `,
       params: detailedRecurringParams,
