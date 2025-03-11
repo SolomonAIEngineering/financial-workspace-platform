@@ -1,6 +1,6 @@
+import { z } from 'zod'
 import type { Querier } from '../../client'
 import { businessParams } from './params'
-import { z } from 'zod'
 
 /**
  * Get customer lifetime value (CLV) metrics

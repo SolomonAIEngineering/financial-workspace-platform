@@ -1,14 +1,44 @@
+import { z } from 'zod'
 import type { Querier } from '../../client'
 import { dateTimeToUnix } from '../../util'
 import { recurringParams } from './params'
-import { z } from 'zod'
 
 /**
- * Get detailed list of recurring transactions
- * @param ch - ClickHouse client instance
- * @returns Function to query raw recurring transactions
+ * Retrieves a paginated list of recurring transactions with comprehensive details.
+ *
+ * This query function fetches recurring transaction data from the ClickHouse database
+ * with filtering, sorting, and pagination capabilities. It allows clients to retrieve
+ * recurring transaction records based on various criteria such as date range, bank account,
+ * status, and frequency.
+ *
+ * Recurring transactions represent scheduled, repeating financial activities such as
+ * subscriptions, regular bills, or recurring revenue streams. This function provides
+ * access to all attributes of these transactions including their scheduling information,
+ * execution status, and categorization.
+ *
+ * @param ch - ClickHouse client instance that provides query execution capabilities
+ * @returns A function that accepts filter parameters and returns recurring transaction data
+ *
+ * @example
+ * ```typescript
+ * const recurringQuery = getRecurringTransactions(clickhouseClient);
+ * const result = await recurringQuery({
+ *   userId: 'user-123',
+ *   teamId: 'team-456',
+ *   start: 1609459200000, // Jan 1, 2021 in milliseconds
+ *   end: 1640995199000,   // Dec 31, 2021 in milliseconds
+ *   status: ['active', 'pending'],
+ *   limit: 50,
+ *   offset: 0,
+ *   sortBy: 'start_date',
+ *   sortDir: 'desc'
+ * });
+ * ```
  */
 export function getRecurringTransactions(ch: Querier) {
+  /**
+   * Extended parameters schema for recurring transaction queries with additional sorting and pagination options
+   */
   const detailedRecurringParams = recurringParams.extend({
     offset: z.number().optional().default(0),
     sortBy: z
@@ -18,6 +48,12 @@ export function getRecurringTransactions(ch: Querier) {
     sortDir: z.enum(['asc', 'desc']).optional().default('desc'),
   })
 
+  /**
+   * Query function that retrieves recurring transaction data based on provided parameters
+   *
+   * @param args - Query parameters including filters, sorting options, and pagination
+   * @returns Promise resolving to recurring transaction data or error
+   */
   return async (args: z.input<typeof detailedRecurringParams>) => {
     const query = ch.query({
       query: `

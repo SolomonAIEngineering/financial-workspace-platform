@@ -1,18 +1,53 @@
+import { z } from 'zod'
 import type { Querier } from '../../client'
 import { businessParams } from './params'
-import { z } from 'zod'
 
 /**
- * Get cash runway metrics
- * @param ch - ClickHouse client instance
- * @returns Function to query cash runway data
+ * Calculates and retrieves cash runway metrics for a business.
+ *
+ * This query function analyzes financial data to determine how long a business can
+ * sustain operations with its current cash reserves and burn rate. It calculates
+ * key metrics including:
+ * - Runway months (how long current cash will last at the current burn rate)
+ * - Current cash position
+ * - Monthly burn rate (calculated from recent financial data or provided directly)
+ * - Revenue growth rate
+ * - Expense growth rate
+ *
+ * The function first retrieves historical financial data for the specified period,
+ * then uses this data to calculate average burn rate and growth metrics. These
+ * calculations provide critical insights for financial planning and cash management.
+ *
+ * @param ch - ClickHouse client instance that provides query execution capabilities
+ * @returns A function that accepts parameters and returns cash runway metrics
+ *
+ * @example
+ * ```typescript
+ * const runwayQuery = getCashRunway(clickhouseClient);
+ * const result = await runwayQuery({
+ *   teamId: 'team-456',
+ *   start: 1609459200000, // Jan 1, 2021 in milliseconds
+ *   end: 1640995199000,   // Dec 31, 2021 in milliseconds
+ *   currentCash: 500000,  // $500,000 current cash balance
+ *   burnRate: 50000       // Optional: override calculated burn rate with $50,000
+ * });
+ * ```
  */
 export function getCashRunway(ch: Querier) {
+  /**
+   * Extended parameters schema for cash runway calculations with additional required fields
+   */
   const cashRunwayParams = businessParams.extend({
     currentCash: z.number(),
     burnRate: z.number().optional(),
   })
 
+  /**
+   * Query function that calculates cash runway metrics based on provided parameters
+   *
+   * @param args - Query parameters including team ID, date range, current cash, and optional burn rate
+   * @returns Promise resolving to cash runway metrics or error
+   */
   return async (args: z.input<typeof cashRunwayParams>) => {
     // First, get the financial data for the last 12 months
     const financialDataQuery = ch.query({
@@ -49,9 +84,11 @@ export function getCashRunway(ch: Querier) {
     const recentMonths = data.slice(0, 3)
 
     // Calculate average burn rate
-    const avgBurnRate = recentMonths.length > 0
-      ? recentMonths.reduce((sum, month) => sum + month.monthly_burn, 0) / recentMonths.length
-      : 0
+    const avgBurnRate =
+      recentMonths.length > 0
+        ? recentMonths.reduce((sum, month) => sum + month.monthly_burn, 0) /
+          recentMonths.length
+        : 0
 
     // Calculate growth rates if we have enough data
     let revenueGrowth: number | null = null
@@ -63,12 +100,16 @@ export function getCashRunway(ch: Querier) {
 
       // Calculate revenue growth
       if (previous.total_revenue !== 0) {
-        revenueGrowth = (current.total_revenue - previous.total_revenue) / previous.total_revenue
+        revenueGrowth =
+          (current.total_revenue - previous.total_revenue) /
+          previous.total_revenue
       }
 
       // Calculate expense growth
       if (previous.total_expenses !== 0) {
-        expenseGrowth = (current.total_expenses - previous.total_expenses) / previous.total_expenses
+        expenseGrowth =
+          (current.total_expenses - previous.total_expenses) /
+          previous.total_expenses
       }
     }
 
@@ -80,13 +121,15 @@ export function getCashRunway(ch: Querier) {
 
     // Return the results
     return {
-      val: [{
-        runway_months: runwayMonths,
-        current_cash: args.currentCash,
-        burn_rate: burnRate,
-        monthly_revenue_growth: revenueGrowth,
-        monthly_expense_growth: expenseGrowth,
-      }]
+      val: [
+        {
+          runway_months: runwayMonths,
+          current_cash: args.currentCash,
+          burn_rate: burnRate,
+          monthly_revenue_growth: revenueGrowth,
+          monthly_expense_growth: expenseGrowth,
+        },
+      ],
     }
   }
 }

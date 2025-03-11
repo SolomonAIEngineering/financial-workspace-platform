@@ -1,6 +1,6 @@
+import { z } from 'zod'
 import type { Querier } from '../../client'
 import { transactionParams } from './params'
-import { z } from 'zod'
 
 /**
  * Get category spending breakdown
@@ -42,17 +42,21 @@ export function getCategorySpending(ch: Querier) {
     }
 
     // Calculate total expenses across all categories
-    const totalExpenses = result.val!.reduce((sum, item) => sum + item.total_expenses, 0)
+    const totalExpenses = result.val!.reduce(
+      (sum, item) => sum + item.total_expenses,
+      0,
+    )
 
     // Calculate percentage for each category
-    const resultsWithPercentage = result.val!.map(item => ({
+    const resultsWithPercentage = result.val!.map((item) => ({
       ...item,
-      percentage: totalExpenses > 0 ? (item.total_expenses / totalExpenses) * 100 : 0
+      percentage:
+        totalExpenses > 0 ? (item.total_expenses / totalExpenses) * 100 : 0,
     }))
 
     return {
       val: resultsWithPercentage,
-      err: null
+      err: null,
     }
   }
 }

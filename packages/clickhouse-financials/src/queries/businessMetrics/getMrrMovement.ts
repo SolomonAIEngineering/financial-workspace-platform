@@ -1,6 +1,6 @@
+import { z } from 'zod'
 import type { Querier } from '../../client'
 import { businessParams } from './params'
-import { z } from 'zod'
 
 /**
  * Get MRR movement metrics (new, expansion, contraction, churn)

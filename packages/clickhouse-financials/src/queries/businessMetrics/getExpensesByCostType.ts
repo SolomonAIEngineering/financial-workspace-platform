@@ -1,6 +1,6 @@
+import { z } from 'zod'
 import type { Querier } from '../../client'
 import { businessParams } from './params'
-import { z } from 'zod'
 
 /**
  * Get expenses breakdown by cost type (fixed vs variable)
@@ -40,21 +40,23 @@ export function getExpensesByCostType(ch: Querier) {
     }
 
     // Process the results to calculate total costs and percentages
-    const processedResults = expenseResult.val.map(item => {
+    const processedResults = expenseResult.val.map((item) => {
       const totalCosts = item.fixed_costs + item.variable_costs
       return {
         month_date: item.month_date,
         fixed_costs: item.fixed_costs,
         variable_costs: item.variable_costs,
         total_costs: totalCosts,
-        fixed_cost_percentage: totalCosts > 0 ? (item.fixed_costs / totalCosts) * 100 : 0,
-        variable_cost_percentage: totalCosts > 0 ? (item.variable_costs / totalCosts) * 100 : 0,
+        fixed_cost_percentage:
+          totalCosts > 0 ? (item.fixed_costs / totalCosts) * 100 : 0,
+        variable_cost_percentage:
+          totalCosts > 0 ? (item.variable_costs / totalCosts) * 100 : 0,
       }
     })
 
     return {
       val: processedResults,
-      err: null
+      err: null,
     }
   }
 }

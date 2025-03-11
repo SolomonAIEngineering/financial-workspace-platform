@@ -1,13 +1,13 @@
-import { RecurringTransaction, recurringTransactionSchema } from '../../types'
 import { describe, expect, test } from 'vitest'
+import { RecurringTransaction, recurringTransactionSchema } from '../../types'
 
+import { z } from 'zod'
+import { Inserter as ClickHouseInserter } from '../../client'
 import { ClickHouse } from '../../index'
 import { ClickHouseContainer } from '../../testutil'
-import { Inserter as ClickHouseInserter } from '../../client'
 import { Inserter } from '../types'
 import { insertRecurringTransaction } from './insertRecurringTransaction'
 import { insertRecurringTransactions } from './insertRecurringTransactions'
-import { z } from 'zod'
 
 // Helper to format dates in a ClickHouse-compatible way
 function formatDateForClickHouse(isoDate: string): string {

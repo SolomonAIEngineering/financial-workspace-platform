@@ -1,6 +1,6 @@
+import { z } from 'zod'
 import type { Querier } from '../../client'
 import { businessParams } from './params'
-import { z } from 'zod'
 
 /**
  * Get revenue breakdown by category
@@ -65,7 +65,7 @@ export function getRevenueByCategory(ch: Querier) {
     }
 
     // Calculate percentage manually
-    const resultsWithPercentage = result.val?.map(item => ({
+    const resultsWithPercentage = result.val?.map((item) => ({
       ...item,
       percentage: total > 0 ? (item.total_revenue / total) * 100 : 0,
     }))
