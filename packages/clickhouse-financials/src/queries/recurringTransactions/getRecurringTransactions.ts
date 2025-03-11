@@ -1,7 +1,7 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { recurringParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { dateTimeToUnix } from '../../util'
+import { recurringParams } from './params'
 
 /**
  * Get detailed list of recurring transactions
@@ -9,15 +9,18 @@ import { z } from 'zod';
  * @returns Function to query raw recurring transactions
  */
 export function getRecurringTransactions(ch: Querier) {
-    const detailedRecurringParams = recurringParams.extend({
-        offset: z.number().optional().default(0),
-        sortBy: z.enum(['start_date', 'amount', 'title', 'frequency']).optional().default('start_date'),
-        sortDir: z.enum(['asc', 'desc']).optional().default('desc'),
-    });
+  const detailedRecurringParams = recurringParams.extend({
+    offset: z.number().optional().default(0),
+    sortBy: z
+      .enum(['start_date', 'amount', 'title', 'frequency'])
+      .optional()
+      .default('start_date'),
+    sortDir: z.enum(['asc', 'desc']).optional().default('desc'),
+  })
 
-    return async (args: z.input<typeof detailedRecurringParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof detailedRecurringParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         id,
         user_id,
@@ -57,38 +60,38 @@ export function getRecurringTransactions(ch: Querier) {
       ORDER BY ${args.sortBy} ${args.sortDir}
       LIMIT {limit: Int} OFFSET {offset: Int}
       `,
-            params: detailedRecurringParams,
-            schema: z.object({
-                id: z.string(),
-                user_id: z.string(),
-                team_id: z.string(),
-                bank_account_id: z.string(),
-                title: z.string(),
-                description: z.string(),
-                amount: z.number(),
-                currency: z.string(),
-                frequency: z.string(),
-                interval: z.number(),
-                start_date: dateTimeToUnix,
-                end_date: dateTimeToUnix.nullable(),
-                next_scheduled_date: dateTimeToUnix.nullable(),
-                days_to_next_execution: z.number().nullable(),
-                status: z.string(),
-                execution_count: z.number(),
-                total_executed: z.number(),
-                merchant_name: z.string(),
-                is_revenue: z.number(),
-                is_subscription_revenue: z.number(),
-                is_expense: z.number(),
-                is_fixed_cost: z.number(),
-                is_variable_cost: z.number(),
-                category_slug: z.string(),
-                tags: z.array(z.string()),
-                created_at: dateTimeToUnix,
-                updated_at: dateTimeToUnix,
-            }),
-        });
+      params: detailedRecurringParams,
+      schema: z.object({
+        id: z.string(),
+        user_id: z.string(),
+        team_id: z.string(),
+        bank_account_id: z.string(),
+        title: z.string(),
+        description: z.string(),
+        amount: z.number(),
+        currency: z.string(),
+        frequency: z.string(),
+        interval: z.number(),
+        start_date: dateTimeToUnix,
+        end_date: dateTimeToUnix.nullable(),
+        next_scheduled_date: dateTimeToUnix.nullable(),
+        days_to_next_execution: z.number().nullable(),
+        status: z.string(),
+        execution_count: z.number(),
+        total_executed: z.number(),
+        merchant_name: z.string(),
+        is_revenue: z.number(),
+        is_subscription_revenue: z.number(),
+        is_expense: z.number(),
+        is_fixed_cost: z.number(),
+        is_variable_cost: z.number(),
+        category_slug: z.string(),
+        tags: z.array(z.string()),
+        created_at: dateTimeToUnix,
+        updated_at: dateTimeToUnix,
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

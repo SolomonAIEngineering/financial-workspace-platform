@@ -7,7 +7,8 @@
   "keywords": [],
   "author": "Yoan Yomba",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@dagger.io/dagger": "^0.14.0",

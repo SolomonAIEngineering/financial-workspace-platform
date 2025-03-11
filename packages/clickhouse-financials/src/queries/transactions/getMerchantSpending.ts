@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { transactionParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { transactionParams } from './params'
 
 /**
  * Get merchant spending analysis
@@ -9,9 +8,9 @@ import { z } from 'zod';
  * @returns Function to query merchant spending
  */
 export function getMerchantSpending(ch: Querier) {
-    return async (args: z.input<typeof transactionParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof transactionParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         month_start,
         merchant_name,
@@ -29,18 +28,18 @@ export function getMerchantSpending(ch: Querier) {
       ORDER BY month_start ASC, total_spent DESC
       LIMIT {limit: Int}
       `,
-            params: transactionParams,
-            schema: z.object({
-                month_start: z.string(),
-                merchant_name: z.string(),
-                transaction_count: z.number(),
-                total_spent: z.number(),
-                first_transaction: z.string(),
-                latest_transaction: z.string(),
-                average_amount: z.number(),
-            }),
-        });
+      params: transactionParams,
+      schema: z.object({
+        month_start: z.string(),
+        merchant_name: z.string(),
+        transaction_count: z.number(),
+        total_spent: z.number(),
+        first_transaction: z.string(),
+        latest_transaction: z.string(),
+        average_amount: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

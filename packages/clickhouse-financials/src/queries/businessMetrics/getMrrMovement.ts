@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { businessParams } from './params';
-import { dateTimeToUnix } from '../../util';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { businessParams } from './params'
 
 /**
  * Get MRR movement metrics (new, expansion, contraction, churn)
@@ -9,9 +8,9 @@ import { z } from 'zod';
  * @returns Function to query MRR movement data
  */
 export function getMrrMovement(ch: Querier) {
-    return async (args: z.input<typeof businessParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof businessParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         team_id,
         month_date,
@@ -31,22 +30,22 @@ export function getMrrMovement(ch: Querier) {
       ORDER BY month_date ASC
       LIMIT {limit: Int}
       `,
-            params: businessParams,
-            schema: z.object({
-                team_id: z.string(),
-                month_date: z.string(),
-                new_mrr: z.number(),
-                expansion_mrr: z.number(),
-                contraction_mrr: z.number(),
-                churn_mrr: z.number(),
-                reactivation_mrr: z.number(),
-                net_new_mrr: z.number(),
-                new_customers: z.number(),
-                churned_customers: z.number(),
-                active_customers: z.number(),
-            }),
-        });
+      params: businessParams,
+      schema: z.object({
+        team_id: z.string(),
+        month_date: z.string(),
+        new_mrr: z.number(),
+        expansion_mrr: z.number(),
+        contraction_mrr: z.number(),
+        churn_mrr: z.number(),
+        reactivation_mrr: z.number(),
+        net_new_mrr: z.number(),
+        new_customers: z.number(),
+        churned_customers: z.number(),
+        active_customers: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

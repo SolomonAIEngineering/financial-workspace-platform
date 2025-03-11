@@ -1,7 +1,7 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { recurringParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { dateTimeToUnix } from '../../util'
+import { recurringParams } from './params'
 
 /**
  * Get monthly cash flow forecast
@@ -9,9 +9,9 @@ import { z } from 'zod';
  * @returns Function to query monthly cash flow forecast
  */
 export function getMonthlyCashFlowForecast(ch: Querier) {
-    return async (args: z.input<typeof recurringParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof recurringParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         user_id,
         bank_account_id,
@@ -31,20 +31,20 @@ export function getMonthlyCashFlowForecast(ch: Querier) {
       ORDER BY month_start ASC, is_expense ASC
       LIMIT {limit: Int}
       `,
-            params: recurringParams,
-            schema: z.object({
-                user_id: z.string(),
-                bank_account_id: z.string(),
-                month_start: z.string(),
-                is_expense: z.number(),
-                transaction_count: z.number(),
-                total_amount: z.number(),
-                first_transaction_date: dateTimeToUnix,
-                last_transaction_date: dateTimeToUnix,
-                transaction_titles: z.array(z.string()),
-            }),
-        });
+      params: recurringParams,
+      schema: z.object({
+        user_id: z.string(),
+        bank_account_id: z.string(),
+        month_start: z.string(),
+        is_expense: z.number(),
+        transaction_count: z.number(),
+        total_amount: z.number(),
+        first_transaction_date: dateTimeToUnix,
+        last_transaction_date: dateTimeToUnix,
+        transaction_titles: z.array(z.string()),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

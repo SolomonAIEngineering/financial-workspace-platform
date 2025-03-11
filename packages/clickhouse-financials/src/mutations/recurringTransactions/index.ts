@@ -1,3 +1,3 @@
-export { insertRecurringTransactions } from './insertRecurringTransactions';
-export { insertRecurringTransaction } from './insertRecurringTransaction';
-export { batchInsertRecurringTransactions } from './batchInsertRecurringTransactions'; 
+export { batchInsertRecurringTransactions } from './batchInsertRecurringTransactions'
+export { insertRecurringTransaction } from './insertRecurringTransaction'
+export { insertRecurringTransactions } from './insertRecurringTransactions'

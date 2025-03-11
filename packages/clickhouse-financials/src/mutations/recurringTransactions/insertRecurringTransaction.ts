@@ -1,7 +1,7 @@
-import { Inserter, MutationResponse } from '../types';
+import { Inserter, MutationResponse } from '../types'
 
-import { RecurringTransaction } from '../../types';
-import { insertRecurringTransactions } from './insertRecurringTransactions';
+import { RecurringTransaction } from '../../types'
+import { insertRecurringTransactions } from './insertRecurringTransactions'
 
 /**
  * Insert a single recurring transaction into the raw recurring transactions table
@@ -9,9 +9,11 @@ import { insertRecurringTransactions } from './insertRecurringTransactions';
  * @returns Function to insert a single recurring transaction
  */
 export function insertRecurringTransaction(ch: Inserter) {
-    const insertMultiple = insertRecurringTransactions(ch);
+  const insertMultiple = insertRecurringTransactions(ch)
 
-    return async (transaction: RecurringTransaction): Promise<MutationResponse> => {
-        return insertMultiple([transaction]);
-    };
-} 
+  return async (
+    transaction: RecurringTransaction,
+  ): Promise<MutationResponse> => {
+    return insertMultiple([transaction])
+  }
+}

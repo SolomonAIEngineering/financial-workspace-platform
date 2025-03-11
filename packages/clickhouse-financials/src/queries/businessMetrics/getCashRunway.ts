@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { businessParams } from './params';
-import { dateTimeToUnix } from '../../util';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { businessParams } from './params'
 
 /**
  * Get cash runway metrics
@@ -9,14 +8,14 @@ import { z } from 'zod';
  * @returns Function to query cash runway data
  */
 export function getCashRunway(ch: Querier) {
-    const cashRunwayParams = businessParams.extend({
-        currentCash: z.number(),
-        burnRate: z.number().optional(),
-    });
+  const cashRunwayParams = businessParams.extend({
+    currentCash: z.number(),
+    burnRate: z.number().optional(),
+  })
 
-    return async (args: z.input<typeof cashRunwayParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof cashRunwayParams>) => {
+    const query = ch.query({
+      query: `
       WITH 
         {currentCash: Float64} AS starting_cash,
         avg(monthly_burn) OVER (ORDER BY month_date DESC ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING) AS avg_burn_rate,
@@ -47,16 +46,16 @@ export function getCashRunway(ch: Querier) {
         monthly_expense_growth
       LIMIT 1
       `,
-            params: cashRunwayParams,
-            schema: z.object({
-                runway_months: z.number(),
-                current_cash: z.number(),
-                burn_rate: z.number(),
-                monthly_revenue_growth: z.number().nullable(),
-                monthly_expense_growth: z.number().nullable(),
-            }),
-        });
+      params: cashRunwayParams,
+      schema: z.object({
+        runway_months: z.number(),
+        current_cash: z.number(),
+        burn_rate: z.number(),
+        monthly_revenue_growth: z.number().nullable(),
+        monthly_expense_growth: z.number().nullable(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

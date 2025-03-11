@@ -3,10 +3,10 @@
  */
 
 // Transaction queries
-export * from './transactions';
+export * from './transactions'
 
 // Recurring transaction queries
-export * from './recurringTransactions';
+export * from './recurringTransactions'
 
 // Business metrics queries
-export * from './businessMetrics'; 
+export * from './businessMetrics'

@@ -1,7 +1,7 @@
-import { Inserter, MutationResponse } from '../types';
+import { Inserter, MutationResponse } from '../types'
 
-import { RawTransaction } from '../../types';
-import { insertTransactions } from './insertTransactions';
+import { RawTransaction } from '../../types'
+import { insertTransactions } from './insertTransactions'
 
 /**
  * Insert a single transaction into the raw transactions table
@@ -9,9 +9,9 @@ import { insertTransactions } from './insertTransactions';
  * @returns Function to insert a single transaction
  */
 export function insertTransaction(ch: Inserter) {
-    const insertMultiple = insertTransactions(ch);
+  const insertMultiple = insertTransactions(ch)
 
-    return async (transaction: RawTransaction): Promise<MutationResponse> => {
-        return insertMultiple([transaction]);
-    };
-} 
+  return async (transaction: RawTransaction): Promise<MutationResponse> => {
+    return insertMultiple([transaction])
+  }
+}

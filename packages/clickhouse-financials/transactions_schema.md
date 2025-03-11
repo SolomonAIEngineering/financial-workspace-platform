@@ -27,19 +27,19 @@ CREATE TABLE financials.raw_transactions_v1 (
     date_day UInt8 MATERIALIZED toDayOfMonth(date),
     date_day_of_week UInt8 MATERIALIZED toDayOfWeek(date),
     date_week_of_year UInt8 MATERIALIZED toWeek(date),
-    
+
     -- Categorization
     category LowCardinality(String),
     sub_category String,
     custom_category String,
     category_icon_url String,
-    
+
     -- Merchant data
     merchant_id String,
     merchant_logo_url String,
     merchant_category String,
     merchant_website String,
-    
+
     -- Location data (flattened from JSON)
     latitude Float64,
     longitude Float64,
@@ -47,53 +47,53 @@ CREATE TABLE financials.raw_transactions_v1 (
     location_state String,
     location_country String,
     location_postal_code String,
-    
+
     -- Payment metadata
     payment_channel LowCardinality(String),
     payment_method LowCardinality(String),
     transaction_type LowCardinality(String),
     transaction_method LowCardinality(String),
-    
+
     -- Financial attributes
     tax_amount Float64,
     tax_rate Float64,
     vat_amount Float64,
     vat_rate Float64,
-    
+
     -- Business categorization
     business_purpose String,
     cost_center String,
     project_code String,
-    
+
     -- Personal finance flags
     exclude_from_budget UInt8,
     is_recurring UInt8,
     recurring_transaction_id String,
-    
+
     -- Cash flow classification
     cash_flow_category LowCardinality(String),
     need_want_category LowCardinality(String),
-    
+
     -- User interaction flags
     is_manual UInt8,
     is_modified UInt8,
     is_verified UInt8,
     is_reconciled UInt8,
-    
+
     -- Tags and organization
     tags Array(String),
     labels Array(String),
-    
+
     -- Split transaction support
     parent_transaction_id String,
     is_split UInt8,
     split_total Float64,
-    
+
     -- Timestamps
     created_at DateTime,
     updated_at DateTime,
     imported_at DateTime,
-    
+
     -- Other flags
     is_internal UInt8,
     has_been_notified UInt8,
@@ -113,16 +113,16 @@ CREATE TABLE financials.raw_recurring_transactions_v1 (
     id String,
     user_id String,
     bank_account_id String,
-    
+
     -- Basic information
     title String,
     description String,
     amount Float64,
     currency LowCardinality(String),
-    
+
     -- Account information
     initial_account_balance Float64,
-    
+
     -- Schedule information
     frequency LowCardinality(String), -- Weekly, monthly, annually, etc.
     interval UInt8, -- Every X days/weeks/months
@@ -133,28 +133,28 @@ CREATE TABLE financials.raw_recurring_transactions_v1 (
     week_of_month Int8 NULL, -- For monthly: which week (1-5, -1=last)
     month_of_year UInt8 NULL, -- For yearly: which month (1-12)
     execution_days Array(UInt8), -- For custom frequencies: which days to execute
-    
+
     -- Time dimensions (for efficient aggregations)
     start_date_year UInt16 MATERIALIZED toYear(start_date),
     start_date_month UInt8 MATERIALIZED toMonth(start_date),
-    
+
     -- Schedule options
     skip_weekends UInt8,
     adjust_for_holidays UInt8,
     allow_execution UInt8,
     limit_executions UInt32 NULL,
-    
+
     -- Transaction template
     transaction_template String, -- Stored as JSON
     category_slug String,
     tags Array(String),
     notes String,
     custom_fields String, -- Stored as JSON
-    
+
     -- Bank account specific details
     target_account_id String,
     affect_available_balance UInt8,
-    
+
     -- Execution tracking
     last_executed_at DateTime NULL,
     next_scheduled_date DateTime NULL,
@@ -162,42 +162,42 @@ CREATE TABLE financials.raw_recurring_transactions_v1 (
     total_executed Float64,
     last_execution_status LowCardinality(String),
     last_execution_error String,
-    
+
     -- Account health monitoring
     min_balance_required Float64 NULL,
     overspend_action LowCardinality(String),
     insufficient_funds_count UInt32,
-    
+
     -- Smart variance handling
     expected_amount Float64 NULL,
     allowed_variance Float64 NULL,
     variance_action LowCardinality(String),
-    
+
     -- Reminders and notifications
     reminder_days Array(UInt8),
     reminder_sent_at DateTime NULL,
     notify_on_execution UInt8,
     notify_on_failure UInt8,
-    
+
     -- Status fields
     status LowCardinality(String), -- active, paused, completed, cancelled
     is_automated UInt8,
     requires_approval UInt8,
     is_variable UInt8,
-    
+
     -- Metadata
     source LowCardinality(String),
     confidence_score Float64 NULL,
     merchant_id String,
     merchant_name String,
-    
+
     -- Categorization
     transaction_type LowCardinality(String),
     importance_level LowCardinality(String),
-    
+
     -- Time to next execution (calculated)
     days_to_next_execution Int32 MATERIALIZED if(next_scheduled_date IS NOT NULL, dateDiff('day', today(), next_scheduled_date), NULL),
-    
+
     -- Audit trail
     created_at DateTime,
     updated_at DateTime,
@@ -230,10 +230,10 @@ SELECT
     groupArray(title) AS transaction_titles,
     groupArray(id) AS transaction_ids
 FROM financials.raw_recurring_transactions_v1
-WHERE next_scheduled_date IS NOT NULL 
+WHERE next_scheduled_date IS NOT NULL
   AND next_scheduled_date > today()
   AND next_scheduled_date <= (today() + INTERVAL 30 DAY)
-  AND status = 'active' 
+  AND status = 'active'
   AND allow_execution = 1
 GROUP BY user_id, bank_account_id, next_scheduled_date, days_to_next_execution;
 ```
@@ -280,8 +280,8 @@ SELECT
     max(next_scheduled_date) AS last_transaction_date,
     groupArray(title) AS transaction_titles
 FROM financials.raw_recurring_transactions_v1
-WHERE next_scheduled_date IS NOT NULL 
-  AND status = 'active' 
+WHERE next_scheduled_date IS NOT NULL
+  AND status = 'active'
   AND allow_execution = 1
   AND next_scheduled_date <= (today() + INTERVAL 90 DAY)
 GROUP BY user_id, bank_account_id, month_start, is_expense;
@@ -326,7 +326,7 @@ FROM financials.raw_recurring_transactions_v1
 WHERE status = 'active'
   AND user_id = 'user123'
   AND importance_level IN ('Critical', 'High')
-ORDER BY 
+ORDER BY
     CASE importance_level
         WHEN 'Critical' THEN 1
         WHEN 'High' THEN 2
@@ -503,7 +503,7 @@ SELECT
     count() / (dateDiff('month', toStartOfMonth(min(date)), toStartOfMonth(max(date))) + 1) AS transactions_per_month,
     groupArray(id) AS transaction_ids
 FROM financials.raw_transactions_v1
-WHERE 
+WHERE
     merchant_name != ''
     AND date >= (today() - INTERVAL 6 MONTH)
 GROUP BY user_id, merchant_name, month, day_of_month
@@ -546,7 +546,7 @@ SELECT
     category_slug AS category,
     id AS recurring_id
 FROM financials.raw_recurring_transactions_v1
-WHERE 
+WHERE
     status = 'active'
     AND next_scheduled_date IS NOT NULL
     AND next_scheduled_date > today()
@@ -575,16 +575,16 @@ SELECT
     t.category,
     t.is_recurring,
     t.recurring_transaction_id,
-    
+
     -- Add recurring information when available
     r.id AS linked_recurring_id,
     r.title AS recurring_title,
     r.frequency AS recurring_frequency,
     r.execution_count AS recurring_occurrence_count,
-    
+
     -- Check if pattern matches
     if(
-        t.is_recurring = 0 AND 
+        t.is_recurring = 0 AND
         t.recurring_transaction_id IS NULL AND
         r.id IS NULL AND
         (
@@ -601,7 +601,7 @@ SELECT
         0
     ) AS potential_recurring_pattern
 FROM financials.raw_transactions_v1 t
-LEFT JOIN financials.raw_recurring_transactions_v1 r ON 
+LEFT JOIN financials.raw_recurring_transactions_v1 r ON
     t.recurring_transaction_id = r.id AND
     t.user_id = r.user_id;
 ```
@@ -632,9 +632,9 @@ SELECT
     sum(abs(amount)) AS total_amount,
     round(sum(abs(amount)) / sum(sum(abs(amount))) OVER () * 100, 2) AS percentage
 FROM financials.raw_transactions_v1
-WHERE user_id = 'user123' 
-  AND amount < 0 
-  AND date >= toDate('2023-01-01') 
+WHERE user_id = 'user123'
+  AND amount < 0
+  AND date >= toDate('2023-01-01')
   AND date <= toDate('2023-01-31')
 GROUP BY category
 ORDER BY total_amount DESC;
@@ -648,8 +648,8 @@ SELECT
     count() AS transaction_count,
     sum(abs(amount)) AS total_spent
 FROM financials.raw_transactions_v1
-WHERE user_id = 'user123' 
-  AND amount < 0 
+WHERE user_id = 'user123'
+  AND amount < 0
   AND date >= toStartOfMonth(now()) - INTERVAL 6 MONTH
   AND date <= toEndOfMonth(now())
 GROUP BY merchant_name
@@ -680,9 +680,9 @@ SELECT
     category,
     sum(abs(amount)) AS total_spent
 FROM financials.raw_transactions_v1
-WHERE user_id = 'user123' 
-  AND amount < 0 
-  AND date >= toDate('2023-01-01') 
+WHERE user_id = 'user123'
+  AND amount < 0
+  AND date >= toDate('2023-01-01')
   AND date <= toDate('2023-12-31')
 GROUP BY month, category
 ORDER BY month, total_spent DESC;
@@ -711,7 +711,7 @@ For optimal performance, it's recommended to:
 2. **Data Retention**: Implement TTL policies for historical data if needed
 3. **Materialized View Updates**: Views automatically update as new data is inserted
 4. **Backups**: Regular backups should be configured
-5. **Monitoring**: Monitor query performance and storage usage 
+5. **Monitoring**: Monitor query performance and storage usage
 
 # ClickHouse Schema for Business Financial Analytics
 
@@ -743,13 +743,13 @@ CREATE TABLE financials.raw_transactions_v1 (
     date_day UInt8 MATERIALIZED toDayOfMonth(date),
     date_day_of_week UInt8 MATERIALIZED toDayOfWeek(date),
     date_week_of_year UInt8 MATERIALIZED toWeek(date),
-    
+
     -- Business categorization
     category LowCardinality(String),
     sub_category String,
     custom_category String,
     category_icon_url String,
-    
+
     -- Business expense classification
     is_cogs UInt8, -- Cost of Goods Sold
     is_opex UInt8, -- Operating Expense
@@ -760,25 +760,25 @@ CREATE TABLE financials.raw_transactions_v1 (
     is_owner_draw UInt8, -- Owner withdrawal
     is_tax UInt8, -- Tax payment
     is_transfer UInt8, -- Internal transfer
-    
+
     -- Merchant data
     merchant_id String,
     merchant_logo_url String,
     merchant_category String,
     merchant_website String,
-    
+
     -- Payment metadata
     payment_channel LowCardinality(String),
     payment_method LowCardinality(String),
     transaction_type LowCardinality(String),
     transaction_method LowCardinality(String),
-    
+
     -- Financial attributes
     tax_amount Float64,
     tax_rate Float64,
     vat_amount Float64,
     vat_rate Float64,
-    
+
     -- Business metadata
     department String,
     project String,
@@ -786,14 +786,14 @@ CREATE TABLE financials.raw_transactions_v1 (
     invoice_id String,
     customer_id String,
     vendor_id String,
-    
+
     -- Accounting classification
     accounting_category LowCardinality(String),
     gl_account String, -- General Ledger account
-    
+
     -- Cash flow classification
     cash_flow_category LowCardinality(String),
-    
+
     -- Flags
     exclude_from_budget UInt8,
     is_recurring UInt8,
@@ -802,21 +802,21 @@ CREATE TABLE financials.raw_transactions_v1 (
     is_manual UInt8,
     is_modified UInt8,
     is_reconciled UInt8,
-    
+
     -- Tags and organization
     tags Array(String),
     labels Array(String),
-    
+
     -- Split transaction support
     parent_transaction_id String,
     is_split UInt8,
     split_total Float64,
-    
+
     -- Timestamps
     created_at DateTime,
     updated_at DateTime,
     imported_at DateTime,
-    
+
     -- Other flags
     is_internal UInt8,
     has_been_notified UInt8,
@@ -837,20 +837,20 @@ CREATE TABLE financials.raw_recurring_transactions_v1 (
     user_id String,
     team_id String, -- Business/organization identifier
     bank_account_id String,
-    
+
     -- Basic information
     title String,
     description String,
     amount Float64,
     currency LowCardinality(String),
-    
+
     -- Business classification
     is_revenue UInt8, -- Is this a recurring revenue stream
     is_subscription_revenue UInt8, -- Is this subscription revenue
     is_expense UInt8, -- Is this a recurring expense
     is_fixed_cost UInt8, -- Is this a fixed cost
     is_variable_cost UInt8, -- Is this a variable cost
-    
+
     -- Business metadata
     department String,
     project String,
@@ -858,17 +858,17 @@ CREATE TABLE financials.raw_recurring_transactions_v1 (
     gl_account String, -- General Ledger account
     vendor_id String,
     customer_id String,
-    
+
     -- MRR/ARR tracking (for subscription revenue)
     is_mrr_component UInt8, -- Should be counted in MRR
     initial_mrr_amount Float64, -- Initial MRR value when created
     current_mrr_amount Float64, -- Current MRR value
     mrr_currency LowCardinality(String), -- Currency for MRR
     arr_multiplier Float32 DEFAULT 12, -- Multiplier for ARR (typically 12)
-    
+
     -- Account information
     initial_account_balance Float64,
-    
+
     -- Schedule information
     frequency LowCardinality(String), -- Weekly, monthly, annually, etc.
     interval UInt8, -- Every X days/weeks/months
@@ -879,28 +879,28 @@ CREATE TABLE financials.raw_recurring_transactions_v1 (
     week_of_month Int8 NULL, -- For monthly: which week (1-5, -1=last)
     month_of_year UInt8 NULL, -- For yearly: which month (1-12)
     execution_days Array(UInt8), -- For custom frequencies: which days to execute
-    
+
     -- Time dimensions (for efficient aggregations)
     start_date_year UInt16 MATERIALIZED toYear(start_date),
     start_date_month UInt8 MATERIALIZED toMonth(start_date),
-    
+
     -- Schedule options
     skip_weekends UInt8,
     adjust_for_holidays UInt8,
     allow_execution UInt8,
     limit_executions UInt32 NULL,
-    
+
     -- Transaction template
     transaction_template String, -- Stored as JSON
     category_slug String,
     tags Array(String),
     notes String,
     custom_fields String, -- Stored as JSON
-    
+
     -- Bank account specific details
     target_account_id String,
     affect_available_balance UInt8,
-    
+
     -- Execution tracking
     last_executed_at DateTime NULL,
     next_scheduled_date DateTime NULL,
@@ -908,24 +908,24 @@ CREATE TABLE financials.raw_recurring_transactions_v1 (
     total_executed Float64,
     last_execution_status LowCardinality(String),
     last_execution_error String,
-    
+
     -- Account health monitoring
     min_balance_required Float64 NULL,
     overspend_action LowCardinality(String),
     insufficient_funds_count UInt32,
-    
+
     -- Metadata
     source LowCardinality(String),
     merchant_id String,
     merchant_name String,
-    
+
     -- Categorization
     transaction_type LowCardinality(String),
     importance_level LowCardinality(String),
-    
+
     -- Time to next execution (calculated)
     days_to_next_execution Int32 MATERIALIZED if(next_scheduled_date IS NOT NULL, dateDiff('day', today(), next_scheduled_date), NULL),
-    
+
     -- Audit trail
     created_at DateTime,
     updated_at DateTime,
@@ -944,19 +944,19 @@ CREATE TABLE financials.business_metrics_v1 (
     -- Primary identifiers
     id String,
     team_id String,
-    
+
     -- Time dimensions
     date DateTime,
     date_year UInt16 MATERIALIZED toYear(date),
     date_month UInt8 MATERIALIZED toMonth(date),
     date_day UInt8 MATERIALIZED toDayOfMonth(date),
-    
+
     -- Revenue metrics
     mrr Float64, -- Monthly Recurring Revenue
     arr Float64, -- Annual Recurring Revenue
     one_time_revenue Float64, -- Non-recurring revenue
     total_revenue Float64, -- Total revenue (MRR + one-time)
-    
+
     -- MRR movement metrics
     new_mrr Float64, -- MRR from new customers
     expansion_mrr Float64, -- MRR from existing customers expanding
@@ -964,36 +964,36 @@ CREATE TABLE financials.business_metrics_v1 (
     churn_mrr Float64, -- MRR lost from customers leaving
     reactivation_mrr Float64, -- MRR from returning customers
     net_mrr_movement Float64, -- Net change in MRR
-    
+
     -- Customer metrics
     customer_count UInt32, -- Total customers
     new_customers UInt32, -- New customers added
     churned_customers UInt32, -- Customers churned
-    
+
     -- Expense metrics
     fixed_costs Float64, -- Fixed costs
     variable_costs Float64, -- Variable costs
     total_expenses Float64, -- Total expenses
-    
+
     -- Cash metrics
     cash_balance Float64, -- Total cash across all accounts
     accounts_receivable Float64, -- Money owed to the business
     accounts_payable Float64, -- Money owed by the business
-    
+
     -- Burn rate metrics
     gross_burn Float64, -- Total expenses
     net_burn Float64, -- Expenses minus revenue
     runway_days UInt32, -- Days of runway at current burn rate
-    
+
     -- Calculated metrics
     gross_margin Float64, -- (Revenue - COGS) / Revenue
     cac Float64, -- Customer Acquisition Cost
     ltv Float64, -- Customer Lifetime Value
     ltv_cac_ratio Float64, -- LTV / CAC
-    
+
     -- Currency
     base_currency LowCardinality(String),
-    
+
     -- Metadata
     created_at DateTime,
     updated_at DateTime
@@ -1053,9 +1053,9 @@ FROM (
         customer_id
     FROM financials.raw_recurring_transactions_v1
     WHERE status = 'active' AND is_mrr_component = 1
-    
+
     UNION ALL
-    
+
     -- Include actual transactions for revenue/expense tracking
     SELECT
         team_id,
@@ -1089,25 +1089,25 @@ AS
 SELECT
     team_id,
     toStartOfMonth(date) AS month_date,
-    
+
     -- Income components
     sum(if(amount > 0 AND NOT is_transfer AND NOT is_investment, amount, 0)) AS total_income,
     sum(if(amount > 0 AND is_subscription, amount, 0)) AS subscription_income,
     sum(if(amount > 0 AND NOT is_subscription AND NOT is_transfer AND NOT is_investment, amount, 0)) AS non_subscription_income,
     sum(if(amount > 0 AND is_investment, amount, 0)) AS investment_income,
-    
+
     -- Expense components
     sum(if(amount < 0 AND NOT is_transfer, abs(amount), 0)) AS total_expenses,
     sum(if(is_cogs = 1, abs(amount), 0)) AS cogs,
     sum(if(is_opex = 1, abs(amount), 0)) AS opex,
-    
+
     -- Cash movement
     sum(amount) AS net_cash_movement,
-    
+
     -- Burn rate calculations
     sum(if(amount < 0 AND NOT is_transfer, abs(amount), 0)) AS gross_burn,
     sum(if(NOT is_transfer AND NOT is_investment, amount, 0)) AS net_burn,
-    
+
     -- Initial and final bank balances need to be calculated separately
     0 AS starting_balance,
     0 AS ending_balance,
@@ -1150,7 +1150,7 @@ GROUP BY team_id, month_date, category, accounting_category, department, cost_ce
 ```sql
 CREATE VIEW financials.business_cash_flow_projection_v1 AS
 WITH current_balances AS (
-    SELECT 
+    SELECT
         team_id,
         sum(amount) AS current_cash_balance
     FROM financials.raw_transactions_v1
@@ -1170,8 +1170,8 @@ upcoming_expenses AS (
         toStartOfMonth(next_scheduled_date) AS month,
         sum(if(amount < 0, abs(amount), 0)) AS projected_expenses
     FROM financials.raw_recurring_transactions_v1
-    WHERE 
-        status = 'active' 
+    WHERE
+        status = 'active'
         AND next_scheduled_date IS NOT NULL
         AND next_scheduled_date > today()
         AND next_scheduled_date <= (today() + INTERVAL 12 MONTH)
@@ -1183,8 +1183,8 @@ upcoming_revenue AS (
         toStartOfMonth(next_scheduled_date) AS month,
         sum(if(amount > 0, amount, 0)) AS projected_revenue
     FROM financials.raw_recurring_transactions_v1
-    WHERE 
-        status = 'active' 
+    WHERE
+        status = 'active'
         AND next_scheduled_date IS NOT NULL
         AND next_scheduled_date > today()
         AND next_scheduled_date <= (today() + INTERVAL 12 MONTH)
@@ -1200,18 +1200,18 @@ SELECT
     coalesce(e0.projected_expenses, 0) AS expenses_month_0,
     coalesce(r0.projected_revenue, 0) AS revenue_month_0,
     b.current_cash_balance + coalesce(r0.projected_revenue, 0) - coalesce(e0.projected_expenses, 0) AS projected_balance_month_0,
-    
+
     toStartOfMonth(addMonths(today(), 1)) AS month_1,
     coalesce(e1.projected_expenses, 0) AS expenses_month_1,
     coalesce(r1.projected_revenue, 0) AS revenue_month_1,
-    b.current_cash_balance + 
+    b.current_cash_balance +
         coalesce(r0.projected_revenue, 0) - coalesce(e0.projected_expenses, 0) +
         coalesce(r1.projected_revenue, 0) - coalesce(e1.projected_expenses, 0) AS projected_balance_month_1,
-    
+
     toStartOfMonth(addMonths(today(), 2)) AS month_2,
     coalesce(e2.projected_expenses, 0) AS expenses_month_2,
     coalesce(r2.projected_revenue, 0) AS revenue_month_2,
-    b.current_cash_balance + 
+    b.current_cash_balance +
         coalesce(r0.projected_revenue, 0) - coalesce(e0.projected_expenses, 0) +
         coalesce(r1.projected_revenue, 0) - coalesce(e1.projected_expenses, 0) +
         coalesce(r2.projected_revenue, 0) - coalesce(e2.projected_expenses, 0) AS projected_balance_month_2
@@ -1235,15 +1235,15 @@ ORDER BY (team_id, month_date)
 POPULATE
 AS
 WITH mrr_current AS (
-    -- Current month MRR 
+    -- Current month MRR
     SELECT
         team_id,
         customer_id,
         toStartOfMonth(today()) AS month_date,
         sum(current_mrr_amount) AS current_mrr
     FROM financials.raw_recurring_transactions_v1
-    WHERE 
-        status = 'active' 
+    WHERE
+        status = 'active'
         AND is_mrr_component = 1
     GROUP BY team_id, customer_id
 ),
@@ -1254,7 +1254,7 @@ mrr_previous AS (
         customer_id,
         toStartOfMonth(today() - INTERVAL 1 MONTH) AS month_date,
         sum(if(
-            (start_date < toStartOfMonth(today())) AND 
+            (start_date < toStartOfMonth(today())) AND
             (end_date IS NULL OR end_date > toStartOfMonth(today() - INTERVAL 1 MONTH)),
             current_mrr_amount,
             0
@@ -1266,27 +1266,27 @@ mrr_previous AS (
 SELECT
     c.team_id,
     toStartOfMonth(today()) AS month_date,
-    
+
     -- Total current and previous MRR
     sum(c.current_mrr) AS current_month_mrr,
     sum(p.previous_mrr) AS previous_month_mrr,
-    
+
     -- New customers (didn't exist last month)
     sum(if(p.customer_id IS NULL, c.current_mrr, 0)) AS new_mrr,
     count(if(p.customer_id IS NULL, 1, NULL)) AS new_customers,
-    
+
     -- Expansion (existing customers who increased)
     sum(if(p.customer_id IS NOT NULL AND c.current_mrr > p.previous_mrr, c.current_mrr - p.previous_mrr, 0)) AS expansion_mrr,
     count(if(p.customer_id IS NOT NULL AND c.current_mrr > p.previous_mrr, 1, NULL)) AS expanded_customers,
-    
+
     -- Contraction (existing customers who decreased)
     sum(if(p.customer_id IS NOT NULL AND c.current_mrr < p.previous_mrr AND c.current_mrr > 0, p.previous_mrr - c.current_mrr, 0)) AS contraction_mrr,
     count(if(p.customer_id IS NOT NULL AND c.current_mrr < p.previous_mrr AND c.current_mrr > 0, 1, NULL)) AS contracted_customers,
-    
+
     -- Churn (customers who left)
     sum(if(p.customer_id IS NOT NULL AND c.current_mrr = 0, p.previous_mrr, 0)) AS churned_mrr,
     count(if(p.customer_id IS NOT NULL AND c.current_mrr = 0, 1, NULL)) AS churned_customers,
-    
+
     -- Net movement
     sum(c.current_mrr) - sum(p.previous_mrr) AS net_mrr_movement
 FROM mrr_current c
@@ -1299,7 +1299,7 @@ GROUP BY c.team_id;
 ```sql
 CREATE VIEW financials.business_kpis_v1 AS
 WITH revenue_data AS (
-    SELECT 
+    SELECT
         team_id,
         toStartOfMonth(date) AS month,
         sum(if(is_revenue = 1, amount, 0)) AS total_revenue,
@@ -1311,7 +1311,7 @@ WITH revenue_data AS (
     GROUP BY team_id, month
 ),
 expense_data AS (
-    SELECT 
+    SELECT
         team_id,
         toStartOfMonth(date) AS month,
         sum(if(is_cogs = 1, abs(amount), 0)) AS cogs,
@@ -1353,7 +1353,7 @@ SELECT
     r.total_revenue,
     r.subscription_revenue,
     r.non_subscription_revenue,
-    
+
     -- MRR metrics
     m.mrr,
     m.mrr * 12 AS arr,
@@ -1361,23 +1361,23 @@ SELECT
     m.expansion_mrr,
     m.contraction_mrr,
     m.churned_mrr,
-    
+
     -- Expense metrics
     e.cogs,
     e.opex,
     e.total_expenses,
-    
+
     -- Profitability metrics
     r.total_revenue - e.total_expenses AS net_income,
     r.total_revenue - e.cogs AS gross_profit,
     (r.total_revenue - e.cogs) / nullif(r.total_revenue, 0) AS gross_margin,
     r.total_revenue - e.total_expenses AS operating_income,
     (r.total_revenue - e.total_expenses) / nullif(r.total_revenue, 0) AS operating_margin,
-    
+
     -- Cash metrics
     c.gross_burn,
     c.net_burn,
-    
+
     -- Customer metrics
     r.paying_customers,
     r.subscription_revenue / nullif(r.paying_customers, 0) AS arpu, -- Average Revenue Per User
@@ -1385,11 +1385,11 @@ SELECT
     m.churned_customers,
     m.churned_customers / nullif(lag(r.paying_customers) OVER (PARTITION BY r.team_id ORDER BY r.month), 0) AS customer_churn_rate,
     m.churned_mrr / nullif(lag(m.mrr) OVER (PARTITION BY r.team_id ORDER BY r.month), 0) AS revenue_churn_rate,
-    
+
     -- Growth metrics
-    (r.total_revenue - lag(r.total_revenue) OVER (PARTITION BY r.team_id ORDER BY r.month)) / 
+    (r.total_revenue - lag(r.total_revenue) OVER (PARTITION BY r.team_id ORDER BY r.month)) /
         nullif(lag(r.total_revenue) OVER (PARTITION BY r.team_id ORDER BY r.month), 0) AS mom_revenue_growth,
-    (m.mrr - lag(m.mrr) OVER (PARTITION BY r.team_id ORDER BY r.month)) / 
+    (m.mrr - lag(m.mrr) OVER (PARTITION BY r.team_id ORDER BY r.month)) /
         nullif(lag(m.mrr) OVER (PARTITION BY r.team_id ORDER BY r.month), 0) AS mom_mrr_growth
 FROM revenue_data r
 LEFT JOIN expense_data e ON r.team_id = e.team_id AND r.month = e.month
@@ -1424,7 +1424,7 @@ LIMIT 12;
 
 ```sql
 WITH latest_balance AS (
-    SELECT 
+    SELECT
         team_id,
         sum(amount) AS current_balance
     FROM financials.raw_transactions_v1
@@ -1436,7 +1436,7 @@ average_burn AS (
         team_id,
         avg(net_burn) AS monthly_burn
     FROM financials.cash_runway_mv_v1
-    WHERE 
+    WHERE
         team_id = 'team123' AND
         month_date >= toStartOfMonth(today() - INTERVAL 3 MONTH)
     GROUP BY team_id
@@ -1462,13 +1462,13 @@ WITH customer_acquisition AS (
         count(DISTINCT customer_id) FILTER (WHERE is_revenue = 1 AND customer_id NOT IN (
             SELECT DISTINCT customer_id
             FROM financials.raw_transactions_v1
-            WHERE 
+            WHERE
                 team_id = 'team123' AND
                 is_revenue = 1 AND
                 date < toStartOfMonth(date)
         )) AS new_customers
     FROM financials.raw_transactions_v1
-    WHERE 
+    WHERE
         team_id = 'team123' AND
         category = 'Marketing' AND
         date >= toStartOfMonth(today() - INTERVAL 6 MONTH)
@@ -1488,7 +1488,7 @@ customer_lifetime AS (
             dateDiff('month', min(date), max(date)) + 1 AS lifetime_months,
             sum(amount) AS lifetime_value
         FROM financials.raw_transactions_v1
-        WHERE 
+        WHERE
             team_id = 'team123' AND
             is_revenue = 1 AND
             customer_id != ''
@@ -1525,7 +1525,7 @@ SELECT
     dateDiff('day', min(date) FILTER (WHERE is_revenue = 1), max(date) FILTER (WHERE is_revenue = 1)) AS customer_age_days,
     sum(if(is_revenue = 1, amount, 0)) / (dateDiff('month', min(date) FILTER (WHERE is_revenue = 1), max(date) FILTER (WHERE is_revenue = 1)) + 1) AS average_monthly_revenue
 FROM financials.raw_transactions_v1
-WHERE 
+WHERE
     team_id = 'team123' AND
     customer_id != '' AND
     date >= toDate('2023-01-01')
@@ -1545,7 +1545,7 @@ SELECT
     avg(abs(amount)) AS average_transaction_size,
     sum(abs(amount)) / sum(sum(abs(amount))) OVER (PARTITION BY toStartOfMonth(date)) AS percentage_of_monthly_expenses
 FROM financials.raw_transactions_v1
-WHERE 
+WHERE
     team_id = 'team123' AND
     amount < 0 AND
     date >= toStartOfMonth(today() - INTERVAL 6 MONTH) AND
@@ -1569,4 +1569,4 @@ ORDER BY month DESC, total_expenses DESC;
 2. **Currency Handling**: All monetary values should be normalized to a base currency for accurate reporting
 3. **Taxonomies**: Implement consistent categorization of transactions for reliable reporting
 4. **Historical Data**: Load at least 12-24 months of historical data for trend analysis
-5. **Data Freshness**: Update transaction data daily for accurate cash flow reporting 
+5. **Data Freshness**: Update transaction data daily for accurate cash flow reporting

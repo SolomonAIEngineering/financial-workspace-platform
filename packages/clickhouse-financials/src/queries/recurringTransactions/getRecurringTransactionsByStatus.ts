@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { recurringParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { recurringParams } from './params'
 
 /**
  * Get recurring transactions by status
@@ -9,9 +8,9 @@ import { z } from 'zod';
  * @returns Function to query recurring transactions by status
  */
 export function getRecurringTransactionsByStatus(ch: Querier) {
-    return async (args: z.input<typeof recurringParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof recurringParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         user_id,
         bank_account_id,
@@ -30,19 +29,19 @@ export function getRecurringTransactionsByStatus(ch: Querier) {
       ORDER BY count DESC
       LIMIT {limit: Int}
       `,
-            params: recurringParams,
-            schema: z.object({
-                user_id: z.string(),
-                bank_account_id: z.string(),
-                status: z.string(),
-                frequency: z.string(),
-                count: z.number(),
-                variable_count: z.number(),
-                automated_count: z.number(),
-                total_amount: z.number(),
-            }),
-        });
+      params: recurringParams,
+      schema: z.object({
+        user_id: z.string(),
+        bank_account_id: z.string(),
+        status: z.string(),
+        frequency: z.string(),
+        count: z.number(),
+        variable_count: z.number(),
+        automated_count: z.number(),
+        total_amount: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

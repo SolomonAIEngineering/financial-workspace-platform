@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { recurringParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { recurringParams } from './params'
 
 /**
  * Get upcoming cash flow projection
@@ -9,13 +8,13 @@ import { z } from 'zod';
  * @returns Function to query upcoming cash flow for a specified period
  */
 export function getCashFlowProjection(ch: Querier) {
-    const cashFlowParams = recurringParams.extend({
-        projectionDays: z.number().optional().default(30),
-    });
+  const cashFlowParams = recurringParams.extend({
+    projectionDays: z.number().optional().default(30),
+  })
 
-    return async (args: z.input<typeof cashFlowParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof cashFlowParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         user_id,
         bank_account_id,
@@ -35,17 +34,17 @@ export function getCashFlowProjection(ch: Querier) {
       GROUP BY user_id, bank_account_id
       ORDER BY user_id, bank_account_id
       `,
-            params: cashFlowParams,
-            schema: z.object({
-                user_id: z.string(),
-                bank_account_id: z.string(),
-                projected_income: z.number(),
-                projected_expenses: z.number(),
-                net_projected_balance: z.number(),
-                total_recurring_transactions: z.number(),
-            }),
-        });
+      params: cashFlowParams,
+      schema: z.object({
+        user_id: z.string(),
+        bank_account_id: z.string(),
+        projected_income: z.number(),
+        projected_expenses: z.number(),
+        net_projected_balance: z.number(),
+        total_recurring_transactions: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

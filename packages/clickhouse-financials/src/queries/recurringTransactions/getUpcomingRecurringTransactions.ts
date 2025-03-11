@@ -1,7 +1,7 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { recurringParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { dateTimeToUnix } from '../../util'
+import { recurringParams } from './params'
 
 /**
  * Get list of upcoming recurring transactions
@@ -43,8 +43,8 @@ export function getUpcomingRecurringTransactions(ch: Querier) {
         transaction_titles: z.array(z.string()),
         transaction_ids: z.array(z.string()),
       }),
-    });
+    })
 
-    return query(args);
-  };
-} 
+    return query(args)
+  }
+}

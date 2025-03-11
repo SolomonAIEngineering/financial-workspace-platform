@@ -1,8 +1,8 @@
-import { Inserter, MutationResponse } from '../types';
+import { Inserter, MutationResponse } from '../types'
 
-import { RawTransaction } from '../../types';
-import { getCurrentTimestamp } from './utils';
-import { insertTransaction } from './insertTransaction';
+import { RawTransaction } from '../../types'
+import { insertTransaction } from './insertTransaction'
+import { getCurrentTimestamp } from './utils'
 
 /**
  * Update a transaction in the raw transactions table
@@ -10,17 +10,17 @@ import { insertTransaction } from './insertTransaction';
  * @returns Function to update a transaction
  */
 export function updateTransaction(ch: Inserter) {
-    const insertTx = insertTransaction(ch);
+  const insertTx = insertTransaction(ch)
 
-    return async (transaction: RawTransaction): Promise<MutationResponse> => {
-        // Make sure we have the updated_at field set to now
-        const updatedTransaction = {
-            ...transaction,
-            updated_at: getCurrentTimestamp(),
-        };
+  return async (transaction: RawTransaction): Promise<MutationResponse> => {
+    // Make sure we have the updated_at field set to now
+    const updatedTransaction = {
+      ...transaction,
+      updated_at: getCurrentTimestamp(),
+    }
 
-        // In ClickHouse, updates are done as new inserts with the updated data
-        // The ReplacingMergeTree engine will replace older versions during merges
-        return insertTx(updatedTransaction);
-    };
-} 
+    // In ClickHouse, updates are done as new inserts with the updated data
+    // The ReplacingMergeTree engine will replace older versions during merges
+    return insertTx(updatedTransaction)
+  }
+}

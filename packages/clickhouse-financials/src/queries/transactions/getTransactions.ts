@@ -1,7 +1,7 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { transactionParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { dateTimeToUnix } from '../../util'
+import { transactionParams } from './params'
 
 /**
  * Get detailed transaction list
@@ -9,15 +9,15 @@ import { z } from 'zod';
  * @returns Function to query raw transactions
  */
 export function getTransactions(ch: Querier) {
-    const transactionDetailsParams = transactionParams.extend({
-        offset: z.number().optional().default(0),
-        sortBy: z.enum(['date', 'amount', 'name']).optional().default('date'),
-        sortDir: z.enum(['asc', 'desc']).optional().default('desc'),
-    });
+  const transactionDetailsParams = transactionParams.extend({
+    offset: z.number().optional().default(0),
+    sortBy: z.enum(['date', 'amount', 'name']).optional().default('date'),
+    sortDir: z.enum(['asc', 'desc']).optional().default('desc'),
+  })
 
-    return async (args: z.input<typeof transactionDetailsParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof transactionDetailsParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         id,
         user_id,
@@ -47,28 +47,28 @@ export function getTransactions(ch: Querier) {
       ORDER BY ${args.sortBy} ${args.sortDir}
       LIMIT {limit: Int} OFFSET {offset: Int}
       `,
-            params: transactionDetailsParams,
-            schema: z.object({
-                id: z.string(),
-                user_id: z.string(),
-                team_id: z.string(),
-                bank_account_id: z.string(),
-                amount: z.number(),
-                iso_currency_code: z.string(),
-                date: dateTimeToUnix,
-                name: z.string(),
-                merchant_name: z.string(),
-                description: z.string(),
-                category: z.string(),
-                sub_category: z.string(),
-                is_recurring: z.number(),
-                recurring_transaction_id: z.string().nullable(),
-                tags: z.array(z.string()),
-                created_at: dateTimeToUnix,
-                updated_at: dateTimeToUnix,
-            }),
-        });
+      params: transactionDetailsParams,
+      schema: z.object({
+        id: z.string(),
+        user_id: z.string(),
+        team_id: z.string(),
+        bank_account_id: z.string(),
+        amount: z.number(),
+        iso_currency_code: z.string(),
+        date: dateTimeToUnix,
+        name: z.string(),
+        merchant_name: z.string(),
+        description: z.string(),
+        category: z.string(),
+        sub_category: z.string(),
+        is_recurring: z.number(),
+        recurring_transaction_id: z.string().nullable(),
+        tags: z.array(z.string()),
+        created_at: dateTimeToUnix,
+        updated_at: dateTimeToUnix,
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

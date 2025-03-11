@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { businessParams } from './params';
-import { dateTimeToUnix } from '../../util';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { businessParams } from './params'
 
 /**
  * Get revenue breakdown by category
@@ -9,9 +8,9 @@ import { z } from 'zod';
  * @returns Function to query revenue by category data
  */
 export function getRevenueByCategory(ch: Querier) {
-    return async (args: z.input<typeof businessParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof businessParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         category,
         sum(subscription_revenue) AS subscription_revenue,
@@ -26,16 +25,16 @@ export function getRevenueByCategory(ch: Querier) {
       ORDER BY total_revenue DESC
       LIMIT {limit: Int}
       `,
-            params: businessParams,
-            schema: z.object({
-                category: z.string(),
-                subscription_revenue: z.number(),
-                one_time_revenue: z.number(),
-                total_revenue: z.number(),
-                percentage: z.number(),
-            }),
-        });
+      params: businessParams,
+      schema: z.object({
+        category: z.string(),
+        subscription_revenue: z.number(),
+        one_time_revenue: z.number(),
+        total_revenue: z.number(),
+        percentage: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

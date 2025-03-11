@@ -1,17 +1,16 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { transactionParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { transactionParams } from './params'
 
 /**
- * Get category spending breakdown 
+ * Get category spending breakdown
  * @param ch - ClickHouse client instance
  * @returns Function to query category spending
  */
 export function getCategorySpending(ch: Querier) {
-    return async (args: z.input<typeof transactionParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof transactionParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         category,
         sum(transaction_count) AS transaction_count,
@@ -28,15 +27,15 @@ export function getCategorySpending(ch: Querier) {
       ORDER BY total_expenses DESC
       LIMIT {limit: Int}
       `,
-            params: transactionParams,
-            schema: z.object({
-                category: z.string(),
-                transaction_count: z.number(),
-                total_expenses: z.number(),
-                percentage: z.number(),
-            }),
-        });
+      params: transactionParams,
+      schema: z.object({
+        category: z.string(),
+        transaction_count: z.number(),
+        total_expenses: z.number(),
+        percentage: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

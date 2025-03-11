@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { businessParams } from './params';
-import { dateTimeToUnix } from '../../util';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { businessParams } from './params'
 
 /**
  * Get MRR tracking metrics
@@ -9,9 +8,9 @@ import { z } from 'zod';
  * @returns Function to query MRR tracking data
  */
 export function getMrrTracking(ch: Querier) {
-    return async (args: z.input<typeof businessParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof businessParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         team_id,
         month_date,
@@ -33,24 +32,24 @@ export function getMrrTracking(ch: Querier) {
       ORDER BY month_date ASC
       LIMIT {limit: Int}
       `,
-            params: businessParams,
-            schema: z.object({
-                team_id: z.string(),
-                month_date: z.string(),
-                date_year: z.number(),
-                date_month: z.number(),
-                category: z.string(),
-                is_subscription_revenue: z.number(),
-                subscription_revenue: z.number(),
-                one_time_revenue: z.number(),
-                fixed_costs: z.number(),
-                variable_costs: z.number(),
-                mrr: z.number(),
-                arr: z.number(),
-                customer_count: z.number(),
-            }),
-        });
+      params: businessParams,
+      schema: z.object({
+        team_id: z.string(),
+        month_date: z.string(),
+        date_year: z.number(),
+        date_month: z.number(),
+        category: z.string(),
+        is_subscription_revenue: z.number(),
+        subscription_revenue: z.number(),
+        one_time_revenue: z.number(),
+        fixed_costs: z.number(),
+        variable_costs: z.number(),
+        mrr: z.number(),
+        arr: z.number(),
+        customer_count: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

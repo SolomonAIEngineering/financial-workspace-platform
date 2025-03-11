@@ -3,10 +3,10 @@
  */
 
 // Raw Transaction types
-export * from './rawTransaction';
+export * from './rawTransaction'
 
 // Recurring Transaction types
-export * from './recurringTransaction';
+export * from './recurringTransaction'
 
 // Business Metrics types
-export * from './businessMetrics'; 
+export * from './businessMetrics'

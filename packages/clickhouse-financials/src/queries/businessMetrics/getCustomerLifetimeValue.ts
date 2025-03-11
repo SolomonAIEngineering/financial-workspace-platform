@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { businessParams } from './params';
-import { dateTimeToUnix } from '../../util';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { businessParams } from './params'
 
 /**
  * Get customer lifetime value (CLV) metrics
@@ -9,9 +8,9 @@ import { z } from 'zod';
  * @returns Function to query CLV data
  */
 export function getCustomerLifetimeValue(ch: Querier) {
-    return async (args: z.input<typeof businessParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof businessParams>) => {
+    const query = ch.query({
+      query: `
       WITH
         churn_rate AS (
           SELECT
@@ -45,15 +44,15 @@ export function getCustomerLifetimeValue(ch: Querier) {
       FROM metrics
       CROSS JOIN churn_rate
       `,
-            params: businessParams,
-            schema: z.object({
-                arpu: z.number().nullable(),
-                avg_customer_lifetime_months: z.number().nullable(),
-                customer_lifetime_value: z.number().nullable(),
-                monthly_churn_rate: z.number().nullable(),
-            }),
-        });
+      params: businessParams,
+      schema: z.object({
+        arpu: z.number().nullable(),
+        avg_customer_lifetime_months: z.number().nullable(),
+        customer_lifetime_value: z.number().nullable(),
+        monthly_churn_rate: z.number().nullable(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

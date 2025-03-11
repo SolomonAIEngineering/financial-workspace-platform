@@ -1,7 +1,7 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { recurringParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { dateTimeToUnix } from '../../util'
+import { recurringParams } from './params'
 
 /**
  * Get most important recurring transactions (critical and high importance)
@@ -9,9 +9,9 @@ import { z } from 'zod';
  * @returns Function to query important recurring transactions
  */
 export function getImportantRecurringTransactions(ch: Querier) {
-    return async (args: z.input<typeof recurringParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof recurringParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         user_id,
         title,
@@ -37,20 +37,20 @@ export function getImportantRecurringTransactions(ch: Querier) {
         abs(amount) DESC
       LIMIT {limit: Int}
       `,
-            params: recurringParams,
-            schema: z.object({
-                user_id: z.string(),
-                title: z.string(),
-                amount: z.number(),
-                frequency: z.string(),
-                next_scheduled_date: dateTimeToUnix.nullable(),
-                importance_level: z.string(),
-                merchant_name: z.string(),
-                execution_count: z.number(),
-                total_executed: z.number(),
-            }),
-        });
+      params: recurringParams,
+      schema: z.object({
+        user_id: z.string(),
+        title: z.string(),
+        amount: z.number(),
+        frequency: z.string(),
+        next_scheduled_date: dateTimeToUnix.nullable(),
+        importance_level: z.string(),
+        merchant_name: z.string(),
+        execution_count: z.number(),
+        total_executed: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

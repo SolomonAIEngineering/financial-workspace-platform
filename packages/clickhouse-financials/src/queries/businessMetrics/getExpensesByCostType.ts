@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { businessParams } from './params';
-import { dateTimeToUnix } from '../../util';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { businessParams } from './params'
 
 /**
  * Get expenses breakdown by cost type (fixed vs variable)
@@ -9,9 +8,9 @@ import { z } from 'zod';
  * @returns Function to query expenses by cost type
  */
 export function getExpensesByCostType(ch: Querier) {
-    return async (args: z.input<typeof businessParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof businessParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         month_date,
         sum(fixed_costs) AS fixed_costs,
@@ -27,17 +26,17 @@ export function getExpensesByCostType(ch: Querier) {
       ORDER BY month_date ASC
       LIMIT {limit: Int}
       `,
-            params: businessParams,
-            schema: z.object({
-                month_date: z.string(),
-                fixed_costs: z.number(),
-                variable_costs: z.number(),
-                total_costs: z.number(),
-                fixed_cost_percentage: z.number(),
-                variable_cost_percentage: z.number(),
-            }),
-        });
+      params: businessParams,
+      schema: z.object({
+        month_date: z.string(),
+        fixed_costs: z.number(),
+        variable_costs: z.number(),
+        total_costs: z.number(),
+        fixed_cost_percentage: z.number(),
+        variable_cost_percentage: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

@@ -1,7 +1,6 @@
-import type { Querier } from '../../client';
-import { dateTimeToUnix } from '../../util';
-import { transactionParams } from './params';
-import { z } from 'zod';
+import { z } from 'zod'
+import type { Querier } from '../../client'
+import { transactionParams } from './params'
 
 /**
  * Get transactions by day with daily aggregations
@@ -9,9 +8,9 @@ import { z } from 'zod';
  * @returns Function to query transactions by day
  */
 export function getTransactionsByDay(ch: Querier) {
-    return async (args: z.input<typeof transactionParams>) => {
-        const query = ch.query({
-            query: `
+  return async (args: z.input<typeof transactionParams>) => {
+    const query = ch.query({
+      query: `
       SELECT
         day,
         category,
@@ -30,18 +29,18 @@ export function getTransactionsByDay(ch: Querier) {
       ORDER BY day ASC
       LIMIT {limit: Int}
       `,
-            params: transactionParams,
-            schema: z.object({
-                day: z.string(),
-                category: z.string(),
-                transaction_count: z.number(),
-                total_amount: z.number(),
-                total_expenses: z.number(),
-                total_income: z.number(),
-                average_amount: z.number(),
-            }),
-        });
+      params: transactionParams,
+      schema: z.object({
+        day: z.string(),
+        category: z.string(),
+        transaction_count: z.number(),
+        total_amount: z.number(),
+        total_expenses: z.number(),
+        total_income: z.number(),
+        average_amount: z.number(),
+      }),
+    })
 
-        return query(args);
-    };
-} 
+    return query(args)
+  }
+}

@@ -33,15 +33,15 @@ import {
 
 export type ClickHouseConfig =
   | {
-    url?: string
-    insertUrl?: never
-    queryUrl?: never
-  }
+      url?: string
+      insertUrl?: never
+      queryUrl?: never
+    }
   | {
-    url?: never
-    insertUrl: string
-    queryUrl: string
-  }
+      url?: never
+      insertUrl: string
+      queryUrl: string
+    }
 
 export class ClickHouse {
   public readonly querier: Querier

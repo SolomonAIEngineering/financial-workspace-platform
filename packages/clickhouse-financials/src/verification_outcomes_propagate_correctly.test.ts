@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest'
 
-import { ClickHouse } from './index'
-import { ClickHouseContainer } from './testutil'
 import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
+import { ClickHouse } from './index'
+import { ClickHouseContainer } from './testutil'
 
 describe.each([10, 100, 1_000, 10_000])('with %i verifications', (n) => {
   test(
