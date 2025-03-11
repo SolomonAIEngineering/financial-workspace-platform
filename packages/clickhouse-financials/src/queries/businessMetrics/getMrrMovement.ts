@@ -1,6 +1,6 @@
-import { z } from 'zod'
 import type { Querier } from '../../client'
 import { businessParams } from './params'
+import { z } from 'zod'
 
 /**
  * Get MRR movement metrics (new, expansion, contraction, churn)
@@ -14,15 +14,17 @@ export function getMrrMovement(ch: Querier) {
       SELECT
         team_id,
         month_date,
+        current_month_mrr,
+        previous_month_mrr,
         new_mrr,
-        expansion_mrr,
-        contraction_mrr,
-        churn_mrr,
-        reactivation_mrr,
-        net_new_mrr,
         new_customers,
+        expansion_mrr,
+        expanded_customers,
+        contraction_mrr,
+        contracted_customers,
+        churned_mrr,
         churned_customers,
-        active_customers
+        net_mrr_movement
       FROM financials.mrr_movement_mv_v1
       WHERE team_id = {teamId: String}
         AND month_date >= toStartOfMonth(fromUnixTimestamp64Milli({start: Int64}))
@@ -34,15 +36,17 @@ export function getMrrMovement(ch: Querier) {
       schema: z.object({
         team_id: z.string(),
         month_date: z.string(),
+        current_month_mrr: z.number(),
+        previous_month_mrr: z.number(),
         new_mrr: z.number(),
-        expansion_mrr: z.number(),
-        contraction_mrr: z.number(),
-        churn_mrr: z.number(),
-        reactivation_mrr: z.number(),
-        net_new_mrr: z.number(),
         new_customers: z.number(),
+        expansion_mrr: z.number(),
+        expanded_customers: z.number(),
+        contraction_mrr: z.number(),
+        contracted_customers: z.number(),
+        churned_mrr: z.number(),
         churned_customers: z.number(),
-        active_customers: z.number(),
+        net_mrr_movement: z.number(),
       }),
     })
 

@@ -1,6 +1,6 @@
-import { z } from 'zod'
 import type { Querier } from '../../client'
 import { businessParams } from './params'
+import { z } from 'zod'
 
 /**
  * Get cash runway metrics
@@ -14,48 +14,79 @@ export function getCashRunway(ch: Querier) {
   })
 
   return async (args: z.input<typeof cashRunwayParams>) => {
-    const query = ch.query({
+    // First, get the financial data for the last 12 months
+    const financialDataQuery = ch.query({
       query: `
-      WITH 
-        {currentCash: Float64} AS starting_cash,
-        avg(monthly_burn) OVER (ORDER BY month_date DESC ROWS BETWEEN CURRENT ROW AND 2 FOLLOWING) AS avg_burn_rate,
-        monthly_revenue_growth,
-        monthly_expense_growth
-      FROM (
-        SELECT
-          month_date,
-          total_revenue,
-          total_expenses,
-          total_expenses - total_revenue AS monthly_burn,
-          (total_revenue - lag(total_revenue) OVER (ORDER BY month_date)) / 
-            nullIf(lag(total_revenue) OVER (ORDER BY month_date), 0) AS monthly_revenue_growth,
-          (total_expenses - lag(total_expenses) OVER (ORDER BY month_date)) / 
-            nullIf(lag(total_expenses) OVER (ORDER BY month_date), 0) AS monthly_expense_growth
-        FROM financials.monthly_financial_summary_mv_v1
-        WHERE team_id = {teamId: String}
-          AND month_date >= toStartOfMonth(fromUnixTimestamp64Milli({start: Int64}))
-          AND month_date <= toStartOfMonth(fromUnixTimestamp64Milli({end: Int64}))
-        ORDER BY month_date DESC
-        LIMIT 12
-      )
       SELECT
-        starting_cash / ${args.burnRate ? '{burnRate: Float64}' : 'avg_burn_rate'} AS runway_months,
-        starting_cash AS current_cash,
-        ${args.burnRate ? '{burnRate: Float64}' : 'avg_burn_rate'} AS burn_rate,
-        monthly_revenue_growth,
-        monthly_expense_growth
-      LIMIT 1
+        month_date,
+        total_revenue,
+        total_expenses,
+        total_expenses - total_revenue AS monthly_burn
+      FROM financials.monthly_financial_summary_mv_v1
+      WHERE team_id = {teamId: String}
+        AND month_date >= toStartOfMonth(fromUnixTimestamp64Milli({start: Int64}))
+        AND month_date <= toStartOfMonth(fromUnixTimestamp64Milli({end: Int64}))
+      ORDER BY month_date DESC
+      LIMIT 12
       `,
-      params: cashRunwayParams,
+      params: businessParams,
       schema: z.object({
-        runway_months: z.number(),
-        current_cash: z.number(),
-        burn_rate: z.number(),
-        monthly_revenue_growth: z.number().nullable(),
-        monthly_expense_growth: z.number().nullable(),
+        month_date: z.string(),
+        total_revenue: z.number(),
+        total_expenses: z.number(),
+        monthly_burn: z.number(),
       }),
     })
 
-    return query(args)
+    const financialData = await financialDataQuery(args)
+
+    if (financialData.err) {
+      return financialData
+    }
+
+    // Calculate average burn rate from the last 3 months
+    const data = financialData.val || []
+    const recentMonths = data.slice(0, 3)
+
+    // Calculate average burn rate
+    const avgBurnRate = recentMonths.length > 0
+      ? recentMonths.reduce((sum, month) => sum + month.monthly_burn, 0) / recentMonths.length
+      : 0
+
+    // Calculate growth rates if we have enough data
+    let revenueGrowth: number | null = null
+    let expenseGrowth: number | null = null
+
+    if (data.length >= 2) {
+      const current = data[0]
+      const previous = data[1]
+
+      // Calculate revenue growth
+      if (previous.total_revenue !== 0) {
+        revenueGrowth = (current.total_revenue - previous.total_revenue) / previous.total_revenue
+      }
+
+      // Calculate expense growth
+      if (previous.total_expenses !== 0) {
+        expenseGrowth = (current.total_expenses - previous.total_expenses) / previous.total_expenses
+      }
+    }
+
+    // Use provided burn rate or calculated average
+    const burnRate = args.burnRate || avgBurnRate
+
+    // Calculate runway months
+    const runwayMonths = burnRate > 0 ? args.currentCash / burnRate : 0
+
+    // Return the results
+    return {
+      val: [{
+        runway_months: runwayMonths,
+        current_cash: args.currentCash,
+        burn_rate: burnRate,
+        monthly_revenue_growth: revenueGrowth,
+        monthly_expense_growth: expenseGrowth,
+      }]
+    }
   }
 }

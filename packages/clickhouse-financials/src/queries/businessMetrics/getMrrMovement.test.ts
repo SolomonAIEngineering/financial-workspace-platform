@@ -17,15 +17,17 @@ function generateMrrMovementData(n: number, teamId: string) {
     type MrrMovementData = {
         team_id: string;
         month_date: string;
+        current_month_mrr: number;
+        previous_month_mrr: number;
         new_mrr: number;
-        expansion_mrr: number;
-        contraction_mrr: number;
-        churn_mrr: number;
-        reactivation_mrr: number;
-        net_new_mrr: number;
         new_customers: number;
+        expansion_mrr: number;
+        expanded_customers: number;
+        contraction_mrr: number;
+        contracted_customers: number;
+        churned_mrr: number;
         churned_customers: number;
-        active_customers: number;
+        net_mrr_movement: number;
     };
 
     const mrrMovementRecords: MrrMovementData[] = [];
@@ -33,6 +35,7 @@ function generateMrrMovementData(n: number, teamId: string) {
     // Generate data for the last n months
     const now = new Date();
     let activeCustomers = 100; // Starting customer base
+    let previousMonthMrr = 50000; // Starting MRR
 
     for (let i = 0; i < n; i++) {
         // Generate date for i months ago
@@ -48,39 +51,44 @@ function generateMrrMovementData(n: number, teamId: string) {
         const newMrr = Math.round((Math.floor(Math.random() * 5000) + 1000) * growthFactor);
         const newCustomers = Math.floor(Math.random() * 10) + 2;
 
-        // Generate expansion MRR (existing customers spending more)
+        // Generate expansion MRR (existing customers paying more)
         const expansionMrr = Math.round((Math.floor(Math.random() * 3000) + 500) * growthFactor);
+        const expandedCustomers = Math.floor(Math.random() * 5) + 1;
 
-        // Generate contraction MRR (existing customers spending less)
-        const contractionMrr = Math.floor(Math.random() * 2000) + 200;
+        // Generate contraction MRR (existing customers paying less)
+        const contractionMrr = Math.round(Math.floor(Math.random() * 1000) + 100);
+        const contractedCustomers = Math.floor(Math.random() * 3) + 1;
 
         // Generate churn MRR (customers leaving)
-        const churnMrr = Math.floor(Math.random() * 3000) + 300;
+        const churnMrr = Math.round(Math.floor(Math.random() * 3000) + 500);
         const churnedCustomers = Math.floor(Math.random() * 5) + 1;
 
-        // Generate reactivation MRR (customers coming back)
-        const reactivationMrr = Math.floor(Math.random() * 1000) + 100;
+        // Calculate net MRR movement
+        const netMrrMovement = newMrr + expansionMrr - contractionMrr - churnMrr;
 
-        // Calculate net new MRR
-        const netNewMrr = newMrr + expansionMrr + reactivationMrr - contractionMrr - churnMrr;
+        // Calculate current month MRR
+        const currentMonthMrr = previousMonthMrr + netMrrMovement;
 
-        // Update active customers
-        activeCustomers = activeCustomers + newCustomers - churnedCustomers;
-        if (activeCustomers < 0) activeCustomers = 0;
-
+        // Create the MRR movement record
         mrrMovementRecords.push({
             team_id: teamId,
             month_date: monthDate,
+            current_month_mrr: currentMonthMrr,
+            previous_month_mrr: previousMonthMrr,
             new_mrr: newMrr,
-            expansion_mrr: expansionMrr,
-            contraction_mrr: contractionMrr,
-            churn_mrr: churnMrr,
-            reactivation_mrr: reactivationMrr,
-            net_new_mrr: netNewMrr,
             new_customers: newCustomers,
+            expansion_mrr: expansionMrr,
+            expanded_customers: expandedCustomers,
+            contraction_mrr: contractionMrr,
+            contracted_customers: contractedCustomers,
+            churned_mrr: churnMrr,
             churned_customers: churnedCustomers,
-            active_customers: activeCustomers
+            net_mrr_movement: netMrrMovement
         });
+
+        // Update for next iteration
+        previousMonthMrr = currentMonthMrr;
+        activeCustomers = activeCustomers + newCustomers - churnedCustomers;
     }
 
     return mrrMovementRecords;
@@ -138,15 +146,17 @@ describe('getMrrMovement', () => {
                 CREATE TABLE IF NOT EXISTS financials.mrr_movement_mv_v1 (
                     team_id String,
                     month_date Date,
+                    current_month_mrr Float64,
+                    previous_month_mrr Float64,
                     new_mrr Float64,
+                    new_customers UInt64,
                     expansion_mrr Float64,
+                    expanded_customers UInt64,
                     contraction_mrr Float64,
-                    churn_mrr Float64,
-                    reactivation_mrr Float64,
-                    net_new_mrr Float64,
-                    new_customers UInt32,
-                    churned_customers UInt32,
-                    active_customers UInt32
+                    contracted_customers UInt64,
+                    churned_mrr Float64,
+                    churned_customers UInt64,
+                    net_mrr_movement Float64
                 ) ENGINE = MergeTree()
                 ORDER BY (team_id, month_date)
                 `,
@@ -174,15 +184,17 @@ describe('getMrrMovement', () => {
                 schema: z.object({
                     team_id: z.string(),
                     month_date: z.string(),
+                    current_month_mrr: z.number(),
+                    previous_month_mrr: z.number(),
                     new_mrr: z.number(),
-                    expansion_mrr: z.number(),
-                    contraction_mrr: z.number(),
-                    churn_mrr: z.number(),
-                    reactivation_mrr: z.number(),
-                    net_new_mrr: z.number(),
                     new_customers: z.number(),
+                    expansion_mrr: z.number(),
+                    expanded_customers: z.number(),
+                    contraction_mrr: z.number(),
+                    contracted_customers: z.number(),
+                    churned_mrr: z.number(),
                     churned_customers: z.number(),
-                    active_customers: z.number()
+                    net_mrr_movement: z.number()
                 })
             });
 
@@ -242,14 +254,17 @@ describe('getMrrMovement', () => {
                         const firstRecord = result.val[0];
                         expect(firstRecord.team_id).toBe(teamId);
                         expect(firstRecord.month_date).toBeDefined();
+                        expect(firstRecord.current_month_mrr).toBeDefined();
+                        expect(firstRecord.previous_month_mrr).toBeDefined();
                         expect(firstRecord.new_mrr).toBeDefined();
-                        expect(firstRecord.expansion_mrr).toBeDefined();
-                        expect(firstRecord.contraction_mrr).toBeDefined();
-                        expect(firstRecord.churn_mrr).toBeDefined();
-                        expect(firstRecord.net_new_mrr).toBeDefined();
                         expect(firstRecord.new_customers).toBeDefined();
+                        expect(firstRecord.expansion_mrr).toBeDefined();
+                        expect(firstRecord.expanded_customers).toBeDefined();
+                        expect(firstRecord.contraction_mrr).toBeDefined();
+                        expect(firstRecord.contracted_customers).toBeDefined();
+                        expect(firstRecord.churned_mrr).toBeDefined();
                         expect(firstRecord.churned_customers).toBeDefined();
-                        expect(firstRecord.active_customers).toBeDefined();
+                        expect(firstRecord.net_mrr_movement).toBeDefined();
                     }
                 }
             } catch (error) {
