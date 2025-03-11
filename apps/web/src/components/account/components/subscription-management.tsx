@@ -6,8 +6,6 @@
 
 'use client';
 
-import { useState } from 'react';
-
 import {
   Card,
   CardContent,
@@ -16,10 +14,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { env } from '@/env';
+
 import { Button } from '@/registry/default/potion-ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { api } from '@/trpc/react';
+import { env } from '@/env';
+import { useState } from 'react';
 
 type SubscriptionDetails = {
   id: string | null;
@@ -142,7 +142,7 @@ export function SubscriptionManagement({
   // Show subscription details if the user has an active subscription
   if (subscription?.id) {
     return (
-      <Card className="w-full">
+      <Card className="w-full rounded-xl border-2 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
         <CardHeader>
           <CardTitle>Your Subscription</CardTitle>
           <CardDescription>
@@ -216,7 +216,7 @@ export function SubscriptionManagement({
 
   // Show subscription plans if the user doesn't have an active subscription
   return (
-    <Card className="w-full">
+    <Card className="w-full rounded-xl border-2 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
       <CardHeader>
         <CardTitle>Subscription Plans</CardTitle>
         <CardDescription>Choose a plan that works for you</CardDescription>

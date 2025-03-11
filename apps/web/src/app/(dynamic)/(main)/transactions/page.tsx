@@ -7,9 +7,7 @@ import {
   TagIcon,
 } from '@heroicons/react/24/outline';
 
-import {
-  FeatureDevelopment
-} from '@/components/document-sending/feature-development';
+import { FeatureDevelopment } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
 

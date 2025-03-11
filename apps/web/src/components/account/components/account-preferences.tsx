@@ -6,8 +6,6 @@
 
 'use client';
 
-import { cn } from '@udecode/cn';
-
 import {
   Card,
   CardContent,
@@ -16,10 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Icons } from '@/components/ui/icons';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/registry/default/potion-ui/button';
 import {
   Tooltip,
   TooltipContent,
@@ -28,6 +22,11 @@ import {
 } from '@/registry/default/potion-ui/tooltip';
 
 import type { AccountPreferencesProps } from '../types/account-types';
+import { Button } from '@/registry/default/potion-ui/button';
+import { Icons } from '@/components/ui/icons';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { cn } from '@udecode/cn';
 
 /**
  * Component for managing user preferences and settings
@@ -70,8 +69,8 @@ export function AccountPreferences({
   } = updateUserSettings;
 
   return (
-    <Card className="overflow-hidden rounded-xl border-0 shadow-md transition-all duration-300 hover:shadow-lg">
-      <CardHeader className="border-b border-muted/10 bg-gradient-to-r from-primary/5 via-primary/3 to-muted/5 pb-6">
+    <Card className="overflow-hidden rounded-xl border-2 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
+      <CardHeader className="border-b border-muted/10 bg-background pb-6 text-foreground">
         <div className="flex items-center gap-2">
           <Icons.settings className="size-5 text-primary" />
           <CardTitle>Preferences</CardTitle>
@@ -82,9 +81,9 @@ export function AccountPreferences({
       </CardHeader>
       <CardContent className="space-y-4 p-6">
         {/* Email Notifications Preference */}
-        <div className="flex items-center justify-between rounded-xl border border-muted/20 bg-gradient-to-r from-muted/5 to-background p-4 shadow-sm transition-all duration-200 hover:border-muted/30 hover:bg-muted/10 hover:shadow-md">
+        <div className="flex items-center justify-between rounded-xl border border-muted/20 bg-background p-4 text-foreground shadow-sm transition-all duration-200 hover:border-muted/30 hover:bg-muted/10 hover:shadow-md">
           <div className="flex gap-4">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 shadow-sm">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background text-foreground shadow-sm">
               <Icons.message className="size-5 text-primary" />
             </div>
             <div className="space-y-1">
@@ -120,9 +119,9 @@ export function AccountPreferences({
         </div>
 
         {/* Dark Mode Preference */}
-        <div className="flex items-center justify-between rounded-xl border border-muted/20 bg-gradient-to-r from-muted/5 to-background p-4 shadow-sm transition-all duration-200 hover:border-muted/30 hover:bg-muted/10 hover:shadow-md">
+        <div className="flex items-center justify-between rounded-xl border border-muted/20 bg-background p-4 text-foreground shadow-sm transition-all duration-200 hover:border-muted/30 hover:bg-muted/10 hover:shadow-md">
           <div className="flex gap-4">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 shadow-sm">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background text-foreground shadow-sm">
               <Icons.moon className="size-5 text-primary" />
             </div>
             <div className="space-y-1">
@@ -153,9 +152,9 @@ export function AccountPreferences({
         </div>
 
         {/* Two-Factor Authentication Preference */}
-        <div className="flex items-center justify-between rounded-xl border border-muted/20 bg-gradient-to-r from-muted/5 to-background p-4 shadow-sm transition-all duration-200 hover:border-muted/30 hover:bg-muted/10 hover:shadow-md">
+        <div className="flex items-center justify-between rounded-xl border border-muted/20 bg-background p-4 text-foreground shadow-sm transition-all duration-200 hover:border-muted/30 hover:bg-muted/10 hover:shadow-md">
           <div className="flex gap-4">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 shadow-sm">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-background text-foreground shadow-sm">
               <Icons.alertCircle className="size-5 text-primary" />
             </div>
             <div className="space-y-1">
@@ -204,7 +203,7 @@ export function AccountPreferences({
           </TooltipProvider>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between border-t border-muted/10 bg-gradient-to-r from-muted/10 to-transparent p-5">
+      <CardFooter className="flex justify-between border-t border-muted/10 bg-background p-5 text-foreground">
         <div className="text-sm text-muted-foreground">
           {isUpdating && (
             <span className="flex items-center text-primary/80">
@@ -217,14 +216,14 @@ export function AccountPreferences({
           <Button
             size="xs"
             variant="default"
-            className="rounded-full bg-gradient-to-r from-primary/90 to-primary/70 shadow-sm transition-all duration-200 hover:from-primary hover:to-primary/80 hover:shadow"
+            className="rounded-full border-2 border-foreground bg-background px-3 py-3 text-foreground shadow-sm transition-all duration-200 hover:from-primary hover:to-primary/80 hover:shadow"
             disabled={isLoading || isUpdating !== null}
             onClick={() => saveAllPreferences(user.isPremium)}
           >
             {isLoading ? (
               <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
             ) : (
-              <Icons.check className="mr-2 h-4 w-4" />
+              <Icons.check className="mr-2 h-4 w-4 rounded-full bg-foreground text-background" />
             )}
             Save All Preferences
           </Button>

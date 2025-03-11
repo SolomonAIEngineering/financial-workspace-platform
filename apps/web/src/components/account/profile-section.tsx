@@ -184,7 +184,7 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
               defaultValue="basic"
               onValueChange={setActiveTab}
             >
-              <TabsList className="mb-8 grid h-auto w-full grid-cols-3 rounded-2xl border border-muted/10 bg-gradient-to-r from-background to-muted/5 p-1.5 shadow-sm md:grid-cols-5">
+              <TabsList className="mb-8 grid h-auto w-full grid-cols-3 rounded-2xl border border-muted/10 bg-background p-1.5 text-foreground shadow-sm md:grid-cols-5">
                 <TabsTrigger
                   className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium transition-all duration-200 hover:bg-muted/20 data-[state=active]:scale-[1.02] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
                   value="basic"
@@ -273,7 +273,7 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
 
               <Button
                 className={cn(
-                  'relative overflow-hidden rounded-full border-0 bg-gradient-to-r from-primary to-primary/80 px-10 py-3 text-sm font-medium text-white transition-all duration-300 hover:from-primary/90 hover:to-primary/70',
+                  'relative overflow-hidden rounded-full border-2 border-primary bg-background px-10 py-3 text-sm font-medium text-foreground transition-all duration-300 hover:from-primary/90 hover:to-primary/70',
                   form.formState.isDirty &&
                     'animate-pulse shadow-lg shadow-primary/20'
                 )}
@@ -282,15 +282,15 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
               >
                 <span
                   className={cn(
-                    'absolute inset-0 h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 transition-opacity',
+                    'absolute inset-0 h-full w-full bg-background text-foreground opacity-0 transition-opacity',
                     form.formState.isDirty && 'animate-shimmer'
                   )}
                 />
                 <span className="relative flex items-center text-foreground">
                   {isLoading ? (
-                    <Icons.spinner className="mr-2.5 size-5 animate-spin" />
+                    <Icons.spinner className="mr-2.5 size-5 animate-spin rounded-full border-2 border-primary" />
                   ) : (
-                    <Icons.check className="mr-2.5 size-5" />
+                    <Icons.check className="mr-2.5 size-5 rounded-full bg-primary" />
                   )}
                   Save Changes
                 </span>

@@ -13,9 +13,7 @@ import {
 import { DocumentCard } from '@/components/document-sending/document-card';
 import { DocumentSendingActions } from '@/components/document-sending/action-buttons';
 import { EmptyState } from '@/components/document-sending/empty-state';
-import {
-  FeatureDevelopment
-} from '@/components/document-sending/feature-development';
+import { FeatureDevelopment } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
 import { cn } from '@udecode/cn';
@@ -278,7 +276,7 @@ export default function FinancialAnalyticsPage() {
                   'h-full transition-shadow duration-200 hover:shadow-md',
                   viewMode === 'list' ? 'max-w-full' : ''
                 )}
-                onClick={() => { }}
+                onClick={() => {}}
                 title={doc.title}
                 recipients={doc.recipients}
                 status={doc.status}
