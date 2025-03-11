@@ -1,7 +1,8 @@
-import { LucideProps } from "lucide-react";
+import { LucideProps } from 'lucide-react'
+import { SVGProps } from 'react'
 
 export const Icons = {
-  gitHub: ({ ...props }: LucideProps) => (
+  gitHub: (props: SVGProps<SVGSVGElement>) => (
     <svg
       aria-hidden="true"
       focusable="false"
@@ -18,4 +19,4 @@ export const Icons = {
       ></path>
     </svg>
   ),
-};
+}

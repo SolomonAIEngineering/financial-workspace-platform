@@ -1,26 +1,26 @@
-import { ArrowLeftEndOnRectangleIcon } from "@heroicons/react/24/outline";
-import React, { useState } from "react";
-import { Transaction } from "client-typescript-sdk";
-import { FinancialDataProcessor } from "../../../lib/financial-data-processor";
+import { ArrowLeftEndOnRectangleIcon } from '@heroicons/react/24/outline'
+import { Transaction } from 'client-typescript-sdk'
+import React, { useState } from 'react'
+import { FinancialDataProcessor } from '../../../lib/financial-data-processor'
 
-import { Button } from "../../button";
-import { Card } from "../../card";
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../../sheet";
+import { Button } from '../../button'
+import { Card } from '../../card'
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '../../sheet'
 
 export interface TransactionCardProps {
-  transaction: Transaction;
-  enableSimpleView?: boolean;
+  transaction: Transaction
+  enableSimpleView?: boolean
 }
 
 const shortenIfTooLong = (str: string, maxLength: number): string =>
-  str.length > maxLength ? str.substr(0, maxLength) + "..." : str;
+  str.length > maxLength ? str.substr(0, maxLength) + '...' : str
 
 const TransactionCard: React.FC<TransactionCardProps> = ({
   transaction,
   enableSimpleView = false,
 }) => {
   const [selectedTransaction, setSelectedTransaction] =
-    useState<Transaction | null>(null);
+    useState<Transaction | null>(null)
 
   return (
     <Sheet>
@@ -29,7 +29,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
           <div className="flex flex-col gap-0.5">
             <div className="text-md truncate font-semibold">
               {shortenIfTooLong(
-                transaction.merchantName || "Unknown Merchant",
+                transaction.merchantName || 'Unknown Merchant',
                 25,
               )}
             </div>
@@ -54,7 +54,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
             )}
             <span className="font-base text-xs">
               {FinancialDataProcessor.formatDate(
-                transaction.authorizedDate?.toString() ?? "",
+                transaction.authorizedDate?.toString() ?? '',
               )}
             </span>
           </div>
@@ -69,14 +69,14 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
           <SheetContent className="p-[5%] md:min-w-[90%]">
             {selectedTransaction && (
               <SheetHeader>
-                <p>{selectedTransaction.merchantName || "Unknown Merchant"}</p>
+                <p>{selectedTransaction.merchantName || 'Unknown Merchant'}</p>
               </SheetHeader>
             )}
           </SheetContent>
         </div>
       </Card>
     </Sheet>
-  );
-};
+  )
+}
 
-export { TransactionCard };
+export { TransactionCard }

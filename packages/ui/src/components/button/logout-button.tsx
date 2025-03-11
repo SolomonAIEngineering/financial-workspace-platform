@@ -1,15 +1,15 @@
-import { ExclamationTriangleIcon } from "@heroicons/react/20/solid";
-import React from "react";
+import { ExclamationTriangleIcon } from '@heroicons/react/20/solid'
+import React from 'react'
 
-import { cn } from "../../utils/cn";
-import { Button } from "../button";
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
 
-import { ButtonProps } from "./ask-solomon-button";
+import { ButtonProps } from './ask-solomon-button'
 
 export interface LogoutButtonProps extends ButtonProps {
-  variant?: "button" | "navigation"; // Added variant to choose the style
-  className?: string;
-  callback: () => void;
+  variant?: 'button' | 'navigation' // Added variant to choose the style
+  className?: string
+  callback: () => void
 }
 
 /**
@@ -21,16 +21,16 @@ export interface LogoutButtonProps extends ButtonProps {
  * @returns {React.ReactElement}
  */
 const LogoutButton: React.FC<LogoutButtonProps> = ({
-  variant = "button",
+  variant = 'button',
   className,
   callback,
   ...props
 }) => {
-  if (variant === "navigation") {
+  if (variant === 'navigation') {
     return (
       <div
         className={cn(
-          "group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 text-foreground hover:bg-gray-50 hover:text-zinc-950",
+          'text-foreground group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 hover:text-zinc-950',
           className,
         )}
         onClick={callback}
@@ -46,7 +46,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
           <p className="mt-1">Sign out of your account of interest</p>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -54,7 +54,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
       variant="ghost"
       onClick={callback}
       className={cn(
-        "border-1 flex flex-1 items-center justify-center gap-1 font-bold",
+        'border-1 flex flex-1 items-center justify-center gap-1 font-bold',
         className,
       )}
       {...props}
@@ -62,7 +62,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({
       <ExclamationTriangleIcon className="mr-2 h-5 w-5" />
       <p>Sign out</p>
     </Button>
-  );
-};
+  )
+}
 
-export { LogoutButton };
+export { LogoutButton }

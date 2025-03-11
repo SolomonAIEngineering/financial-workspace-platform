@@ -1,40 +1,33 @@
-import { Meta, StoryFn } from "@storybook/react";
+import { Meta, StoryFn } from '@storybook/react'
 import {
   MonthlyFinancialByCategoryChart,
   MonthlyFinancialByCategoryChartProps,
-} from "./monthly-financials-by-category-chart";
+} from './monthly-financials-by-category-chart'
 
-import { FinancialDataGenerator } from "../../../../lib/random/financial-data-generator";
-import { JSX } from "react/jsx-runtime";
-import React from "react";
-import { useAssistant } from "@ai-sdk/react";
-import { useVercelUseAssistantRuntime } from "@assistant-ui/react-ai-sdk";
+import { JSX } from 'react/jsx-runtime'
+import { FinancialDataGenerator } from '../../../../lib/random/financial-data-generator'
 
 export default {
   component: MonthlyFinancialByCategoryChart,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     currency: {
-      control: "select",
-      options: ["USD", "EUR", "GBP", "JPY"],
+      control: 'select',
+      options: ['USD', 'EUR', 'GBP', 'JPY'],
     },
     height: {
-      control: { type: "range", min: 200, max: 600, step: 10 },
+      control: { type: 'range', min: 200, max: 600, step: 10 },
     },
   },
-  decorators: [
-    (Story) => (
-      <Story />
-    ),
-  ],
-} as Meta;
+  decorators: [(Story) => <Story />],
+} as Meta
 
 const categoryMonthlyIncome =
-  FinancialDataGenerator.generateUserCategoryMonthlyData(1000, 2022, "income");
+  FinancialDataGenerator.generateUserCategoryMonthlyData(1000, 2022, 'income')
 const categoryMonthlyExpense =
-  FinancialDataGenerator.generateUserCategoryMonthlyData(1000, 2022, "expense");
+  FinancialDataGenerator.generateUserCategoryMonthlyData(1000, 2022, 'expense')
 
 const Template: StoryFn<MonthlyFinancialByCategoryChartProps> = (
   args: JSX.IntrinsicAttributes & MonthlyFinancialByCategoryChartProps,
@@ -42,42 +35,42 @@ const Template: StoryFn<MonthlyFinancialByCategoryChartProps> = (
   <div className="w-[900px]">
     <MonthlyFinancialByCategoryChart {...args} />
   </div>
-);
+)
 
-export const Default = Template.bind({});
+export const Default = Template.bind({})
 Default.args = {
-  currency: "USD",
+  currency: 'USD',
   data: categoryMonthlyIncome,
-  type: "income",
+  type: 'income',
   height: 290,
-  locale: "en-US",
+  locale: 'en-US',
   enableAssistantMode: true,
-};
+}
 
-export const IncomeChart = Template.bind({});
+export const IncomeChart = Template.bind({})
 IncomeChart.args = {
   ...Default.args,
   data: categoryMonthlyIncome,
-  type: "income",
-  currency: "USD",
+  type: 'income',
+  currency: 'USD',
   enableAssistantMode: true,
-};
+}
 
-export const ExpenseChart = Template.bind({});
+export const ExpenseChart = Template.bind({})
 ExpenseChart.args = {
   ...Default.args,
   data: categoryMonthlyExpense,
-  type: "expense",
-  currency: "USD",
+  type: 'expense',
+  currency: 'USD',
   enableAssistantMode: true,
-};
+}
 
-export const ExpenseChartWithEnabledDrilldown = Template.bind({});
+export const ExpenseChartWithEnabledDrilldown = Template.bind({})
 ExpenseChartWithEnabledDrilldown.args = {
   ...Default.args,
   data: categoryMonthlyExpense,
-  type: "expense",
-  currency: "USD",
+  type: 'expense',
+  currency: 'USD',
   enableAssistantMode: true,
   enableDrillDown: true,
-};
+}

@@ -1,5 +1,6 @@
-"use client";
+'use client'
 
+import React, { useMemo } from 'react'
 import {
   Bar,
   BarChart as BaseBarChartMulti,
@@ -8,24 +9,23 @@ import {
   TooltipProps,
   XAxis,
   YAxis,
-} from "recharts";
-import { BarChartMultiDataPoint, ChartDataPoint } from "../../../types/chart";
-import React, { useMemo } from "react";
+} from 'recharts'
+import { BarChartMultiDataPoint, ChartDataPoint } from '../../../types/chart'
 
-import { ChartContainer } from "./chart-container";
-import { Payload } from "recharts/types/component/DefaultTooltipContent";
-import { format } from "date-fns";
-import { formatAmount } from "../../../lib/chart-utils";
-import { generatePayloadArray } from "../../../lib/random/generator";
-import { useWrapperState } from "./chart-wrapper";
+import { format } from 'date-fns'
+import { Payload } from 'recharts/types/component/DefaultTooltipContent'
+import { formatAmount } from '../../../lib/chart-utils'
+import { generatePayloadArray } from '../../../lib/random/generator'
+import { ChartContainer } from './chart-container'
+import { useWrapperState } from './chart-wrapper'
 
 /**
  * Props for the ToolTipContent component.
  */
 interface ToolTipContentProps {
-  payload?: Array<Payload<number, string>>;
-  currency: string;
-  locale?: string;
+  payload?: Array<Payload<number, string>>
+  currency: string
+  locale?: string
 }
 
 /**
@@ -36,12 +36,12 @@ const ToolTipContent: React.FC<ToolTipContentProps> = ({
   currency,
   locale,
 }) => {
-  if (!payload) return null;
+  if (!payload) return null
 
-  const { value = 0, date } = payload[0]?.payload ?? {};
+  const { value = 0, date } = payload[0]?.payload ?? {}
 
   return (
-    <div className="w-[240px] border bg-background shadow-sm">
+    <div className="bg-background w-[240px] border shadow-sm">
       <div className="px-3 py-2">
         <div className="flex items-center justify-between">
           <p className="text-[13px] font-medium">
@@ -54,25 +54,25 @@ const ToolTipContent: React.FC<ToolTipContentProps> = ({
             })}
           </p>
           <p className="text-right text-xs text-[#606060]">
-            {date && format(new Date(date), "MMM, y")}
+            {date && format(new Date(date), 'MMM, y')}
           </p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 /**
  * Props for the BarChartMulti component.
  */
 export interface BarChartMultiProps {
-  currency: string;
-  data: Array<BarChartMultiDataPoint>;
-  height?: number;
-  locale?: string;
-  enableAssistantMode?: boolean;
-  disabled?: boolean;
-  chartType?: "stack" | "group";
+  currency: string
+  data: Array<BarChartMultiDataPoint>
+  height?: number
+  locale?: string
+  enableAssistantMode?: boolean
+  disabled?: boolean
+  chartType?: 'stack' | 'group'
 }
 
 /**
@@ -88,7 +88,7 @@ export const BarChartMulti: React.FC<BarChartMultiProps> = ({
   locale,
   enableAssistantMode,
   disabled = false,
-  chartType = "stack",
+  chartType = 'stack',
 }) => {
   const data = useMemo(() => {
     if (disabled) {
@@ -101,39 +101,38 @@ export const BarChartMulti: React.FC<BarChartMultiProps> = ({
           date: value.date,
           current: value.value,
           previous: index * 100,
-        };
-        return dataPoint;
-      });
+        }
+        return dataPoint
+      })
     }
-    return propData;
-  }, [disabled, propData]);
+    return propData
+  }, [disabled, propData])
 
-  const [aiModalOpenState, setAiModalOpenState] =
-    React.useState<boolean>(false);
-  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState);
+  const [aiModalOpenState, setAiModalOpenState] = React.useState<boolean>(false)
+  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState)
   const [dataSet, setDataSet] = React.useState<
     Array<ChartDataPoint> | Array<BarChartMultiDataPoint>
-  >(data.length > 0 ? data : []);
+  >(data.length > 0 ? data : [])
   const [comparisonTimePeriod, setComparisonTimePeriod] = React.useState<
-    "monthly" | "weekly"
-  >("weekly");
+    'monthly' | 'weekly'
+  >('weekly')
 
   // get all the keys in data
   const keys = React.useMemo(() => {
-    return Object.keys(data[0] || {}).filter((key) => key !== "date");
-  }, [data]);
+    return Object.keys(data[0] || {}).filter((key) => key !== 'date')
+  }, [data])
 
   const filterDataByDateRange = (dateRange: { from: Date; to: Date }) => {
-    const { from, to } = dateRange;
+    const { from, to } = dateRange
     setDataSet(
       data.filter(({ date }) => new Date(date) >= from && new Date(date) <= to),
-    );
-  };
+    )
+  }
 
   // Add this useEffect hook to update dataSet when data changes
   React.useEffect(() => {
-    setDataSet(data);
-  }, [data]);
+    setDataSet(data)
+  }, [data])
 
   /**
    * Formats a number value as a currency string.
@@ -148,8 +147,8 @@ export const BarChartMulti: React.FC<BarChartMultiProps> = ({
       currency,
       amount: value,
       locale,
-    });
-  };
+    })
+  }
 
   /**
    * Custom tooltip component for the BarChartMulti.
@@ -163,27 +162,31 @@ export const BarChartMulti: React.FC<BarChartMultiProps> = ({
       locale={locale}
       currency={currency}
     />
-  );
+  )
 
   // get the earliest date in the data
   // sort the data by date in ascending order
   const sortedData = data.sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  );
+  )
   const earliestDate = sortedData[0]?.date
     ? new Date(sortedData[0].date)
-    : undefined;
+    : undefined
   const latestDate = sortedData[sortedData.length - 1]?.date
     ? new Date(sortedData[sortedData.length - 1]!.date)
-    : undefined;
+    : undefined
 
-  const currentChartType = chartType === "stack" ? { stackId: "a" } : null;
+  const currentChartType = chartType === 'stack' ? { stackId: 'a' } : null
 
   return (
     <ChartContainer
       data={data}
       dataSet={dataSet as BarChartMultiDataPoint[]}
-      setDataSet={setDataSet as React.Dispatch<React.SetStateAction<BarChartMultiDataPoint[]>>}
+      setDataSet={
+        setDataSet as React.Dispatch<
+          React.SetStateAction<BarChartMultiDataPoint[]>
+        >
+      }
       height={height}
       earliestDate={earliestDate ?? new Date()}
       latestDate={latestDate ?? new Date()}
@@ -220,9 +223,9 @@ export const BarChartMulti: React.FC<BarChartMultiProps> = ({
           tickMargin={15}
           // tickFormatter={(value) => format(new Date(value), "MMM")}
           tick={{
-            fill: "#606060",
+            fill: '#606060',
             fontSize: 12,
-            fontFamily: "var(--font-sans)",
+            fontFamily: 'var(--font-sans)',
           }}
         />
 
@@ -234,9 +237,9 @@ export const BarChartMulti: React.FC<BarChartMultiProps> = ({
           tickMargin={10}
           tickFormatter={getLabel}
           tick={{
-            fill: "#606060",
+            fill: '#606060',
             fontSize: 12,
-            fontFamily: "var(--font-sans)",
+            fontFamily: 'var(--font-sans)',
           }}
         />
 
@@ -254,5 +257,5 @@ export const BarChartMulti: React.FC<BarChartMultiProps> = ({
         ))}
       </BaseBarChartMulti>
     </ChartContainer>
-  );
-};
+  )
+}

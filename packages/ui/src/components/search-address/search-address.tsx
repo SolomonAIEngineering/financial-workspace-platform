@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown } from 'lucide-react'
 import {
   Command,
   CommandEmpty,
@@ -8,16 +8,16 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "../command";
-import { Popover, PopoverContent, PopoverTrigger } from "../popover";
+} from '../command'
+import { Popover, PopoverContent, PopoverTrigger } from '../popover'
 
-import { Button } from "../button";
-import { CommandLoading } from "cmdk";
-import { RawResult } from "leaflet-geosearch/dist/providers/bingProvider.js";
-import React from "react";
-import { SearchResult } from "leaflet-geosearch/dist/providers/provider.js";
-import { cn } from "../../utils/cn";
-import { useSearchAddress } from "../../hooks/use-search-address";
+import { CommandLoading } from 'cmdk'
+import { RawResult } from 'leaflet-geosearch/dist/providers/bingProvider.js'
+import { SearchResult } from 'leaflet-geosearch/dist/providers/provider.js'
+import React from 'react'
+import { useSearchAddress } from '../../hooks/use-search-address'
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
 
 /**
  * Props for the SearchAddress component.
@@ -28,7 +28,7 @@ interface SearchAddressProps {
    * Callback function triggered when a location is selected.
    * @param {SearchResult<RawResult> | null} item - The selected location or null if selection is cleared.
    */
-  onSelectLocation: (item: SearchResult<RawResult> | null) => void;
+  onSelectLocation: (item: SearchResult<RawResult> | null) => void
 }
 
 /**
@@ -54,8 +54,8 @@ interface SearchAddressProps {
  * ```
  */
 const SearchAddress: React.FC<SearchAddressProps> = ({ onSelectLocation }) => {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
+  const [open, setOpen] = React.useState(false)
+  const [value, setValue] = React.useState('')
 
   const {
     query,
@@ -64,7 +64,7 @@ const SearchAddress: React.FC<SearchAddressProps> = ({ onSelectLocation }) => {
     handleSearch,
     selectedItem,
     setSelectedItem,
-  } = useSearchAddress();
+  } = useSearchAddress()
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -78,7 +78,7 @@ const SearchAddress: React.FC<SearchAddressProps> = ({ onSelectLocation }) => {
           <p className="truncate">
             {selectedItem
               ? `${selectedItem.label} (${selectedItem.raw.entityType})`
-              : "Select place..."}
+              : 'Select place...'}
           </p>
 
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -109,17 +109,17 @@ const SearchAddress: React.FC<SearchAddressProps> = ({ onSelectLocation }) => {
                       onSelect={(currentValue: string) => {
                         const item = results[type]?.find(
                           (item) => item.label === currentValue,
-                        );
-                        setValue(currentValue === value ? "" : currentValue);
-                        setSelectedItem(item ?? null);
-                        onSelectLocation(item ?? null);
-                        setOpen(false);
+                        )
+                        setValue(currentValue === value ? '' : currentValue)
+                        setSelectedItem(item ?? null)
+                        onSelectLocation(item ?? null)
+                        setOpen(false)
                       }}
                     >
                       <Check
                         className={cn(
-                          "mr-2 h-4 w-4",
-                          value === item.label ? "opacity-100" : "opacity-0",
+                          'mr-2 h-4 w-4',
+                          value === item.label ? 'opacity-100' : 'opacity-0',
                         )}
                       />
                       {item.label}
@@ -134,7 +134,7 @@ const SearchAddress: React.FC<SearchAddressProps> = ({ onSelectLocation }) => {
         </Command>
       </PopoverContent>
     </Popover>
-  );
-};
+  )
+}
 
-export default SearchAddress;
+export default SearchAddress

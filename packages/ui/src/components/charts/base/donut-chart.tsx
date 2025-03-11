@@ -1,9 +1,8 @@
-"use client";
+'use client'
 
-import { TrendingDown, TrendingUp } from "lucide-react";
-import React from "react";
-import { Label, Pie, PieChart, Sector } from "recharts";
-import { PieSectorDataItem } from "recharts/types/polar/Pie";
+import { TrendingDown, TrendingUp } from 'lucide-react'
+import { Pie, PieChart, Sector } from 'recharts'
+import { PieSectorDataItem } from 'recharts/types/polar/Pie'
 import {
   Card,
   CardContent,
@@ -11,29 +10,29 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../card";
+} from '../../card'
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "../../chart";
+} from '../../chart'
 
 export type DonutChartDataPoint = {
-  [key: string]: string | number;
-};
+  [key: string]: string | number
+}
 
 export interface DonutChartProps {
-  title: string;
-  description: string;
-  data: Array<DonutChartDataPoint>;
-  config: ChartConfig;
-  dataKey: string;
-  nameKey: string;
-  activeIndex?: number;
-  trendPercentage?: number;
-  trendPeriod?: string;
-  footerDescription?: string;
+  title: string
+  description: string
+  data: Array<DonutChartDataPoint>
+  config: ChartConfig
+  dataKey: string
+  nameKey: string
+  activeIndex?: number
+  trendPercentage?: number
+  trendPeriod?: string
+  footerDescription?: string
 }
 
 export function DonutChart({
@@ -45,7 +44,7 @@ export function DonutChart({
   nameKey,
   activeIndex = 0,
   trendPercentage,
-  trendPeriod = "this month",
+  trendPeriod = 'this month',
   footerDescription,
 }: DonutChartProps) {
   return (
@@ -84,7 +83,7 @@ export function DonutChart({
       <CardFooter className="flex-col gap-2 text-sm">
         {trendPercentage !== undefined && (
           <div className="flex items-center gap-2 font-medium leading-none">
-            Trending {trendPercentage >= 0 ? "up" : "down"} by{" "}
+            Trending {trendPercentage >= 0 ? 'up' : 'down'} by{' '}
             {Math.abs(trendPercentage)}% {trendPeriod}
             {trendPercentage >= 0 ? (
               <TrendingUp className="h-4 w-4" />
@@ -94,11 +93,11 @@ export function DonutChart({
           </div>
         )}
         {footerDescription && (
-          <div className="leading-none text-muted-foreground">
+          <div className="text-muted-foreground leading-none">
             {footerDescription}
           </div>
         )}
       </CardFooter>
     </Card>
-  );
+  )
 }

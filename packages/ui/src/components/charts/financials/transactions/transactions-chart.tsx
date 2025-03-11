@@ -1,16 +1,16 @@
-import { formatDate } from "../../../../lib/converters/date-formater";
-import { Badge } from "../../../../components/badge";
+import { Transaction } from 'client-typescript-sdk'
+import React from 'react'
+import { Badge } from '../../../../components/badge'
 import {
   Table,
   TableBody,
   TableCell,
   TableRow,
-} from "../../../../components/table";
-import { Transaction } from "client-typescript-sdk";
-import React from "react";
+} from '../../../../components/table'
+import { formatDate } from '../../../../lib/converters/date-formater'
 
 interface TransactionsByMonthProps {
-  transactionsByMonth: Record<string, Transaction[]>;
+  transactionsByMonth: Record<string, Transaction[]>
 }
 
 const TransactionsByMonth: React.FC<TransactionsByMonthProps> = ({
@@ -20,8 +20,8 @@ const TransactionsByMonth: React.FC<TransactionsByMonthProps> = ({
     return transactions.reduce(
       (acc, transaction) => acc + (transaction.amount || 0),
       0,
-    );
-  };
+    )
+  }
 
   return (
     <div className="space-y-8">
@@ -40,23 +40,23 @@ const TransactionsByMonth: React.FC<TransactionsByMonthProps> = ({
         <p>No transactions available.</p>
       )}
     </div>
-  );
-};
+  )
+}
 
 interface MonthlyTransactionsProps {
-  month: string;
-  transactions: Transaction[];
+  month: string
+  transactions: Transaction[]
 }
 
 const MonthlyTransactions: React.FC<MonthlyTransactionsProps> = ({
   month,
   transactions,
 }) => {
-  const monthTotal = calculateMonthTotal(transactions);
+  const monthTotal = calculateMonthTotal(transactions)
 
   return (
     <div className="space-y-4 py-3">
-      <div className="flex justify-between items-center p-2">
+      <div className="flex items-center justify-between p-2">
         <h3 className="text-xl font-semibold">{month}</h3>
         <p className="text-xl">${monthTotal.toFixed(2)}</p>
       </div>
@@ -70,16 +70,16 @@ const MonthlyTransactions: React.FC<MonthlyTransactionsProps> = ({
         </Table>
       </div>
     </div>
-  );
-};
+  )
+}
 
 interface TransactionRowProps {
-  transaction: Transaction;
+  transaction: Transaction
 }
 
 const TransactionRow: React.FC<TransactionRowProps> = ({ transaction }) => (
   <TableRow className="rounded-2xl">
-    <TableCell>{formatDate(transaction.currentDate || "")}</TableCell>
+    <TableCell>{formatDate(transaction.currentDate || '')}</TableCell>
     <TableCell>{transaction.accountId}</TableCell>
     <TableCell>{transaction.name}</TableCell>
     <TableCell>${transaction.amount?.toFixed(2)}</TableCell>
@@ -89,18 +89,18 @@ const TransactionRow: React.FC<TransactionRowProps> = ({ transaction }) => (
       </Badge>
     </TableCell>
   </TableRow>
-);
+)
 
 const calculateMonthTotal = (transactions: Transaction[]): number => {
   return transactions.reduce(
     (acc, transaction) => acc + (transaction.amount || 0),
     0,
-  );
-};
+  )
+}
 
 export {
   calculateMonthTotal,
   MonthlyTransactions,
   TransactionRow,
   TransactionsByMonth,
-};
+}

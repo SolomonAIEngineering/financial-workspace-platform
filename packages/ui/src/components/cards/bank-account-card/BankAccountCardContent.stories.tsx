@@ -1,20 +1,20 @@
 // BankAccountCardHeader.stories.tsx
-import { StoryObj, type Meta } from "@storybook/react";
-import { FinancialDataGenerator } from "../../../lib/random/financial-data-generator";
+import { StoryObj, type Meta } from '@storybook/react'
+import { FinancialDataGenerator } from '../../../lib/random/financial-data-generator'
 
-import { BankAccountContext } from "./BankAccountCard";
-import { BankAccountCardContent } from "./BankAccountCardContent";
+import { BankAccountContext } from './BankAccountCard'
+import { BankAccountCardContent } from './BankAccountCardContent'
 // Mock data for the bank account
-const mockBankAccount = FinancialDataGenerator.generateRandomBankAccount();
+const mockBankAccount = FinancialDataGenerator.generateRandomBankAccount()
 
 const meta: Meta<typeof BankAccountCardContent> = {
   component: BankAccountCardContent,
   argTypes: {
     className: {
       control: {
-        type: "text",
+        type: 'text',
       },
-      defaultValue: "",
+      defaultValue: '',
     },
   },
   decorators: [
@@ -24,18 +24,18 @@ const meta: Meta<typeof BankAccountCardContent> = {
       </BankAccountContext.Provider>
     ),
   ],
-};
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof BankAccountCardContent>;
+type Story = StoryObj<typeof BankAccountCardContent>
 
 export const Default: Story = {
   args: {},
-};
+}
 
 export const BankAccountCardContentWithClassName: Story = {
   args: {
-    className: "border rounded-md",
+    className: 'border rounded-md',
   },
-};
+}

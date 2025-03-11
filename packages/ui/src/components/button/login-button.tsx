@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from 'react'
 
-import { Button } from "../button";
-import { ButtonProps } from "react-day-picker";
-import { KeyIcon } from "@heroicons/react/24/outline";
-import { cn } from "../../utils/cn";
+import { KeyIcon } from '@heroicons/react/24/outline'
+import { ButtonProps } from 'react-day-picker'
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
 
 /*
  * LogInButtonProps defines the props for the LogInButton component.
@@ -12,8 +12,8 @@ import { cn } from "../../utils/cn";
  * @extends {ButtonProps}
  * */
 interface LogInButtonProps extends ButtonProps {
-  callBack: () => void;
-  className?: string;
+  callBack: () => void
+  className?: string
 }
 
 /**
@@ -25,14 +25,14 @@ interface LogInButtonProps extends ButtonProps {
 const LogInButton: React.FC<LogInButtonProps> = ({ className, callBack }) => {
   return (
     <Button
-      className={cn("rounded-2xl font-bold text-foreground", className)}
+      className={cn('text-foreground rounded-2xl font-bold', className)}
       variant="outline"
       onClick={callBack}
     >
       <KeyIcon className="mr-2 h-5 w-5" />
       Log In
     </Button>
-  );
-};
+  )
+}
 
-export { LogInButton };
+export { LogInButton }

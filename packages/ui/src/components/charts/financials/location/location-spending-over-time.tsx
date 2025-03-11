@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from "react";
-import { LocationFinancialMetricsConverter } from "../../../../lib/converters/location-sub-profile-converter";
-import { SpendingPeriod } from "../../../../types/merchant";
-import { LocationFinancialSubProfile } from "client-typescript-sdk";
-import { HiSquare3Stack3D } from "react-icons/hi2";
+import { LocationFinancialSubProfile } from 'client-typescript-sdk'
+import React, { useMemo, useState } from 'react'
+import { HiSquare3Stack3D } from 'react-icons/hi2'
+import { LocationFinancialMetricsConverter } from '../../../../lib/converters/location-sub-profile-converter'
+import { SpendingPeriod } from '../../../../types/merchant'
 
 import {
   Select,
@@ -10,15 +10,15 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../components/select";
+} from '../../../../components/select'
 
-import { AreaChart, AreaChartProps } from "../../base/area-chart";
+import { AreaChart, AreaChartProps } from '../../base/area-chart'
 
 export interface LocationSpendingVsMonthChartProps
-  extends Omit<AreaChartProps, "data"> {
-  locations: Array<string>;
-  selectedSpendingPeriod: SpendingPeriod;
-  records: Array<LocationFinancialSubProfile>;
+  extends Omit<AreaChartProps, 'data'> {
+  locations: Array<string>
+  selectedSpendingPeriod: SpendingPeriod
+  records: Array<LocationFinancialSubProfile>
 }
 
 export const LocationSpendingVsMonthChart: React.FC<
@@ -33,19 +33,19 @@ export const LocationSpendingVsMonthChart: React.FC<
   selectedSpendingPeriod,
 }) => {
   const [selectedLocation, setSelectedLocation] = useState<string>(
-    locations[0] || "",
-  );
+    locations[0] || '',
+  )
 
   const allChartData = useMemo(() => {
     return LocationFinancialMetricsConverter.generateSpendingTimeSeries(
       records,
       selectedSpendingPeriod,
-    );
-  }, [records, selectedSpendingPeriod]);
+    )
+  }, [records, selectedSpendingPeriod])
 
   const chartData = useMemo(() => {
-    return allChartData[selectedLocation] || [];
-  }, [allChartData, selectedLocation]);
+    return allChartData[selectedLocation] || []
+  }, [allChartData, selectedLocation])
 
   if (
     !records ||
@@ -53,7 +53,7 @@ export const LocationSpendingVsMonthChart: React.FC<
     !locations ||
     locations.length === 0
   ) {
-    return null;
+    return null
   }
 
   return (
@@ -87,5 +87,5 @@ export const LocationSpendingVsMonthChart: React.FC<
         />
       </div>
     </div>
-  );
-};
+  )
+}

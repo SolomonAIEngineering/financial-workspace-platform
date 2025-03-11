@@ -1,27 +1,26 @@
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion'
 import {
   type ComponentPropsWithoutRef,
   type PropsWithChildren,
+  RefObject,
   forwardRef,
   useRef,
-  RefObject,
-} from "react";
-import { useResizeObserver } from "../hooks";
-import { cn } from "../utils";
+} from 'react'
+import { useResizeObserver } from '../hooks'
+import { cn } from '../utils'
 
 type AnimatedSizeContainerProps = PropsWithChildren<{
-  width?: boolean;
-  height?: boolean;
+  width?: boolean
+  height?: boolean
 }> &
-  Omit<ComponentPropsWithoutRef<typeof motion.div>, "animate" | "children">;
+  Omit<ComponentPropsWithoutRef<typeof motion.div>, 'animate' | 'children'>
 
 /**
  * A container with animated width and height (each optional) based on children dimensions
  */
-const AnimatedSizeContainer = forwardRef<
-  HTMLDivElement,
-  AnimatedSizeContainerProps
->(
+const AnimatedSizeContainer: React.ForwardRefExoticComponent<
+  AnimatedSizeContainerProps & React.RefAttributes<HTMLDivElement>
+> = forwardRef<HTMLDivElement, AnimatedSizeContainerProps>(
   (
     {
       width = false,
@@ -33,35 +32,37 @@ const AnimatedSizeContainer = forwardRef<
     }: AnimatedSizeContainerProps,
     forwardedRef,
   ) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const resizeObserverEntry = useResizeObserver(containerRef as RefObject<Element>);
+    const containerRef = useRef<HTMLDivElement>(null)
+    const resizeObserverEntry = useResizeObserver(
+      containerRef as RefObject<Element>,
+    )
 
     return (
       <motion.div
         ref={forwardedRef}
-        className={cn("overflow-hidden", className)}
+        className={cn('overflow-hidden', className)}
         animate={{
           width: width
-            ? (resizeObserverEntry?.contentRect?.width ?? "auto")
-            : "auto",
+            ? (resizeObserverEntry?.contentRect?.width ?? 'auto')
+            : 'auto',
           height: height
-            ? (resizeObserverEntry?.contentRect?.height ?? "auto")
-            : "auto",
+            ? (resizeObserverEntry?.contentRect?.height ?? 'auto')
+            : 'auto',
         }}
-        transition={transition ?? { type: "spring", duration: 0.3 }}
+        transition={transition ?? { type: 'spring', duration: 0.3 }}
         {...rest}
       >
         <div
           ref={containerRef}
-          className={cn(height && "h-max", width && "w-max")}
+          className={cn(height && 'h-max', width && 'w-max')}
         >
           {children}
         </div>
       </motion.div>
-    );
+    )
   },
-);
+)
 
-AnimatedSizeContainer.displayName = "AnimatedSizeContainer";
+AnimatedSizeContainer.displayName = 'AnimatedSizeContainer'
 
-export { AnimatedSizeContainer };
+export { AnimatedSizeContainer }

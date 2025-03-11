@@ -1,1 +1,1 @@
-export * from "./account-balance-over-time-card";
+export * from './account-balance-over-time-card'

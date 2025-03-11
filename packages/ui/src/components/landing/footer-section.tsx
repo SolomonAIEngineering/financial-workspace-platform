@@ -1,32 +1,32 @@
-import { DiscordLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
-import React, { JSX } from "react";
+import { DiscordLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons'
+import React, { JSX } from 'react'
 
-import { Icons } from "../icons";
-import Link from "next/link";
+import Link from 'next/link'
+import { Icons } from '../icons'
 
 /**
  * Interface for footer navigation item
  */
 interface FooterNavItem {
-  href: string;
-  name: string;
+  href: string
+  name: string
 }
 
 /**
  * Interface for footer navigation section
  */
 interface FooterNavSection {
-  label: string;
-  items: FooterNavItem[];
+  label: string
+  items: FooterNavItem[]
 }
 
 /**
  * Interface for footer social link
  */
 interface FooterSocial {
-  href: string;
-  name: string;
-  icon: JSX.Element;
+  href: string
+  name: string
+  icon: JSX.Element
 }
 
 /**
@@ -34,45 +34,45 @@ interface FooterSocial {
  */
 const footerNavs: FooterNavSection[] = [
   {
-    label: "Product",
+    label: 'Product',
     items: [
-      { href: "https://app-business.solomon-ai.app", name: "Business" },
+      { href: 'https://app-business.solomon-ai.app', name: 'Business' },
 
-      { href: "mailto:yoanyomba@solomon-ai.co", name: "Email" },
+      { href: 'mailto:yoanyomba@solomon-ai.co', name: 'Email' },
     ],
   },
   {
-    label: "Legal",
+    label: 'Legal',
     items: [
-      { href: "https://solomon-ai.app/terms", name: "Terms" },
-      { href: "https://solomon-ai.app/policy", name: "Privacy" },
+      { href: 'https://solomon-ai.app/terms', name: 'Terms' },
+      { href: 'https://solomon-ai.app/policy', name: 'Privacy' },
     ],
   },
-];
+]
 
 /**
  * Array of footer social links
  */
 const footerSocials: FooterSocial[] = [
   {
-    href: "",
-    name: "Discord",
+    href: '',
+    name: 'Discord',
     icon: <DiscordLogoIcon className="h-4 w-4" />,
   },
   {
-    href: "",
-    name: "Twitter",
+    href: '',
+    name: 'Twitter',
     icon: <TwitterLogoIcon className="h-4 w-4" />,
   },
-];
+]
 
 /**
  * SiteFooter component
  * @returns {JSX.Element} Rendered SiteFooter component
  */
 export const FooterSection: React.FC<{
-  title: string;
-  description: string;
+  title: string
+  description: string
 }> = ({ title, description }) => {
   return (
     <footer>
@@ -84,16 +84,16 @@ export const FooterSection: React.FC<{
         <FooterBottom title={title} />
       </div>
     </footer>
-  );
-};
+  )
+}
 
 /**
  * FooterLogo component
  * @returns {JSX.Element} Rendered FooterLogo component
  */
 const FooterLogo: React.FC<{
-  title: string;
-  description: string;
+  title: string
+  description: string
 }> = ({ title, description }) => (
   <div className="mb-12 flex flex-col gap-4">
     <Link href="/" className="flex items-center gap-2">
@@ -104,7 +104,7 @@ const FooterLogo: React.FC<{
     </Link>
     <p className="max-w-md">{description}</p>
   </div>
-);
+)
 
 /**
  * FooterNavigation component
@@ -116,13 +116,13 @@ const FooterNavigation: React.FC = () => (
       <FooterNavSection key={nav.label} section={nav} />
     ))}
   </div>
-);
+)
 
 /**
  * FooterNavSection component props
  */
 interface FooterNavSectionProps {
-  section: FooterNavSection;
+  section: FooterNavSection
 }
 
 /**
@@ -148,20 +148,20 @@ const FooterNavSection: React.FC<FooterNavSectionProps> = ({ section }) => (
       ))}
     </ul>
   </div>
-);
+)
 
 /**
  * FooterBottom component
  * @returns {JSX.Element} Rendered FooterBottom component
  */
 const FooterBottom: React.FC<{
-  title: string;
+  title: string
 }> = ({ title }) => (
   <div className="flex flex-col gap-2 rounded-md border-neutral-700/20 px-8 py-4 sm:flex sm:flex-row sm:items-center sm:justify-between">
     {/* <FooterSocialLinks /> */}
     <FooterCopyright title={title} />
   </div>
-);
+)
 
 /**
  * FooterSocialLinks component
@@ -180,20 +180,20 @@ const FooterSocialLinks: React.FC = () => (
       </Link>
     ))}
   </div>
-);
+)
 
 /**
  * FooterCopyright component
  * @returns {JSX.Element} Rendered FooterCopyright component
  */
 const FooterCopyright: React.FC<{
-  title: string;
+  title: string
 }> = ({ title }) => (
-  <span className="text-sm text-gray-500 dark:text-gray-400 sm:text-center">
-    Copyright © {new Date().getFullYear()}{" "}
+  <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+    Copyright © {new Date().getFullYear()}{' '}
     <Link href="/" className="cursor-pointer">
       {title}
     </Link>
     . All Rights Reserved.
   </span>
-);
+)

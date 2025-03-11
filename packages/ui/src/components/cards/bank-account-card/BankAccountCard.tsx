@@ -1,36 +1,36 @@
-"use client";
+'use client'
 
 import {
   AccountBalanceHistory,
   BankAccount,
   FinancialProfile,
   FinancialUserProfile,
-} from "client-typescript-sdk";
-import React, { createContext, ReactNode } from "react";
-import { FinancialDataGenerator } from "../../../lib/random/financial-data-generator";
-import { cn } from "../../../utils/cn";
+} from 'client-typescript-sdk'
+import React, { createContext, ReactNode } from 'react'
+import { FinancialDataGenerator } from '../../../lib/random/financial-data-generator'
+import { cn } from '../../../utils/cn'
 
-import { Card } from "../../card";
+import { Card } from '../../card'
 
-import { BankAccountCardContent } from "./BankAccountCardContent";
-import { BankAccountCardFooter } from "./BankAccountCardFooter";
-import { BankAccountCardHeader } from "./BankAccountCardHeader";
+import { BankAccountCardContent } from './BankAccountCardContent'
+import { BankAccountCardFooter } from './BankAccountCardFooter'
+import { BankAccountCardHeader } from './BankAccountCardHeader'
 
 // eslint-disable-next-line
 /** @type {React.Context<T extends BankAccount>} */
-const BankAccountContext = createContext<BankAccount | undefined>(undefined);
-const FinancialProfileContext = createContext<FinancialProfile>({});
-const AccountBalanceHistoryContext = createContext<AccountBalanceHistory[]>([]);
+const BankAccountContext = createContext<BankAccount | undefined>(undefined)
+const FinancialProfileContext = createContext<FinancialProfile>({})
+const AccountBalanceHistoryContext = createContext<AccountBalanceHistory[]>([])
 
 export type BankAccountCardProps = {
-  bankAccount: BankAccount;
-  financialProfile: FinancialUserProfile;
-  className?: string;
-  contextQuestions?: string[];
-  enableDemoMode?: boolean;
-  children?: ReactNode;
-  historicalAccountBalance?: AccountBalanceHistory[];
-};
+  bankAccount: BankAccount
+  financialProfile: FinancialUserProfile
+  className?: string
+  contextQuestions?: string[]
+  enableDemoMode?: boolean
+  children?: ReactNode
+  historicalAccountBalance?: AccountBalanceHistory[]
+}
 
 /**
  * Bank Account Card Component that displays the bank account information
@@ -55,7 +55,7 @@ const BankAccountCard: React.FC<BankAccountCardProps> = ({
 }) => {
   const currentBankAccount = enableDemoMode
     ? FinancialDataGenerator.generateRandomBankAccount()
-    : bankAccount;
+    : bankAccount
 
   return (
     <BankAccountContext.Provider value={currentBankAccount}>
@@ -65,7 +65,7 @@ const BankAccountCard: React.FC<BankAccountCardProps> = ({
         >
           <Card
             className={cn(
-              "w-full leading-7 [&:not(:first-child)]:mt-6",
+              'w-full leading-7 [&:not(:first-child)]:mt-6',
               className,
             )}
           >
@@ -77,12 +77,12 @@ const BankAccountCard: React.FC<BankAccountCardProps> = ({
         </AccountBalanceHistoryContext.Provider>
       </FinancialProfileContext.Provider>
     </BankAccountContext.Provider>
-  );
-};
+  )
+}
 
 export {
   AccountBalanceHistoryContext,
   BankAccountCard,
   BankAccountContext,
   FinancialProfileContext,
-};
+}

@@ -1,1 +1,1 @@
-export * from "./collapsible-panel-layout";
+export * from './collapsible-panel-layout'

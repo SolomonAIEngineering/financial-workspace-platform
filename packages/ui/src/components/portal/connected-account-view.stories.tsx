@@ -1,39 +1,39 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { FinancialDataGenerator } from "../../lib/random/financial-data-generator";
-import { ConnectedAccountSummary } from "./connected-account-view";
+import type { Meta, StoryObj } from '@storybook/react'
+import { FinancialDataGenerator } from '../../lib/random/financial-data-generator'
+import { ConnectedAccountSummary } from './connected-account-view'
 
 const meta: Meta<typeof ConnectedAccountSummary> = {
   component: ConnectedAccountSummary,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     financialProfile: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: FinancialDataGenerator.generateFinancialProfile(),
     },
     financialContext: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: FinancialDataGenerator.generateFinancialContext(),
     },
   },
   decorators: [(Story) => <Story />],
-} satisfies Meta<typeof ConnectedAccountSummary>;
+} satisfies Meta<typeof ConnectedAccountSummary>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
     financialProfile: FinancialDataGenerator.generateFinancialProfile(),
     financialContext: FinancialDataGenerator.generateFinancialContext(),
   },
-};
+}
 
 export const WithMultipleLinkedAccounts: Story = {
   args: {
@@ -45,7 +45,7 @@ export const WithMultipleLinkedAccounts: Story = {
     },
     financialContext: FinancialDataGenerator.generateFinancialContext(),
   },
-};
+}
 
 export const NoLinkedAccounts: Story = {
   args: {
@@ -55,4 +55,4 @@ export const NoLinkedAccounts: Story = {
     },
     financialContext: FinancialDataGenerator.generateFinancialContext(),
   },
-};
+}

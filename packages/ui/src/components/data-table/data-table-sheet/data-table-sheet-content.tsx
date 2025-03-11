@@ -1,28 +1,28 @@
-"use client";
+'use client'
 
-import * as React from "react";
+import * as React from 'react'
 
-import { DataTableFilterField, SheetField } from "../types";
+import { DataTableFilterField, SheetField } from '../types'
 
-import { DataTableSheetRowAction } from "./data-table-sheet-row-action";
-import { SheetDetailsContentSkeleton } from "./data-table-sheet-skeleton";
-import { Table } from "@tanstack/react-table";
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils'
+import { Table } from '@tanstack/react-table'
+import { DataTableSheetRowAction } from './data-table-sheet-row-action'
+import { SheetDetailsContentSkeleton } from './data-table-sheet-skeleton'
 
 interface DataTableSheetContentProps<TData, TMeta>
   extends React.HTMLAttributes<HTMLDListElement> {
-  data?: TData;
-  table: Table<TData>;
-  fields: SheetField<TData, TMeta>[];
-  filterFields: DataTableFilterField<TData>[];
+  data?: TData
+  table: Table<TData>
+  fields: SheetField<TData, TMeta>[]
+  filterFields: DataTableFilterField<TData>[]
   // totalRows: number;
   // filterRows: number;
   // totalRowsFetched: number;
   metadata?: TMeta & {
-    totalRows: number;
-    filterRows: number;
-    totalRowsFetched: number;
-  };
+    totalRows: number
+    filterRows: number
+    totalRowsFetched: number
+  }
 }
 
 export function DataTableSheetContent<TData, TMeta>({
@@ -34,26 +34,26 @@ export function DataTableSheetContent<TData, TMeta>({
   metadata,
   ...props
 }: DataTableSheetContentProps<TData, TMeta>) {
-  if (!data) return <SheetDetailsContentSkeleton fields={fields} />;
+  if (!data) return <SheetDetailsContentSkeleton fields={fields} />
 
   return (
-    <dl className={cn("divide-y", className)} {...props}>
+    <dl className={cn('divide-y', className)} {...props}>
       {fields.map((field) => {
-        if (field.condition && !field.condition(data)) return null;
+        if (field.condition && !field.condition(data)) return null
 
-        const Component = field.component;
-        const value = String(data[field.id]);
+        const Component = field.component
+        const value = String(data[field.id])
 
         return (
           <div key={field.id.toString()}>
-            {field.type === "readonly" ? (
+            {field.type === 'readonly' ? (
               <div
                 className={cn(
-                  "my-1 flex w-full items-center justify-between gap-4 py-1 text-sm",
+                  'my-1 flex w-full items-center justify-between gap-4 py-1 text-sm',
                   field.className,
                 )}
               >
-                <dt className="shrink-0 text-muted-foreground">
+                <dt className="text-muted-foreground shrink-0">
                   {field.label}
                 </dt>
                 <dd className="w-full text-right font-mono">
@@ -71,11 +71,11 @@ export function DataTableSheetContent<TData, TMeta>({
                 value={value}
                 table={table}
                 className={cn(
-                  "my-1 flex w-full items-center justify-between gap-4 py-1 text-sm",
+                  'my-1 flex w-full items-center justify-between gap-4 py-1 text-sm',
                   field.className,
                 )}
               >
-                <dt className="shrink-0 text-muted-foreground">
+                <dt className="text-muted-foreground shrink-0">
                   {field.label}
                 </dt>
                 <dd className="w-full text-right font-mono">
@@ -88,16 +88,16 @@ export function DataTableSheetContent<TData, TMeta>({
               </DataTableSheetRowAction>
             )}
           </div>
-        );
+        )
       })}
     </dl>
-  );
+  )
 }
 
 export const MemoizedDataTableSheetContent = React.memo(
   DataTableSheetContent,
   (prev, next) => {
     // REMINDER: only check if data is the same, rest is useless
-    return prev.data === next.data;
+    return prev.data === next.data
   },
-) as typeof DataTableSheetContent;
+) as typeof DataTableSheetContent

@@ -1,17 +1,17 @@
-import { ViewfinderCircleIcon } from "@heroicons/react/24/outline";
-import React from "react";
+import { ViewfinderCircleIcon } from '@heroicons/react/24/outline'
+import React from 'react'
 
-import { cn } from "../../utils/cn";
-import { Button } from "../button";
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
 
-import { ButtonProps } from "./ask-solomon-button";
+import { ButtonProps } from './ask-solomon-button'
 
 export interface FeedbackButtonProps extends ButtonProps {
-  asChild?: boolean;
-  active: boolean;
-  className?: string;
-  href: string;
-  label?: string;
+  asChild?: boolean
+  active: boolean
+  className?: string
+  href: string
+  label?: string
 }
 
 /**
@@ -31,10 +31,10 @@ const FeedbackButton: React.FC<FeedbackButtonProps> = ({
   return (
     <a href={href}>
       <Button
-        variant={"outline"}
+        variant={'outline'}
         className={cn(
-          "ml-3 items-center justify-center border font-bold transition-colors duration-300 ease-in-out dark:border-white dark:bg-transparent dark:text-foreground",
-          "text-foreground hover:bg-gray-200 hover:text-background dark:hover:bg-gray-800 dark:hover:text-foreground",
+          'dark:text-foreground ml-3 items-center justify-center border font-bold transition-colors duration-300 ease-in-out dark:border-white dark:bg-transparent',
+          'text-foreground hover:text-background dark:hover:text-foreground hover:bg-gray-200 dark:hover:bg-gray-800',
           className,
         )}
       >
@@ -42,7 +42,7 @@ const FeedbackButton: React.FC<FeedbackButtonProps> = ({
         {label ? <p>{label}</p> : <p>Feedback</p>}
       </Button>
     </a>
-  );
-};
+  )
+}
 
-export { FeedbackButton };
+export { FeedbackButton }

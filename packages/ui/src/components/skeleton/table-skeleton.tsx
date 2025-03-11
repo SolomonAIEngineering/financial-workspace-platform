@@ -4,7 +4,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 
-import { Skeleton } from "../skeleton";
+import { Skeleton } from '../skeleton'
 
 export default function TableSkeleton() {
   return (
@@ -42,5 +42,5 @@ export default function TableSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }

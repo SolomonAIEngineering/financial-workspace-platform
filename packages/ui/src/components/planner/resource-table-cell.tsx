@@ -1,12 +1,12 @@
-import React, { FC, useState } from "react";
-import { Resource } from "../../types/resource";
-import { cn } from "../../utils";
+import React, { FC } from 'react'
+import { Resource } from '../../types/resource'
+import { cn } from '../../utils'
 
-import { TableCell } from "../table";
+import { TableCell } from '../table'
 
 export interface ResourceTableCellProps
   extends React.HTMLAttributes<HTMLTableCellElement> {
-  resourceItem: Resource;
+  resourceItem: Resource
 }
 
 const ResourceTableCell: FC<ResourceTableCellProps> = ({
@@ -16,7 +16,7 @@ const ResourceTableCell: FC<ResourceTableCellProps> = ({
 }) => {
   return (
     <TableCell
-      className={cn(className, "sticky left-0 z-10 border-y bg-background")}
+      className={cn(className, 'bg-background sticky left-0 z-10 border-y')}
       {...props}
     >
       <div className="flex items-center space-x-4">
@@ -30,7 +30,7 @@ const ResourceTableCell: FC<ResourceTableCellProps> = ({
         <h2>{resourceItem.name}</h2>
       </div>
     </TableCell>
-  );
-};
+  )
+}
 
-export default ResourceTableCell;
+export default ResourceTableCell

@@ -1,25 +1,25 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import { type Meta, type StoryObj } from '@storybook/react'
 
-import { FileUploader } from "./file-uploader-primitive";
+import { FileUploader } from './file-uploader-primitive'
 
 const meta: Meta<typeof FileUploader> = {
   component: FileUploader,
   argTypes: {
     className: {
-      control: "text",
-      defaultValue: "", // Default value
+      control: 'text',
+      defaultValue: '', // Default value
     },
   },
-};
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof FileUploader>;
+type Story = StoryObj<typeof FileUploader>
 
-export const Default: Story = {};
+export const Default: Story = {}
 
 export const FileUploaderWithClassName: Story = {
   args: {
-    className: "w-full rounded-2xl border-black",
+    className: 'w-full rounded-2xl border-black',
   },
-};
+}

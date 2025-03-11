@@ -1,5 +1,5 @@
-import { MerchantMetricsFinancialSubProfile } from "client-typescript-sdk";
-import React, { useMemo } from "react";
+import { MerchantMetricsFinancialSubProfile } from 'client-typescript-sdk'
+import React, { useMemo } from 'react'
 import {
   Bar,
   BarChart,
@@ -10,14 +10,14 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { MerchantFinancialMetricsConverter } from "../../../../lib/converters/merchant-sub-profile-converter";
-import { SpendingPeriod } from "../../../../types/merchant";
+} from 'recharts'
+import { MerchantFinancialMetricsConverter } from '../../../../lib/converters/merchant-sub-profile-converter'
+import { SpendingPeriod } from '../../../../types/merchant'
 
 export interface TopMerchantChartProps {
-  merchants: Array<string>;
-  selectedSpendingPeriod: SpendingPeriod;
-  records: Array<MerchantMetricsFinancialSubProfile>;
+  merchants: Array<string>
+  selectedSpendingPeriod: SpendingPeriod
+  records: Array<MerchantMetricsFinancialSubProfile>
 }
 
 export const TopMerchantChart: React.FC<TopMerchantChartProps> = ({
@@ -30,8 +30,8 @@ export const TopMerchantChart: React.FC<TopMerchantChartProps> = ({
       records,
       selectedSpendingPeriod,
       5,
-    );
-  }, [records, selectedSpendingPeriod]);
+    )
+  }, [records, selectedSpendingPeriod])
 
   return (
     <div className="w-full">
@@ -61,9 +61,9 @@ export const TopMerchantChart: React.FC<TopMerchantChartProps> = ({
             axisLine={false}
             tickMargin={15}
             tick={{
-              fill: "#606060",
+              fill: '#606060',
               fontSize: 12,
-              fontFamily: "var(--font-sans)",
+              fontFamily: 'var(--font-sans)',
             }}
           />
           <YAxis
@@ -73,9 +73,9 @@ export const TopMerchantChart: React.FC<TopMerchantChartProps> = ({
             axisLine={false}
             tickMargin={10}
             tick={{
-              fill: "#606060",
+              fill: '#606060',
               fontSize: 12,
-              fontFamily: "var(--font-sans)",
+              fontFamily: 'var(--font-sans)',
             }}
           />
           <Tooltip />
@@ -93,5 +93,5 @@ export const TopMerchantChart: React.FC<TopMerchantChartProps> = ({
         </BarChart>
       </ResponsiveContainer>
     </div>
-  );
-};
+  )
+}

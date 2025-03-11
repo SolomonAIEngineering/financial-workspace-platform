@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+import type { Meta, StoryObj } from '@storybook/react'
+import { Avatar, AvatarFallback, AvatarImage } from './avatar'
 
 const meta: Meta<typeof Avatar> = {
   component: () => (
@@ -8,10 +8,10 @@ const meta: Meta<typeof Avatar> = {
       <AvatarFallback>CN</AvatarFallback>
     </Avatar>
   ),
-};
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof Avatar>;
+type Story = StoryObj<typeof Avatar>
 
-export const Default: Story = {};
+export const Default: Story = {}

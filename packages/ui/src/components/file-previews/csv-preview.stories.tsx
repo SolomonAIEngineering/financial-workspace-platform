@@ -1,29 +1,29 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import { type Meta, type StoryObj } from '@storybook/react'
 
-import { CsvPreview } from "./csv-preview";
+import { CsvPreview } from './csv-preview'
 
 const meta: Meta<typeof CsvPreview> = {
   component: CsvPreview,
   argTypes: {
     fileUrl: {
-      control: "text",
-      defaultValue: "", // Default value
+      control: 'text',
+      defaultValue: '', // Default value
     },
   },
-};
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof CsvPreview>;
+type Story = StoryObj<typeof CsvPreview>
 
 export const Default: Story = {
   args: {
-    fileUrl: "https://data.wa.gov/api/views/f6w7-q2d2/rows.csv",
+    fileUrl: 'https://data.wa.gov/api/views/f6w7-q2d2/rows.csv',
   },
-};
+}
 
 export const CsvPreviewWithFileUrl: Story = {
   args: {
-    fileUrl: "https://data.wa.gov/api/views/f6w7-q2d2/rows.csv",
+    fileUrl: 'https://data.wa.gov/api/views/f6w7-q2d2/rows.csv',
   },
-};
+}

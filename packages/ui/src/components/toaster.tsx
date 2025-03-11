@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { Loader2 } from "lucide-react";
-import { Icons } from "./icons";
-import { Progress } from "./progress";
+import { Loader2 } from 'lucide-react'
+import { Icons } from './icons'
+import { Progress } from './progress'
 import {
   Toast,
   ToastClose,
@@ -10,11 +10,11 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-} from "./toast";
-import { useToast } from "./use-toast";
+} from './toast'
+import { useToast } from './use-toast'
 
 export function Toaster() {
-  const { toasts } = useToast();
+  const { toasts } = useToast()
 
   return (
     <ToastProvider>
@@ -31,22 +31,22 @@ export function Toaster() {
           return (
             <Toast key={id} {...props} className="flex flex-col">
               <div className="flex w-full">
-                <div className="space-y-2 w-full justify-center">
-                  <div className="flex space-x-2 justify-between">
-                    <div className="flex space-x-2 items-center">
+                <div className="w-full justify-center space-y-2">
+                  <div className="flex justify-between space-x-2">
+                    <div className="flex items-center space-x-2">
                       {props?.variant && (
-                        <div className="w-[20px] h-[20px] flex items-center">
-                          {props.variant === "ai" && (
+                        <div className="flex h-[20px] w-[20px] items-center">
+                          {props.variant === 'ai' && (
                             <Icons.AI className="text-[#0064D9]" />
                           )}
-                          {props?.variant === "success" && <Icons.Check />}
-                          {props?.variant === "error" && (
+                          {props?.variant === 'success' && <Icons.Check />}
+                          {props?.variant === 'error' && (
                             <Icons.Error className="text-[#FF3638]" />
                           )}
-                          {props?.variant === "progress" && (
+                          {props?.variant === 'progress' && (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           )}
-                          {props?.variant === "spinner" && (
+                          {props?.variant === 'spinner' && (
                             <Loader2 className="h-4 w-4 animate-spin" />
                           )}
                         </div>
@@ -55,7 +55,7 @@ export function Toaster() {
                     </div>
 
                     <div>
-                      {props?.variant === "progress" && (
+                      {props?.variant === 'progress' && (
                         <span className="text-sm text-[#878787]">
                           {progress}%
                         </span>
@@ -63,10 +63,10 @@ export function Toaster() {
                     </div>
                   </div>
 
-                  {props.variant === "progress" && (
+                  {props.variant === 'progress' && (
                     <Progress
                       value={progress}
-                      className="w-full rounded-none h-[3px] bg-border"
+                      className="bg-border h-[3px] w-full rounded-none"
                     />
                   )}
 
@@ -78,12 +78,12 @@ export function Toaster() {
                 <ToastClose />
               </div>
 
-              <div className="w-full flex justify-end">{footer}</div>
+              <div className="flex w-full justify-end">{footer}</div>
             </Toast>
-          );
+          )
         },
       )}
       <ToastViewport />
     </ToastProvider>
-  );
+  )
 }

@@ -1,8 +1,8 @@
-import * as React from "react";
-import { AccountBalanceHistory } from "client-typescript-sdk";
-import { cn } from "../../../utils/cn";
-import { Card, CardHeader, CardTitle } from "../../card";
-import { AccountBalanceChart } from "../../charts/financials/account-balance";
+import { AccountBalanceHistory } from 'client-typescript-sdk'
+import * as React from 'react'
+import { cn } from '../../../utils/cn'
+import { Card, CardHeader, CardTitle } from '../../card'
+import { AccountBalanceChart } from '../../charts/financials/account-balance'
 
 export interface AccountBalanceOverTimeCardProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -12,8 +12,8 @@ export interface AccountBalanceOverTimeCardProps
    * @type {Array<AccountBalanceHistory>}
    * @memberOf AccountBalanceOverTimeCardProps
    * */
-  accountBalanceHistory: Array<AccountBalanceHistory>;
-  className?: string;
+  accountBalanceHistory: Array<AccountBalanceHistory>
+  className?: string
 }
 
 /**
@@ -34,7 +34,7 @@ export const AccountBalanceOverTimeCard: React.FC<
 > = ({ accountBalanceHistory, className }) => {
   if (accountBalanceHistory.length === 0) {
     return (
-      <div className={cn("p-[1%]", className)}>
+      <div className={cn('p-[1%]', className)}>
         <Card className="py-2">
           <CardHeader>
             <CardTitle>We are still pulling in your data!</CardTitle>
@@ -42,12 +42,12 @@ export const AccountBalanceOverTimeCard: React.FC<
           </CardHeader>
         </Card>
       </div>
-    );
+    )
   }
 
   return (
-    <div className={cn("p-[1%]", className)}>
-      <AccountBalanceChart data={accountBalanceHistory} currency={"USD"} />
+    <div className={cn('p-[1%]', className)}>
+      <AccountBalanceChart data={accountBalanceHistory} currency={'USD'} />
     </div>
-  );
-};
+  )
+}

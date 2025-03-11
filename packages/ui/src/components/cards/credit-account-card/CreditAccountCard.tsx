@@ -1,43 +1,39 @@
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import { RocketIcon, Wallet2Icon } from "lucide-react";
-import React, { createContext, ReactNode } from "react";
+import { CaretSortIcon } from '@radix-ui/react-icons'
 import {
   AccountBalanceHistory,
   Apr,
   CreditAccount,
   FinancialProfile,
-} from "client-typescript-sdk";
-import { FinancialDataGenerator } from "../../../lib/random/financial-data-generator";
-import { cn } from "../../../utils/cn";
-import { AccountBalanceChart } from "../../charts/financials/account-balance";
+} from 'client-typescript-sdk'
+import { RocketIcon, Wallet2Icon } from 'lucide-react'
+import React, { createContext, ReactNode } from 'react'
+import { FinancialDataGenerator } from '../../../lib/random/financial-data-generator'
+import { cn } from '../../../utils/cn'
+import { AccountBalanceChart } from '../../charts/financials/account-balance'
 
-import { Badge } from "../../badge";
-import { Button } from "../../button";
+import { Badge } from '../../badge'
+import { Button } from '../../button'
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../card";
+} from '../../card'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../../collapsible";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "../../hover-card";
-import { Label } from "../../label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../tabs";
+} from '../../collapsible'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../../hover-card'
+import { Label } from '../../label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../tabs'
 
-import { FinancialDataProcessor } from "../../../lib/financial-data-processor";
+import { FinancialDataProcessor } from '../../../lib/financial-data-processor'
 
 /** @type {React.Context<CreditAccount>} */
-const CreditAccountCardContext = createContext<CreditAccount>({});
-const FinancialProfileContext = createContext<FinancialProfile>({});
+const CreditAccountCardContext = createContext<CreditAccount>({})
+const FinancialProfileContext = createContext<FinancialProfile>({})
 
 /**
  * Credit Account Card Props
@@ -47,15 +43,15 @@ const FinancialProfileContext = createContext<FinancialProfile>({});
  * @template CreditAccount
  */
 export type CreditAccountCardProps<CreditAccount> = {
-  creditAccount: CreditAccount;
-  financialProfile: FinancialProfile;
-  institutionName: string;
-  className?: string;
-  contextQuestions?: string[];
-  enableDemoMode?: boolean;
-  children?: ReactNode;
-  historicalAccountBalance?: AccountBalanceHistory[];
-};
+  creditAccount: CreditAccount
+  financialProfile: FinancialProfile
+  institutionName: string
+  className?: string
+  contextQuestions?: string[]
+  enableDemoMode?: boolean
+  children?: ReactNode
+  historicalAccountBalance?: AccountBalanceHistory[]
+}
 
 /**
  * Credit Account Card Component that displays the credit account information
@@ -84,12 +80,12 @@ export const CreditAccountCard: React.FC<
 }) => {
   creditAccount = enableDemoMode
     ? FinancialDataGenerator.generateRandomCreditAccount()
-    : creditAccount;
+    : creditAccount
 
   return (
     <CreditAccountCardContext.Provider value={creditAccount}>
       <FinancialProfileContext.Provider value={financialProfile}>
-        <div className={cn("p-2", className)}>
+        <div className={cn('p-2', className)}>
           <CardHeader className="flex items-start gap-x-5 space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-xs font-bold text-gray-600 dark:text-gray-200">
@@ -102,12 +98,12 @@ export const CreditAccountCard: React.FC<
               <CardTitle
                 className="text-xs font-bold"
                 style={{
-                  fontSize: "11px",
+                  fontSize: '11px',
                 }}
               >
                 <HoverCard>
                   <HoverCardTrigger>
-                    {" "}
+                    {' '}
                     {institutionName} Credit Card
                   </HoverCardTrigger>
                   <HoverCardContent className="rounded-2xl">
@@ -122,27 +118,27 @@ export const CreditAccountCard: React.FC<
               <div>
                 <div className="flex flex-1 justify-start gap-2">
                   <Badge
-                    className="border border-black bg-white font-bold text-background"
+                    className="text-background border border-black bg-white font-bold"
                     style={{
-                      fontSize: "8px",
+                      fontSize: '8px',
                     }}
                   >
                     {creditAccount.type}
                   </Badge>
                   <Badge
-                    className="border border-black bg-white text-background"
+                    className="text-background border border-black bg-white"
                     style={{
-                      fontSize: "8px",
+                      fontSize: '8px',
                     }}
                   >
-                    Overdue: {creditAccount.isOverdue === false ? "No" : "Yes"}
+                    Overdue: {creditAccount.isOverdue === false ? 'No' : 'Yes'}
                   </Badge>
                 </div>
               </div>
               <div>
                 <div className="flex gap-1">
                   <span className="text-xs text-gray-600 dark:text-gray-200">
-                    Account Number:{" "}
+                    Account Number:{' '}
                   </span>
                   <span className="text-xs font-bold">
                     {creditAccount.number}
@@ -159,7 +155,7 @@ export const CreditAccountCard: React.FC<
                 </Label>
                 <p
                   style={{
-                    fontSize: "10px",
+                    fontSize: '10px',
                   }}
                   className="font-bold"
                 >
@@ -167,7 +163,7 @@ export const CreditAccountCard: React.FC<
                 </p>
                 <p
                   style={{
-                    fontSize: "10px",
+                    fontSize: '10px',
                   }}
                   className="font-bold"
                 >
@@ -175,8 +171,8 @@ export const CreditAccountCard: React.FC<
                   {FinancialDataProcessor.formatNumber(
                     creditAccount.minimumPaymentAmount ?? 0,
                     2,
-                  )}{" "}
-                  due on{" "}
+                  )}{' '}
+                  due on{' '}
                   {FinancialDataProcessor.formatDate(
                     creditAccount.nextPaymentDueDate ?? 0,
                   )}
@@ -215,8 +211,8 @@ export const CreditAccountCard: React.FC<
         </div>
       </FinancialProfileContext.Provider>
     </CreditAccountCardContext.Provider>
-  );
-};
+  )
+}
 
 /*
  * Credit Account Apr Props
@@ -224,7 +220,7 @@ export const CreditAccountCard: React.FC<
  * @interface CreditAccountAprProps
  * */
 interface CreditAccountAprProps {
-  aprs: Apr[];
+  aprs: Apr[]
 }
 
 /**
@@ -234,7 +230,7 @@ interface CreditAccountAprProps {
  * @returns {*}
  */
 const CreditAccountApr: React.FC<CreditAccountAprProps> = (props) => {
-  const { aprs } = props;
+  const { aprs } = props
 
   return (
     <div>
@@ -260,12 +256,12 @@ const CreditAccountApr: React.FC<CreditAccountAprProps> = (props) => {
                 <span className="text-xs"> of balance subject to apr</span>
               </p>
             </div>
-          ))}{" "}
+          ))}{' '}
         </div>
       </Card>
     </div>
-  );
-};
+  )
+}
 
 /*
  * Credit Account Mini Card Props
@@ -273,9 +269,9 @@ const CreditAccountApr: React.FC<CreditAccountAprProps> = (props) => {
  * @interface CreditAccountMiniCardProps
  * */
 interface CreditAccountMiniCardProps {
-  creditAccount: CreditAccount;
-  institutionName: string;
-  className?: string;
+  creditAccount: CreditAccount
+  institutionName: string
+  className?: string
 }
 
 /**
@@ -285,11 +281,11 @@ interface CreditAccountMiniCardProps {
  * @returns {*}
  */
 const CreditAccountMiniCard: React.FC<CreditAccountMiniCardProps> = (props) => {
-  const { creditAccount, institutionName, className } = props;
+  const { creditAccount, institutionName, className } = props
   return (
     <Card
       className={cn(
-        "flex flex-col space-x-1 rounded-2xl bg-white text-secondary-foreground",
+        'text-secondary-foreground flex flex-col space-x-1 rounded-2xl bg-white',
         className,
       )}
     >
@@ -304,13 +300,13 @@ const CreditAccountMiniCard: React.FC<CreditAccountMiniCardProps> = (props) => {
       <CardContent>
         <div className="flex flex-col items-center justify-center">
           <p className="text-xl font-bold">
-            ${creditAccount.balance}{" "}
+            ${creditAccount.balance}{' '}
             <span className="text-xs">current balance</span>
           </p>
           <p className="text-md font-bold">
             ${creditAccount.minimumPaymentAmount}
             <span className="ml-2 text-xs">
-              due on {creditAccount.nextPaymentDueDate}{" "}
+              due on {creditAccount.nextPaymentDueDate}{' '}
             </span>
           </p>
         </div>
@@ -322,8 +318,8 @@ const CreditAccountMiniCard: React.FC<CreditAccountMiniCardProps> = (props) => {
         </div>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}
 
 /*
  * Credit Card Collapsible Details Props
@@ -331,8 +327,8 @@ const CreditAccountMiniCard: React.FC<CreditAccountMiniCardProps> = (props) => {
  * @interface CreditCardCollapsibleDetailsProps
  * */
 interface CreditCardCollapsibleDetailsProps {
-  creditAccount: CreditAccount;
-  className?: string;
+  creditAccount: CreditAccount
+  className?: string
 }
 
 /**
@@ -343,14 +339,14 @@ interface CreditCardCollapsibleDetailsProps {
 const CreditCardCollapsibleDetails: React.FC<
   CreditCardCollapsibleDetailsProps
 > = (props) => {
-  const { creditAccount, className } = props;
-  const [isOpen, setIsOpen] = React.useState(false);
+  const { creditAccount, className } = props
+  const [isOpen, setIsOpen] = React.useState(false)
 
   return (
     <Collapsible
       open={isOpen}
       onOpenChange={setIsOpen}
-      className={cn("w-[350px] space-y-2", className)}
+      className={cn('w-[350px] space-y-2', className)}
     >
       <div className="flex items-center justify-between space-x-4 px-4">
         <h4 className="text-sm font-semibold">{creditAccount.name} details</h4>
@@ -365,10 +361,10 @@ const CreditCardCollapsibleDetails: React.FC<
         <div className="items-between flex flex-row justify-between">
           <p className="text-xs"> Last Payed</p>
           <p className="text-xs">
-            {" "}
+            {' '}
             {FinancialDataProcessor.formatDate(
-              creditAccount.lastPaymentDate ?? "",
-            )}{" "}
+              creditAccount.lastPaymentDate ?? '',
+            )}{' '}
           </p>
         </div>
       </div>
@@ -377,10 +373,10 @@ const CreditCardCollapsibleDetails: React.FC<
           <div className="items-between flex flex-row justify-between">
             <p className="text-xs"> Last Issued</p>
             <p className="text-xs">
-              {" "}
+              {' '}
               {FinancialDataProcessor.formatDate(
-                creditAccount.lastStatementIssueDate ?? "",
-              )}{" "}
+                creditAccount.lastStatementIssueDate ?? '',
+              )}{' '}
             </p>
           </div>
         </div>
@@ -388,12 +384,12 @@ const CreditCardCollapsibleDetails: React.FC<
           <div className="items-between flex flex-row justify-between">
             <p className="text-xs"> Last Statement Balance</p>
             <p className="text-xs">
-              {" "}
+              {' '}
               $
               {FinancialDataProcessor.formatNumber(
                 creditAccount.lastStatementBalance ?? 0,
                 2,
-              )}{" "}
+              )}{' '}
             </p>
           </div>
         </div>
@@ -401,18 +397,18 @@ const CreditCardCollapsibleDetails: React.FC<
           <div className="items-between flex flex-row justify-between">
             <p className="text-xs"> Last Payment Amount</p>
             <p className="text-xs">
-              {" "}
+              {' '}
               $
               {FinancialDataProcessor.formatNumber(
                 creditAccount.lastPaymentAmount ?? 0,
                 2,
-              )}{" "}
+              )}{' '}
             </p>
           </div>
         </div>
       </CollapsibleContent>
     </Collapsible>
-  );
-};
+  )
+}
 
-export { CreditAccountMiniCard };
+export { CreditAccountMiniCard }

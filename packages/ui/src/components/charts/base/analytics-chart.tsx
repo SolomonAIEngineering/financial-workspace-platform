@@ -1,11 +1,6 @@
-import {
-  Activity,
-  ArrowDownRight,
-  ArrowUpRight,
-  DollarSign,
-  TrendingDown,
-  TrendingUp,
-} from "lucide-react";
+import { format, isValid } from 'date-fns'
+import { Activity, DollarSign, TrendingDown, TrendingUp } from 'lucide-react'
+import { JSX, useEffect, useMemo, useState } from 'react'
 import {
   Area,
   AreaChart,
@@ -22,14 +17,13 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { BarChartMultiDataPoint, ChartDataPoint } from "../../../types/chart";
+} from 'recharts'
 import {
-  ChartContainer as BaseChartContainer,
-  ChartConfig,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "../../chart";
+  formatAmount,
+  getYAxisWidth,
+  roundToNearestFactor,
+} from '../../../lib/chart-utils'
+import { BarChartMultiDataPoint } from '../../../types/chart'
 import {
   Card,
   CardContent,
@@ -37,38 +31,27 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../card";
+} from '../../card'
+import {
+  ChartContainer as BaseChartContainer,
+  ChartConfig,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '../../chart'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../../dialog";
-import React, {
-  Dispatch,
-  FC,
-  JSX,
-  SetStateAction,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../select";
+} from '../../dialog'
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
-} from "../../sheet";
+} from '../../sheet'
 import {
   Table,
   TableBody,
@@ -76,56 +59,48 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../tabs";
-import { format, isValid, parseISO } from "date-fns";
-import {
-  formatAmount,
-  getYAxisWidth,
-  roundToNearestFactor,
-} from "../../../lib/chart-utils";
+} from '../../table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../tabs'
 
-import { BiRightArrow } from "react-icons/bi";
-import { Button } from "../../button";
-import { ChartContainer } from "./chart-container";
-import { InteractiveBarChart } from "./interactive-bar-chart";
-import { Progress } from "@radix-ui/react-progress";
-import { ZoomableChart } from "./zoomable-chart";
-import { generatePayloadArray } from "../../../lib/random/generator";
-import { useWrapperState } from "./chart-wrapper";
+import { Progress } from '@radix-ui/react-progress'
+import { BiRightArrow } from 'react-icons/bi'
+import { Button } from '../../button'
+import { ChartContainer } from './chart-container'
+import { useWrapperState } from './chart-wrapper'
+import { InteractiveBarChart } from './interactive-bar-chart'
 
-type ChartType = "line" | "bar" | "area";
+type ChartType = 'line' | 'bar' | 'area'
 
 interface AnalyticsChartProps<T extends BarChartMultiDataPoint> {
-  chartData: T[];
-  title: string;
-  description: string;
-  footerDescription?: string;
-  dataKeys: (keyof T)[];
-  colors: string[];
-  trendKey: keyof T;
-  yAxisFormatter?: (value: number) => string;
-  chartType: ChartType;
-  stacked?: boolean;
-  currency: string;
-  height?: number;
-  locale?: string;
-  enableAssistantMode?: boolean;
-  disabled?: boolean;
-  disableViewMore?: boolean;
+  chartData: T[]
+  title: string
+  description: string
+  footerDescription?: string
+  dataKeys: (keyof T)[]
+  colors: string[]
+  trendKey: keyof T
+  yAxisFormatter?: (value: number) => string
+  chartType: ChartType
+  stacked?: boolean
+  currency: string
+  height?: number
+  locale?: string
+  enableAssistantMode?: boolean
+  disabled?: boolean
+  disableViewMore?: boolean
 }
 
 const parseDate = (dateString: string | undefined): Date | null => {
-  if (!dateString) return null;
-  const date = new Date(dateString);
-  return isValid(date) ? date : null;
-};
+  if (!dateString) return null
+  const date = new Date(dateString)
+  return isValid(date) ? date : null
+}
 
 const formatDate = (dateString: string | undefined): string => {
-  if (!dateString) return "N/A";
-  const date = parseDate(dateString);
-  return date ? format(date, "MMM d, yyyy") : "Invalid Date";
-};
+  if (!dateString) return 'N/A'
+  const date = parseDate(dateString)
+  return date ? format(date, 'MMM d, yyyy') : 'Invalid Date'
+}
 
 const AnalyticsChart = <T extends BarChartMultiDataPoint>({
   chartData: propData,
@@ -145,75 +120,75 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
   disabled = false,
   disableViewMore = false,
 }: AnalyticsChartProps<T>) => {
-  const [drilldownData, setDrilldownData] = useState<T | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [aiModalOpenState, setAiModalOpenState] = useState<boolean>(false);
-  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [drilldownData, setDrilldownData] = useState<T | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [aiModalOpenState, setAiModalOpenState] = useState<boolean>(false)
+  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
 
   const data = useMemo(() => {
     if (disabled) {
-      return [];
+      return []
     }
-    return propData;
-  }, [disabled, propData]);
+    return propData
+  }, [disabled, propData])
 
-  const [dataSet, setDataSet] = useState<T[]>(data.length > 0 ? data : []);
+  const [dataSet, setDataSet] = useState<T[]>(data.length > 0 ? data : [])
 
   useEffect(() => {
-    setDataSet(data);
-  }, [data]);
+    setDataSet(data)
+  }, [data])
 
   const chartConfig = useMemo(() => {
-    const config: ChartConfig = {};
+    const config: ChartConfig = {}
     dataKeys.forEach((key, index) => {
       config[key as string] = {
         label: key as string,
         color: colors[index] || `hsl(var(--chart-${index + 1}))`,
-      };
-    });
-    return config;
-  }, [dataKeys, colors]);
+      }
+    })
+    return config
+  }, [dataKeys, colors])
 
   const formattedData = useMemo(
     () =>
       dataSet
         .map((item) => {
-          const date = parseDate(item.date);
+          const date = parseDate(item.date)
           return {
             ...item,
             dateTime: date ? date.getTime() : null,
-          };
+          }
         })
         .filter((item) => item.dateTime !== null)
         .sort((a, b) => (a.dateTime ?? 0) - (b.dateTime ?? 0)),
     [dataSet],
-  );
+  )
 
   const [minValue, maxValue] = useMemo(() => {
     const allValues = formattedData.flatMap((item) =>
       dataKeys.map((key) => Number(item[key])),
-    );
-    return [Math.min(...allValues), Math.max(...allValues)];
-  }, [formattedData, dataKeys]);
+    )
+    return [Math.min(...allValues), Math.max(...allValues)]
+  }, [formattedData, dataKeys])
 
   const percentageChange = useMemo(() => {
-    if (formattedData.length < 2) return 0;
-    const firstValue = Number(formattedData[0]?.[trendKey] ?? 0);
+    if (formattedData.length < 2) return 0
+    const firstValue = Number(formattedData[0]?.[trendKey] ?? 0)
     const lastValue = Number(
       formattedData[formattedData.length - 1]?.[trendKey] ?? 0,
-    );
-    return firstValue === 0 ? 0 : ((lastValue - firstValue) / firstValue) * 100;
-  }, [formattedData, trendKey]);
+    )
+    return firstValue === 0 ? 0 : ((lastValue - firstValue) / firstValue) * 100
+  }, [formattedData, trendKey])
 
-  const isTrendingUp = percentageChange > 0;
+  const isTrendingUp = percentageChange > 0
 
   const handleDataPointClick = (data: any) => {
     if (data && data.activePayload && data.activePayload.length > 0) {
-      setDrilldownData(data.activePayload[0].payload);
-      setIsDialogOpen(true);
+      setDrilldownData(data.activePayload[0].payload)
+      setIsDialogOpen(true)
     }
-  };
+  }
 
   const getLabel = (value: number): string => {
     return formatAmount({
@@ -222,48 +197,48 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
       currency,
       amount: value,
       locale,
-    });
-  };
+    })
+  }
 
   const maxYAxisValue = roundToNearestFactor(
     formattedData.map((item) =>
       Math.max(...dataKeys.map((key) => Number(item[key]))),
     ),
-  );
-  const yAxisLabelMaxValue: string = getLabel(maxYAxisValue);
-  const yAxisWidth = getYAxisWidth(yAxisLabelMaxValue);
+  )
+  const yAxisLabelMaxValue: string = getLabel(maxYAxisValue)
+  const yAxisWidth = getYAxisWidth(yAxisLabelMaxValue)
 
   const filterDataByDateRange = (dateRange: { from: Date; to: Date }) => {
-    const { from, to } = dateRange;
+    const { from, to } = dateRange
     setDataSet(
       data.filter(({ date }) => {
-        const itemDate = new Date(date);
-        return itemDate >= from && itemDate <= to;
+        const itemDate = new Date(date)
+        return itemDate >= from && itemDate <= to
       }) as T[],
-    );
-  };
+    )
+  }
 
   const renderChart = () => {
     const commonProps = {
       data: formattedData,
       margin: { top: 20, right: 30, left: 20, bottom: 10 },
       onClick: handleDataPointClick,
-    };
+    }
 
     const commonAxisProps = {
-      stroke: "#888888",
+      stroke: '#888888',
       fontSize: 12,
       tickLine: false,
       axisLine: false,
       tick: {
-        fill: "#606060",
+        fill: '#606060',
         fontSize: 12,
-        fontFamily: "var(--font-sans)",
+        fontFamily: 'var(--font-sans)',
       },
-    };
+    }
 
     switch (chartType) {
-      case "bar":
+      case 'bar':
         return (
           <BarChart {...commonProps}>
             <CartesianGrid
@@ -298,12 +273,12 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
                 key={key as string}
                 dataKey={key as string}
                 fill={colors[index] || `hsl(var(--chart-${index + 1}))`}
-                stackId={stacked ? "stack" : undefined}
+                stackId={stacked ? 'stack' : undefined}
               />
             ))}
           </BarChart>
-        );
-      case "area":
+        )
+      case 'area':
         return (
           <AreaChart {...commonProps}>
             <CartesianGrid
@@ -341,11 +316,11 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
                 fill={colors[index] || `hsl(var(--chart-${index + 1}))`}
                 stroke={colors[index] || `hsl(var(--chart-${index + 1}))`}
                 fillOpacity={0.3}
-                stackId={stacked ? "stack" : undefined}
+                stackId={stacked ? 'stack' : undefined}
               />
             ))}
           </AreaChart>
-        );
+        )
       default:
         return (
           <LineChart {...commonProps}>
@@ -387,57 +362,57 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
               />
             ))}
           </LineChart>
-        );
+        )
     }
-  };
+  }
 
   const getActivityLevel = (value: number) => {
-    if (isNaN(value)) return "N/A";
-    if (value > maxValue * 0.8) return "High";
-    if (value > maxValue * 0.5) return "Moderate";
-    return "Low";
-  };
+    if (isNaN(value)) return 'N/A'
+    if (value > maxValue * 0.8) return 'High'
+    if (value > maxValue * 0.5) return 'Moderate'
+    return 'Low'
+  }
 
   const getRecommendations = (value: number) => {
-    const activityLevel = getActivityLevel(value);
+    const activityLevel = getActivityLevel(value)
     switch (activityLevel) {
-      case "High":
+      case 'High':
         return [
-          "Review your high number of transactions for any unnecessary spending",
-          "Consider setting up automated savings for excess funds",
-          "Look into rewards programs that benefit frequent transactions",
-        ];
-      case "Moderate":
+          'Review your high number of transactions for any unnecessary spending',
+          'Consider setting up automated savings for excess funds',
+          'Look into rewards programs that benefit frequent transactions',
+        ]
+      case 'Moderate':
         return [
-          "Analyze your spending patterns to identify areas for potential savings",
-          "Review your budget to ensure it aligns with your current spending",
-          "Consider setting financial goals based on your consistent activity",
-        ];
-      case "Low":
+          'Analyze your spending patterns to identify areas for potential savings',
+          'Review your budget to ensure it aligns with your current spending',
+          'Consider setting financial goals based on your consistent activity',
+        ]
+      case 'Low':
         return [
-          "Review your budget to ensure all necessary expenses are accounted for",
-          "Look for opportunities to increase your savings or investments",
-          "Explore ways to diversify your income or increase cash flow",
-        ];
+          'Review your budget to ensure all necessary expenses are accounted for',
+          'Look for opportunities to increase your savings or investments',
+          'Explore ways to diversify your income or increase cash flow',
+        ]
       default:
         return [
-          "Insufficient data to provide recommendations",
-          "Consider reviewing your data input for accuracy",
-          "Ensure all necessary financial information is being tracked",
-        ];
+          'Insufficient data to provide recommendations',
+          'Consider reviewing your data input for accuracy',
+          'Ensure all necessary financial information is being tracked',
+        ]
     }
-  };
+  }
 
   // get the earliest and latest dates in the data
   const sortedData = data.sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  );
+  )
   const earliestDate = sortedData[0]?.date
     ? new Date(sortedData[0].date)
-    : undefined;
+    : undefined
   const latestDate = sortedData[sortedData.length - 1]?.date
     ? new Date(sortedData[sortedData.length - 1]!.date)
-    : undefined;
+    : undefined
 
   return (
     <ChartContainer<T>
@@ -471,29 +446,29 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
               </BaseChartContainer>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-1 justify-between items-start gap-2 text-sm">
+          <CardFooter className="flex flex-1 items-start justify-between gap-2 text-sm">
             <div className="flex gap-2 font-medium leading-none">
               {isTrendingUp ? (
                 <>
-                  Trending up by{" "}
+                  Trending up by{' '}
                   <span className="text-[#2DB78A]">
-                    {percentageChange.toFixed(2)}%{" "}
-                  </span>{" "}
-                  this period{" "}
-                  <TrendingUp className="inline text-[#2DB78A] h-4 w-4" />
+                    {percentageChange.toFixed(2)}%{' '}
+                  </span>{' '}
+                  this period{' '}
+                  <TrendingUp className="inline h-4 w-4 text-[#2DB78A]" />
                 </>
               ) : (
                 <>
-                  Trending down by{" "}
+                  Trending down by{' '}
                   <span className="text-[#E2366F]">
-                    {Math.abs(percentageChange).toFixed(2)}%{" "}
-                  </span>{" "}
-                  this period{" "}
-                  <TrendingDown className="inline text-[#E2366F] h-4 w-4" />
+                    {Math.abs(percentageChange).toFixed(2)}%{' '}
+                  </span>{' '}
+                  this period{' '}
+                  <TrendingDown className="inline h-4 w-4 text-[#E2366F]" />
                 </>
               )}
               {footerDescription && (
-                <div className="leading-none text-muted-foreground">
+                <div className="text-muted-foreground leading-none">
                   {footerDescription}
                 </div>
               )}
@@ -506,7 +481,7 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
                 className="text-sm"
               >
                 View More
-                <BiRightArrow className="inline ml-1" />
+                <BiRightArrow className="ml-1 inline" />
               </Button>
             )}
           </CardFooter>
@@ -528,7 +503,7 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
             open={isDialogOpen}
             onOpenChange={() => setIsDialogOpen(false)}
           >
-            <DialogContent className="sm:max-w-[600px] p-[2%]">
+            <DialogContent className="p-[2%] sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>Detailed Insights</DialogTitle>
                 <DialogDescription>
@@ -537,20 +512,20 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
               </DialogHeader>
               <div className="mt-4 space-y-4">
                 {dataKeys.map((key) => {
-                  const value = Number(drilldownData[key]);
+                  const value = Number(drilldownData[key])
                   return (
                     <div key={key as string}>
                       <h3 className="text-lg font-semibold">
-                        {key as string}:{" "}
+                        {key as string}:{' '}
                         {isNaN(value)
-                          ? "N/A"
+                          ? 'N/A'
                           : yAxisFormatter
                             ? yAxisFormatter(value)
                             : getLabel(Number(value.toFixed(2)))}
                       </h3>
                       <p>Activity Level: {getActivityLevel(value)}</p>
                     </div>
-                  );
+                  )
                 })}
                 <div>
                   <h4 className="font-semibold">Recommendations:</h4>
@@ -571,26 +546,26 @@ const AnalyticsChart = <T extends BarChartMultiDataPoint>({
         )}
       </>
     </ChartContainer>
-  );
-};
+  )
+}
 
 interface DetailedAnalyticsSheetProps<T extends BarChartMultiDataPoint> {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  formattedData: T[];
-  dataKeys: (keyof T)[];
-  getLabel: (value: number) => string;
-  colors: string[]; // Add this line
+  isOpen: boolean
+  onOpenChange: (open: boolean) => void
+  formattedData: T[]
+  dataKeys: (keyof T)[]
+  getLabel: (value: number) => string
+  colors: string[] // Add this line
 }
 
 const COLORS = [
-  "#1A1A1A",
-  "#333333",
-  "#4D4D4D",
-  "#666666",
-  "#808080",
-  "#999999",
-];
+  '#1A1A1A',
+  '#333333',
+  '#4D4D4D',
+  '#666666',
+  '#808080',
+  '#999999',
+]
 
 const DetailedAnalyticsSheet = <T extends BarChartMultiDataPoint>({
   isOpen,
@@ -600,25 +575,25 @@ const DetailedAnalyticsSheet = <T extends BarChartMultiDataPoint>({
   getLabel,
   colors, // Add this prop
 }: DetailedAnalyticsSheetProps<T>) => {
-  const [selectedMetric, setSelectedMetric] = useState<keyof T>(dataKeys[0]!);
+  const [selectedMetric, setSelectedMetric] = useState<keyof T>(dataKeys[0]!)
 
   const getDataSummary = () =>
     dataKeys.reduce(
       (acc, key) => {
-        const values = formattedData.map((item) => Number(item[key]));
+        const values = formattedData.map((item) => Number(item[key]))
         acc[key as string] = {
           min: Math.min(...values),
           max: Math.max(...values),
           average: values.reduce((sum, val) => sum + val, 0) / values.length,
           total: values.reduce((sum, val) => sum + val, 0),
-        };
-        return acc;
+        }
+        return acc
       },
       {} as Record<
         string,
         { min: number; max: number; average: number; total: number }
       >,
-    );
+    )
 
   const getTopPerformers = () =>
     dataKeys.map((key) => ({
@@ -627,77 +602,77 @@ const DetailedAnalyticsSheet = <T extends BarChartMultiDataPoint>({
         .sort((a, b) => Number(b[key]) - Number(a[key]))
         .slice(0, 5)
         .map((item) => ({
-          date: format(new Date(item.date), "MMM dd, yyyy"),
+          date: format(new Date(item.date), 'MMM dd, yyyy'),
           value: Number(item[key]),
         })),
-    }));
+    }))
 
   const getGrowthRate = () =>
     dataKeys.map((key) => {
-      const firstValue = Number(formattedData[0]?.[key] ?? 0);
+      const firstValue = Number(formattedData[0]?.[key] ?? 0)
       const lastValue = Number(
         formattedData[formattedData.length - 1]?.[key] ?? 0,
-      );
+      )
       const growthRate =
-        firstValue === 0 ? 0 : ((lastValue - firstValue) / firstValue) * 100;
-      return { key, growthRate };
-    });
+        firstValue === 0 ? 0 : ((lastValue - firstValue) / firstValue) * 100
+      return { key, growthRate }
+    })
 
   const getMetricInsights = (metric: keyof T) => {
-    const values = formattedData.map((item) => Number(item[metric]));
-    const average = values.reduce((sum, val) => sum + val, 0) / values.length;
-    const lastValue = values[values.length - 1] ?? 0;
-    const firstValue = values[0] ?? 0;
+    const values = formattedData.map((item) => Number(item[metric]))
+    const average = values.reduce((sum, val) => sum + val, 0) / values.length
+    const lastValue = values[values.length - 1] ?? 0
+    const firstValue = values[0] ?? 0
     const percentChange =
-      firstValue !== 0 ? ((lastValue - firstValue) / firstValue) * 100 : 0;
+      firstValue !== 0 ? ((lastValue - firstValue) / firstValue) * 100 : 0
     return {
       average,
       lastValue,
       percentChange,
-      trend: percentChange >= 0 ? "up" : "down",
-    };
-  };
+      trend: percentChange >= 0 ? 'up' : 'down',
+    }
+  }
 
   const getCorrelations = () => {
     const correlations: {
-      metric1: string;
-      metric2: string;
-      correlation: number;
-    }[] = [];
+      metric1: string
+      metric2: string
+      correlation: number
+    }[] = []
     for (let i = 0; i < dataKeys.length; i++) {
       for (let j = i + 1; j < dataKeys.length; j++) {
-        const metric1 = dataKeys[i] as keyof T;
-        const metric2 = dataKeys[j] as keyof T;
-        const values1 = formattedData.map((item) => Number(item[metric1] ?? 0));
-        const values2 = formattedData.map((item) => Number(item[metric2] ?? 0));
+        const metric1 = dataKeys[i] as keyof T
+        const metric2 = dataKeys[j] as keyof T
+        const values1 = formattedData.map((item) => Number(item[metric1] ?? 0))
+        const values2 = formattedData.map((item) => Number(item[metric2] ?? 0))
         correlations.push({
           metric1: String(metric1),
           metric2: String(metric2),
           correlation: calculateCorrelation(values1, values2),
-        });
+        })
       }
     }
     return correlations.sort(
       (a, b) => Math.abs(b.correlation) - Math.abs(a.correlation),
-    );
-  };
+    )
+  }
 
   const calculateCorrelation = (x: number[], y: number[]) => {
-    const n = x.length;
-    const sum_x = x.reduce((a, b) => a + b, 0);
-    const sum_y = y.reduce((a, b) => a + b, 0);
-    const sum_xy = x.reduce((total, xi, i) => total + xi * y[i]!, 0);
-    const sum_x2 = x.reduce((total, xi) => total + xi * xi, 0);
-    const sum_y2 = y.reduce((total, yi) => total + yi * yi, 0);
-    const numerator = n * sum_xy - sum_x * sum_y;
+    const n = x.length
+    const sum_x = x.reduce((a, b) => a + b, 0)
+    const sum_y = y.reduce((a, b) => a + b, 0)
+    const sum_xy = x.reduce((total, xi, i) => total + xi * y[i]!, 0)
+    const sum_x2 = x.reduce((total, xi) => total + xi * xi, 0)
+    const sum_y2 = y.reduce((total, yi) => total + yi * yi, 0)
+    const numerator = n * sum_xy - sum_x * sum_y
     const denominator = Math.sqrt(
       (n * sum_x2 - sum_x * sum_x) * (n * sum_y2 - sum_y * sum_y),
-    );
-    return numerator / denominator;
-  };
+    )
+    return numerator / denominator
+  }
 
   const getPieChartData = (data: Record<string, number>) =>
-    Object.entries(data).map(([name, value]) => ({ name, value }));
+    Object.entries(data).map(([name, value]) => ({ name, value }))
 
   const getBarChartData = (summary: ReturnType<typeof getDataSummary>) =>
     Object.entries(summary).map(([key, values]) => ({
@@ -705,17 +680,17 @@ const DetailedAnalyticsSheet = <T extends BarChartMultiDataPoint>({
       min: values.min,
       max: values.max,
       average: values.average,
-    }));
+    }))
 
   const getAreaChartData = () =>
     formattedData.map((item) => ({
-      date: format(new Date(item.date), "MMM dd, yyyy"),
+      date: format(new Date(item.date), 'MMM dd, yyyy'),
       ...Object.fromEntries(dataKeys.map((key) => [key, Number(item[key])])),
-    }));
+    }))
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
-      <SheetContent className="min-w-[70%] overflow-y-auto scroll-smooth  bg-background text-foreground">
+      <SheetContent className="bg-background text-foreground min-w-[70%] overflow-y-auto scroll-smooth">
         <SheetHeader>
           <SheetTitle>Detailed Analytics</SheetTitle>
           <SheetDescription>
@@ -724,7 +699,7 @@ const DetailedAnalyticsSheet = <T extends BarChartMultiDataPoint>({
         </SheetHeader>
         <div className="mt-6">
           <Tabs defaultValue="summary" className="w-full">
-            <TabsList className="grid grid-cols-4 gap-2 mb-6">
+            <TabsList className="mb-6 grid grid-cols-4 gap-2">
               <TabsTrigger value="summary">Summary</TabsTrigger>
               <TabsTrigger value="trends">Trends</TabsTrigger>
               <TabsTrigger value="topPerformers">Top Performers</TabsTrigger>
@@ -735,11 +710,11 @@ const DetailedAnalyticsSheet = <T extends BarChartMultiDataPoint>({
                 <SummaryTab<T>
                   dataKeys={dataKeys}
                   getMetricInsights={(metric: keyof T) => {
-                    const insights = getMetricInsights(metric);
+                    const insights = getMetricInsights(metric)
                     return {
                       ...insights,
-                      trend: insights.trend as "up" | "down",
-                    };
+                      trend: insights.trend as 'up' | 'down',
+                    }
                   }}
                   getDataSummary={getDataSummary}
                   getLabel={getLabel}
@@ -780,8 +755,8 @@ const DetailedAnalyticsSheet = <T extends BarChartMultiDataPoint>({
         </div>
       </SheetContent>
     </Sheet>
-  );
-};
+  )
+}
 
 const SummaryTab = <T extends BarChartMultiDataPoint>({
   dataKeys,
@@ -789,24 +764,24 @@ const SummaryTab = <T extends BarChartMultiDataPoint>({
   getDataSummary,
   getLabel,
 }: {
-  dataKeys: (keyof T)[];
+  dataKeys: (keyof T)[]
   getMetricInsights: (metric: keyof T) => {
-    average: number;
-    lastValue: number;
-    percentChange: number;
-    trend: "up" | "down";
-  };
+    average: number
+    lastValue: number
+    percentChange: number
+    trend: 'up' | 'down'
+  }
   getDataSummary: () => Record<
     string,
     { min: number; max: number; average: number; total: number }
-  >;
-  getLabel: (value: number) => string;
+  >
+  getLabel: (value: number) => string
 }) => {
-  const summary = getDataSummary();
+  const summary = getDataSummary()
   const pieChartData = Object.entries(summary).map(([key, values]) => ({
     name: key,
     value: values.total,
-  }));
+  }))
 
   return (
     <div className="space-y-4">
@@ -819,7 +794,7 @@ const SummaryTab = <T extends BarChartMultiDataPoint>({
         />
       </div>
       <div className="p-[2%]">
-        <h3 className="text-lg font-semibold mt-6">Data Summary</h3>
+        <h3 className="mt-6 text-lg font-semibold">Data Summary</h3>
         <Table>
           <TableHeader>
             <TableRow>
@@ -848,7 +823,7 @@ const SummaryTab = <T extends BarChartMultiDataPoint>({
         </Table>
       </div>
       <div className="p-[2%]">
-        <h3 className="text-lg font-semibold mt-6">Total Distribution</h3>
+        <h3 className="mt-6 text-lg font-semibold">Total Distribution</h3>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -878,8 +853,8 @@ const SummaryTab = <T extends BarChartMultiDataPoint>({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const TrendsTab = <T extends BarChartMultiDataPoint>({
   formattedData,
@@ -890,17 +865,17 @@ const TrendsTab = <T extends BarChartMultiDataPoint>({
   colors,
   getCorrelations,
 }: {
-  formattedData: T[];
-  dataKeys: (keyof T)[];
-  selectedMetric: keyof T;
-  setSelectedMetric: (metric: keyof T) => void;
-  getLabel: (value: number) => string;
-  colors: string[];
+  formattedData: T[]
+  dataKeys: (keyof T)[]
+  selectedMetric: keyof T
+  setSelectedMetric: (metric: keyof T) => void
+  getLabel: (value: number) => string
+  colors: string[]
   getCorrelations: () => {
-    metric1: string;
-    metric2: string;
-    correlation: number;
-  }[];
+    metric1: string
+    metric2: string
+    correlation: number
+  }[]
 }) => {
   // Create a config object for InteractiveBarChart
   const chartConfig = useMemo(() => {
@@ -909,31 +884,31 @@ const TrendsTab = <T extends BarChartMultiDataPoint>({
         config[key as string] = {
           label: String(key),
           color: colors[index] || `hsl(var(--chart-${index + 1}))`,
-        };
-        return config;
+        }
+        return config
       },
       {} as Record<string, { label: string; color: string }>,
-    );
-  }, [dataKeys, colors]);
+    )
+  }, [dataKeys, colors])
 
-  const correlations = getCorrelations();
+  const correlations = getCorrelations()
 
   // Simple linear regression forecast
   const forecast = (data: number[]) => {
-    const n = data.length;
-    const sum_x = data.reduce((sum, _, i) => sum + i, 0);
-    const sum_y = data.reduce((sum, value) => sum + value, 0);
-    const sum_xy = data.reduce((sum, value, i) => sum + i * value, 0);
-    const sum_xx = data.reduce((sum, _, i) => sum + i * i, 0);
+    const n = data.length
+    const sum_x = data.reduce((sum, _, i) => sum + i, 0)
+    const sum_y = data.reduce((sum, value) => sum + value, 0)
+    const sum_xy = data.reduce((sum, value, i) => sum + i * value, 0)
+    const sum_xx = data.reduce((sum, _, i) => sum + i * i, 0)
 
-    const slope = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x);
-    const intercept = (sum_y - slope * sum_x) / n;
+    const slope = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x)
+    const intercept = (sum_y - slope * sum_x) / n
 
-    return intercept + slope * n;
-  };
+    return intercept + slope * n
+  }
 
   return (
-    <div className="space-y-4 flex flex-col gap-2">
+    <div className="flex flex-col gap-2 space-y-4">
       <InteractiveBarChart
         data={formattedData}
         config={chartConfig}
@@ -974,40 +949,40 @@ const TrendsTab = <T extends BarChartMultiDataPoint>({
           </TableHeader>
           <TableBody>
             {dataKeys.map((key) => {
-              const data = formattedData.map((item) => Number(item[key]));
-              const currentValue = data[data.length - 1] ?? 0;
-              const forecastedValue = forecast(data);
+              const data = formattedData.map((item) => Number(item[key]))
+              const currentValue = data[data.length - 1] ?? 0
+              const forecastedValue = forecast(data)
               return (
                 <TableRow key={String(key)}>
                   <TableCell>{String(key)}</TableCell>
                   <TableCell>{getLabel(currentValue)}</TableCell>
                   <TableCell>{getLabel(forecastedValue)}</TableCell>
                 </TableRow>
-              );
+              )
             })}
           </TableBody>
         </Table>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const TopPerformersTab = <T extends BarChartMultiDataPoint>({
   getTopPerformers,
   getLabel,
 }: {
   getTopPerformers: () => {
-    key: keyof T;
-    topDays: { date: string; value: number }[];
-  }[];
-  getLabel: (value: number) => string;
+    key: keyof T
+    topDays: { date: string; value: number }[]
+  }[]
+  getLabel: (value: number) => string
 }) => {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Top Performers</h3>
       {getTopPerformers().map(({ key, topDays }) => (
         <div key={String(key)} className="mb-4">
-          <h4 className="font-medium mb-2">{String(key)}</h4>
+          <h4 className="mb-2 font-medium">{String(key)}</h4>
           <Table>
             <TableHeader>
               <TableRow>
@@ -1029,8 +1004,8 @@ const TopPerformersTab = <T extends BarChartMultiDataPoint>({
         </div>
       ))}
     </div>
-  );
-};
+  )
+}
 
 const GrowthRatesTab = <T extends BarChartMultiDataPoint>({
   getGrowthRate,
@@ -1038,16 +1013,16 @@ const GrowthRatesTab = <T extends BarChartMultiDataPoint>({
   dataKeys,
   getLabel,
 }: {
-  getGrowthRate: () => { key: keyof T; growthRate: number }[];
-  getAreaChartData: () => any[];
-  dataKeys: (keyof T)[];
-  getLabel: (value: number) => string;
+  getGrowthRate: () => { key: keyof T; growthRate: number }[]
+  getAreaChartData: () => any[]
+  dataKeys: (keyof T)[]
+  getLabel: (value: number) => string
 }) => {
-  const growthRates = getGrowthRate();
+  const growthRates = getGrowthRate()
   const pieChartData = growthRates.map(({ key, growthRate }) => ({
     name: String(key),
     value: Math.abs(growthRate),
-  }));
+  }))
 
   return (
     <div className="space-y-4">
@@ -1067,16 +1042,16 @@ const GrowthRatesTab = <T extends BarChartMultiDataPoint>({
               <TableCell>{growthRate.toFixed(2)}%</TableCell>
               <TableCell>
                 {growthRate > 0 ? (
-                  <TrendingUp className="inline text-green-500 h-4 w-4" />
+                  <TrendingUp className="inline h-4 w-4 text-green-500" />
                 ) : (
-                  <TrendingDown className="inline text-red-500 h-4 w-4" />
+                  <TrendingDown className="inline h-4 w-4 text-red-500" />
                 )}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <h3 className="text-lg font-semibold mt-6">Growth Rate Distribution</h3>
+      <h3 className="mt-6 text-lg font-semibold">Growth Rate Distribution</h3>
       <div className="h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -1104,7 +1079,7 @@ const GrowthRatesTab = <T extends BarChartMultiDataPoint>({
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <h4 className="text-md font-semibold mt-4">Trend Over Time</h4>
+      <h4 className="text-md mt-4 font-semibold">Trend Over Time</h4>
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={getAreaChartData()}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -1125,17 +1100,17 @@ const GrowthRatesTab = <T extends BarChartMultiDataPoint>({
         </AreaChart>
       </ResponsiveContainer>
     </div>
-  );
-};
+  )
+}
 
 const DetailedDataTab = <T extends BarChartMultiDataPoint>({
   formattedData,
   dataKeys,
   getLabel,
 }: {
-  formattedData: T[];
-  dataKeys: (keyof T)[];
-  getLabel: (value: number) => string;
+  formattedData: T[]
+  dataKeys: (keyof T)[]
+  getLabel: (value: number) => string
 }) => {
   return (
     <div className="space-y-4">
@@ -1163,61 +1138,60 @@ const DetailedDataTab = <T extends BarChartMultiDataPoint>({
         </TableBody>
       </Table>
     </div>
-  );
-};
+  )
+}
 
 const MetricInsightCard = ({
   metric,
   insights,
   getLabel,
 }: {
-  metric: string;
+  metric: string
   insights: {
-    average: number;
-    lastValue: number;
-    percentChange: number;
-    trend: "up" | "down";
-    max?: number;
-  };
-  getLabel: (value: number) => string;
+    average: number
+    lastValue: number
+    percentChange: number
+    trend: 'up' | 'down'
+    max?: number
+  }
+  getLabel: (value: number) => string
 }) => {
-  const trendColor =
-    insights.trend === "up" ? "text-green-500" : "text-red-500";
-  const TrendIcon = insights.trend === "up" ? TrendingUp : TrendingDown;
+  const trendColor = insights.trend === 'up' ? 'text-green-500' : 'text-red-500'
+  const TrendIcon = insights.trend === 'up' ? TrendingUp : TrendingDown
   const progressValue =
-    insights.max !== undefined ? (insights.lastValue / insights.max) * 100 : 0;
+    insights.max !== undefined ? (insights.lastValue / insights.max) * 100 : 0
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-300">
+    <Card className="transition-shadow duration-300 hover:shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{String(metric)}</CardTitle>
-        {metric.toLowerCase().includes("revenue") ? (
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
+        {metric.toLowerCase().includes('revenue') ? (
+          <DollarSign className="text-muted-foreground h-4 w-4" />
         ) : (
-          <Activity className="h-4 w-4 text-muted-foreground" />
+          <Activity className="text-muted-foreground h-4 w-4" />
         )}
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">
           {getLabel(Number(insights.lastValue.toFixed(2)))}
         </div>
-        <p className="text-xs text-muted-foreground">
-          {insights.trend === "up" ? "Increased" : "Decreased"} by{" "}
+        <p className="text-muted-foreground text-xs">
+          {insights.trend === 'up' ? 'Increased' : 'Decreased'} by{' '}
           {Math.abs(insights.percentChange).toFixed(2)}%
         </p>
         <div className="mt-4 flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Average</p>
+            <p className="text-muted-foreground text-xs">Average</p>
             <p className="text-sm font-medium">
               {getLabel(Number(insights.average.toFixed(2)))}
             </p>
           </div>
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Max</p>
+            <p className="text-muted-foreground text-xs">Max</p>
             <p className="text-sm font-medium">
               {insights.max !== undefined
                 ? getLabel(Number(insights.max.toFixed(2)))
-                : "N/A"}
+                : 'N/A'}
             </p>
           </div>
         </div>
@@ -1225,32 +1199,32 @@ const MetricInsightCard = ({
         <div className="mt-2 flex items-center">
           <TrendIcon className={`mr-2 h-4 w-4 ${trendColor}`} />
           <span className={`text-xs font-medium ${trendColor}`}>
-            {insights.trend === "up" ? "Trending Up" : "Trending Down"}
+            {insights.trend === 'up' ? 'Trending Up' : 'Trending Down'}
           </span>
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}
 
 const EnhancedMetricInsights: <T extends BarChartMultiDataPoint>({
   dataKeys,
   getMetricInsights,
   getLabel,
 }: {
-  dataKeys: (keyof T)[];
+  dataKeys: (keyof T)[]
   getMetricInsights: (metric: keyof T) => {
-    average: number;
-    lastValue: number;
-    percentChange: number;
-    trend: "up" | "down";
-  };
-  getLabel: (value: number) => string;
+    average: number
+    lastValue: number
+    percentChange: number
+    trend: 'up' | 'down'
+  }
+  getLabel: (value: number) => string
 }) => JSX.Element = ({ dataKeys, getMetricInsights, getLabel }) => {
   return (
     <div className="grid grid-cols-1 gap-4">
       {dataKeys.map((key) => {
-        const insights = getMetricInsights(key);
+        const insights = getMetricInsights(key)
         return (
           <MetricInsightCard
             key={String(key)}
@@ -1258,10 +1232,10 @@ const EnhancedMetricInsights: <T extends BarChartMultiDataPoint>({
             insights={insights}
             getLabel={getLabel}
           />
-        );
+        )
       })}
     </div>
-  );
-};
+  )
+}
 
-export { AnalyticsChart };
+export { AnalyticsChart }

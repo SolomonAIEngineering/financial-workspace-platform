@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { FinancialDataGenerator } from "../../../lib/random/financial-data-generator";
-import { BankAccountCard } from "./BankAccountCard";
+import type { Meta, StoryObj } from '@storybook/react'
+import { FinancialDataGenerator } from '../../../lib/random/financial-data-generator'
+import { BankAccountCard } from './BankAccountCard'
 
 const meta: Meta<typeof BankAccountCard> = {
   component: BankAccountCard,
@@ -8,52 +8,52 @@ const meta: Meta<typeof BankAccountCard> = {
   argTypes: {
     bankAccount: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: FinancialDataGenerator.generateRandomBankAccount(),
     },
     financialProfile: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: {},
     },
     className: {
       control: {
-        type: "text",
+        type: 'text',
       },
-      defaultValue: "",
+      defaultValue: '',
     },
     contextQuestions: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: [
-        "How much money do I have in my account?",
-        "Am l spending too much in my account?",
-        "What fees are associated with my account?",
-        "How can l optimize my spending on this account?",
+        'How much money do I have in my account?',
+        'Am l spending too much in my account?',
+        'What fees are associated with my account?',
+        'How can l optimize my spending on this account?',
       ],
     },
     enableDemoMode: {
       control: {
-        type: "boolean",
+        type: 'boolean',
       },
       defaultValue: false,
     },
     historicalAccountBalance: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue:
         FinancialDataGenerator.generateRandomAccountBalanceHistories(50),
     },
   },
   decorators: [(Story) => <Story />],
-} satisfies Meta<typeof BankAccountCard>;
+} satisfies Meta<typeof BankAccountCard>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const RegularBankAccountCardWithDemoModeDisabled: Story = {
   args: {
@@ -63,7 +63,7 @@ export const RegularBankAccountCardWithDemoModeDisabled: Story = {
     //   AccountBalanceHistory.randomInstance(),
     // ).sort((a, b) => a.time!.getTime() - b.time!.getTime()),
   },
-};
+}
 
 export const RegularBankAccountCardWithHistoricalBankAccountBalance: Story = {
   args: {
@@ -73,18 +73,18 @@ export const RegularBankAccountCardWithHistoricalBankAccountBalance: Story = {
         (a, b) => new Date(a.time!).getTime() - new Date(b.time!).getTime(),
       ),
   },
-};
+}
 
 export const RegularBankAccountCardWithDemoModeEnabled: Story = {
   args: {
     bankAccount: FinancialDataGenerator.generateRandomBankAccount(),
     enableDemoMode: true,
   },
-};
+}
 
 export const RegularBankAccountCardWithClassName: Story = {
   args: {
     bankAccount: FinancialDataGenerator.generateRandomBankAccount(),
-    className: "border rounded-md",
+    className: 'border rounded-md',
   },
-};
+}

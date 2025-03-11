@@ -1,30 +1,30 @@
-import { Button } from "../../button";
-import { CalendarDatePicker } from "../../calendar/index";
-import React from "react";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { ResponsiveContainer } from "recharts";
+import { ReloadIcon } from '@radix-ui/react-icons'
+import React from 'react'
+import { ResponsiveContainer } from 'recharts'
+import { Button } from '../../button'
+import { CalendarDatePicker } from '../../calendar/index'
 
 export interface BaseDataPoint {
-  date: string;
-  [key: string]: number | string;
+  date: string
+  [key: string]: number | string
 }
 
 export interface ChartContainerProps<T extends BaseDataPoint> {
-  data: T[];
-  dataSet: T[];
-  setDataSet: React.Dispatch<React.SetStateAction<T[]>>;
-  height: number;
-  earliestDate: Date;
-  latestDate: Date;
-  filterDataByDateRange: (range: { from: Date; to: Date }) => void;
-  enableAssistantMode?: boolean;
-  children: React.ReactElement;
-  disabled?: boolean;
+  data: T[]
+  dataSet: T[]
+  setDataSet: React.Dispatch<React.SetStateAction<T[]>>
+  height: number
+  earliestDate: Date
+  latestDate: Date
+  filterDataByDateRange: (range: { from: Date; to: Date }) => void
+  enableAssistantMode?: boolean
+  children: React.ReactElement
+  disabled?: boolean
   DatePickerComponent?: React.ComponentType<{
-    date: { from: Date; to: Date };
-    onDateSelect: (range: { from: Date; to: Date }) => void;
-  }>;
-  AssistantComponent?: React.ComponentType<{ className?: string }>;
+    date: { from: Date; to: Date }
+    onDateSelect: (range: { from: Date; to: Date }) => void
+  }>
+  AssistantComponent?: React.ComponentType<{ className?: string }>
 }
 
 export function ChartContainer<T extends BaseDataPoint>({
@@ -41,15 +41,15 @@ export function ChartContainer<T extends BaseDataPoint>({
   DatePickerComponent,
   AssistantComponent,
 }: ChartContainerProps<T>) {
-  const disabledClassName = disabled ? "skeleton-box opacity-15" : "";
+  const disabledClassName = disabled ? 'skeleton-box opacity-15' : ''
 
   return (
-    <div className={`flex flex-col gap-2 w-full`}>
+    <div className={`flex w-full flex-col gap-2`}>
       <div className="flex items-center gap-2">
         <CalendarDatePicker
           date={{ from: earliestDate, to: latestDate }}
           onDateSelect={(range: { from: Date; to: Date }) => {
-            filterDataByDateRange(range);
+            filterDataByDateRange(range)
           }}
         />
         {dataSet.length !== data.length && (
@@ -61,7 +61,7 @@ export function ChartContainer<T extends BaseDataPoint>({
       <ResponsiveContainer
         width="100%"
         height={height}
-        className={`flex flex-col gap-2 h-full rounded-2xl ${disabledClassName}`}
+        className={`flex h-full flex-col gap-2 rounded-2xl ${disabledClassName}`}
       >
         {children}
       </ResponsiveContainer>
@@ -71,5 +71,5 @@ export function ChartContainer<T extends BaseDataPoint>({
         </div>
       )}
     </div>
-  );
+  )
 }

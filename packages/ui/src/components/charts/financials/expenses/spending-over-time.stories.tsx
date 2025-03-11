@@ -1,34 +1,34 @@
-import { Meta, StoryFn } from "@storybook/react";
-import { SpendingOverTime, SpendingOverTimeProps } from "./spending-over-time";
+import { Meta, StoryFn } from '@storybook/react'
+import { SpendingOverTime, SpendingOverTimeProps } from './spending-over-time'
 
-import AssistantProviderWrapper from "../../../../wrapper/assistant-provider-wrapper";
-import { FinancialDataGenerator } from "../../../../lib/random/financial-data-generator";
-import { JSX } from "react";
+import { JSX } from 'react'
+import { FinancialDataGenerator } from '../../../../lib/random/financial-data-generator'
+import AssistantProviderWrapper from '../../../../wrapper/assistant-provider-wrapper'
 
 const ExpenseMetricsData =
-  FinancialDataGenerator.generateExpenseMetricsAcrossManyYears(2022, 2024);
+  FinancialDataGenerator.generateExpenseMetricsAcrossManyYears(2022, 2024)
 
-const transactions = FinancialDataGenerator.generateRandomTransactions(100);
+const transactions = FinancialDataGenerator.generateRandomTransactions(100)
 
 export default {
   component: SpendingOverTime,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     currency: {
-      control: "select",
-      options: ["USD", "EUR", "GBP", "JPY"],
+      control: 'select',
+      options: ['USD', 'EUR', 'GBP', 'JPY'],
     },
     height: {
-      control: { type: "range", min: 200, max: 600, step: 10 },
+      control: { type: 'range', min: 200, max: 600, step: 10 },
     },
     enableAssistantMode: {
-      control: "boolean",
+      control: 'boolean',
     },
     locale: {
-      control: "select",
-      options: ["en-US", "de-DE", "fr-FR", "ja-JP"],
+      control: 'select',
+      options: ['en-US', 'de-DE', 'fr-FR', 'ja-JP'],
     },
   },
   decorators: [
@@ -38,7 +38,7 @@ export default {
       </AssistantProviderWrapper>
     ),
   ],
-} as Meta;
+} as Meta
 
 const Template: StoryFn<SpendingOverTimeProps> = (
   args: JSX.IntrinsicAttributes & SpendingOverTimeProps,
@@ -46,26 +46,26 @@ const Template: StoryFn<SpendingOverTimeProps> = (
   <div className="w-[900px]">
     <SpendingOverTime {...args} />
   </div>
-);
+)
 
-export const Default = Template.bind({});
+export const Default = Template.bind({})
 Default.args = {
-  title: "Monthly spending",
-  viewMoreHref: "/net-Expense",
+  title: 'Monthly spending',
+  viewMoreHref: '/net-Expense',
   price: 1000,
   priceChange: 10,
   expenseMetrics: ExpenseMetricsData,
   transactions: transactions,
-};
+}
 
-export const DisabledChart = Template.bind({});
+export const DisabledChart = Template.bind({})
 DisabledChart.args = {
   ...Default.args,
   disabled: true,
-};
+}
 
-export const CustomStyling = Template.bind({});
+export const CustomStyling = Template.bind({})
 CustomStyling.args = {
   ...Default.args,
-  className: "bg-gray-100 shadow-lg rounded-xl",
-};
+  className: 'bg-gray-100 shadow-lg rounded-xl',
+}

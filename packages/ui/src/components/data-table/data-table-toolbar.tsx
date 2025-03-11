@@ -1,33 +1,33 @@
-"use client";
+'use client'
 
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../tooltip";
+} from '../tooltip'
 
-import { Button } from "../button";
-import { DataTableFilterControlsDrawer } from "./data-table-filter-controls-drawer";
-import { DataTableResetButton } from "./data-table-reset-button";
-import { DataTableViewOptions } from "./data-table-view-options";
-import { Kbd } from "@/components/custom/kbd";
-import { formatCompactNumber } from "@/lib/format";
-import { useControls } from "@/providers/controls";
-import { useDataTable } from "@/components/data-table/data-table-provider";
-import { useHotKey } from "@/hooks/use-hot-key";
-import { useMemo } from "react";
+import { Kbd } from '@/components/custom/kbd'
+import { useDataTable } from '@/components/data-table/data-table-provider'
+import { useHotKey } from '@/hooks/use-hot-key'
+import { formatCompactNumber } from '@/lib/format'
+import { useControls } from '@/providers/controls'
+import { useMemo } from 'react'
+import { Button } from '../button'
+import { DataTableFilterControlsDrawer } from './data-table-filter-controls-drawer'
+import { DataTableResetButton } from './data-table-reset-button'
+import { DataTableViewOptions } from './data-table-view-options'
 
 interface DataTableToolbarProps {
-  renderActions?: () => React.ReactNode;
+  renderActions?: () => React.ReactNode
 }
 
 export function DataTableToolbar({ renderActions }: DataTableToolbarProps) {
-  const { table, isLoading, columnFilters } = useDataTable();
-  const { open, setOpen } = useControls();
-  useHotKey(() => setOpen((prev) => !prev), "b");
-  const filters = table.getState().columnFilters;
+  const { table, isLoading, columnFilters } = useDataTable()
+  const { open, setOpen } = useControls()
+  useHotKey(() => setOpen((prev) => !prev), 'b')
+  const filters = table.getState().columnFilters
 
   const rows = useMemo(
     () => ({
@@ -35,7 +35,7 @@ export function DataTableToolbar({ renderActions }: DataTableToolbarProps) {
       filtered: table.getFilteredRowModel().rows.length,
     }),
     [isLoading, columnFilters],
-  );
+  )
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">
@@ -64,8 +64,8 @@ export function DataTableToolbar({ renderActions }: DataTableToolbarProps) {
             </TooltipTrigger>
             <TooltipContent side="right">
               <p>
-                Toggle controls with{" "}
-                <Kbd className="ml-1 text-muted-foreground group-hover:text-accent-foreground">
+                Toggle controls with{' '}
+                <Kbd className="text-muted-foreground group-hover:text-accent-foreground ml-1">
                   <span className="mr-1">⌘</span>
                   <span>B</span>
                 </Kbd>
@@ -77,17 +77,17 @@ export function DataTableToolbar({ renderActions }: DataTableToolbarProps) {
           <DataTableFilterControlsDrawer />
         </div>
         <div>
-          <p className="hidden text-sm text-muted-foreground sm:block">
+          <p className="text-muted-foreground hidden text-sm sm:block">
             <span className="font-mono font-medium">
               {formatCompactNumber(rows.filtered)}
-            </span>{" "}
-            of <span className="font-mono font-medium">{rows.total}</span>{" "}
+            </span>{' '}
+            of <span className="font-mono font-medium">{rows.total}</span>{' '}
             row(s) <span className="sr-only sm:not-sr-only">filtered</span>
           </p>
-          <p className="block text-sm text-muted-foreground sm:hidden">
+          <p className="text-muted-foreground block text-sm sm:hidden">
             <span className="font-mono font-medium">
               {formatCompactNumber(rows.filtered)}
-            </span>{" "}
+            </span>{' '}
             row(s)
           </p>
         </div>
@@ -98,5 +98,5 @@ export function DataTableToolbar({ renderActions }: DataTableToolbarProps) {
         <DataTableViewOptions />
       </div>
     </div>
-  );
+  )
 }

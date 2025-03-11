@@ -1,110 +1,110 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import { type Meta, type StoryObj } from '@storybook/react'
 
-import NotificationBanner from "./notification-banner";
+import NotificationBanner from './notification-banner'
 
 const meta: Meta<typeof NotificationBanner> = {
   component: NotificationBanner,
   argTypes: {
     position: {
       control: {
-        type: "select",
-        options: ["bottom", "top"],
+        type: 'select',
+        options: ['bottom', 'top'],
       },
-      defaultValue: "bottom", // Default value
+      defaultValue: 'bottom', // Default value
     },
     centered: {
-      control: "boolean",
+      control: 'boolean',
       defaultValue: false, // Default value
     },
     fullScreen: {
-      control: "boolean",
+      control: 'boolean',
       defaultValue: false, // Default value
     },
     marginLeft: {
-      control: "boolean",
+      control: 'boolean',
       defaultValue: false, // Default value
     },
     message: {
-      control: "text",
-      defaultValue: "", // Default value
+      control: 'text',
+      defaultValue: '', // Default value
     },
   },
-};
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof NotificationBanner>;
+type Story = StoryObj<typeof NotificationBanner>
 
-export const Default: Story = {};
+export const Default: Story = {}
 
 export const TopPositionBanner: Story = {
   args: {
-    position: "top",
+    position: 'top',
   },
-};
+}
 
 export const BottomPositionBanner: Story = {
   args: {
-    position: "bottom",
+    position: 'bottom',
   },
-};
+}
 
 export const CenteredBanner: Story = {
   args: {
     centered: true,
   },
-};
+}
 
 export const FullScreenBanner: Story = {
   args: {
     fullScreen: true,
   },
-};
+}
 
 export const LeftMarginBanner: Story = {
   args: {
     marginLeft: true,
   },
-};
+}
 
 export const WithMessage: Story = {
   args: {
-    message: "This is a notification banner.",
+    message: 'This is a notification banner.',
   },
-};
+}
 
 export const WithSaveAndRejectButtons: Story = {
   args: {
-    message: "This is a notification banner with save and reject buttons.",
+    message: 'This is a notification banner with save and reject buttons.',
     onSave: () => {
-      alert("Save button clicked!");
+      alert('Save button clicked!')
     },
     onReject: () => {
-      alert("Reject button clicked!");
+      alert('Reject button clicked!')
     },
   },
-};
+}
 
 export const FullScreenBottomPositionBanner: Story = {
   args: {
     fullScreen: true,
-    position: "bottom",
-    message: "This is a full screen banner",
+    position: 'bottom',
+    message: 'This is a full screen banner',
   },
-};
+}
 
 export const FullScreenTopPositionBanner: Story = {
   args: {
     fullScreen: true,
-    position: "top",
-    message: "This is a full screen banner",
+    position: 'top',
+    message: 'This is a full screen banner',
   },
-};
+}
 
 export const FullScreenCenteredBanner: Story = {
   args: {
     fullScreen: true,
     centered: true,
-    message: "This is a full screen banner",
+    message: 'This is a full screen banner',
   },
-};
+}

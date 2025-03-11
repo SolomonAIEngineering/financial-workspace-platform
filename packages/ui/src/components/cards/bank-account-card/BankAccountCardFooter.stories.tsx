@@ -1,23 +1,22 @@
 // BankAccountCardHeader.stories.tsx
-import { Meta, StoryObj } from "@storybook/react";
-import { FinancialDataGenerator } from "../../../lib/random/financial-data-generator";
+import { Meta, StoryObj } from '@storybook/react'
+import { FinancialDataGenerator } from '../../../lib/random/financial-data-generator'
 
-import React from "react";
 import {
   AccountBalanceHistoryContext,
   BankAccountContext,
-} from "./BankAccountCard";
-import { BankAccountCardFooter } from "./BankAccountCardFooter";
+} from './BankAccountCard'
+import { BankAccountCardFooter } from './BankAccountCardFooter'
 
 // Mock data for the bank account
-const mockBankAccount = FinancialDataGenerator.generateRandomBankAccount();
+const mockBankAccount = FinancialDataGenerator.generateRandomBankAccount()
 const historicalAccountBalance =
-  FinancialDataGenerator.generateRandomAccountBalanceHistories(100);
+  FinancialDataGenerator.generateRandomAccountBalanceHistories(100)
 
 const meta: Meta<typeof BankAccountCardFooter> = {
   component: BankAccountCardFooter,
   argTypes: {
-    serverUrl: { control: "text" },
+    serverUrl: { control: 'text' },
   },
   decorators: [
     (Story) => (
@@ -28,10 +27,10 @@ const meta: Meta<typeof BankAccountCardFooter> = {
       </BankAccountContext.Provider>
     ),
   ],
-} as Meta;
+} as Meta
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof BankAccountCardFooter>;
+type Story = StoryObj<typeof BankAccountCardFooter>
 
-export const Default: Story = {};
+export const Default: Story = {}

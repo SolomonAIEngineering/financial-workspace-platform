@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import { Row } from "@tanstack/react-table";
+import { DotsHorizontalIcon } from '@radix-ui/react-icons'
+import { Row } from '@tanstack/react-table'
 
-import { Transaction } from "client-typescript-sdk";
-import { Button } from "../button";
+import { Transaction } from 'client-typescript-sdk'
+import { Button } from '../button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,24 +17,24 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "../dropdown-menu";
-import { labels } from "./data/data";
+} from '../dropdown-menu'
+import { labels } from './data/data'
 
 interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
+  row: Row<TData>
 }
 
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const txn = row.original as Transaction;
+  const txn = row.original as Transaction
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+          className="data-[state=open]:bg-muted flex h-8 w-8 p-0"
         >
           <DotsHorizontalIcon className="h-4 w-4" />
           <span className="sr-only">Open menu</span>
@@ -64,5 +64,5 @@ export function DataTableRowActions<TData>({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

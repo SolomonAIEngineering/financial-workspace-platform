@@ -1,12 +1,8 @@
-"use client";
+'use client'
 
-import * as React from "react";
+import * as React from 'react'
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../popover";
+import { Popover, PopoverContent, PopoverTrigger } from '../popover'
 import {
   Select,
   SelectContent,
@@ -15,27 +11,27 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "../select";
+} from '../select'
 
-import { Button } from "../button";
-import { Calendar } from "../calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
-import type { DatePreset } from "@/components/data-table/types";
-import type { DateRange } from "react-day-picker";
-import { Input } from "../input";
-import { Label } from "../label";
-import { Separator } from "../separator";
-import { cn } from "@/lib/utils";
-import { presets as defaultPresets } from "@/constants/date-preset";
-import { format } from "date-fns";
-import { kbdVariants } from "@/components/custom/kbd";
-import { useDebounce } from "@/hooks/use-debounce";
+import { kbdVariants } from '@/components/custom/kbd'
+import type { DatePreset } from '@/components/data-table/types'
+import { presets as defaultPresets } from '@/constants/date-preset'
+import { useDebounce } from '@/hooks/use-debounce'
+import { cn } from '@/lib/utils'
+import { format } from 'date-fns'
+import { Calendar as CalendarIcon } from 'lucide-react'
+import type { DateRange } from 'react-day-picker'
+import { Button } from '../button'
+import { Calendar } from '../calendar'
+import { Input } from '../input'
+import { Label } from '../label'
+import { Separator } from '../separator'
 
 interface DatePickerWithRangeProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  date: DateRange | undefined;
-  setDate: (date: DateRange | undefined) => void;
-  presets?: DatePreset[];
+  date: DateRange | undefined
+  setDate: (date: DateRange | undefined) => void
+  presets?: DatePreset[]
 }
 
 export function DatePickerWithRange({
@@ -48,16 +44,16 @@ export function DatePickerWithRange({
     const down = (e: KeyboardEvent) => {
       presets.map((preset) => {
         if (preset.shortcut === e.key) {
-          setDate({ from: preset.from, to: preset.to });
+          setDate({ from: preset.from, to: preset.to })
         }
-      });
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, [setDate, presets]);
+      })
+    }
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [setDate, presets])
 
   return (
-    <div className={cn("grid gap-2", className)}>
+    <div className={cn('grid gap-2', className)}>
       <Popover modal={true}>
         <PopoverTrigger asChild>
           <Button
@@ -65,19 +61,19 @@ export function DatePickerWithRange({
             variant="outline"
             size="sm"
             className={cn(
-              "max-w-full justify-start truncate text-left font-normal hover:bg-muted/50",
-              !date && "text-muted-foreground",
+              'hover:bg-muted/50 max-w-full justify-start truncate text-left font-normal',
+              !date && 'text-muted-foreground',
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
               date.to ? (
                 <span className="truncate">
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(date.from, 'LLL dd, y')} -{' '}
+                  {format(date.to, 'LLL dd, y')}
                 </span>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(date.from, 'LLL dd, y')
               )
             ) : (
               <span>Pick a date</span>
@@ -115,7 +111,7 @@ export function DatePickerWithRange({
         </PopoverContent>
       </Popover>
     </div>
-  );
+  )
 }
 
 function DatePresets({
@@ -123,35 +119,35 @@ function DatePresets({
   onSelect,
   presets,
 }: {
-  selected: DateRange | undefined;
-  onSelect: (date: DateRange | undefined) => void;
-  presets: DatePreset[];
+  selected: DateRange | undefined
+  onSelect: (date: DateRange | undefined) => void
+  presets: DatePreset[]
 }) {
   return (
     <div className="flex flex-col gap-2 p-3">
-      <p className="mx-3 text-xs uppercase text-muted-foreground">Date Range</p>
+      <p className="text-muted-foreground mx-3 text-xs uppercase">Date Range</p>
       <div className="grid gap-1">
         {presets.map(({ label, shortcut, from, to }) => {
-          const isActive = selected?.from === from && selected?.to === to;
+          const isActive = selected?.from === from && selected?.to === to
           return (
             <Button
               key={label}
-              variant={isActive ? "outline" : "ghost"}
+              variant={isActive ? 'outline' : 'ghost'}
               size="sm"
               onClick={() => onSelect({ from, to })}
               className={cn(
-                "flex items-center justify-between gap-6",
-                !isActive && "border border-transparent",
+                'flex items-center justify-between gap-6',
+                !isActive && 'border border-transparent',
               )}
             >
               <span className="mr-auto">{label}</span>
-              <span className={cn(kbdVariants(), "uppercase")}>{shortcut}</span>
+              <span className={cn(kbdVariants(), 'uppercase')}>{shortcut}</span>
             </Button>
-          );
+          )
         })}
       </div>
     </div>
-  );
+  )
 }
 
 function DatePresetsSelect({
@@ -159,30 +155,30 @@ function DatePresetsSelect({
   onSelect,
   presets,
 }: {
-  selected: DateRange | undefined;
-  onSelect: (date: DateRange | undefined) => void;
-  presets: DatePreset[];
+  selected: DateRange | undefined
+  onSelect: (date: DateRange | undefined) => void
+  presets: DatePreset[]
 }) {
   function findPreset(from?: Date, to?: Date) {
-    return presets.find((p) => p.from === from && p.to === to)?.shortcut;
+    return presets.find((p) => p.from === from && p.to === to)?.shortcut
   }
   const [value, setValue] = React.useState<string | undefined>(
     findPreset(selected?.from, selected?.to),
-  );
+  )
 
   React.useEffect(() => {
-    const preset = findPreset(selected?.from, selected?.to);
-    if (preset === value) return;
-    setValue(preset);
-  }, [selected, presets]);
+    const preset = findPreset(selected?.from, selected?.to)
+    if (preset === value) return
+    setValue(preset)
+  }, [selected, presets])
 
   return (
     <Select
       value={value}
       onValueChange={(v) => {
-        const preset = presets.find((p) => p.shortcut === v);
+        const preset = presets.find((p) => p.shortcut === v)
         if (preset) {
-          onSelect({ from: preset.from, to: preset.to });
+          onSelect({ from: preset.from, to: preset.to })
         }
       }}
     >
@@ -203,18 +199,18 @@ function DatePresetsSelect({
                 <span
                   className={cn(
                     kbdVariants(),
-                    "ml-2 h-5 uppercase leading-snug",
+                    'ml-2 h-5 uppercase leading-snug',
                   )}
                 >
                   {shortcut}
                 </span>
               </SelectItem>
-            );
+            )
           })}
         </SelectGroup>
       </SelectContent>
     </Select>
-  );
+  )
 }
 
 // REMINDER: We can add min max date range validation https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#setting_maximum_and_minimum_dates_and_times
@@ -222,30 +218,30 @@ function CustomDateRange({
   selected,
   onSelect,
 }: {
-  selected: DateRange | undefined;
-  onSelect: (date: DateRange | undefined) => void;
+  selected: DateRange | undefined
+  onSelect: (date: DateRange | undefined) => void
 }) {
   const [dateFrom, setDateFrom] = React.useState<Date | undefined>(
     selected?.from,
-  );
-  const [dateTo, setDateTo] = React.useState<Date | undefined>(selected?.to);
-  const debounceDateFrom = useDebounce(dateFrom, 1000);
-  const debounceDateTo = useDebounce(dateTo, 1000);
+  )
+  const [dateTo, setDateTo] = React.useState<Date | undefined>(selected?.to)
+  const debounceDateFrom = useDebounce(dateFrom, 1000)
+  const debounceDateTo = useDebounce(dateTo, 1000)
 
   const formatDateForInput = (date: Date | undefined): string => {
-    if (!date) return "";
-    const utcDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-    return utcDate.toISOString().slice(0, 16);
-  };
+    if (!date) return ''
+    const utcDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    return utcDate.toISOString().slice(0, 16)
+  }
 
   React.useEffect(() => {
-    onSelect({ from: debounceDateFrom, to: debounceDateTo });
+    onSelect({ from: debounceDateFrom, to: debounceDateTo })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debounceDateFrom, debounceDateTo]);
+  }, [debounceDateFrom, debounceDateTo])
 
   return (
     <div className="flex flex-col gap-2 p-3">
-      <p className="text-xs uppercase text-muted-foreground">Custom Range</p>
+      <p className="text-muted-foreground text-xs uppercase">Custom Range</p>
       <div className="grid gap-2 sm:grid-cols-2">
         <div className="grid w-full gap-1.5">
           <Label htmlFor="from">Start</Label>
@@ -256,9 +252,9 @@ function CustomDateRange({
             name="from"
             defaultValue={formatDateForInput(selected?.from)}
             onChange={(e) => {
-              const newDate = new Date(e.target.value);
+              const newDate = new Date(e.target.value)
               if (!Number.isNaN(newDate.getTime())) {
-                setDateFrom(newDate);
+                setDateFrom(newDate)
               }
             }}
             disabled={!selected?.from}
@@ -273,9 +269,9 @@ function CustomDateRange({
             name="to"
             defaultValue={formatDateForInput(selected?.to)}
             onChange={(e) => {
-              const newDate = new Date(e.target.value);
+              const newDate = new Date(e.target.value)
               if (!Number.isNaN(newDate.getTime())) {
-                setDateTo(newDate);
+                setDateTo(newDate)
               }
             }}
             disabled={!selected?.to}
@@ -283,5 +279,5 @@ function CustomDateRange({
         </div>
       </div>
     </div>
-  );
+  )
 }

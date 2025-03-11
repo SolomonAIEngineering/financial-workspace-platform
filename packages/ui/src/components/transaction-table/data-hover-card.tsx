@@ -1,14 +1,14 @@
-import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
-import { Badge } from "../badge";
-import { Button } from "../button";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "../hover-card";
+import { Avatar, AvatarFallback, AvatarImage } from '../avatar'
+import { Badge } from '../badge'
+import { Button } from '../button'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../hover-card'
 
 interface DataHoverCardProps {
-  triggerLabel: string;
-  title: string;
-  items: string[];
-  avatarSrc?: string;
-  avatarFallbackText?: string;
+  triggerLabel: string
+  title: string
+  items: string[]
+  avatarSrc?: string
+  avatarFallbackText?: string
 }
 
 export const DataHoverCard: React.FC<DataHoverCardProps> = ({
@@ -16,7 +16,7 @@ export const DataHoverCard: React.FC<DataHoverCardProps> = ({
   title,
   items,
   avatarSrc,
-  avatarFallbackText = "Default",
+  avatarFallbackText = 'Default',
 }) => {
   return (
     <HoverCard>
@@ -26,10 +26,10 @@ export const DataHoverCard: React.FC<DataHoverCardProps> = ({
       <HoverCardContent className="w-80">
         <div className="flex justify-between space-x-4">
           <Avatar>
-            <AvatarImage src={avatarSrc || "default_avatar_url.png"} />
+            <AvatarImage src={avatarSrc || 'default_avatar_url.png'} />
             <AvatarFallback>{avatarFallbackText}</AvatarFallback>
           </Avatar>
-          <div className="flex flex-col gap-2 p-2 space-y-1 border-l">
+          <div className="flex flex-col gap-2 space-y-1 border-l p-2">
             <h4 className="text-xs font-semibold">{title}</h4>
             <div className="flex flex-wrap gap-2">
               {items.map((item, index) => (
@@ -42,5 +42,5 @@ export const DataHoverCard: React.FC<DataHoverCardProps> = ({
         </div>
       </HoverCardContent>
     </HoverCard>
-  );
-};
+  )
+}

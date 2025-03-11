@@ -1,6 +1,6 @@
-import { FinancialMetricsScatterPlotConverter } from "../../../../lib/converters/expense-and-income-metrics-converter";
-import { ExpenseMetrics, IncomeMetrics } from "client-typescript-sdk";
-import React, { useMemo, useState } from "react";
+import { ExpenseMetrics, IncomeMetrics } from 'client-typescript-sdk'
+import React, { useMemo, useState } from 'react'
+import { FinancialMetricsScatterPlotConverter } from '../../../../lib/converters/expense-and-income-metrics-converter'
 
 import {
   Select,
@@ -8,91 +8,89 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../components/select";
+} from '../../../../components/select'
 
-import { CaretDownIcon } from "@radix-ui/react-icons";
-import { AreaChart } from "../../base/area-chart";
-import { BarChart } from "../../base/bar-chart";
-import { ScatterChart } from "../../base/scatter-chart";
+import { AreaChart } from '../../base/area-chart'
+import { ScatterChart } from '../../base/scatter-chart'
 
-type FinancialMetrics = IncomeMetrics | ExpenseMetrics;
+type FinancialMetrics = IncomeMetrics | ExpenseMetrics
 
 export interface IncomeExpenseChartProps {
-  data: FinancialMetrics[];
-  type: "income" | "expense";
-  height?: number;
-  width?: number;
-  currency: string;
-  locale?: string;
-  enableAssistantMode?: boolean;
-  enableDrillDown?: boolean;
+  data: FinancialMetrics[]
+  type: 'income' | 'expense'
+  height?: number
+  width?: number
+  currency: string
+  locale?: string
+  enableAssistantMode?: boolean
+  enableDrillDown?: boolean
 }
 
 const chartTypes = [
-  "txnCountVsMonth",
-  "txnCountVsTotalAmount",
-  "totalAmountVsMonth",
-  "totalAmountVsCategory",
-  "txnCountVsCategory",
-  "aggregatedTotalAmountVsCategory",
-  "aggregatedTxnCountVsCategory",
-] as const;
+  'txnCountVsMonth',
+  'txnCountVsTotalAmount',
+  'totalAmountVsMonth',
+  'totalAmountVsCategory',
+  'txnCountVsCategory',
+  'aggregatedTotalAmountVsCategory',
+  'aggregatedTxnCountVsCategory',
+] as const
 
 // type ChartType = typeof chartTypes[number];
 interface ChartTypeInfo {
-  label: string;
-  value: string;
-  description: string;
+  label: string
+  value: string
+  description: string
 }
 
 export const CHART_TYPES: ChartTypeInfo[] = [
   {
-    label: "Transaction Count vs Month",
-    value: "txnCountVsMonth",
-    description: "Shows how the number of transactions changes over time",
+    label: 'Transaction Count vs Month',
+    value: 'txnCountVsMonth',
+    description: 'Shows how the number of transactions changes over time',
   },
   {
-    label: "Transaction Count vs Total Amount",
-    value: "txnCountVsTotalAmount",
-    description: "Compares the number of transactions to the total amount",
+    label: 'Transaction Count vs Total Amount',
+    value: 'txnCountVsTotalAmount',
+    description: 'Compares the number of transactions to the total amount',
   },
   {
-    label: "Total Amount vs Month",
-    value: "totalAmountVsMonth",
-    description: "Displays the total amount trend over time",
+    label: 'Total Amount vs Month',
+    value: 'totalAmountVsMonth',
+    description: 'Displays the total amount trend over time',
   },
   {
-    label: "Total Amount by Category",
-    value: "totalAmountVsCategory",
-    description: "Breaks down total amount across different categories",
+    label: 'Total Amount by Category',
+    value: 'totalAmountVsCategory',
+    description: 'Breaks down total amount across different categories',
   },
   {
-    label: "Transaction Count by Category",
-    value: "txnCountVsCategory",
-    description: "Shows the number of transactions for each category",
+    label: 'Transaction Count by Category',
+    value: 'txnCountVsCategory',
+    description: 'Shows the number of transactions for each category',
   },
   {
-    label: "Aggregated Total Amount by Category",
-    value: "aggregatedTotalAmountVsCategory",
-    description: "Displays the average total amount for each category",
+    label: 'Aggregated Total Amount by Category',
+    value: 'aggregatedTotalAmountVsCategory',
+    description: 'Displays the average total amount for each category',
   },
   {
-    label: "Aggregated Transaction Count by Category",
-    value: "aggregatedTxnCountVsCategory",
-    description: "Shows the average number of transactions for each category",
+    label: 'Aggregated Transaction Count by Category',
+    value: 'aggregatedTxnCountVsCategory',
+    description: 'Shows the average number of transactions for each category',
   },
-];
+]
 
-export type ChartType = (typeof CHART_TYPES)[number]["value"];
+export type ChartType = (typeof CHART_TYPES)[number]['value']
 
 export function getChartTypeLabel(value: ChartType): string {
-  const chartType = CHART_TYPES.find((type) => type.value === value);
-  return chartType ? chartType.label : value;
+  const chartType = CHART_TYPES.find((type) => type.value === value)
+  return chartType ? chartType.label : value
 }
 
 export function getChartTypeDescription(value: ChartType): string {
-  const chartType = CHART_TYPES.find((type) => type.value === value);
-  return chartType ? chartType.description : "";
+  const chartType = CHART_TYPES.find((type) => type.value === value)
+  return chartType ? chartType.description : ''
 }
 
 export const IncomeExpenseChart: React.FC<IncomeExpenseChartProps> = ({
@@ -106,90 +104,90 @@ export const IncomeExpenseChart: React.FC<IncomeExpenseChartProps> = ({
   enableDrillDown,
 }) => {
   const [selectedChart, setSelectedChart] =
-    useState<ChartType>("txnCountVsMonth");
+    useState<ChartType>('txnCountVsMonth')
 
   const chartData = useMemo(() => {
     switch (selectedChart) {
-      case "txnCountVsMonth":
-        return FinancialMetricsScatterPlotConverter.txnCountVsMonth(data, type);
-      case "txnCountVsTotalAmount":
+      case 'txnCountVsMonth':
+        return FinancialMetricsScatterPlotConverter.txnCountVsMonth(data, type)
+      case 'txnCountVsTotalAmount':
         return FinancialMetricsScatterPlotConverter.txnCountVsTotalAmount(
           data,
           type,
-        );
-      case "totalAmountVsMonth":
+        )
+      case 'totalAmountVsMonth':
         return FinancialMetricsScatterPlotConverter.totalAmountVsMonth(
           data,
           type,
-        );
-      case "totalAmountVsCategory":
+        )
+      case 'totalAmountVsCategory':
         return FinancialMetricsScatterPlotConverter.totalAmountVsCategory(
           data,
           type,
-        );
-      case "txnCountVsCategory":
+        )
+      case 'txnCountVsCategory':
         return FinancialMetricsScatterPlotConverter.txnCountVsCategory(
           data,
           type,
-        );
-      case "aggregatedTotalAmountVsCategory":
+        )
+      case 'aggregatedTotalAmountVsCategory':
         return FinancialMetricsScatterPlotConverter.aggregatedTotalAmountVsCategory(
           data,
           type,
-        );
-      case "aggregatedTxnCountVsCategory":
+        )
+      case 'aggregatedTxnCountVsCategory':
         return FinancialMetricsScatterPlotConverter.aggregatedTxnCountVsCategory(
           data,
           type,
-        );
+        )
       default:
-        return [];
+        return []
     }
-  }, [data, type, selectedChart]);
+  }, [data, type, selectedChart])
 
   const getAxisLabels = (): { xLabel: string; yLabel: string } => {
     switch (selectedChart) {
-      case "txnCountVsMonth":
-        return { xLabel: "Month", yLabel: "Transaction Count" };
-      case "txnCountVsTotalAmount":
+      case 'txnCountVsMonth':
+        return { xLabel: 'Month', yLabel: 'Transaction Count' }
+      case 'txnCountVsTotalAmount':
         return {
-          xLabel: `Total ${type === "income" ? "Income" : "Expenses"}`,
-          yLabel: "Transaction Count",
-        };
-      case "totalAmountVsMonth":
+          xLabel: `Total ${type === 'income' ? 'Income' : 'Expenses'}`,
+          yLabel: 'Transaction Count',
+        }
+      case 'totalAmountVsMonth':
         return {
-          xLabel: "Month",
-          yLabel: `Total ${type === "income" ? "Income" : "Expenses"}`,
-        };
-      case "totalAmountVsCategory":
-      case "aggregatedTotalAmountVsCategory":
+          xLabel: 'Month',
+          yLabel: `Total ${type === 'income' ? 'Income' : 'Expenses'}`,
+        }
+      case 'totalAmountVsCategory':
+      case 'aggregatedTotalAmountVsCategory':
         return {
-          xLabel: "Category",
-          yLabel: `Total ${type === "income" ? "Income" : "Expenses"}`,
-        };
-      case "txnCountVsCategory":
-      case "aggregatedTxnCountVsCategory":
-        return { xLabel: "Category", yLabel: "Transaction Count" };
+          xLabel: 'Category',
+          yLabel: `Total ${type === 'income' ? 'Income' : 'Expenses'}`,
+        }
+      case 'txnCountVsCategory':
+      case 'aggregatedTxnCountVsCategory':
+        return { xLabel: 'Category', yLabel: 'Transaction Count' }
       default:
-        return { xLabel: "X Axis", yLabel: "Y Axis" };
+        return { xLabel: 'X Axis', yLabel: 'Y Axis' }
     }
-  };
+  }
 
-  const { xLabel, yLabel } = getAxisLabels();
+  const { xLabel, yLabel } = getAxisLabels()
 
   const txnCountvsMonthBarData = useMemo(() => {
     return FinancialMetricsScatterPlotConverter.txnCountVsMonthChartDataPoint(
       data,
       type,
-    );
-  }, [data, type]);
+    )
+  }, [data, type])
 
   const totalAmountvsMonthBarData = useMemo(() => {
     return FinancialMetricsScatterPlotConverter.totalAmountVsMonthChartDataPoint(
       data,
       type,
-    );
-  }, [data, type]);
+    )
+  }, [data, type])
 
   return (
     <div>
@@ -255,5 +253,5 @@ export const IncomeExpenseChart: React.FC<IncomeExpenseChartProps> = ({
         </div>
       )}
     </div>
-  );
-};
+  )
+}

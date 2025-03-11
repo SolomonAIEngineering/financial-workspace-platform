@@ -1,30 +1,30 @@
-"use client";
+'use client'
 
-import * as React from "react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import * as React from 'react'
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts'
 
-import { BarChartMultiDataPoint } from "../../../types/chart";
+import { BarChartMultiDataPoint } from '../../../types/chart'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../card";
+} from '../../card'
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "../../chart";
+} from '../../chart'
 
 export interface InteractiveBarChartProps {
-  data: BarChartMultiDataPoint[];
-  config: ChartConfig;
-  title: string;
-  description: string;
-  height?: number;
-  dateFormatter?: (date: string) => string;
+  data: BarChartMultiDataPoint[]
+  config: ChartConfig
+  title: string
+  description: string
+  height?: number
+  dateFormatter?: (date: string) => string
 }
 
 export function InteractiveBarChart({
@@ -34,17 +34,17 @@ export function InteractiveBarChart({
   description,
   height = 250,
   dateFormatter = (value) => {
-    const date = new Date(value);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
+    const date = new Date(value)
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })
   },
 }: InteractiveBarChartProps) {
-  const chartKeys = Object.keys(config).filter((key) => key !== "views");
+  const chartKeys = Object.keys(config).filter((key) => key !== 'views')
   const [activeChart, setActiveChart] = React.useState<string>(
     chartKeys[0] as any,
-  );
+  )
 
   const total = React.useMemo(
     () =>
@@ -56,7 +56,7 @@ export function InteractiveBarChart({
         {} as Record<string, number>,
       ),
     [data, chartKeys],
-  );
+  )
 
   return (
     <Card>
@@ -70,14 +70,14 @@ export function InteractiveBarChart({
             <button
               key={key}
               data-active={activeChart === key}
-              className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
+              className="data-[active=true]:bg-muted/50 relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l sm:border-l sm:border-t-0 sm:px-8 sm:py-6"
               onClick={() => setActiveChart(key)}
             >
-              <span className="text-xs text-muted-foreground">
-                {config[key]?.label || ""}
+              <span className="text-muted-foreground text-xs">
+                {config[key]?.label || ''}
               </span>
               <span className="text-lg font-bold leading-none sm:text-3xl">
-                {total[key]?.toLocaleString() || "0"}
+                {total[key]?.toLocaleString() || '0'}
               </span>
             </button>
           ))}
@@ -112,11 +112,11 @@ export function InteractiveBarChart({
                   className="w-[150px]"
                   nameKey="views"
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    });
+                    return new Date(value).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
                   }}
                 />
               }
@@ -126,5 +126,5 @@ export function InteractiveBarChart({
         </ChartContainer>
       </CardContent>
     </Card>
-  );
+  )
 }

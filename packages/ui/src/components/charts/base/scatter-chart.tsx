@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react'
 import {
   ScatterChart as BaseScatterChart,
   CartesianGrid,
@@ -9,35 +9,35 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { Payload } from "recharts/types/component/DefaultTooltipContent";
-import { formatAmount } from "../../../lib/chart-utils";
-import { ScatterChartDataPoint } from "../../../types/chart";
+} from 'recharts'
+import { Payload } from 'recharts/types/component/DefaultTooltipContent'
+import { formatAmount } from '../../../lib/chart-utils'
+import { ScatterChartDataPoint } from '../../../types/chart'
 
-import { generateScatterChartData } from "../../../lib/random/generator";
-import { useWrapperState } from "./chart-wrapper";
+import { generateScatterChartData } from '../../../lib/random/generator'
+import { useWrapperState } from './chart-wrapper'
 
 /**
  * Props for the ToolTipContent component.
  */
 interface ToolTipContentProps {
-  payload?: Array<Payload<number, string>>;
-  currency: string;
-  locale?: string;
+  payload?: Array<Payload<number, string>>
+  currency: string
+  locale?: string
 }
 
 /**
  * Props for the ScatterChart component.
  */
 export interface ScatterChartProps {
-  currency: string;
-  data: Array<ScatterChartDataPoint>;
-  height?: number;
-  locale?: string;
-  enableAssistantMode?: boolean;
-  xUNit: string;
-  yUnit: string;
-  disabled?: boolean;
+  currency: string
+  data: Array<ScatterChartDataPoint>
+  height?: number
+  locale?: string
+  enableAssistantMode?: boolean
+  xUNit: string
+  yUnit: string
+  disabled?: boolean
 }
 
 /**
@@ -63,15 +63,14 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
         count: 50,
         minValue: 100,
         maxValue: 500,
-      });
+      })
     }
-    return propData;
-  }, [disabled, propData]);
+    return propData
+  }, [disabled, propData])
 
-  const disabledClassName = disabled ? "opacity-15" : "";
-  const [aiModalOpenState, setAiModalOpenState] =
-    React.useState<boolean>(false);
-  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState);
+  const disabledClassName = disabled ? 'opacity-15' : ''
+  const [aiModalOpenState, setAiModalOpenState] = React.useState<boolean>(false)
+  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState)
 
   /**
    * Formats a number value as a currency string.
@@ -86,8 +85,8 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
       currency,
       amount: value,
       locale,
-    });
-  };
+    })
+  }
 
   return (
     <ResponsiveContainer
@@ -130,11 +129,11 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
         />
 
         <Tooltip
-          cursor={{ strokeDasharray: "3 3" }}
+          cursor={{ strokeDasharray: '3 3' }}
           cursorStyle={{
-            stroke: "hsl(var(--primary))",
-            border: "1px solid hsl(var(--primary))",
-            borderRadius: "3px",
+            stroke: 'hsl(var(--primary))',
+            border: '1px solid hsl(var(--primary))',
+            borderRadius: '3px',
           }}
         />
         <XAxis
@@ -145,16 +144,16 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
           axisLine={false}
           tickMargin={15}
           tick={{
-            fill: "#606060",
+            fill: '#606060',
             fontSize: 12,
-            fontFamily: "var(--font-sans)",
+            fontFamily: 'var(--font-sans)',
           }}
           unit={xUNit}
         />
 
         <YAxis
           type="number"
-          dataKey={"y"}
+          dataKey={'y'}
           stroke="#888888"
           fontSize={12}
           tickLine={false}
@@ -162,9 +161,9 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
           tickMargin={10}
           tickFormatter={getLabel}
           tick={{
-            fill: "#606060",
+            fill: '#606060',
             fontSize: 12,
-            fontFamily: "var(--font-sans)",
+            fontFamily: 'var(--font-sans)',
           }}
           unit={yUnit}
         />
@@ -178,5 +177,5 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
         />
       </BaseScatterChart>
     </ResponsiveContainer>
-  );
-};
+  )
+}

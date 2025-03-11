@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import React, { JSX } from "react";
+import { JSX } from 'react'
 
 /**
  * Interface for client logo information
@@ -8,9 +8,9 @@ import React, { JSX } from "react";
  */
 interface ClientLogo {
   /** The name of the client company */
-  name: string;
+  name: string
   /** The URL of the client's logo image */
-  logoUrl: string;
+  logoUrl: string
 }
 
 /**
@@ -18,18 +18,18 @@ interface ClientLogo {
  */
 const clientLogos: ClientLogo[] = [
   {
-    name: "Playbook Media",
-    logoUrl: "https://cdn.magicui.design/companies/Google.svg",
+    name: 'Playbook Media',
+    logoUrl: 'https://cdn.magicui.design/companies/Google.svg',
   },
   {
-    name: "Street Ready",
-    logoUrl: "https://cdn.magicui.design/companies/Microsoft.svg",
+    name: 'Street Ready',
+    logoUrl: 'https://cdn.magicui.design/companies/Microsoft.svg',
   },
   {
-    name: "PromptMD",
-    logoUrl: "https://cdn.magicui.design/companies/GitHub.svg",
+    name: 'PromptMD',
+    logoUrl: 'https://cdn.magicui.design/companies/GitHub.svg',
   },
-];
+]
 
 /**
  * ClientSection component displays a list of client logos
@@ -48,7 +48,7 @@ export default function ClientSection(): JSX.Element {
         </div>
       </div>
     </section>
-  );
+  )
 }
 
 /**
@@ -60,7 +60,7 @@ function ClientSectionHeader(): JSX.Element {
     <h2 className="text-center text-sm font-semibold text-gray-600">
       TRUSTED BY TEAMS FROM AROUND THE WORLD
     </h2>
-  );
+  )
 }
 
 /**
@@ -69,7 +69,7 @@ function ClientSectionHeader(): JSX.Element {
  */
 interface ClientLogoListProps {
   /** Array of client logos to be displayed */
-  logos: ClientLogo[];
+  logos: ClientLogo[]
 }
 
 /**
@@ -86,7 +86,7 @@ function ClientLogoList({ logos }: ClientLogoListProps): JSX.Element {
         ))}
       </ul>
     </div>
-  );
+  )
 }
 
 /**
@@ -106,5 +106,5 @@ function ClientLogo({ name, logoUrl }: ClientLogo): JSX.Element {
         {name}
       </span>
     </li>
-  );
+  )
 }

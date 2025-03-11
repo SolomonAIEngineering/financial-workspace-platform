@@ -1,19 +1,18 @@
-import { FileMetadata } from "client-typescript-sdk";
+import { FileMetadata } from 'client-typescript-sdk'
 
-import React from "react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../card";
-import { ScrollArea, ScrollBar } from "../scroll-area";
+} from '../card'
+import { ScrollArea, ScrollBar } from '../scroll-area'
 
-import { EmptyFileUploadCard } from "./empty-file-upload-card";
+import { EmptyFileUploadCard } from './empty-file-upload-card'
 
 interface UploadedFilesCardProps {
-  uploadedFiles: FileMetadata[];
+  uploadedFiles: FileMetadata[]
 }
 
 export function UploadedFilesCard({ uploadedFiles }: UploadedFilesCardProps) {
@@ -50,5 +49,5 @@ export function UploadedFilesCard({ uploadedFiles }: UploadedFilesCardProps) {
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

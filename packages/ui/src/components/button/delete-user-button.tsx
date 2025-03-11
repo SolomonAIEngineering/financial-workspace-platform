@@ -7,14 +7,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../alert-dialog";
+} from '../alert-dialog'
 
-import { Button } from "../button";
-import { ButtonProps } from "react-day-picker";
-import React from "react";
-import { Spinner } from "../spinner";
-import { TrashIcon } from "@heroicons/react/24/outline";
-import { cn } from "../../utils/cn";
+import { TrashIcon } from '@heroicons/react/24/outline'
+import React from 'react'
+import { ButtonProps } from 'react-day-picker'
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
+import { Spinner } from '../spinner'
 
 /*
  * DeleteUserButtonProps defines the props for the DeleteUserButton component.
@@ -23,12 +23,12 @@ import { cn } from "../../utils/cn";
  * @extends {ButtonProps}
  * */
 interface DeleteUserButtonProps extends ButtonProps {
-  showDeleteAlert: boolean;
-  isDeleteLoading: boolean;
-  openDeleteDialog: () => void;
-  onCloseDialog: () => void;
-  handleDelete: () => Promise<void>;
-  className?: string;
+  showDeleteAlert: boolean
+  isDeleteLoading: boolean
+  openDeleteDialog: () => void
+  onCloseDialog: () => void
+  handleDelete: () => Promise<void>
+  className?: string
 }
 
 /**
@@ -50,7 +50,7 @@ const DeleteUserButton: React.FC<DeleteUserButtonProps> = ({
   return (
     <>
       <Button
-        className={cn("text-foreground", className)}
+        className={cn('text-foreground', className)}
         variant="outline"
         onClick={openDeleteDialog}
       >
@@ -58,7 +58,7 @@ const DeleteUserButton: React.FC<DeleteUserButtonProps> = ({
         <span>Delete Profile</span>
       </Button>
       {showDeleteAlert && (
-        <AlertDialog open={showDeleteAlert} onOpenChange={() => { }}>
+        <AlertDialog open={showDeleteAlert} onOpenChange={() => {}}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
@@ -85,7 +85,7 @@ const DeleteUserButton: React.FC<DeleteUserButtonProps> = ({
         </AlertDialog>
       )}
     </>
-  );
-};
+  )
+}
 
-export { DeleteUserButton };
+export { DeleteUserButton }

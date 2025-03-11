@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from "react";
-import { MerchantFinancialMetricsConverter } from "../../../../lib/converters/merchant-sub-profile-converter";
-import { SpendingPeriod } from "../../../../types/merchant";
-import { MerchantMetricsFinancialSubProfile } from "client-typescript-sdk";
-import { HiSquare3Stack3D } from "react-icons/hi2";
+import { MerchantMetricsFinancialSubProfile } from 'client-typescript-sdk'
+import React, { useMemo, useState } from 'react'
+import { HiSquare3Stack3D } from 'react-icons/hi2'
+import { MerchantFinancialMetricsConverter } from '../../../../lib/converters/merchant-sub-profile-converter'
+import { SpendingPeriod } from '../../../../types/merchant'
 
 import {
   Select,
@@ -10,15 +10,15 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../components/select";
+} from '../../../../components/select'
 
-import { AreaChart, AreaChartProps } from "../../base/area-chart";
+import { AreaChart, AreaChartProps } from '../../base/area-chart'
 
 export interface SpendingVsMonthChartProps
-  extends Omit<AreaChartProps, "data"> {
-  merchants: Array<string>;
-  selectedSpendingPeriod: SpendingPeriod;
-  records: Array<MerchantMetricsFinancialSubProfile>;
+  extends Omit<AreaChartProps, 'data'> {
+  merchants: Array<string>
+  selectedSpendingPeriod: SpendingPeriod
+  records: Array<MerchantMetricsFinancialSubProfile>
 }
 
 export const MerchantSpendingVsMonthChart: React.FC<
@@ -33,19 +33,19 @@ export const MerchantSpendingVsMonthChart: React.FC<
   selectedSpendingPeriod,
 }) => {
   const [selectedMerchant, setSelectedMerchant] = useState<string>(
-    merchants[0] || "",
-  );
+    merchants[0] || '',
+  )
 
   const allChartData = useMemo(() => {
     return MerchantFinancialMetricsConverter.generateSpendingTimeSeries(
       records,
       selectedSpendingPeriod,
-    );
-  }, [records, selectedSpendingPeriod]);
+    )
+  }, [records, selectedSpendingPeriod])
 
   const chartData = useMemo(() => {
-    return allChartData[selectedMerchant] || [];
-  }, [allChartData, selectedMerchant]);
+    return allChartData[selectedMerchant] || []
+  }, [allChartData, selectedMerchant])
 
   if (
     !records ||
@@ -53,7 +53,7 @@ export const MerchantSpendingVsMonthChart: React.FC<
     !merchants ||
     merchants.length === 0
   ) {
-    return null;
+    return null
   }
 
   return (
@@ -87,5 +87,5 @@ export const MerchantSpendingVsMonthChart: React.FC<
         />
       </div>
     </div>
-  );
-};
+  )
+}

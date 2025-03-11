@@ -1,8 +1,8 @@
-import React from "react";
-import { LinkedAccountCard } from "../../cards/linked-account-card/linked-account-card";
+import React from 'react'
+import { LinkedAccountCard } from '../../cards/linked-account-card/linked-account-card'
 
 interface LinkedAccountsOverviewProps {
-  linkedInstitutions: any[];
+  linkedInstitutions: any[]
 }
 
 export const LinkedAccountsOverview: React.FC<LinkedAccountsOverviewProps> = ({
@@ -13,4 +13,4 @@ export const LinkedAccountsOverview: React.FC<LinkedAccountsOverviewProps> = ({
       <LinkedAccountCard link={link} key={idx} />
     ))}
   </div>
-);
+)

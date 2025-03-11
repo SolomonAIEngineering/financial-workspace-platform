@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { useEffect } from "react";
+import { useEffect } from 'react'
 
 /**
  * Interface for Intercom settings.
@@ -8,9 +8,9 @@ import { useEffect } from "react";
  */
 interface IntercomSettings {
   /** The base URL for the Intercom API. */
-  api_base: string;
+  api_base: string
   /** The unique identifier for your Intercom app. */
-  app_id: string;
+  app_id: string
 }
 
 /**
@@ -19,20 +19,20 @@ interface IntercomSettings {
  */
 interface IntercomWidgetProps {
   /** The unique identifier for your Intercom app. */
-  appId: string;
+  appId: string
 }
 
 declare global {
   interface Window {
     /** Global Intercom settings object. */
-    intercomSettings: IntercomSettings;
+    intercomSettings: IntercomSettings
     /** Global Intercom function. */
-    Intercom: any;
+    Intercom: any
   }
 }
 
 /** The base URL for the Intercom API. */
-const INTERCOM_API_BASE = "https://api-iam.intercom.io";
+const INTERCOM_API_BASE = 'https://api-iam.intercom.io'
 
 /**
  * A React component that initializes and manages the Intercom chat widget.
@@ -50,13 +50,13 @@ const IntercomWidget: React.FC<IntercomWidgetProps> = ({ appId }) => {
   useEffect(() => {
     if (!appId) {
       console.error(
-        "Intercom app ID is not provided. Please check the appId prop.",
-      );
-      return;
+        'Intercom app ID is not provided. Please check the appId prop.',
+      )
+      return
     }
 
     /** The URL of the Intercom widget script. */
-    const INTERCOM_SCRIPT_SRC = `https://widget.intercom.io/widget/${appId}`;
+    const INTERCOM_SCRIPT_SRC = `https://widget.intercom.io/widget/${appId}`
 
     /**
      * Initializes the Intercom chat widget.
@@ -69,15 +69,15 @@ const IntercomWidget: React.FC<IntercomWidgetProps> = ({ appId }) => {
       window.intercomSettings = {
         api_base: INTERCOM_API_BASE,
         app_id: appId,
-      };
+      }
 
       if (window.Intercom) {
-        window.Intercom("reattach_activator");
-        window.Intercom("update", window.intercomSettings);
+        window.Intercom('reattach_activator')
+        window.Intercom('update', window.intercomSettings)
       } else {
-        loadIntercomScript();
+        loadIntercomScript()
       }
-    };
+    }
 
     /**
      * Loads the Intercom script dynamically.
@@ -86,25 +86,25 @@ const IntercomWidget: React.FC<IntercomWidgetProps> = ({ appId }) => {
      * Intercom widget URL, and appends it to the document body.
      */
     const loadIntercomScript = () => {
-      const script = document.createElement("script");
-      script.type = "text/javascript";
-      script.async = true;
-      script.src = INTERCOM_SCRIPT_SRC;
-      script.onload = () => window.Intercom("update", window.intercomSettings);
-      document.body.appendChild(script);
-    };
+      const script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.async = true
+      script.src = INTERCOM_SCRIPT_SRC
+      script.onload = () => window.Intercom('update', window.intercomSettings)
+      document.body.appendChild(script)
+    }
 
-    initializeIntercom();
+    initializeIntercom()
 
     return () => {
       // Clean up Intercom on component unmount
       if (window.Intercom) {
-        window.Intercom("shutdown");
+        window.Intercom('shutdown')
       }
-    };
-  }, [appId]);
+    }
+  }, [appId])
 
-  return null;
-};
+  return null
+}
 
-export default IntercomWidget;
+export default IntercomWidget

@@ -1,11 +1,11 @@
-import { Fragment } from "react";
-import { Menu, Transition } from "@headlessui/react";
-import { BellIcon } from "@heroicons/react/20/solid";
-import * as React from "react";
+import { Menu, Transition } from '@headlessui/react'
+import { BellIcon } from '@heroicons/react/20/solid'
+import * as React from 'react'
+import { Fragment } from 'react'
 
 interface ViewNotificationDropdownProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  title: string;
+  title: string
 }
 
 export const ViewNotificationDropdown: React.FC<
@@ -31,5 +31,5 @@ export const ViewNotificationDropdown: React.FC<
         </Menu.Items>
       </Transition>
     </Menu>
-  );
-};
+  )
+}

@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react'
 
 interface FreeTierViewProps {
-  baseTierNumberOfConnectedAccounts: number;
+  baseTierNumberOfConnectedAccounts: number
 }
 
 export const FreeTierView: React.FC<FreeTierViewProps> = ({
@@ -14,18 +14,18 @@ export const FreeTierView: React.FC<FreeTierViewProps> = ({
           Solomon AI
         </p>
       </div>
-      <h2 className="mt-2 text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
+      <h2 className="text-foreground mt-2 text-4xl font-bold tracking-tight sm:text-6xl">
         Financial Portal
         <span className="font-base ml-4 text-sm">
           {baseTierNumberOfConnectedAccounts} Linked Accounts
         </span>
       </h2>
-      <p className="mt-6 text-lg leading-8 text-foreground/3">
+      <p className="text-foreground/3 mt-6 text-lg leading-8">
         Your Premier Gateway to Wealth Mastery and Financial Liberation.
       </p>
       <div>
         <h2 className="py-5 text-2xl font-bold tracking-tight">
-          Overview{" "}
+          Overview{' '}
           <span className="ml-1 text-xs">
             {baseTierNumberOfConnectedAccounts} Linked Accounts
           </span>
@@ -33,4 +33,4 @@ export const FreeTierView: React.FC<FreeTierViewProps> = ({
       </div>
     </div>
   </div>
-);
+)

@@ -1,21 +1,21 @@
-"use client";
+'use client'
 
-import { Checkbox } from "../checkbox";
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "./data-table-column-header";
-import { DataTableFilter } from "./data-table-filters";
-import { DataTableRowActions } from "./data-table-row-actions";
-import { Transaction } from "client-typescript-sdk";
-import { removeUnderScores } from "../../lib/utils";
+import { ColumnDef } from '@tanstack/react-table'
+import { Transaction } from 'client-typescript-sdk'
+import { removeUnderScores } from '../../lib/utils'
+import { Checkbox } from '../checkbox'
+import { DataTableColumnHeader } from './data-table-column-header'
+import { DataTableFilter } from './data-table-filters'
+import { DataTableRowActions } from './data-table-row-actions'
 
 export const columns: ColumnDef<Transaction>[] = [
   {
-    id: "select",
+    id: 'select',
     header: ({ table }) => (
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -35,18 +35,18 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 
   {
-    accessorKey: "accountId",
+    accessorKey: 'accountId',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Account" />
     ),
     cell: ({ row }) => (
-      <div className="w-[80px]">{row.getValue("accountId")}</div>
+      <div className="w-[80px]">{row.getValue('accountId')}</div>
     ),
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: "merchantName",
+    accessorKey: 'merchantName',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Merchant" />
     ),
@@ -54,17 +54,17 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("merchantName")}
+            {row.getValue('merchantName')}
           </span>
         </div>
-      );
+      )
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+      return value.includes(row.getValue(id))
     },
   },
   {
-    accessorKey: "name",
+    accessorKey: 'name',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Transaction" />
     ),
@@ -72,14 +72,14 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("name")}
+            {row.getValue('name')}
           </span>
         </div>
-      );
+      )
     },
   },
   {
-    accessorKey: "personalFinanceCategoryPrimary",
+    accessorKey: 'personalFinanceCategoryPrimary',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Category" />
     ),
@@ -87,17 +87,17 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {removeUnderScores(row.getValue("personalFinanceCategoryPrimary"))}
+            {removeUnderScores(row.getValue('personalFinanceCategoryPrimary'))}
           </span>
         </div>
-      );
+      )
     },
     filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
+      return value.includes(row.getValue(id))
     },
   },
   {
-    accessorKey: "authorizedDate",
+    accessorKey: 'authorizedDate',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Authorized" />
     ),
@@ -105,14 +105,14 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {new Date(row.getValue("authorizedDate")).toString().slice(0, 10)}
+            {new Date(row.getValue('authorizedDate')).toString().slice(0, 10)}
           </span>
         </div>
-      );
+      )
     },
   },
   {
-    accessorKey: "amount",
+    accessorKey: 'amount',
     header: ({ column, table }) => (
       // <DataTableColumnHeader column={column} title="Amount" />
       <div className="flex flex-row items-center justify-center gap-2">
@@ -124,14 +124,14 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex items-center justify-center space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            ${Math.abs(Number(row.getValue("amount"))).toFixed(2)}
+            ${Math.abs(Number(row.getValue('amount'))).toFixed(2)}
           </span>
         </div>
-      );
+      )
     },
   },
   {
-    accessorKey: "locationCity",
+    accessorKey: 'locationCity',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="City" />
     ),
@@ -139,14 +139,14 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("locationCity")}
+            {row.getValue('locationCity')}
           </span>
         </div>
-      );
+      )
     },
   },
   {
-    accessorKey: "paymentChannel",
+    accessorKey: 'paymentChannel',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Payment Channel" />
     ),
@@ -154,15 +154,15 @@ export const columns: ColumnDef<Transaction>[] = [
       return (
         <div className="flex space-x-2">
           <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("paymentChannel")}
+            {row.getValue('paymentChannel')}
           </span>
         </div>
-      );
+      )
     },
   },
 
   {
-    id: "actions",
+    id: 'actions',
     cell: ({ row }) => <DataTableRowActions row={row} />,
   },
-];
+]

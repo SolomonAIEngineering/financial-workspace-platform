@@ -1,6 +1,6 @@
-import { ChartDataPoint } from "../../types/chart";
-import { SpendingPeriod } from "../../types/merchant";
-import { MerchantMetricsFinancialSubProfile } from "client-typescript-sdk";
+import { MerchantMetricsFinancialSubProfile } from 'client-typescript-sdk'
+import { ChartDataPoint } from '../../types/chart'
+import { SpendingPeriod } from '../../types/merchant'
 
 export class MerchantFinancialMetricsConverter {
   /**
@@ -16,31 +16,31 @@ export class MerchantFinancialMetricsConverter {
     merchant: string,
     spendingPeriod: keyof Pick<
       MerchantMetricsFinancialSubProfile,
-      | "spentLastWeek"
-      | "spentLastTwoWeeks"
-      | "spentLastMonth"
-      | "spentLastSixMonths"
-      | "spentLastYear"
-      | "spentLastTwoYears"
+      | 'spentLastWeek'
+      | 'spentLastTwoWeeks'
+      | 'spentLastMonth'
+      | 'spentLastSixMonths'
+      | 'spentLastYear'
+      | 'spentLastTwoYears'
     >,
   ): ChartDataPoint[] {
     return data
       .filter((item) => item.merchantName === merchant)
       .map((item) => {
         if (item.month !== undefined && item[spendingPeriod] !== undefined) {
-          const year = Math.floor(item.month / 100);
-          const month = item.month % 100;
-          const date = new Date(year, month - 1, 1); // month is 0-indexed in Date constructor
+          const year = Math.floor(item.month / 100)
+          const month = item.month % 100
+          const date = new Date(year, month - 1, 1) // month is 0-indexed in Date constructor
 
           return {
             date: date.toISOString().slice(0, 7), // Format as YYYY-MM
             value: item[spendingPeriod] as number,
-          };
+          }
         }
-        return null;
+        return null
       })
       .filter((item): item is ChartDataPoint => item !== null)
-      .sort((a, b) => a.date.localeCompare(b.date)); // Sort by date
+      .sort((a, b) => a.date.localeCompare(b.date)) // Sort by date
   }
 
   /**
@@ -58,7 +58,7 @@ export class MerchantFinancialMetricsConverter {
           .map((item) => item.merchantName)
           .filter((merchant): merchant is string => merchant !== undefined),
       ),
-    ).sort();
+    ).sort()
   }
 
   /**
@@ -74,47 +74,47 @@ export class MerchantFinancialMetricsConverter {
     merchant: string,
     spendingPeriod: keyof Pick<
       MerchantMetricsFinancialSubProfile,
-      | "spentLastWeek"
-      | "spentLastTwoWeeks"
-      | "spentLastMonth"
-      | "spentLastSixMonths"
-      | "spentLastYear"
-      | "spentLastTwoYears"
+      | 'spentLastWeek'
+      | 'spentLastTwoWeeks'
+      | 'spentLastMonth'
+      | 'spentLastSixMonths'
+      | 'spentLastYear'
+      | 'spentLastTwoYears'
     >,
   ): {
-    highest: { month: string; value: number };
-    lowest: { month: string; value: number };
-    average: number;
+    highest: { month: string; value: number }
+    lowest: { month: string; value: number }
+    average: number
   } {
-    const filteredData = data.filter((item) => item.merchantName === merchant);
+    const filteredData = data.filter((item) => item.merchantName === merchant)
 
     if (filteredData.length === 0) {
-      throw new Error(`No data found for merchant: ${merchant}`);
+      throw new Error(`No data found for merchant: ${merchant}`)
     }
 
-    let highest = { month: "", value: -Infinity };
-    let lowest = { month: "", value: Infinity };
-    let sum = 0;
+    let highest = { month: '', value: -Infinity }
+    let lowest = { month: '', value: Infinity }
+    let sum = 0
 
     filteredData.forEach((item) => {
       if (item.month !== undefined && item[spendingPeriod] !== undefined) {
-        const monthStr = this.formatMonth(item.month);
-        const value = item[spendingPeriod] as number;
-        sum += value;
+        const monthStr = this.formatMonth(item.month)
+        const value = item[spendingPeriod] as number
+        sum += value
 
         if (value > highest.value) {
-          highest = { month: monthStr, value };
+          highest = { month: monthStr, value }
         }
 
         if (value < lowest.value) {
-          lowest = { month: monthStr, value };
+          lowest = { month: monthStr, value }
         }
       }
-    });
+    })
 
-    const average = sum / filteredData.length;
+    const average = sum / filteredData.length
 
-    return { highest, lowest, average };
+    return { highest, lowest, average }
   }
 
   /**
@@ -128,32 +128,32 @@ export class MerchantFinancialMetricsConverter {
     data: MerchantMetricsFinancialSubProfile[],
     spendingPeriod: keyof Pick<
       MerchantMetricsFinancialSubProfile,
-      | "spentLastWeek"
-      | "spentLastTwoWeeks"
-      | "spentLastMonth"
-      | "spentLastSixMonths"
-      | "spentLastYear"
-      | "spentLastTwoYears"
+      | 'spentLastWeek'
+      | 'spentLastTwoWeeks'
+      | 'spentLastMonth'
+      | 'spentLastSixMonths'
+      | 'spentLastYear'
+      | 'spentLastTwoYears'
     >,
   ): { month: string; total: number }[] {
-    const monthlyTotals: { [key: string]: number } = {};
+    const monthlyTotals: { [key: string]: number } = {}
 
     data.forEach((item) => {
       if (item.month !== undefined && item[spendingPeriod] !== undefined) {
-        const monthStr = this.formatMonth(item.month);
-        const value = item[spendingPeriod] as number;
+        const monthStr = this.formatMonth(item.month)
+        const value = item[spendingPeriod] as number
 
         if (monthlyTotals[monthStr]) {
-          monthlyTotals[monthStr] += value;
+          monthlyTotals[monthStr] += value
         } else {
-          monthlyTotals[monthStr] = value;
+          monthlyTotals[monthStr] = value
         }
       }
-    });
+    })
 
     return Object.entries(monthlyTotals)
       .map(([month, total]) => ({ month, total }))
-      .sort((a, b) => a.month.localeCompare(b.month));
+      .sort((a, b) => a.month.localeCompare(b.month))
   }
 
   /**
@@ -166,15 +166,15 @@ export class MerchantFinancialMetricsConverter {
     data: MerchantMetricsFinancialSubProfile[],
   ): {
     transactionCount: {
-      [merchant: string]: { total: number; average: number };
-    };
+      [merchant: string]: { total: number; average: number }
+    }
     spendingPeriods: {
       [K in SpendingPeriod]: {
-        [merchant: string]: { total: number; average: number };
-      };
-    };
+        [merchant: string]: { total: number; average: number }
+      }
+    }
   } {
-    const cities = this.getUniqueMerchants(data);
+    const cities = this.getUniqueMerchants(data)
     const result: ReturnType<
       typeof MerchantFinancialMetricsConverter.computeComprehensiveStatistics
     > = {
@@ -187,23 +187,21 @@ export class MerchantFinancialMetricsConverter {
         spentLastYear: {},
         spentLastTwoYears: {},
       },
-    };
+    }
 
     cities.forEach((merchant) => {
-      const merchantData = data.filter(
-        (item) => item.merchantName === merchant,
-      );
+      const merchantData = data.filter((item) => item.merchantName === merchant)
 
       // Spending Period Statistics
-      (Object.keys(result.spendingPeriods) as SpendingPeriod[]).forEach(
+      ;(Object.keys(result.spendingPeriods) as SpendingPeriod[]).forEach(
         (period) => {
           result.spendingPeriods[period][merchant] =
-            this.computeNumericFieldStats(merchantData, period);
+            this.computeNumericFieldStats(merchantData, period)
         },
-      );
-    });
+      )
+    })
 
-    return result;
+    return result
   }
 
   /**
@@ -217,24 +215,24 @@ export class MerchantFinancialMetricsConverter {
     data: MerchantMetricsFinancialSubProfile[],
     field: keyof MerchantMetricsFinancialSubProfile,
   ): { total: number; average: number } {
-    let total = 0;
-    let count = 0;
+    let total = 0
+    let count = 0
 
     data.forEach((item) => {
-      const value = item[field];
-      if (typeof value === "number") {
-        total += value;
-        count++;
-      } else if (typeof value === "string" && !isNaN(Number(value))) {
-        total += Number(value);
-        count++;
+      const value = item[field]
+      if (typeof value === 'number') {
+        total += value
+        count++
+      } else if (typeof value === 'string' && !isNaN(Number(value))) {
+        total += Number(value)
+        count++
       }
-    });
+    })
 
     return {
       total,
       average: count > 0 ? total / count : 0,
-    };
+    }
   }
 
   /**
@@ -248,18 +246,18 @@ export class MerchantFinancialMetricsConverter {
     data: MerchantMetricsFinancialSubProfile[],
     spendingPeriod: SpendingPeriod,
   ): { [merchant: string]: ChartDataPoint[] } {
-    const cities = this.getUniqueMerchants(data);
-    const result: { [merchant: string]: ChartDataPoint[] } = {};
+    const cities = this.getUniqueMerchants(data)
+    const result: { [merchant: string]: ChartDataPoint[] } = {}
 
     cities.forEach((merchant) => {
       result[merchant] = this.convertToChartDataPoints(
         data,
         merchant,
         spendingPeriod,
-      );
-    });
+      )
+    })
 
-    return result;
+    return result
   }
 
   /**
@@ -273,19 +271,17 @@ export class MerchantFinancialMetricsConverter {
     data: MerchantMetricsFinancialSubProfile[],
     spendingPeriod: SpendingPeriod,
   ): { merchant: string; totalSpending: number }[] {
-    const merchants = this.getUniqueMerchants(data);
+    const merchants = this.getUniqueMerchants(data)
     const merchantTotals = merchants.map((merchant) => {
-      const merchantData = data.filter(
-        (item) => item.merchantName === merchant,
-      );
+      const merchantData = data.filter((item) => item.merchantName === merchant)
       const totalSpending = merchantData.reduce(
         (sum, item) => sum + ((item[spendingPeriod] as number) || 0),
         0,
-      );
-      return { merchant, totalSpending };
-    });
+      )
+      return { merchant, totalSpending }
+    })
 
-    return merchantTotals.sort((a, b) => b.totalSpending - a.totalSpending);
+    return merchantTotals.sort((a, b) => b.totalSpending - a.totalSpending)
   }
 
   /**
@@ -299,33 +295,33 @@ export class MerchantFinancialMetricsConverter {
     data: MerchantMetricsFinancialSubProfile[],
     spendingPeriod: SpendingPeriod,
   ): { [merchant: string]: { month: string; growthRate: number }[] } {
-    const cities = this.getUniqueMerchants(data);
+    const cities = this.getUniqueMerchants(data)
     const result: {
-      [merchant: string]: { month: string; growthRate: number }[];
-    } = {};
+      [merchant: string]: { month: string; growthRate: number }[]
+    } = {}
 
     cities.forEach((merchant) => {
       const merchantData = data
         .filter((item) => item.merchantName === merchant)
-        .sort((a, b) => (a.month || 0) - (b.month || 0));
+        .sort((a, b) => (a.month || 0) - (b.month || 0))
 
       const growthRates = merchantData.map((item, index) => {
         if (index === 0)
-          return { month: this.formatMonth(item.month || 0), growthRate: 0 };
-        const currentSpending = item[spendingPeriod] as number;
-        const previousItem = merchantData[index - 1];
+          return { month: this.formatMonth(item.month || 0), growthRate: 0 }
+        const currentSpending = item[spendingPeriod] as number
+        const previousItem = merchantData[index - 1]
         const previousSpending = previousItem
           ? (previousItem[spendingPeriod] as number)
-          : 0;
+          : 0
         const growthRate =
-          ((currentSpending - previousSpending) / previousSpending) * 100;
-        return { month: this.formatMonth(item.month || 0), growthRate };
-      });
+          ((currentSpending - previousSpending) / previousSpending) * 100
+        return { month: this.formatMonth(item.month || 0), growthRate }
+      })
 
-      result[merchant] = growthRates;
-    });
+      result[merchant] = growthRates
+    })
 
-    return result;
+    return result
   }
 
   /**
@@ -341,18 +337,18 @@ export class MerchantFinancialMetricsConverter {
     spendingPeriod: SpendingPeriod,
     topN: number = 5,
   ): { merchant: string; recentGrowthRate: number; totalSpending: number }[] {
-    const growthRates = this.calculateMonthlyGrowthRate(data, spendingPeriod);
-    const totalSpending = this.rankMerchantsBySpending(data, spendingPeriod);
+    const growthRates = this.calculateMonthlyGrowthRate(data, spendingPeriod)
+    const totalSpending = this.rankMerchantsBySpending(data, spendingPeriod)
 
     const combinedMetrics = Object.keys(growthRates).map((merchant) => {
       const recentGrowthRate =
         growthRates[merchant]?.[growthRates[merchant]?.length - 1]
-          ?.growthRate ?? 0;
+          ?.growthRate ?? 0
       const spending =
         totalSpending.find((item) => item.merchant === merchant)
-          ?.totalSpending || 0;
-      return { merchant, recentGrowthRate, totalSpending: spending };
-    });
+          ?.totalSpending || 0
+      return { merchant, recentGrowthRate, totalSpending: spending }
+    })
 
     return combinedMetrics
       .sort(
@@ -360,7 +356,7 @@ export class MerchantFinancialMetricsConverter {
           b.recentGrowthRate * b.totalSpending -
           a.recentGrowthRate * a.totalSpending,
       )
-      .slice(0, topN);
+      .slice(0, topN)
   }
 
   /**
@@ -374,36 +370,33 @@ export class MerchantFinancialMetricsConverter {
     data: MerchantMetricsFinancialSubProfile[],
     spendingPeriod: SpendingPeriod,
   ): { [merchant: string]: { [season: string]: number } } {
-    const cities = this.getUniqueMerchants(data);
-    const result: { [merchant: string]: { [season: string]: number } } = {};
+    const cities = this.getUniqueMerchants(data)
+    const result: { [merchant: string]: { [season: string]: number } } = {}
 
     cities.forEach((merchant) => {
-      const merchantData = data.filter(
-        (item) => item.merchantName === merchant,
-      );
+      const merchantData = data.filter((item) => item.merchantName === merchant)
       const seasonalSpending: { [season: string]: number } = {
         Spring: 0,
         Summer: 0,
         Autumn: 0,
         Winter: 0,
-      };
+      }
 
       merchantData.forEach((item) => {
-        const month = item.month !== undefined ? item.month % 100 : 0;
+        const month = item.month !== undefined ? item.month % 100 : 0
         const spending =
-          typeof item[spendingPeriod] === "number" ? item[spendingPeriod] : 0;
+          typeof item[spendingPeriod] === 'number' ? item[spendingPeriod] : 0
 
-        if (month >= 3 && month <= 5) seasonalSpending.Spring! += spending;
-        else if (month >= 6 && month <= 8) seasonalSpending.Summer! += spending;
-        else if (month >= 9 && month <= 11)
-          seasonalSpending.Autumn! += spending;
-        else seasonalSpending.Winter! += spending;
-      });
+        if (month >= 3 && month <= 5) seasonalSpending.Spring! += spending
+        else if (month >= 6 && month <= 8) seasonalSpending.Summer! += spending
+        else if (month >= 9 && month <= 11) seasonalSpending.Autumn! += spending
+        else seasonalSpending.Winter! += spending
+      })
 
-      result[merchant] = seasonalSpending;
-    });
+      result[merchant] = seasonalSpending
+    })
 
-    return result;
+    return result
   }
 
   /**
@@ -415,8 +408,8 @@ export class MerchantFinancialMetricsConverter {
    * @private
    */
   private static formatMonth(month: number): string {
-    const year = Math.floor(month / 100);
-    const monthNum = month % 100;
-    return `${year}-${monthNum.toString().padStart(2, "0")}`;
+    const year = Math.floor(month / 100)
+    const monthNum = month % 100
+    return `${year}-${monthNum.toString().padStart(2, '0')}`
   }
 }

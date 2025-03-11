@@ -1,48 +1,48 @@
-"use client";
+'use client'
 
 import {
   CategoryMonthlyExpenditure,
   CategoryMonthlyIncome,
-} from "client-typescript-sdk";
-import React, { useMemo } from "react";
-import { CategoryDataConverter } from "../../../../lib/converters/category-converter";
+} from 'client-typescript-sdk'
+import React, { useMemo } from 'react'
+import { CategoryDataConverter } from '../../../../lib/converters/category-converter'
 
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../../../accordion";
+} from '../../../accordion'
 import {
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../../card";
+} from '../../../card'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../select";
+} from '../../../select'
 
-import { BarChartMultiDataPoint } from "@/types/chart";
-import { FinancialDataGenerator } from "../../../../lib/random/financial-data-generator";
-import { cn } from "../../../../utils/cn";
-import { AnalyticsChart } from "../../base/analytics-chart";
-import { RadialChart } from "../../base/radial-chart";
-import { ScatterChart } from "../../base/scatter-chart";
+import { BarChartMultiDataPoint } from '@/types/chart'
+import { FinancialDataGenerator } from '../../../../lib/random/financial-data-generator'
+import { cn } from '../../../../utils/cn'
+import { AnalyticsChart } from '../../base/analytics-chart'
+import { RadialChart } from '../../base/radial-chart'
+import { ScatterChart } from '../../base/scatter-chart'
 
 export interface MonthlyFinancialByCategoryChartProps {
-  currency: string;
-  data: Array<CategoryMonthlyExpenditure | CategoryMonthlyIncome>;
-  type: "income" | "expense";
-  height?: number;
-  locale?: string;
-  enableAssistantMode?: boolean;
-  enableDrillDown?: boolean;
-  disabled?: boolean;
+  currency: string
+  data: Array<CategoryMonthlyExpenditure | CategoryMonthlyIncome>
+  type: 'income' | 'expense'
+  height?: number
+  locale?: string
+  enableAssistantMode?: boolean
+  enableDrillDown?: boolean
+  disabled?: boolean
 }
 
 // TODO: cluster by month (amount spent across months - totals)
@@ -61,20 +61,20 @@ export const MonthlyFinancialByCategoryChart: React.FC<
 }) => {
   const data = useMemo(() => {
     if (disabled) {
-      return type === "income"
+      return type === 'income'
         ? FinancialDataGenerator.generateUserCategoryMonthlyData(
             1000,
             2024,
-            "income",
+            'income',
           )
         : FinancialDataGenerator.generateUserCategoryMonthlyData(
             1000,
             2024,
-            "expense",
-          );
+            'expense',
+          )
     }
-    return propData;
-  }, [disabled, type, propData]);
+    return propData
+  }, [disabled, type, propData])
 
   const getUniqueCategories = (
     data: Array<CategoryMonthlyExpenditure | CategoryMonthlyIncome>,
@@ -85,71 +85,71 @@ export const MonthlyFinancialByCategoryChart: React.FC<
           .map((item) => item.personalFinanceCategoryPrimary)
           .filter((category): category is string => category !== undefined),
       ),
-    ).sort();
-  };
+    ).sort()
+  }
 
   // get a unique set of primary categories
-  const categories = getUniqueCategories(data);
+  const categories = getUniqueCategories(data)
 
   // if there is no data, return null
   if (!data || data.length === 0 || categories.length === 0) {
-    return null;
+    return null
   }
 
   // define a state variable to store the selected category
   const [selectedCategory, setSelectedCategory] = React.useState<string>(
-    categories[0] || "",
-  );
+    categories[0] || '',
+  )
 
   // get the data for the selected category
   const chartData = useMemo(() => {
     return CategoryDataConverter.convertToChartDataPoints(
       data,
       selectedCategory,
-      type === "income" ? "totalIncome" : "totalSpending",
-    );
-  }, [data, selectedCategory, type]);
+      type === 'income' ? 'totalIncome' : 'totalSpending',
+    )
+  }, [data, selectedCategory, type])
 
   const handleCategoryChange = (value: string) => {
-    setSelectedCategory(value);
-  };
+    setSelectedCategory(value)
+  }
 
   const title =
-    type === "income"
-      ? "Monthly Income By Category"
-      : "Monthly Spend By Category";
+    type === 'income'
+      ? 'Monthly Income By Category'
+      : 'Monthly Spend By Category'
   const description =
-    type === "income"
+    type === 'income'
       ? `Monthly income by category in ${currency}`
-      : `Monthly spend by category in ${currency}`;
+      : `Monthly spend by category in ${currency}`
 
   const dataRecord = data[0] as
     | CategoryMonthlyIncome
-    | CategoryMonthlyExpenditure;
+    | CategoryMonthlyExpenditure
   const monthlyTotalsAcrossAllCategories =
     CategoryDataConverter.calculateMonthlyCategoryTotals<typeof dataRecord>(
       data,
       type,
-    );
+    )
 
   // convert to scatter chart data
   // check if the selected category exists in the monthlyTotalsAcrossAllCategories
-  let scatterChartData: { x: string; y: number }[] = [];
+  let scatterChartData: { x: string; y: number }[] = []
   if (monthlyTotalsAcrossAllCategories[selectedCategory]) {
     scatterChartData = monthlyTotalsAcrossAllCategories[selectedCategory]!.map(
       (item) => {
         return {
           x: item.month,
           y: item.total,
-        };
+        }
       },
-    );
+    )
   }
 
   // compute category totals
   const categoryTotals = CategoryDataConverter.calculateCategoryTotals<
     typeof dataRecord
-  >(data, type);
+  >(data, type)
 
   // convert to radial chart data
   const radialChartData = Object.entries(categoryTotals).map(
@@ -157,17 +157,17 @@ export const MonthlyFinancialByCategoryChart: React.FC<
       label: category,
       value: total,
     }),
-  );
+  )
 
   const barChartData: Array<BarChartMultiDataPoint> = useMemo(() => {
     return chartData.map((item) => ({
       date: item.date,
       [selectedCategory]:
-        type === "income" ? Number(item.value) : Number(item.value),
-    }));
-  }, [chartData, selectedCategory, type]);
+        type === 'income' ? Number(item.value) : Number(item.value),
+    }))
+  }, [chartData, selectedCategory, type])
 
-  const dataKeys = [selectedCategory];
+  const dataKeys = [selectedCategory]
 
   return (
     <div className="h-full w-full">
@@ -189,16 +189,16 @@ export const MonthlyFinancialByCategoryChart: React.FC<
           </SelectContent>
         </Select>
         <div
-          className={cn("border-none text-white shadow-none", {
-            "opacity-50": disabled,
+          className={cn('border-none text-white shadow-none', {
+            'opacity-50': disabled,
           })}
         >
           <AnalyticsChart
             chartData={barChartData}
-            title={`${type === "income" ? "Income" : "Expenditure"} Analysis for ${selectedCategory}`}
+            title={`${type === 'income' ? 'Income' : 'Expenditure'} Analysis for ${selectedCategory}`}
             description={`Detailed analysis of ${type} for ${selectedCategory} category`}
             dataKeys={dataKeys}
-            colors={["#333"]}
+            colors={['#333']}
             trendKey={selectedCategory}
             chartType="area"
             currency={currency}
@@ -240,5 +240,5 @@ export const MonthlyFinancialByCategoryChart: React.FC<
         </div>
       </CardContent>
     </div>
-  );
-};
+  )
+}

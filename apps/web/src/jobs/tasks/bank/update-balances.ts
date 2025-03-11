@@ -20,8 +20,15 @@ export const updateBalancesJob = client.defineJob({
     await io.logger.info('Starting balance update job');
 
     // Find active connections to update
-    const connections = await io.runTask('get-active-connections', async () => {
-      return await prisma.bankConnection.findMany({
+    let connections: {
+      id: string;
+      accounts: any[];
+      accessToken: string;
+      [key: string]: any;
+    }[] = [];
+
+    await io.runTask('get-active-connections', async (task, io) => {
+      const result = await prisma.bankConnection.findMany({
         include: {
           accounts: {
             where: {
@@ -37,6 +44,9 @@ export const updateBalancesJob = client.defineJob({
           status: BankConnectionStatus.ACTIVE,
         },
       });
+
+      connections = result;
+      return { success: true };
     });
 
     await io.logger.info(

@@ -19,10 +19,17 @@ export const categorizationJob = client.defineJob({
     await io.logger.info('Starting transaction categorization job');
 
     // Get transactions that need categorization
-    const uncategorizedTransactions = await io.runTask(
+    let uncategorizedTransactions: {
+      id: string;
+      name: string;
+      merchantName: string | null;
+      [key: string]: any;
+    }[] = [];
+
+    await io.runTask(
       'get-uncategorized-transactions',
-      async () => {
-        return await prisma.transaction.findMany({
+      async (task, io) => {
+        const result = await prisma.transaction.findMany({
           take: 1000, // Process in batches
           where: {
             category: null,
@@ -30,6 +37,9 @@ export const categorizationJob = client.defineJob({
             date: { gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) },
           },
         });
+
+        uncategorizedTransactions = result;
+        return { success: true };
       }
     );
 

@@ -1,5 +1,6 @@
-"use client";
+'use client'
 
+import React, { useMemo } from 'react'
 import {
   Area,
   AreaChart as BaseAreaChart,
@@ -8,30 +9,29 @@ import {
   TooltipProps,
   XAxis,
   YAxis,
-} from "recharts";
-import { BarChartMultiDataPoint, ChartDataPoint } from "../../../types/chart";
-import { ChartTooltip, ChartTooltipContent } from "../../chart";
-import React, { useMemo } from "react";
+} from 'recharts'
 import {
   formatAmount,
   getYAxisWidth,
   roundToNearestFactor,
-} from "../../../lib/chart-utils";
+} from '../../../lib/chart-utils'
+import { BarChartMultiDataPoint, ChartDataPoint } from '../../../types/chart'
+import { ChartTooltip, ChartTooltipContent } from '../../chart'
 
-import { ChartContainer } from "./chart-container";
-import { ContentType } from "recharts/types/component/Tooltip";
-import { Payload } from "recharts/types/component/DefaultTooltipContent";
-import { format } from "date-fns";
-import { generatePayloadArray } from "../../../lib/random/generator";
-import { useWrapperState } from "./chart-wrapper";
+import { format } from 'date-fns'
+import { Payload } from 'recharts/types/component/DefaultTooltipContent'
+import { ContentType } from 'recharts/types/component/Tooltip'
+import { generatePayloadArray } from '../../../lib/random/generator'
+import { ChartContainer } from './chart-container'
+import { useWrapperState } from './chart-wrapper'
 
 /**
  * Props for the ToolTipContent component.
  */
 interface ToolTipContentProps {
-  payload?: Array<Payload<number, string>>;
-  currency: string;
-  locale?: string;
+  payload?: Array<Payload<number, string>>
+  currency: string
+  locale?: string
 }
 
 /**
@@ -42,12 +42,12 @@ const ToolTipContent: React.FC<ToolTipContentProps> = ({
   currency,
   locale,
 }) => {
-  if (!payload) return null;
+  if (!payload) return null
 
-  const { value = 0, date } = payload[0]?.payload ?? {};
+  const { value = 0, date } = payload[0]?.payload ?? {}
 
   return (
-    <div className="w-[240px] border bg-background shadow-sm">
+    <div className="bg-background w-[240px] border shadow-sm">
       <div className="px-3 py-2">
         <div className="flex items-center justify-between">
           <p className="text-[13px] font-medium">
@@ -60,24 +60,24 @@ const ToolTipContent: React.FC<ToolTipContentProps> = ({
             })}
           </p>
           <p className="text-right text-xs text-[#606060]">
-            {date && format(new Date(date), "MMM, y")}
+            {date && format(new Date(date), 'MMM, y')}
           </p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 /**
  * Props for the AreaChart component.
  */
 export interface AreaChartProps {
-  currency: string;
-  data: Array<ChartDataPoint>;
-  height?: number;
-  locale?: string;
-  enableAssistantMode?: boolean;
-  disabled?: boolean;
+  currency: string
+  data: Array<ChartDataPoint>
+  height?: number
+  locale?: string
+  enableAssistantMode?: boolean
+  disabled?: boolean
 }
 
 /**
@@ -100,29 +100,28 @@ export const AreaChart: React.FC<AreaChartProps> = ({
         count: 50,
         minValue: 100,
         maxValue: 500,
-      });
+      })
     }
-    return propData;
-  }, [disabled, propData]);
+    return propData
+  }, [disabled, propData])
 
-  const [aiModalOpenState, setAiModalOpenState] =
-    React.useState<boolean>(false);
-  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState);
+  const [aiModalOpenState, setAiModalOpenState] = React.useState<boolean>(false)
+  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState)
   const [dataSet, setDataSet] = React.useState<
     Array<ChartDataPoint> | Array<BarChartMultiDataPoint>
-  >(data.length > 0 ? data : []);
+  >(data.length > 0 ? data : [])
 
   // Add this useEffect hook to update dataSet when data changes
   React.useEffect(() => {
-    setDataSet(data);
-  }, [data]);
+    setDataSet(data)
+  }, [data])
 
   const filterDataByDateRange = (dateRange: { from: Date; to: Date }) => {
-    const { from, to } = dateRange;
+    const { from, to } = dateRange
     setDataSet(
       data.filter(({ date }) => new Date(date) >= from && new Date(date) <= to),
-    );
-  };
+    )
+  }
 
   /**
    * Formats a number value as a currency string.
@@ -137,13 +136,13 @@ export const AreaChart: React.FC<AreaChartProps> = ({
       currency,
       amount: value,
       locale,
-    });
-  };
+    })
+  }
 
   // Calculate the maximum Y-axis value
-  const maxYAxisValue = roundToNearestFactor(data.map(({ value }) => value));
-  const yAxisLabelMaxValue: string = getLabel(maxYAxisValue);
-  const width = getYAxisWidth(yAxisLabelMaxValue);
+  const maxYAxisValue = roundToNearestFactor(data.map(({ value }) => value))
+  const yAxisLabelMaxValue: string = getLabel(maxYAxisValue)
+  const width = getYAxisWidth(yAxisLabelMaxValue)
 
   /**
    * Custom tooltip component for the AreaChart.
@@ -157,26 +156,26 @@ export const AreaChart: React.FC<AreaChartProps> = ({
       locale={locale}
       currency={currency}
     />
-  );
+  )
 
   // get the earliest date in the data
   // sort the data by date in ascending order
   const sortedData = data.sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  );
+  )
   const earliestDate = sortedData[0]?.date
     ? new Date(sortedData[0].date)
-    : undefined;
+    : undefined
   const latestDate = sortedData[sortedData.length - 1]?.date
     ? new Date(sortedData[sortedData.length - 1]!.date)
-    : undefined;
+    : undefined
 
   const [minValue, maxValue] = useMemo(() => {
     return [
       Math.min(...data.map((item) => item.value)),
       Math.max(...data.map((item) => item.value)),
-    ];
-  }, [data]);
+    ]
+  }, [data])
 
   return (
     <ChartContainer<any>
@@ -216,15 +215,15 @@ export const AreaChart: React.FC<AreaChartProps> = ({
           tickMargin={15}
           domain={[minValue * 0.9, maxValue * 1.1]}
           tickFormatter={(value) =>
-            new Date(value).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
+            new Date(value).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
             })
           }
           tick={{
-            fill: "#606060",
+            fill: '#606060',
             fontSize: 12,
-            fontFamily: "var(--font-sans)",
+            fontFamily: 'var(--font-sans)',
           }}
         />
 
@@ -238,9 +237,9 @@ export const AreaChart: React.FC<AreaChartProps> = ({
           tickFormatter={getLabel}
           width={getYAxisWidth(yAxisLabelMaxValue)}
           tick={{
-            fill: "#606060",
+            fill: '#606060',
             fontSize: 12,
-            fontFamily: "var(--font-sans)",
+            fontFamily: 'var(--font-sans)',
           }}
         />
         <defs>
@@ -261,16 +260,19 @@ export const AreaChart: React.FC<AreaChartProps> = ({
           </pattern>
         </defs>
 
-        <Tooltip content={CustomTooltip as ContentType<number, string>} cursor={false} />
+        <Tooltip
+          content={CustomTooltip as ContentType<number, string>}
+          cursor={false}
+        />
         <ChartTooltip
           content={
             (CustomTooltip as ContentType<number, string>) ?? (
               <ChartTooltipContent
                 className="w-fit"
                 labelFormatter={(value) =>
-                  new Date(value).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
+                  new Date(value).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
                   })
                 }
               />
@@ -289,5 +291,5 @@ export const AreaChart: React.FC<AreaChartProps> = ({
         />
       </BaseAreaChart>
     </ChartContainer>
-  );
-};
+  )
+}

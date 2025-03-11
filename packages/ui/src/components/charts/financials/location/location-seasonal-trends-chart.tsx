@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from "react";
-import { LocationFinancialMetricsConverter } from "../../../../lib/converters/location-sub-profile-converter";
-import { ScatterChartDataPoint } from "../../../../types/chart";
-import { SpendingPeriod } from "@/types/merchant";
-import { LocationFinancialSubProfile } from "client-typescript-sdk";
-import { HiSquare3Stack3D } from "react-icons/hi2";
+import { SpendingPeriod } from '@/types/merchant'
+import { LocationFinancialSubProfile } from 'client-typescript-sdk'
+import React, { useMemo, useState } from 'react'
+import { HiSquare3Stack3D } from 'react-icons/hi2'
+import { LocationFinancialMetricsConverter } from '../../../../lib/converters/location-sub-profile-converter'
+import { ScatterChartDataPoint } from '../../../../types/chart'
 
 import {
   Select,
@@ -11,15 +11,15 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../components/select";
+} from '../../../../components/select'
 
-import { ScatterChart, ScatterChartProps } from "../../base/scatter-chart";
+import { ScatterChart, ScatterChartProps } from '../../base/scatter-chart'
 
 export interface LocationSeasonalTrendsChartProps
-  extends Omit<ScatterChartProps, "data"> {
-  locations: Array<string>;
-  selectedSpendingPeriod: SpendingPeriod;
-  records: Array<LocationFinancialSubProfile>;
+  extends Omit<ScatterChartProps, 'data'> {
+  locations: Array<string>
+  selectedSpendingPeriod: SpendingPeriod
+  records: Array<LocationFinancialSubProfile>
 }
 
 export const LocationSeasonalTrendsChart: React.FC<
@@ -35,10 +35,10 @@ export const LocationSeasonalTrendsChart: React.FC<
   enableAssistantMode,
   selectedSpendingPeriod,
 }) => {
-  const [selectedCity, setSelectedCity] = useState<string>(locations[0] || "");
+  const [selectedCity, setSelectedCity] = useState<string>(locations[0] || '')
 
   if (!records || records.length === 0) {
-    return null;
+    return null
   }
 
   const allChartData = useMemo(() => {
@@ -47,17 +47,17 @@ export const LocationSeasonalTrendsChart: React.FC<
         records,
         selectedSpendingPeriod,
       ) || []
-    );
-  }, [records, selectedSpendingPeriod]);
+    )
+  }, [records, selectedSpendingPeriod])
 
   const chartData = useMemo(() => {
-    const data = allChartData[selectedCity] || [];
+    const data = allChartData[selectedCity] || []
 
     // convert to scatter data points
     return Object.entries(data).map(
       ([season, value]) => ({ x: season, y: value }) as ScatterChartDataPoint,
-    );
-  }, [allChartData, selectedCity]);
+    )
+  }, [allChartData, selectedCity])
 
   return (
     <div>
@@ -89,5 +89,5 @@ export const LocationSeasonalTrendsChart: React.FC<
         yUnit={yUnit}
       />
     </div>
-  );
-};
+  )
+}

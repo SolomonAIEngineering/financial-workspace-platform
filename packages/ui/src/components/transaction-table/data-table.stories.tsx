@@ -1,20 +1,20 @@
-import { Meta, StoryObj } from "@storybook/react";
-import { ColumnDef } from "@tanstack/react-table";
-import { Transaction } from "client-typescript-sdk";
-import { FinancialDataGenerator } from "../../lib/random/financial-data-generator";
-import { columns } from "./data-columns";
-import { DataTable } from "./data-table";
+import { Meta, StoryObj } from '@storybook/react'
+import { ColumnDef } from '@tanstack/react-table'
+import { Transaction } from 'client-typescript-sdk'
+import { FinancialDataGenerator } from '../../lib/random/financial-data-generator'
+import { columns } from './data-columns'
+import { DataTable } from './data-table'
 
 const meta: Meta<typeof DataTable> = {
   component: DataTable,
-} as Meta;
+} as Meta
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof DataTable>;
+type Story = StoryObj<typeof DataTable>
 
 const transactions: Transaction[] =
-  FinancialDataGenerator.generateRandomTransactions(100);
+  FinancialDataGenerator.generateRandomTransactions(100)
 
 const txnWithProperDate = transactions.map((txn) => {
   return {
@@ -32,11 +32,11 @@ const txnWithProperDate = transactions.map((txn) => {
     // generate a random transaction nae and emrchant name
     name: Math.random().toString(36),
     merchantName: Math.random().toString(36),
-  };
-});
+  }
+})
 
-export const Default: Story = {};
+export const Default: Story = {}
 Default.args = {
   data: txnWithProperDate,
   columns: columns as ColumnDef<unknown, unknown>[],
-};
+}

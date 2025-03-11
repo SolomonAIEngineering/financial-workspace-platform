@@ -1,13 +1,13 @@
-import React from "react";
-import { cn } from "../../utils/cn";
+import React from 'react'
+import { cn } from '../../utils/cn'
 
 export interface AskAILayoutProps {
-  className?: string;
-  context: any | undefined;
-  sampleQuestions: string[];
-  children: React.ReactNode;
-  title?: string;
-  showAskSolomon?: boolean;
+  className?: string
+  context: any | undefined
+  sampleQuestions: string[]
+  children: React.ReactNode
+  title?: string
+  showAskSolomon?: boolean
 }
 
 /**
@@ -31,17 +31,17 @@ const AskAILayout: React.FC<AskAILayoutProps> = ({
   return (
     <div
       className={cn(
-        "bg-white shadow-lg border-4 border-gray-50 md:p-[1%] rounded-2xl",
+        'rounded-2xl border-4 border-gray-50 bg-white shadow-lg md:p-[1%]',
         className,
       )}
     >
       {title && (
-        <h2 className="text-xl font-semibold mb-4 px-4 pt-4">{title}</h2>
+        <h2 className="mb-4 px-4 pt-4 text-xl font-semibold">{title}</h2>
       )}
-      <div className="flex justify-between items-center pb-4 px-4">
+      <div className="flex items-center justify-between px-4 pb-4">
         {sampleQuestions.length > 0 && (
           <div className="flex-grow">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">
+            <h3 className="mb-2 text-sm font-medium text-gray-500">
               Sample Questions:
             </h3>
             <ul className="text-sm text-gray-700">
@@ -61,7 +61,7 @@ const AskAILayout: React.FC<AskAILayoutProps> = ({
       </div>
       <div className="px-4 pb-4">{children}</div>
     </div>
-  );
-};
+  )
+}
 
-export default AskAILayout;
+export default AskAILayout

@@ -83,7 +83,7 @@ export const transactionNotificationsJob = client.defineJob({
 
     try {
       // Find user details
-      const user = await io.runTask('get-user', async () => {
+      const user = await io.runTask('get-user', async (task, io) => {
         return await prisma.user.findUnique({
           select: {
             id: true,
@@ -118,10 +118,21 @@ export const transactionNotificationsJob = client.defineJob({
         user.lastTransactionNotificationAt || subDays(new Date(), 7);
 
       // Find new transactions since last notification
-      const transactions = await io.runTask(
+      let transactions: {
+        id: string;
+        amount: number;
+        bankAccountId: string;
+        bankAccount: {
+          name: string;
+          mask: string | null;
+        };
+        [key: string]: any;
+      }[] = [];
+
+      await io.runTask(
         'get-new-transactions',
-        async () => {
-          return await prisma.transaction.findMany({
+        async (task, io) => {
+          const result = await prisma.transaction.findMany({
             include: {
               bankAccount: {
                 select: {
@@ -142,6 +153,8 @@ export const transactionNotificationsJob = client.defineJob({
               userId,
             },
           });
+          transactions = result;
+          return { success: true };
         }
       );
 
@@ -213,7 +226,7 @@ export const transactionNotificationsJob = client.defineJob({
 
       // Send the notification
       if (user.email) {
-        await io.runTask('send-notification', async () => {
+        await io.runTask('send-notification', async (task, io) => {
           await client.sendEvent({
             name: 'send-email',
             payload: {

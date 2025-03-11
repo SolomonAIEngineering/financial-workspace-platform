@@ -1,26 +1,26 @@
-"use client";
+'use client'
 
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-} from "lucide-react";
+} from 'lucide-react'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../select";
+} from '../select'
 
-import { Button } from "../button";
-import { useDataTable } from "@/components/data-table/data-table-provider";
-import { useMemo } from "react";
+import { useDataTable } from '@/components/data-table/data-table-provider'
+import { useMemo } from 'react'
+import { Button } from '../button'
 
 export function DataTablePagination() {
-  const { table, pagination, columnFilters } = useDataTable();
-  const pageCount = useMemo(() => table.getPageCount(), [columnFilters]);
+  const { table, pagination, columnFilters } = useDataTable()
+  const pageCount = useMemo(() => table.getPageCount(), [columnFilters])
 
   return (
     <div className="flex items-center justify-end space-x-4 md:space-x-6 lg:space-x-8">
@@ -29,7 +29,7 @@ export function DataTablePagination() {
         <Select
           value={`${pagination.pageSize}`}
           onValueChange={(value) => {
-            table.setPageSize(Number(value));
+            table.setPageSize(Number(value))
           }}
         >
           <SelectTrigger className="h-8 w-[70px]">
@@ -52,7 +52,7 @@ export function DataTablePagination() {
           variant="outline"
           className="hidden h-8 w-8 p-0 lg:flex"
           onClick={() => {
-            table.setPageIndex(0);
+            table.setPageIndex(0)
           }}
           disabled={!table.getCanPreviousPage()}
         >
@@ -63,7 +63,7 @@ export function DataTablePagination() {
           variant="outline"
           className="h-8 w-8 p-0"
           onClick={() => {
-            table.previousPage();
+            table.previousPage()
           }}
           disabled={!table.getCanPreviousPage()}
         >
@@ -74,7 +74,7 @@ export function DataTablePagination() {
           variant="outline"
           className="h-8 w-8 p-0"
           onClick={() => {
-            table.nextPage();
+            table.nextPage()
           }}
           disabled={!table.getCanNextPage()}
         >
@@ -85,7 +85,7 @@ export function DataTablePagination() {
           variant="outline"
           className="hidden h-8 w-8 p-0 lg:flex"
           onClick={() => {
-            table.setPageIndex(table.getPageCount() - 1);
+            table.setPageIndex(table.getPageCount() - 1)
           }}
           disabled={!table.getCanNextPage()}
         >
@@ -94,5 +94,5 @@ export function DataTablePagination() {
         </Button>
       </div>
     </div>
-  );
+  )
 }

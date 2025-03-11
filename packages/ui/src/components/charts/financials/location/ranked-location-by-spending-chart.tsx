@@ -1,14 +1,14 @@
-import React, { useMemo } from "react";
-import { LocationFinancialMetricsConverter } from "../../../../lib/converters/location-sub-profile-converter";
-import { SpendingPeriod } from "../../../../types/merchant";
-import { LocationFinancialSubProfile } from "client-typescript-sdk";
+import { LocationFinancialSubProfile } from 'client-typescript-sdk'
+import React, { useMemo } from 'react'
+import { LocationFinancialMetricsConverter } from '../../../../lib/converters/location-sub-profile-converter'
+import { SpendingPeriod } from '../../../../types/merchant'
 
-import { ScatterChart, ScatterChartProps } from "../../base/scatter-chart";
+import { ScatterChart, ScatterChartProps } from '../../base/scatter-chart'
 
 export interface RankedLocationsBySpendingChartProps
-  extends Omit<ScatterChartProps, "data"> {
-  selectedSpendingPeriod: SpendingPeriod;
-  records: Array<LocationFinancialSubProfile>;
+  extends Omit<ScatterChartProps, 'data'> {
+  selectedSpendingPeriod: SpendingPeriod
+  records: Array<LocationFinancialSubProfile>
 }
 
 export const RankedLocationsBySpendingChart: React.FC<
@@ -24,7 +24,7 @@ export const RankedLocationsBySpendingChart: React.FC<
   selectedSpendingPeriod,
 }) => {
   if (!records || records.length === 0) {
-    return null;
+    return null
   }
 
   const chartData = useMemo(() => {
@@ -32,7 +32,7 @@ export const RankedLocationsBySpendingChart: React.FC<
       LocationFinancialMetricsConverter.rankCitiesBySpending(
         records,
         selectedSpendingPeriod,
-      ) || [];
+      ) || []
 
     // convert to ScatterChartDataPoint and then sort
     return result
@@ -40,10 +40,10 @@ export const RankedLocationsBySpendingChart: React.FC<
         return {
           x: location.city,
           y: location.totalSpending,
-        };
+        }
       })
-      .sort((a, b) => a.y - b.y);
-  }, [records, selectedSpendingPeriod]);
+      .sort((a, b) => a.y - b.y)
+  }, [records, selectedSpendingPeriod])
 
   return (
     <ScatterChart
@@ -55,5 +55,5 @@ export const RankedLocationsBySpendingChart: React.FC<
       xUNit={xUNit}
       yUnit={yUnit}
     />
-  );
-};
+  )
+}

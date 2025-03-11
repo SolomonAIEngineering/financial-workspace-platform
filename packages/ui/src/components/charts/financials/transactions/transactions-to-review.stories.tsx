@@ -1,34 +1,34 @@
-import { Meta, StoryFn } from "@storybook/react";
+import { Meta, StoryFn } from '@storybook/react'
 import {
   TransactionsToReview,
   TransactionsToReviewProps,
-} from "./transactions-to-review";
+} from './transactions-to-review'
 
-import AssistantProviderWrapper from "../../../../wrapper/assistant-provider-wrapper";
-import { FinancialDataGenerator } from "../../../../lib/random/financial-data-generator";
-import { JSX } from "react";
+import { JSX } from 'react'
+import { FinancialDataGenerator } from '../../../../lib/random/financial-data-generator'
+import AssistantProviderWrapper from '../../../../wrapper/assistant-provider-wrapper'
 
-const transactions = FinancialDataGenerator.generateRandomTransactions(100);
+const transactions = FinancialDataGenerator.generateRandomTransactions(100)
 
 export default {
   component: TransactionsToReview,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     currency: {
-      control: "select",
-      options: ["USD", "EUR", "GBP", "JPY"],
+      control: 'select',
+      options: ['USD', 'EUR', 'GBP', 'JPY'],
     },
     height: {
-      control: { type: "range", min: 200, max: 600, step: 10 },
+      control: { type: 'range', min: 200, max: 600, step: 10 },
     },
     enableAssistantMode: {
-      control: "boolean",
+      control: 'boolean',
     },
     locale: {
-      control: "select",
-      options: ["en-US", "de-DE", "fr-FR", "ja-JP"],
+      control: 'select',
+      options: ['en-US', 'de-DE', 'fr-FR', 'ja-JP'],
     },
   },
   decorators: [
@@ -38,7 +38,7 @@ export default {
       </AssistantProviderWrapper>
     ),
   ],
-} as Meta;
+} as Meta
 
 const Template: StoryFn<TransactionsToReviewProps> = (
   args: JSX.IntrinsicAttributes & TransactionsToReviewProps,
@@ -46,9 +46,9 @@ const Template: StoryFn<TransactionsToReviewProps> = (
   <div className="w-[900px]">
     <TransactionsToReview {...args} />
   </div>
-);
+)
 
-export const Default = Template.bind({});
+export const Default = Template.bind({})
 Default.args = {
   transactions: transactions,
-};
+}
