@@ -12,7 +12,7 @@ import { format, subDays } from 'date-fns';
  *   // Format the current date for Plaid API
  *   const today = new Date();
  *   const formattedDate = formatDateForPlaid(today);
- *   // Result: '2023-04-15' (if today is April 15, 2023)
+ *   // Result: '2025-04-15' (if today is April 15, 2025)
  *
  *   // Use in Plaid API calls
  *   const params = {
@@ -40,11 +40,11 @@ export function formatDateForPlaid(date: Date): string {
  *   ```typescript
  *   // Get default 30-day range
  *   const defaultRange = getTransactionDateRange();
- *   // Result: { startDate: '2023-03-16', endDate: '2023-04-15' } (if today is April 15, 2023)
+ *   // Result: { startDate: '2025-03-16', endDate: '2025-04-15' } (if today is April 15, 2025)
  *
  *   // Get transactions for the last 7 days
  *   const weekRange = getTransactionDateRange(7);
- *   // Result: { startDate: '2023-04-08', endDate: '2023-04-15' } (if today is April 15, 2023)
+ *   // Result: { startDate: '2025-04-08', endDate: '2025-04-15' } (if today is April 15, 2025)
  *
  *   // Use in API calls
  *   const { startDate, endDate } = getTransactionDateRange();

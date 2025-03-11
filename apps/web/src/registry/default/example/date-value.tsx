@@ -32,7 +32,7 @@ export const dateValue: any = (
     </hp>
     <hp>
       <htext>Examples: </htext>
-      <hdate date="2024-01-01">
+      <hdate date="2025-01-01">
         <htext />
       </hdate>
       <htext> and </htext>

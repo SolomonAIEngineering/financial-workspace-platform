@@ -1,10 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  ArrowTrendingUpIcon,
+  ChartBarSquareIcon,
+  ChartPieIcon,
+  PresentationChartLineIcon,
+} from '@heroicons/react/24/outline';
 
-import { AnimatePresence } from 'framer-motion';
-
-import { FeatureDevelopment } from '@/components/document-sending/feature-development';
+import { FeatureDevelopment, type FeatureCard } from '@/components/document-sending/feature-development';
 // Document signing components
 import {
   type Document,
@@ -25,9 +30,9 @@ import { PageSkeleton } from '@/components/ui/page-skeleton';
 // Feature flags
 import { isFeatureEnabled } from '@/lib/feature-flags';
 
-export default function DocumentSigningPage() {
-  // Check if the document signing feature is enabled
-  const isDocumentSigningEnabled = isFeatureEnabled('DOCUMENT_SIGNING_ENABLED');
+export default function FinancialOverviewPage() {
+  // Check if the feature is enabled
+  const isFeatureEnabled = false; // Change this to true when ready to implement
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(
@@ -63,20 +68,47 @@ export default function DocumentSigningPage() {
   }, []);
 
   // If feature is not enabled, show the development notice
-  if (!isDocumentSigningEnabled) {
+  if (!isFeatureEnabled) {
     return (
       <PageSkeleton
-        description="Analyze your financial data and gain valuable insights."
+        description="Monitor your financial health with real-time dashboards and actionable insights."
         title="Financial Overview"
         breadcrumbs={[
           { href: '/dashboard', label: 'Dashboard' },
           { href: '/financial-overview', label: 'Financial Overview' },
         ]}
+        actions={
+          <motion.div
+            className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-border/40 bg-background/80 px-3.5 py-2 text-sm font-medium shadow-sm backdrop-blur-md transition-all duration-200"
+            whileHover={{ scale: 1.02, borderColor: 'rgba(var(--primary-rgb), 0.3)' }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <ChartBarSquareIcon className="h-4 w-4 text-primary/80" />
+            <span>Join Waitlist</span>
+          </motion.div>
+        }
       >
         <FeatureDevelopment
-          description="We're building a comprehensive financial analytics dashboard to help you make data-driven decisions. Stay tuned for updates on this feature."
-          title="Financial Overview Coming Soon"
-          estimatedTime="Expected release: Q3 2025"
+          description="We're building a comprehensive financial overview dashboard that combines real-time analytics, cash flow visualization, and predictive insights. Get a complete picture of your business's financial health in one unified interface."
+          title="Financial Overview Experience"
+          estimatedTime="Expected release: Q3 2023"
+          featureCards={[
+            {
+              description: 'See all key financial metrics in one unified dashboard',
+              icon: ChartPieIcon,
+              title: 'Complete Picture',
+            },
+            {
+              description: 'Monitor cash flow and understand your company\'s financial trends',
+              icon: PresentationChartLineIcon,
+              title: 'Trend Analysis',
+            },
+            {
+              description: 'Measure business performance against defined KPIs',
+              icon: ArrowTrendingUpIcon,
+              title: 'Performance Tracking',
+            },
+          ]}
         />
       </PageSkeleton>
     );
@@ -176,8 +208,8 @@ export default function DocumentSigningPage() {
 
   return (
     <PageSkeleton
-      description="Sign documents securely and track signature status."
-      title="Document Signing"
+      description="Monitor your financial health with real-time dashboards and actionable insights."
+      title="Financial Overview"
       actions={
         <DocumentActions
           onFilter={() => setIsAdvancedFilterOpen(!isAdvancedFilterOpen)}

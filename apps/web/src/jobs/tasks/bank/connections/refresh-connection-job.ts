@@ -39,7 +39,7 @@ import { z } from 'zod';
  *   success: true,
  *   newAccessToken: "new-access-token-123",
  *   newRefreshToken: "new-refresh-token-456",
- *   expiresAt: "2023-05-15T10:30:00.000Z"
+ *   expiresAt: "2025-05-15T10:30:00.000Z"
  *   }
  *
  *   // Or an error message on failure:

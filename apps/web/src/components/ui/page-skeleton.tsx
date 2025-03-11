@@ -1,9 +1,15 @@
 'use client';
 
-import React from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+} from './breadcrumb';
+import React, { useEffect, useState } from 'react';
 
 import { cn } from '@udecode/cn';
-import { motion } from 'framer-motion';
 
 interface PageSkeletonProps {
   children: React.ReactNode;
@@ -35,110 +41,130 @@ export function PageSkeleton({
   tabs,
   title,
 }: PageSkeletonProps) {
-  // Premium animation variants with refined timing
+  // Track scroll position for parallax effects
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Enhanced animation variants with ultra-smooth timing
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        delayChildren: 0.03,
-        ease: [0.25, 0.1, 0.25, 1], // Custom cubic bezier for premium feel
-        staggerChildren: 0.06,
+        delayChildren: 0.015,
+        ease: [0.2, 0.01, 0.21, 1], // Ultra-smooth cubic bezier
+        staggerChildren: 0.035,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 8 },
+    hidden: { opacity: 0, y: 5 },
     visible: {
       opacity: 1,
       transition: {
-        damping: 22,
-        mass: 0.9,
-        stiffness: 260,
+        damping: 28,
+        mass: 0.7,
+        stiffness: 300,
         type: 'spring',
       },
       y: 0,
     },
   };
 
+  // Subtle hover animations for interactive elements
+  const buttonHoverVariants = {
+    hover: { scale: 1.02, transition: { duration: 0.2 } },
+    tap: { scale: 0.98, transition: { duration: 0.1 } },
+  };
+
   return (
     <motion.div
       className={cn(
-        'flex h-full w-full flex-col bg-background/80 backdrop-blur-sm',
+        'flex h-full w-full flex-col bg-gradient-to-b from-background/98 to-background/95 backdrop-blur-[2.5px]',
         className
       )}
       animate="visible"
       initial={animateEntrance ? 'hidden' : 'visible'}
       variants={containerVariants}
+      style={{
+        backgroundPosition: `center ${scrollY * 0.05}px`, // Subtle parallax effect
+      }}
     >
-      {/* Premium Page Header with refined elevation and spacing */}
+      {/* Exquisite Header with premium glass effect */}
       <motion.div
-        className="border-b border-border/60 bg-card/90 px-4 py-3.5 shadow-sm backdrop-blur-sm sm:px-6"
+        className="relative border-b border-border/30 bg-card/75 px-4 py-3.5 backdrop-blur-xl sm:px-6"
         variants={itemVariants}
+        style={{
+          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px 0 rgba(0, 0, 0, 0.01)',
+        }}
       >
-        <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-2.5">
-          {/* Breadcrumbs with premium styling */}
+        {/* Decorative accent line */}
+        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0" />
+
+        <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-2">
+          {/* Refined Breadcrumbs */}
           {breadcrumbs && breadcrumbs.length > 0 && (
-            <motion.nav
-              className="flex items-center text-xs font-medium tracking-wide text-muted-foreground/80"
-              transition={{ delay: 0.1 }}
+            <motion.div
               variants={itemVariants}
+              transition={{ delay: 0.05 }}
+              className="overflow-hidden"
             >
-              {breadcrumbs.map((crumb, index) => (
-                <React.Fragment key={crumb.href}>
-                  {index > 0 && (
-                    <span className="mx-1.5 text-muted-foreground/30">
-                      <svg
-                        className="h-2.5 w-2.5"
-                        fill="none"
-                        height="16"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        viewBox="0 0 24 24"
-                        width="16"
-                        xmlns="http://www.w3.org/2000/svg"
+              <Breadcrumb>
+                <BreadcrumbList className="text-xs">
+                  {breadcrumbs.map((crumb, index) => (
+                    <BreadcrumbItem key={crumb.href}>
+                      <BreadcrumbLink
+                        href={crumb.href}
+                        className="text-xs font-medium text-muted-foreground/80 hover:text-foreground transition-colors duration-200"
                       >
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                      </svg>
-                    </span>
-                  )}
-                  <a
-                    className="transition-all duration-200 hover:text-foreground hover:underline hover:underline-offset-4"
-                    href={crumb.href}
-                  >
-                    {crumb.label}
-                  </a>
-                </React.Fragment>
-              ))}
-            </motion.nav>
+                        {crumb.label}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                  ))}
+                </BreadcrumbList>
+              </Breadcrumb>
+            </motion.div>
           )}
 
-          {/* Title and Actions Row with premium spacing and alignment */}
-          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+          {/* Elegant Title and Actions Row */}
+          <div className="flex flex-col items-start justify-between gap-2.5 sm:flex-row sm:items-center">
             <div className="flex-1 space-y-1">
               <motion.h1
-                className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-xl font-semibold tracking-tight text-transparent sm:text-2xl"
+                className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/80 bg-clip-text text-xl font-semibold tracking-tight text-transparent sm:text-2xl"
                 variants={itemVariants}
+                style={{
+                  letterSpacing: '-0.01em',
+                  textShadow: '0 0 transparent'
+                }}
               >
                 {title}
               </motion.h1>
               {description && (
                 <motion.p
-                  className="text-sm leading-relaxed font-medium text-muted-foreground/90"
+                  className="text-sm leading-relaxed text-muted-foreground/90 max-w-2xl"
                   variants={itemVariants}
                 >
                   {description}
                 </motion.p>
               )}
             </div>
+
             {actions && (
               <motion.div
-                className="flex items-center gap-2"
-                transition={{ delay: 0.05 }}
+                className="flex items-center gap-2.5"
+                transition={{ delay: 0.03 }}
                 variants={itemVariants}
+                whileHover="hover"
+                whileTap="tap"
               >
                 {actions}
               </motion.div>
@@ -148,42 +174,45 @@ export function PageSkeleton({
           {/* Premium Tab Design */}
           {tabs && tabs.length > 0 && (
             <motion.div
-              className="mt-2"
-              transition={{ delay: 0.1 }}
+              className="mt-4 overflow-hidden"
+              transition={{ delay: 0.07 }}
               variants={itemVariants}
             >
-              <div className="flex space-x-5">
+              <div className="flex space-x-7 border-b border-border/10 pb-px">
                 {tabs.map((tab) => (
-                  <button
+                  <motion.button
                     key={tab.id}
                     className={cn(
-                      'group relative px-1 py-2.5 text-sm font-medium tracking-wide transition-all duration-200',
+                      'group relative px-1 pb-2.5 pt-1 text-sm font-medium tracking-wide transition-all duration-200',
                       tab.isActive
                         ? 'text-foreground'
                         : 'text-muted-foreground/70 hover:text-foreground/90'
                     )}
                     onClick={tab.onClick}
+                    whileHover="hover"
+                    whileTap="tap"
+                    variants={buttonHoverVariants}
                   >
                     {tab.label}
                     <span
                       className={cn(
-                        'absolute bottom-0 left-0 h-[2px] w-full transform-gpu transition-all duration-300',
+                        'absolute bottom-0 left-0 h-[2px] w-full transform-gpu rounded-full transition-all duration-300 ease-out',
                         tab.isActive
-                          ? 'bg-gradient-to-r from-primary to-primary/80 opacity-100'
-                          : 'bg-muted/40 opacity-0 group-hover:opacity-40'
+                          ? 'bg-gradient-to-r from-primary/90 via-primary to-primary/80 opacity-100'
+                          : 'bg-muted/30 opacity-0 group-hover:opacity-30'
                       )}
                     />
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </motion.div>
           )}
 
-          {/* Optional header content with premium spacing */}
+          {/* Optional header content with improved spacing */}
           {headerContent && (
             <motion.div
               className="mt-4"
-              transition={{ delay: 0.15 }}
+              transition={{ delay: 0.1 }}
               variants={itemVariants}
             >
               {headerContent}
@@ -196,24 +225,53 @@ export function PageSkeleton({
       <motion.div
         className="flex-1 overflow-auto px-4 py-5 sm:px-6 sm:py-6"
         variants={itemVariants}
+        transition={{ delay: 0.12 }}
+        style={{
+          backgroundImage: 'radial-gradient(circle at 50% 0%, rgba(var(--primary-rgb), 0.01), transparent 700px)'
+        }}
       >
-        <div className="mx-auto h-full w-full max-w-screen-2xl">
-          {isLoading ? (
-            <div className="flex h-full items-center justify-center">
-              <div className="flex flex-col items-center gap-3">
-                <div className="relative h-7 w-7">
-                  <div className="absolute h-full w-full animate-ping rounded-full bg-primary/10 opacity-75"></div>
-                  <div className="absolute h-full w-full animate-spin rounded-full border-2 border-muted-foreground/20 border-t-primary"></div>
-                </div>
-                <p className="text-xs font-medium tracking-wide text-muted-foreground/80">
-                  Loading your data...
-                </p>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={isLoading ? 'loading' : 'content'}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mx-auto h-full w-full max-w-screen-2xl"
+          >
+            {isLoading ? (
+              <div className="flex h-full items-center justify-center">
+                <motion.div
+                  className="flex flex-col items-center gap-3"
+                  initial={{ scale: 0.95 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="relative h-10 w-10">
+                    {/* Loading spinner with pulsing effect */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-background to-background/70"></div>
+                    <div className="absolute inset-0 animate-pulse rounded-full bg-primary/5 opacity-75"></div>
+                    <div className="absolute inset-1 animate-spin rounded-full border border-muted-foreground/5 border-t-primary/60"></div>
+                    <div className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/70 shadow-sm shadow-primary/20"></div>
+
+                    {/* Decorative orbital accent */}
+                    <div className="absolute inset-0 rounded-full border border-primary/10 opacity-80"></div>
+                  </div>
+                  <motion.p
+                    className="text-xs font-medium tracking-wide text-muted-foreground/90"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    Loading...
+                  </motion.p>
+                </motion.div>
               </div>
-            </div>
-          ) : (
-            children
-          )}
-        </div>
+            ) : (
+              children
+            )}
+          </motion.div>
+        </AnimatePresence>
       </motion.div>
     </motion.div>
   );

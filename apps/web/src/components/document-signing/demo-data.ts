@@ -4,7 +4,7 @@ import type { Document } from './types';
 export const demoDocuments: Document[] = [
   {
     id: 'doc-1',
-    expiresAt: '2023-06-10T23:59:59Z',
+    expiresAt: '2025-06-10T23:59:59Z',
     isFavorited: true,
     pageCount: 12,
     previewUrl: '/images/document-preview-1.jpg',
@@ -14,7 +14,7 @@ export const demoDocuments: Document[] = [
         id: 'r-1',
         email: 'john@example.com',
         name: 'John Smith',
-        signedAt: '2023-05-10T14:30:00Z',
+        signedAt: '2025-05-10T14:30:00Z',
         status: 'signed',
       },
       { id: 'r-2', email: 'you@example.com', name: 'You', status: 'pending' },
@@ -30,7 +30,7 @@ export const demoDocuments: Document[] = [
   },
   {
     id: 'doc-2',
-    expiresAt: '2023-05-30T23:59:59Z',
+    expiresAt: '2025-05-30T23:59:59Z',
     isFavorited: false,
     pageCount: 8,
     previewUrl: '/images/document-preview-2.jpg',
@@ -49,7 +49,7 @@ export const demoDocuments: Document[] = [
   },
   {
     id: 'doc-3',
-    expiresAt: '2023-05-15T23:59:59Z',
+    expiresAt: '2025-05-15T23:59:59Z',
     isFavorited: true,
     pageCount: 4,
     previewUrl: '/images/document-preview-3.jpg',
@@ -59,7 +59,7 @@ export const demoDocuments: Document[] = [
         id: 'r-4',
         email: 'you@example.com',
         name: 'You',
-        signedAt: '2023-05-01T10:15:00Z',
+        signedAt: '2025-05-01T10:15:00Z',
         status: 'signed',
       },
     ],
@@ -74,7 +74,7 @@ export const demoDocuments: Document[] = [
   },
   {
     id: 'doc-4',
-    expiresAt: '2023-05-20T23:59:59Z',
+    expiresAt: '2025-05-20T23:59:59Z',
     isFavorited: false,
     pageCount: 16,
     previewUrl: '/images/document-preview-4.jpg',
@@ -93,7 +93,7 @@ export const demoDocuments: Document[] = [
   },
   {
     id: 'doc-5',
-    expiresAt: '2023-04-15T23:59:59Z',
+    expiresAt: '2025-04-15T23:59:59Z',
     isFavorited: false,
     pageCount: 20,
     previewUrl: '/images/document-preview-5.jpg',
