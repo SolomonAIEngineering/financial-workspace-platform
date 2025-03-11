@@ -1,9 +1,6 @@
-import { Google } from 'arctic';
-
-import { env } from '@/env';
-
 import type { AuthProviderConfig } from '../lucia';
-
+import { Google } from 'arctic';
+import { env } from '@/env';
 import { findOrCreateUser } from '../findOrCreateUser';
 
 const googleAuth = new Google(

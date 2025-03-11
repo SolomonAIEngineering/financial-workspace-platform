@@ -6,7 +6,6 @@
 
 'use client';
 
-import { Badge } from '@/components/ui/badge';
 import {
   Card,
   CardContent,
@@ -14,11 +13,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Icons } from '@/components/ui/icons';
+import { formatDate, getAccountStatus } from '../utils/account-utils';
 
 import type { AccountInformationProps } from '../types/account-types';
-
-import { formatDate, getAccountStatus } from '../utils/account-utils';
+import { Badge } from '@/components/ui/badge';
+import { Icons } from '@/components/ui/icons';
 import { InfoItem } from './info-item';
 
 /**
@@ -41,8 +40,8 @@ export function AccountInformation({ user }: AccountInformationProps) {
   const accountStatus = getAccountStatus(user);
 
   return (
-    <Card className="overflow-hidden rounded-xl border-0 shadow-md transition-all duration-300 hover:shadow-lg">
-      <CardHeader className="border-b border-muted/10 bg-gradient-to-r from-primary/5 via-primary/3 to-muted/5 pb-6">
+    <Card className="overflow-hidden rounded-xl border-2 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
+      <CardHeader className="border-b border-muted/10 bg-background pb-6 text-foreground">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Icons.user className="size-5 text-primary" />

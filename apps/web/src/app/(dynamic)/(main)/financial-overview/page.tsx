@@ -9,9 +9,7 @@ import {
   PresentationChartLineIcon,
 } from '@heroicons/react/24/outline';
 
-import {
-  FeatureDevelopment
-} from '@/components/document-sending/feature-development';
+import { FeatureDevelopment } from '@/components/document-sending/feature-development';
 // Document signing components
 import {
   type Document,
