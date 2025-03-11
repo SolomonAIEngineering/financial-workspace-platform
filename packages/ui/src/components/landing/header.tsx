@@ -1,31 +1,31 @@
-"use client";
+'use client'
 
-import { AlignJustify, XIcon } from "lucide-react";
-import { AnimatePresence, Variants, motion } from "framer-motion";
-import React, { JSX, useEffect, useState } from "react";
+import { AnimatePresence, Variants, motion } from 'framer-motion'
+import { AlignJustify, XIcon } from 'lucide-react'
+import React, { JSX, useEffect, useState } from 'react'
 
-import Link from "next/link";
-import { buttonVariants } from "../button";
-import { cn } from "../../utils";
+import Link from 'next/link'
+import { cn } from '../../utils'
+import { buttonVariants } from '../button'
 
 /**
  * Interface for menu item
  */
 interface MenuItem {
-  id: number;
-  label: string;
-  href: string;
+  id: number
+  label: string
+  href: string
 }
 
 /**
  * Array of menu items
  */
 const menuItems: MenuItem[] = [
-  { id: 1, label: "Features", href: "/features" },
-  { id: 2, label: "Pricing", href: "#" },
-  { id: 3, label: "Careers", href: "#" },
-  { id: 4, label: "Contact Us", href: "#" },
-];
+  { id: 1, label: 'Features', href: '/features' },
+  { id: 2, label: 'Pricing', href: '#' },
+  { id: 3, label: 'Careers', href: '#' },
+  { id: 4, label: 'Contact Us', href: '#' },
+]
 
 /**
  * Animation variants for mobile navbar
@@ -35,55 +35,55 @@ const mobileNavbarVariant: Variants = {
   animate: {
     scale: 1,
     opacity: 1,
-    transition: { duration: 0.2, ease: "easeOut" },
+    transition: { duration: 0.2, ease: 'easeOut' },
   },
   exit: {
     opacity: 0,
-    transition: { duration: 0.2, delay: 0.2, ease: "easeOut" },
+    transition: { duration: 0.2, delay: 0.2, ease: 'easeOut' },
   },
-};
+}
 
 /**
  * Animation variants for mobile links
  */
 const mobileLinkVar: Variants = {
-  initial: { y: "-20px", opacity: 0 },
+  initial: { y: '-20px', opacity: 0 },
   open: {
     y: 0,
     opacity: 1,
-    transition: { duration: 0.3, ease: "easeOut" },
+    transition: { duration: 0.3, ease: 'easeOut' },
   },
-};
+}
 
 /**
  * Animation variants for container
  */
 const containerVariants: Variants = {
   open: { transition: { staggerChildren: 0.06 } },
-};
+}
 
 /**
  * HeaderSection component
  * @returns {JSX.Element} Rendered HeaderSection component
  */
 export function HeaderSection(): JSX.Element {
-  const [hamburgerMenuIsOpen, setHamburgerMenuIsOpen] = useState(false);
+  const [hamburgerMenuIsOpen, setHamburgerMenuIsOpen] = useState(false)
 
   useEffect(() => {
-    const html = document.querySelector("html");
-    if (html) html.classList.toggle("overflow-hidden", hamburgerMenuIsOpen);
-  }, [hamburgerMenuIsOpen]);
+    const html = document.querySelector('html')
+    if (html) html.classList.toggle('overflow-hidden', hamburgerMenuIsOpen)
+  }, [hamburgerMenuIsOpen])
 
   useEffect(() => {
-    const closeHamburgerNavigation = () => setHamburgerMenuIsOpen(false);
-    window.addEventListener("orientationchange", closeHamburgerNavigation);
-    window.addEventListener("resize", closeHamburgerNavigation);
+    const closeHamburgerNavigation = () => setHamburgerMenuIsOpen(false)
+    window.addEventListener('orientationchange', closeHamburgerNavigation)
+    window.addEventListener('resize', closeHamburgerNavigation)
 
     return () => {
-      window.removeEventListener("orientationchange", closeHamburgerNavigation);
-      window.removeEventListener("resize", closeHamburgerNavigation);
-    };
-  }, []);
+      window.removeEventListener('orientationchange', closeHamburgerNavigation)
+      window.removeEventListener('resize', closeHamburgerNavigation)
+    }
+  }, [])
 
   return (
     <>
@@ -96,15 +96,15 @@ export function HeaderSection(): JSX.Element {
         setHamburgerMenuIsOpen={setHamburgerMenuIsOpen}
       />
     </>
-  );
+  )
 }
 
 /**
  * Header component props
  */
 interface HeaderProps {
-  hamburgerMenuIsOpen: boolean;
-  setHamburgerMenuIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  hamburgerMenuIsOpen: boolean
+  setHamburgerMenuIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -128,7 +128,7 @@ const Header: React.FC<HeaderProps> = ({
       />
     </div>
   </header>
-);
+)
 
 /**
  * HeaderLinks component
@@ -140,20 +140,20 @@ const HeaderLinks: React.FC = () => (
       Log in
     </Link>
     <Link
-      className={cn(buttonVariants({ variant: "secondary" }), "mr-6 text-sm")}
+      className={cn(buttonVariants({ variant: 'secondary' }), 'mr-6 text-sm')}
       href="/signup"
     >
       Sign up
     </Link>
   </div>
-);
+)
 
 /**
  * HamburgerButton component props
  */
 interface HamburgerButtonProps {
-  hamburgerMenuIsOpen: boolean;
-  setHamburgerMenuIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  hamburgerMenuIsOpen: boolean
+  setHamburgerMenuIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -172,14 +172,14 @@ const HamburgerButton: React.FC<HamburgerButtonProps> = ({
     <span className="sr-only">Toggle menu</span>
     {hamburgerMenuIsOpen ? <XIcon /> : <AlignJustify />}
   </button>
-);
+)
 
 /**
  * MobileNavbar component props
  */
 interface MobileNavbarProps {
-  hamburgerMenuIsOpen: boolean;
-  setHamburgerMenuIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  hamburgerMenuIsOpen: boolean
+  setHamburgerMenuIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 /**
@@ -196,10 +196,10 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({
       initial="initial"
       exit="exit"
       variants={mobileNavbarVariant}
-      animate={hamburgerMenuIsOpen ? "animate" : "exit"}
+      animate={hamburgerMenuIsOpen ? 'animate' : 'exit'}
       className={cn(
-        `fixed left-0 top-0 z-50 h-screen w-full overflow-auto bg-background/70 backdrop-blur-[12px]`,
-        { "pointer-events-none": !hamburgerMenuIsOpen },
+        `bg-background/70 fixed left-0 top-0 z-50 h-screen w-full overflow-auto backdrop-blur-[12px]`,
+        { 'pointer-events-none': !hamburgerMenuIsOpen },
       )}
     >
       <div className="container flex h-[3.5rem] items-center justify-between">
@@ -214,13 +214,13 @@ const MobileNavbar: React.FC<MobileNavbarProps> = ({
       <MobileNavbarLinks hamburgerMenuIsOpen={hamburgerMenuIsOpen} />
     </motion.nav>
   </AnimatePresence>
-);
+)
 
 /**
  * MobileNavbarLinks component props
  */
 interface MobileNavbarLinksProps {
-  hamburgerMenuIsOpen: boolean;
+  hamburgerMenuIsOpen: boolean
 }
 
 /**
@@ -235,7 +235,7 @@ const MobileNavbarLinks: React.FC<MobileNavbarLinksProps> = ({
     className={`flex flex-col uppercase ease-in md:flex-row md:items-center md:normal-case`}
     variants={containerVariants}
     initial="initial"
-    animate={hamburgerMenuIsOpen ? "open" : "exit"}
+    animate={hamburgerMenuIsOpen ? 'open' : 'exit'}
   >
     {menuItems.map((item) => (
       <motion.li
@@ -244,8 +244,9 @@ const MobileNavbarLinks: React.FC<MobileNavbarLinksProps> = ({
         className="border-grey-dark border-b py-0.5 pl-6 md:border-none"
       >
         <Link
-          className={`hover:text-grey flex h-[var(--navigation-height)] w-full items-center text-xl transition-[color,transform] duration-300 md:translate-y-0 md:text-sm md:transition-colors ${hamburgerMenuIsOpen ? "[&_a]:translate-y-0" : ""
-            }`}
+          className={`hover:text-grey flex h-[var(--navigation-height)] w-full items-center text-xl transition-[color,transform] duration-300 md:translate-y-0 md:text-sm md:transition-colors ${
+            hamburgerMenuIsOpen ? '[&_a]:translate-y-0' : ''
+          }`}
           href={item.href}
         >
           {item.label}
@@ -253,4 +254,4 @@ const MobileNavbarLinks: React.FC<MobileNavbarLinksProps> = ({
       </motion.li>
     ))}
   </motion.ul>
-);
+)

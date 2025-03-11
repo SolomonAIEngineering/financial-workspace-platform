@@ -1,8 +1,8 @@
-import { ChartDataPoint } from "../../types/chart";
 import {
   CategoryMonthlyExpenditure,
   CategoryMonthlyIncome,
-} from "client-typescript-sdk";
+} from 'client-typescript-sdk'
+import { ChartDataPoint } from '../../types/chart'
 
 export class CategoryDataConverter {
   /**
@@ -26,25 +26,25 @@ export class CategoryDataConverter {
   >(
     data: T[],
     category: string,
-    valueKey: "totalIncome" | "totalSpending",
+    valueKey: 'totalIncome' | 'totalSpending',
   ): ChartDataPoint[] {
     return data
       .filter((item) => item.personalFinanceCategoryPrimary === category)
       .map((item) => {
         if (item.month !== undefined && (item as any)[valueKey] !== undefined) {
-          const year = Math.floor(item.month / 100);
-          const month = item.month % 100;
-          const date = new Date(year, month - 1, 1); // month is 0-indexed in Date constructor
+          const year = Math.floor(item.month / 100)
+          const month = item.month % 100
+          const date = new Date(year, month - 1, 1) // month is 0-indexed in Date constructor
 
           return {
             date: date.toISOString().slice(0, 7), // Format as YYYY-MM
             value: (item as any)[valueKey] as number,
-          };
+          }
         }
-        return null;
+        return null
       })
       .filter((item): item is ChartDataPoint => item !== null)
-      .sort((a, b) => a.date.localeCompare(b.date)); // Sort by date
+      .sort((a, b) => a.date.localeCompare(b.date)) // Sort by date
   }
   /**
    * Converts an array of CategoryMonthlyIncome to an array of ChartDataPoint for a specific category.
@@ -70,19 +70,19 @@ export class CategoryDataConverter {
       .filter((item) => item.personalFinanceCategoryPrimary === category)
       .map((item) => {
         if (item.month && item.totalIncome !== undefined) {
-          const year = Math.floor(item.month / 100);
-          const month = item.month % 100;
-          const date = new Date(year, month - 1, 1); // month is 0-indexed in Date constructor
+          const year = Math.floor(item.month / 100)
+          const month = item.month % 100
+          const date = new Date(year, month - 1, 1) // month is 0-indexed in Date constructor
 
           return {
             date: date.toISOString().slice(0, 7), // Format as YYYY-MM
             value: item.totalIncome,
-          };
+          }
         }
-        return null;
+        return null
       })
       .filter((item): item is ChartDataPoint => item !== null)
-      .sort((a, b) => a.date.localeCompare(b.date)); // Sort by date
+      .sort((a, b) => a.date.localeCompare(b.date)) // Sort by date
   }
 
   /**
@@ -109,7 +109,7 @@ export class CategoryDataConverter {
           .map((item) => item.personalFinanceCategoryPrimary)
           .filter((category): category is string => category !== undefined),
       ),
-    ).sort();
+    ).sort()
   }
 
   /**
@@ -136,7 +136,7 @@ export class CategoryDataConverter {
           .map((item) => item.personalFinanceCategoryPrimary)
           .filter((category): category is string => category !== undefined),
       ),
-    ).sort();
+    ).sort()
   }
 
   /**
@@ -168,44 +168,44 @@ export class CategoryDataConverter {
   >(
     data: T[],
     category: string,
-    type: "income" | "expense",
+    type: 'income' | 'expense',
   ): {
-    highest: { month: string; value: number };
-    lowest: { month: string; value: number };
-    average: number;
+    highest: { month: string; value: number }
+    lowest: { month: string; value: number }
+    average: number
   } {
     const filteredData = data.filter(
       (item) => item.personalFinanceCategoryPrimary === category,
-    );
-    const valueKey = type === "income" ? "totalIncome" : "totalSpending";
+    )
+    const valueKey = type === 'income' ? 'totalIncome' : 'totalSpending'
 
     if (filteredData.length === 0) {
-      throw new Error(`No data found for category: ${category}`);
+      throw new Error(`No data found for category: ${category}`)
     }
 
-    let highest = { month: "", value: -Infinity };
-    let lowest = { month: "", value: Infinity };
-    let sum = 0;
+    let highest = { month: '', value: -Infinity }
+    let lowest = { month: '', value: Infinity }
+    let sum = 0
 
     filteredData.forEach((item) => {
       if (item.month !== undefined && (item as any)[valueKey] !== undefined) {
-        const monthStr = this.formatMonth(item.month);
-        const value = (item as any)[valueKey] as number;
-        sum += value;
+        const monthStr = this.formatMonth(item.month)
+        const value = (item as any)[valueKey] as number
+        sum += value
 
         if (value > highest.value) {
-          highest = { month: monthStr, value };
+          highest = { month: monthStr, value }
         }
 
         if (value < lowest.value) {
-          lowest = { month: monthStr, value };
+          lowest = { month: monthStr, value }
         }
       }
-    });
+    })
 
-    const average = sum / filteredData.length;
+    const average = sum / filteredData.length
 
-    return { highest, lowest, average };
+    return { highest, lowest, average }
   }
 
   /**
@@ -226,26 +226,26 @@ export class CategoryDataConverter {
    */
   public static calculateMonthlyTotals<
     T extends CategoryMonthlyIncome | CategoryMonthlyExpenditure,
-  >(data: T[], type: "income" | "expense"): { month: string; total: number }[] {
-    const monthlyTotals: { [key: string]: number } = {};
-    const valueKey = type === "income" ? "totalIncome" : "totalSpending";
+  >(data: T[], type: 'income' | 'expense'): { month: string; total: number }[] {
+    const monthlyTotals: { [key: string]: number } = {}
+    const valueKey = type === 'income' ? 'totalIncome' : 'totalSpending'
 
     data.forEach((item) => {
       if (item.month !== undefined && (item as any)[valueKey] !== undefined) {
-        const monthStr = this.formatMonth(item.month);
-        const value = (item as any)[valueKey] as number;
+        const monthStr = this.formatMonth(item.month)
+        const value = (item as any)[valueKey] as number
 
         if (monthlyTotals[monthStr]) {
-          monthlyTotals[monthStr] += value;
+          monthlyTotals[monthStr] += value
         } else {
-          monthlyTotals[monthStr] = value;
+          monthlyTotals[monthStr] = value
         }
       }
-    });
+    })
 
     return Object.entries(monthlyTotals)
       .map(([month, total]) => ({ month, total }))
-      .sort((a, b) => a.month.localeCompare(b.month));
+      .sort((a, b) => a.month.localeCompare(b.month))
   }
 
   /**
@@ -271,11 +271,11 @@ export class CategoryDataConverter {
     T extends CategoryMonthlyIncome | CategoryMonthlyExpenditure,
   >(
     data: T[],
-    type: "income" | "expense",
+    type: 'income' | 'expense',
   ): { [category: string]: { month: string; total: number }[] } {
     const categoryTotals: { [category: string]: { [month: string]: number } } =
-      {};
-    const valueKey = type === "income" ? "totalIncome" : "totalSpending";
+      {}
+    const valueKey = type === 'income' ? 'totalIncome' : 'totalSpending'
 
     data.forEach((item) => {
       if (
@@ -283,21 +283,21 @@ export class CategoryDataConverter {
         item.personalFinanceCategoryPrimary &&
         (item as any)[valueKey] !== undefined
       ) {
-        const monthStr = this.formatMonth(item.month);
-        const value = (item as any)[valueKey] as number;
-        const category = item.personalFinanceCategoryPrimary;
+        const monthStr = this.formatMonth(item.month)
+        const value = (item as any)[valueKey] as number
+        const category = item.personalFinanceCategoryPrimary
 
         if (!categoryTotals[category]) {
-          categoryTotals[category] = {};
+          categoryTotals[category] = {}
         }
 
         if (categoryTotals[category][monthStr]) {
-          categoryTotals[category][monthStr] += value;
+          categoryTotals[category][monthStr] += value
         } else {
-          categoryTotals[category][monthStr] = value;
+          categoryTotals[category][monthStr] = value
         }
       }
-    });
+    })
 
     return Object.fromEntries(
       Object.entries(categoryTotals).map(([category, monthlyData]) => [
@@ -306,7 +306,7 @@ export class CategoryDataConverter {
           .map(([month, total]) => ({ month, total }))
           .sort((a, b) => a.month.localeCompare(b.month)),
       ]),
-    );
+    )
   }
 
   /**
@@ -327,27 +327,27 @@ export class CategoryDataConverter {
    */
   public static calculateCategoryTotals<
     T extends CategoryMonthlyIncome | CategoryMonthlyExpenditure,
-  >(data: T[], type: "income" | "expense"): { [category: string]: number } {
-    const categoryTotals: { [category: string]: number } = {};
-    const valueKey = type === "income" ? "totalIncome" : "totalSpending";
+  >(data: T[], type: 'income' | 'expense'): { [category: string]: number } {
+    const categoryTotals: { [category: string]: number } = {}
+    const valueKey = type === 'income' ? 'totalIncome' : 'totalSpending'
 
     data.forEach((item) => {
       if (
         item.personalFinanceCategoryPrimary &&
         (item as any)[valueKey] !== undefined
       ) {
-        const value = (item as any)[valueKey] as number;
-        const category = item.personalFinanceCategoryPrimary;
+        const value = (item as any)[valueKey] as number
+        const category = item.personalFinanceCategoryPrimary
 
         if (categoryTotals[category]) {
-          categoryTotals[category] += value;
+          categoryTotals[category] += value
         } else {
-          categoryTotals[category] = value;
+          categoryTotals[category] = value
         }
       }
-    });
+    })
 
-    return categoryTotals;
+    return categoryTotals
   }
 
   /**
@@ -359,8 +359,8 @@ export class CategoryDataConverter {
    * @private
    */
   private static formatMonth(month: number): string {
-    const year = Math.floor(month / 100);
-    const monthNum = month % 100;
-    return `${year}-${monthNum.toString().padStart(2, "0")}`;
+    const year = Math.floor(month / 100)
+    const monthNum = month % 100
+    return `${year}-${monthNum.toString().padStart(2, '0')}`
   }
 }

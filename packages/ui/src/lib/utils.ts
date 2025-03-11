@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from "clsx";
+import { clsx, type ClassValue } from 'clsx'
 import {
   differenceInDays,
   eachDayOfInterval,
@@ -17,13 +17,13 @@ import {
   startOfDay,
   startOfMonth,
   startOfYear,
-} from "date-fns";
-import { DateRange } from "react-day-picker";
-import { twMerge } from "tailwind-merge";
-import { Appointment } from "../types/appointment";
+} from 'date-fns'
+import { DateRange } from 'react-day-picker'
+import { twMerge } from 'tailwind-merge'
+import { Appointment } from '../types/appointment'
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs))
 }
 
 export const calculateNewDates = (
@@ -32,31 +32,31 @@ export const calculateNewDates = (
   currentIndex: number,
   dateRange: DateRange,
 ) => {
-  let start = new Date(dateRange.from as Date);
-  let end = new Date(dateRange.to as Date);
-  const delta = (currentIndex - index) * -1;
+  let start = new Date(dateRange.from as Date)
+  let end = new Date(dateRange.to as Date)
+  const delta = (currentIndex - index) * -1
   switch (viewMode) {
-    case "day":
-      start.setHours(start.getHours() + delta);
-      end.setHours(end.getHours() + delta);
-      break;
-    case "week":
-      start.setDate(start.getDate() + delta);
-      end.setDate(end.getDate() + delta);
-      break;
-    case "month":
-      start.setDate(start.getDate() + delta);
-      end.setDate(end.getDate() + delta);
-      break;
-    case "year":
-      start = new Date(dateRange.from as Date);
-      start.setMonth(index);
-      end = new Date(start);
-      end.setMonth(start.getMonth() + 1);
-      break;
+    case 'day':
+      start.setHours(start.getHours() + delta)
+      end.setHours(end.getHours() + delta)
+      break
+    case 'week':
+      start.setDate(start.getDate() + delta)
+      end.setDate(end.getDate() + delta)
+      break
+    case 'month':
+      start.setDate(start.getDate() + delta)
+      end.setDate(end.getDate() + delta)
+      break
+    case 'year':
+      start = new Date(dateRange.from as Date)
+      start.setMonth(index)
+      end = new Date(start)
+      end.setMonth(start.getMonth() + 1)
+      break
   }
-  return { start, end };
-};
+  return { start, end }
+}
 
 export const filterAppointments = (
   appt: Appointment,
@@ -64,16 +64,16 @@ export const filterAppointments = (
   dateRange: DateRange,
   viewMode: string,
 ): boolean => {
-  const apptDate = new Date(appt.start);
+  const apptDate = new Date(appt.start)
   if (
     !dateRange.from ||
     !dateRange.to ||
     !isWithinInterval(apptDate, { start: dateRange.from, end: dateRange.to })
   ) {
-    return false;
+    return false
   }
-  return isAppointmentInSlot(apptDate, index, viewMode, dateRange);
-};
+  return isAppointmentInSlot(apptDate, index, viewMode, dateRange)
+}
 // Helper function to determine if an appointment should be displayed in a specific slot
 const isAppointmentInSlot = (
   apptDate: Date,
@@ -81,14 +81,14 @@ const isAppointmentInSlot = (
   viewMode: string,
   dateRange: DateRange,
 ): boolean => {
-  if (!dateRange.from) return false;
+  if (!dateRange.from) return false
 
   switch (viewMode) {
-    case "day":
+    case 'day':
       return (
         apptDate.getHours() === index && isSameDay(apptDate, dateRange.from)
-      );
-    case "week":
+      )
+    case 'week':
       return (
         apptDate.getDay() -
           (6 -
@@ -97,52 +97,52 @@ const isAppointmentInSlot = (
               new Date(dateRange.from),
             )) ===
           index && isSameWeek(apptDate, dateRange.from)
-      );
-    case "month":
+      )
+    case 'month':
       return (
         getWeekOfMonth(apptDate) === index &&
         isSameMonth(apptDate, dateRange.from)
-      );
-    case "year":
-      return apptDate.getMonth() === index;
+      )
+    case 'year':
+      return apptDate.getMonth() === index
     default:
-      return false;
+      return false
   }
-};
+}
 
 export const getLabelsForView = (
-  viewMode: "day" | "week" | "month" | "year",
+  viewMode: 'day' | 'week' | 'month' | 'year',
   dateRange: { start: Date; end: Date },
 ): string[] => {
   switch (viewMode) {
-    case "day":
+    case 'day':
       // Generate hourly labels for each day in the range
       return eachHourOfInterval({
         start: startOfDay(dateRange.start),
         end: endOfDay(dateRange.end),
-      }).map((hour) => format(hour, "HH:mm"));
-    case "week":
+      }).map((hour) => format(hour, 'HH:mm'))
+    case 'week':
       // Weekly labels based on the week number within the year
       return eachDayOfInterval({
         start: dateRange.start,
         end: dateRange.end,
-      }).map((day) => `${format(day, "ccc ")} the ${format(day, "do")}`);
-    case "month":
+      }).map((day) => `${format(day, 'ccc ')} the ${format(day, 'do')}`)
+    case 'month':
       // Monthly labels showing the full month name and year
       return eachWeekOfInterval({
         start: startOfMonth(dateRange.start),
         end: endOfMonth(dateRange.end),
-      }).map((week) => `${format(week, "wo")} week of ${format(week, "MMM")}`);
-    case "year":
+      }).map((week) => `${format(week, 'wo')} week of ${format(week, 'MMM')}`)
+    case 'year':
       // Yearly labels showing month names only
       return eachMonthOfInterval({
         start: startOfYear(dateRange.start),
         end: endOfYear(dateRange.end),
-      }).map((month) => format(month, "MMM"));
+      }).map((month) => format(month, 'MMM'))
     default:
-      return [];
+      return []
   }
-};
+}
 
 /**
  * Replaces all underscores in a string with spaces and convert the string to lower case.
@@ -151,8 +151,8 @@ export const getLabelsForView = (
  */
 export function removeUnderScores(input: string): string {
   // Replace all underscores with spaces and convert to lowercase
-  const formatted = input.replace(/_/g, " ").toLowerCase();
+  const formatted = input.replace(/_/g, ' ').toLowerCase()
 
   // Capitalize the first letter and concatenate it with the rest of the string
-  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1)
 }

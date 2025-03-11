@@ -1,3 +1,3 @@
-import countries from "./countries.json";
+import countries from './countries.json'
 
-export { countries };
+export { countries }

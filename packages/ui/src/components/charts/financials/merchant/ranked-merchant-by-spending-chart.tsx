@@ -1,14 +1,14 @@
-import React, { useMemo } from "react";
-import { MerchantFinancialMetricsConverter } from "../../../../lib/converters/merchant-sub-profile-converter";
-import { SpendingPeriod } from "../../../../types/merchant";
-import { MerchantMetricsFinancialSubProfile } from "client-typescript-sdk";
+import { MerchantMetricsFinancialSubProfile } from 'client-typescript-sdk'
+import React, { useMemo } from 'react'
+import { MerchantFinancialMetricsConverter } from '../../../../lib/converters/merchant-sub-profile-converter'
+import { SpendingPeriod } from '../../../../types/merchant'
 
-import { ScatterChart, ScatterChartProps } from "../../base/scatter-chart";
+import { ScatterChart, ScatterChartProps } from '../../base/scatter-chart'
 
 export interface RankedMerchantsBySpendingChartProps
-  extends Omit<ScatterChartProps, "data"> {
-  selectedSpendingPeriod: SpendingPeriod;
-  records: Array<MerchantMetricsFinancialSubProfile>;
+  extends Omit<ScatterChartProps, 'data'> {
+  selectedSpendingPeriod: SpendingPeriod
+  records: Array<MerchantMetricsFinancialSubProfile>
 }
 
 export const RankedMerchantsBySpendingChart: React.FC<
@@ -24,7 +24,7 @@ export const RankedMerchantsBySpendingChart: React.FC<
   selectedSpendingPeriod,
 }) => {
   if (!records || records.length === 0) {
-    return null;
+    return null
   }
 
   const chartData = useMemo(() => {
@@ -32,7 +32,7 @@ export const RankedMerchantsBySpendingChart: React.FC<
       MerchantFinancialMetricsConverter.rankMerchantsBySpending(
         records,
         selectedSpendingPeriod,
-      ) || [];
+      ) || []
 
     // convert to ScatterChartDataPoint and then sort
     return result
@@ -40,10 +40,10 @@ export const RankedMerchantsBySpendingChart: React.FC<
         return {
           x: merchant.merchant,
           y: merchant.totalSpending,
-        };
+        }
       })
-      .sort((a, b) => a.y - b.y);
-  }, [records, selectedSpendingPeriod]);
+      .sort((a, b) => a.y - b.y)
+  }, [records, selectedSpendingPeriod])
 
   return (
     <ScatterChart
@@ -55,5 +55,5 @@ export const RankedMerchantsBySpendingChart: React.FC<
       xUNit={xUNit}
       yUnit={yUnit}
     />
-  );
-};
+  )
+}

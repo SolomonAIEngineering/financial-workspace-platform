@@ -1,8 +1,5 @@
-import { ChartDataPoint } from "../../types/chart";
-import {
-  AccountBalanceHistory,
-  CategoryMonthlyExpenditure,
-} from "client-typescript-sdk";
+import { AccountBalanceHistory } from 'client-typescript-sdk'
+import { ChartDataPoint } from '../../types/chart'
 
 /**
  * Utility class for converting AccountBalanceHistory objects to ChartDataPoint objects.
@@ -35,15 +32,15 @@ export class AccountBalanceConverter {
     return balanceHistory.map((history) => {
       if (!history.time || history.balance === undefined) {
         throw new Error(
-          "AccountBalanceHistory object is missing required fields: time or balance",
-        );
+          'AccountBalanceHistory object is missing required fields: time or balance',
+        )
       }
 
       return {
         date: this.formatDate(history.time),
         value: history.balance,
-      };
-    });
+      }
+    })
   }
 
   /**
@@ -60,6 +57,6 @@ export class AccountBalanceConverter {
    * // Result: '2023-01-15'
    */
   private static formatDate(date: Date): string {
-    return date.toISOString().split("T")[0] || "";
+    return date.toISOString().split('T')[0] || ''
   }
 }

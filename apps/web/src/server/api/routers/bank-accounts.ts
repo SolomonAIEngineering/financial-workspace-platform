@@ -420,14 +420,14 @@ export const bankAccountsRouter = createRouter({
             userId,
           },
           include: {
-            accounts: true
-          }
+            accounts: true,
+          },
         });
 
         if (!connection) {
           throw new TRPCError({
             code: 'NOT_FOUND',
-            message: 'Bank connection not found'
+            message: 'Bank connection not found',
           });
         }
 
@@ -439,14 +439,18 @@ export const bankAccountsRouter = createRouter({
           provider: connection.institutionId || 'unknown',
           status: connection.status,
           expires_at: null, // Use null for now
-          accounts: connection.accounts.map(account => ({
+          accounts: connection.accounts.map((account) => ({
             id: account.id,
-            name: account.name || account.displayName || account.officialName || 'Unnamed Account',
+            name:
+              account.name ||
+              account.displayName ||
+              account.officialName ||
+              'Unnamed Account',
             type: account.type,
             balance: account.availableBalance || account.currentBalance || 0,
             currency: account.isoCurrencyCode || 'USD',
-            enabled: account.enabled
-          }))
+            enabled: account.enabled,
+          })),
         } as any; // Use type assertion to bypass TypeScript checks
       } catch (error) {
         console.error('Error fetching bank connection with accounts:', error);
@@ -547,9 +551,9 @@ export const bankAccountsRouter = createRouter({
         const monthlyAvgSpending =
           monthlySpendings.length > 0
             ? monthlySpendings.reduce(
-              (acc, curr) => acc + Number.parseFloat(curr.total_amount),
-              0
-            ) / monthlySpendings.length
+                (acc, curr) => acc + Number.parseFloat(curr.total_amount),
+                0
+              ) / monthlySpendings.length
             : 0;
 
         return {
@@ -733,7 +737,7 @@ export const bankAccountsRouter = createRouter({
               provider: 'plaid',
               status: 'active',
               expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days in the future
-            }
+            },
           },
           {
             id: '2',
@@ -750,7 +754,7 @@ export const bankAccountsRouter = createRouter({
               provider: 'plaid',
               status: 'active',
               expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            }
+            },
           },
           {
             id: '3',
@@ -767,7 +771,7 @@ export const bankAccountsRouter = createRouter({
               provider: 'plaid',
               status: 'requires_attention',
               expires_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days in the future
-            }
+            },
           },
           {
             id: '4',
@@ -777,8 +781,8 @@ export const bankAccountsRouter = createRouter({
             currency: 'USD',
             enabled: true,
             manual: true,
-            bank: null
-          }
+            bank: null,
+          },
         ];
 
         // For now, just return mock data

@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import React, { JSX, useRef } from "react";
+import React, { JSX, useRef } from 'react'
 
-import { ArrowRightIcon } from "@radix-ui/react-icons";
-import { BorderBeam } from "../magicui/border-beam";
-import { Button } from "../button";
-import TextShimmer from "../magicui/text-shimmer";
-import { cn } from "../../utils/cn";
-import { useInView } from "framer-motion";
+import { ArrowRightIcon } from '@radix-ui/react-icons'
+import { useInView } from 'framer-motion'
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
+import { BorderBeam } from '../magicui/border-beam'
+import TextShimmer from '../magicui/text-shimmer'
 
 /**
  * Props for the HeroSection component.
@@ -15,18 +15,18 @@ import { useInView } from "framer-motion";
  */
 interface HeroSectionProps {
   /** The main title of the hero section */
-  title: string;
+  title: string
   /** The subtitle or description text */
-  subtitle: string;
+  subtitle: string
   /** The text for the call-to-action button */
-  ctaText: string;
+  ctaText: string
   /** The source URL for the dark mode hero image */
-  darkImageSrc: string;
+  darkImageSrc: string
   /** The source URL for the light mode hero image */
-  lightImageSrc: string;
-  children?: React.ReactNode;
-  announcement?: string;
-  className?: string;
+  lightImageSrc: string
+  children?: React.ReactNode
+  announcement?: string
+  className?: string
 }
 
 /**
@@ -55,14 +55,14 @@ export default function HeroSection({
   announcement,
   className,
 }: HeroSectionProps): JSX.Element {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-100px' })
 
   return (
     <section
       id="hero"
       className={cn(
-        "relative mx-auto mt-32 max-w-[80rem] px-6 text-center md:px-8",
+        'relative mx-auto mt-32 max-w-[80rem] px-6 text-center md:px-8',
         className,
       )}
     >
@@ -85,7 +85,7 @@ export default function HeroSection({
         <div className="animate-fade-up relative mt-[8rem] [--animation-delay:400ms] [perspective:2000px] after:absolute after:inset-0 after:z-50 after:[background:linear-gradient(to_top,hsl(var(--background))_30%,transparent)]"></div>
       )}
     </section>
-  );
+  )
 }
 
 /**
@@ -93,15 +93,15 @@ export default function HeroSection({
  * @returns {JSX.Element} The rendered AnnouncementBanner component
  */
 const AnnouncementBanner: React.FC<{
-  text: string;
+  text: string
 }> = ({ text }) => (
   <div className="backdrop-filter-[12px] animate-fade-in group inline-flex h-7 translate-y-[-1rem] items-center justify-between gap-1 rounded-full border border-white/5 bg-white/10 px-3 text-xs text-white transition-all ease-in hover:cursor-pointer hover:bg-white/20 dark:text-white">
     <TextShimmer className="inline-flex items-center justify-center">
-      <span>✨ {text}</span>{" "}
+      <span>✨ {text}</span>{' '}
       <ArrowRightIcon className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
     </TextShimmer>
   </div>
-);
+)
 
 /**
  * Title component for displaying the main heading.
@@ -110,10 +110,10 @@ const AnnouncementBanner: React.FC<{
  * @returns {JSX.Element} The rendered Title component
  */
 const Title: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <h1 className="animate-fade-in translate-y-[-1rem] text-balance bg-gradient-to-br from-black from-30% to-black/40 bg-clip-text py-6 text-5xl font-medium leading-none tracking-tighter text-transparent [--animation-delay:200ms] dark:from-white dark:to-white/40 sm:text-6xl md:text-7xl lg:text-8xl">
+  <h1 className="animate-fade-in translate-y-[-1rem] text-balance bg-gradient-to-br from-black from-30% to-black/40 bg-clip-text py-6 text-5xl font-medium leading-none tracking-tighter text-transparent [--animation-delay:200ms] sm:text-6xl md:text-7xl lg:text-8xl dark:from-white dark:to-white/40">
     {children}
   </h1>
-);
+)
 
 /**
  * Subtitle component for displaying secondary text.
@@ -125,7 +125,7 @@ const Subtitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <p className="animate-fade-in mb-12 translate-y-[-1rem] text-balance text-lg tracking-tight text-gray-400 [--animation-delay:400ms] md:text-xl">
     {children}
   </p>
-);
+)
 
 /**
  * CTAButton component for displaying a call-to-action button.
@@ -137,13 +137,13 @@ const CTAButton: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="flex items-center justify-center">
     <Button
       className="animate-fade-in translate-y-[-1rem] items-center justify-center gap-1 rounded-lg text-white ease-in-out [--animation-delay:600ms] dark:text-white"
-      variant={"ghost"}
+      variant={'ghost'}
     >
       <span>{children}</span>
       <ArrowRightIcon className="ml-1 size-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
     </Button>
   </div>
-);
+)
 
 /**
  * Props for the HeroImage component.
@@ -151,11 +151,11 @@ const CTAButton: React.FC<{ children: React.ReactNode }> = ({ children }) => (
  */
 interface HeroImageProps {
   /** Whether the component is in view */
-  inView: boolean;
+  inView: boolean
   /** The source URL for the dark mode image */
-  darkImageSrc: string;
+  darkImageSrc: string
   /** The source URL for the light mode image */
-  lightImageSrc: string;
+  lightImageSrc: string
 }
 
 /**
@@ -171,8 +171,9 @@ export const HeroImage = React.forwardRef<HTMLDivElement, HeroImageProps>(
       className="animate-fade-up relative mt-[8rem] [--animation-delay:400ms] [perspective:2000px] after:absolute after:inset-0 after:z-50 after:[background:linear-gradient(to_top,hsl(var(--background))_30%,transparent)]"
     >
       <div
-        className={`rounded-xl border border-white/10 bg-white bg-opacity-[0.01] before:absolute before:bottom-1/2 before:left-0 before:top-0 before:h-full before:w-full before:opacity-0 before:[background-image:linear-gradient(to_bottom,var(--color-one),var(--color-one),transparent_40%)] before:[filter:blur(180px)] ${inView ? "before:animate-image-glow" : ""
-          }`}
+        className={`rounded-xl border border-white/10 bg-white bg-opacity-[0.01] before:absolute before:bottom-1/2 before:left-0 before:top-0 before:h-full before:w-full before:opacity-0 before:[background-image:linear-gradient(to_bottom,var(--color-one),var(--color-one),transparent_40%)] before:[filter:blur(180px)] ${
+          inView ? 'before:animate-image-glow' : ''
+        }`}
       >
         <BorderBeam
           size={200}
@@ -194,6 +195,6 @@ export const HeroImage = React.forwardRef<HTMLDivElement, HeroImageProps>(
       </div>
     </div>
   ),
-);
+)
 
-HeroImage.displayName = "HeroImage";
+HeroImage.displayName = 'HeroImage'

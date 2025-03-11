@@ -1,45 +1,45 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
-import type { DataTableInputFilterField } from "./types";
-import { InputWithAddons } from "@/components/custom/input-with-addons";
-import { Label } from "../label";
-import { Search } from "lucide-react";
-import { useDataTable } from "@/components/data-table/data-table-provider";
-import { useDebounce } from "@/hooks/use-debounce";
+import { InputWithAddons } from '@/components/custom/input-with-addons'
+import { useDataTable } from '@/components/data-table/data-table-provider'
+import { useDebounce } from '@/hooks/use-debounce'
+import { Search } from 'lucide-react'
+import { Label } from '../label'
+import type { DataTableInputFilterField } from './types'
 
 function getFilter(filterValue: unknown) {
-  return typeof filterValue === "string" ? filterValue : null;
+  return typeof filterValue === 'string' ? filterValue : null
 }
 
 export function DataTableFilterInput<TData>({
   value: _value,
 }: DataTableInputFilterField<TData>) {
-  const value = _value as string;
-  const { table, columnFilters } = useDataTable();
-  const column = table.getColumn(value);
-  const filterValue = columnFilters.find((i) => i.id === value)?.value;
-  const filters = getFilter(filterValue);
-  const [input, setInput] = useState<string | null>(filters);
+  const value = _value as string
+  const { table, columnFilters } = useDataTable()
+  const column = table.getColumn(value)
+  const filterValue = columnFilters.find((i) => i.id === value)?.value
+  const filters = getFilter(filterValue)
+  const [input, setInput] = useState<string | null>(filters)
 
-  const debouncedInput = useDebounce(input, 500);
+  const debouncedInput = useDebounce(input, 500)
 
   useEffect(() => {
-    const newValue = debouncedInput?.trim() === "" ? null : debouncedInput;
-    if (debouncedInput === null) return;
-    column?.setFilterValue(newValue);
-  }, [debouncedInput]);
+    const newValue = debouncedInput?.trim() === '' ? null : debouncedInput
+    if (debouncedInput === null) return
+    column?.setFilterValue(newValue)
+  }, [debouncedInput])
 
   useEffect(() => {
     if (debouncedInput?.trim() !== filters) {
-      setInput(filters);
+      setInput(filters)
     }
-  }, [filters]);
+  }, [filters])
 
   return (
     <div className="grid w-full gap-1.5">
-      <Label htmlFor={value} className="sr-only px-2 text-muted-foreground">
+      <Label htmlFor={value} className="text-muted-foreground sr-only px-2">
         {value}
       </Label>
       <InputWithAddons
@@ -48,9 +48,9 @@ export function DataTableFilterInput<TData>({
         containerClassName="h-9 rounded-lg"
         name={value}
         id={value}
-        value={input || ""}
+        value={input || ''}
         onChange={(e) => setInput(e.target.value)}
       />
     </div>
-  );
+  )
 }

@@ -1,82 +1,82 @@
-"use client";
+'use client'
 
-import { useMemo } from "react";
-import { BsExclamation } from "react-icons/bs";
+import { useMemo } from 'react'
+import { BsExclamation } from 'react-icons/bs'
 import {
   CreditAccount,
   FinancialUserProfile,
   Link,
   MelodyFinancialContext,
   StudentLoanAccount,
-} from "solomon-ai-typescript-sdk";
-import { FinancialDataGenerator } from "../../lib/random/financial-data-generator";
+} from 'solomon-ai-typescript-sdk'
+import { FinancialDataGenerator } from '../../lib/random/financial-data-generator'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../card";
-import { CreditCard } from "../cards/credit-card";
-import { BarChart } from "../charts/base/bar-chart";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../tabs";
+} from '../card'
+import { CreditCard } from '../cards/credit-card'
+import { BarChart } from '../charts/base/bar-chart'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../tabs'
 
 // Function to calculate cash balance across accounts
 const calculateCashBalance = (
   links: Link[] | undefined,
-  accountType: "bankAccounts" | "investmentAccounts" | "creditAccounts",
+  accountType: 'bankAccounts' | 'investmentAccounts' | 'creditAccounts',
 ): number => {
   return links
     ? links.reduce((total, link) => {
-        const accounts = link[accountType];
+        const accounts = link[accountType]
         if (accounts) {
           return (
             total +
             accounts.reduce((acc, account) => acc + (account.balance || 0), 0)
-          );
+          )
         }
-        return total;
+        return total
       }, 0)
-    : 0;
-};
+    : 0
+}
 
 // Function to calculate outstanding balance for mortgage accounts
 const calculateOutstandingBalance = (
   links: Link[] | undefined,
-  accountType: "mortgageAccounts" | "studentLoanAccounts",
+  accountType: 'mortgageAccounts' | 'studentLoanAccounts',
 ): number => {
   return links
     ? links.reduce((total, link) => {
-        const accounts = link[accountType];
+        const accounts = link[accountType]
         if (accounts) {
           return (
             total +
             accounts.reduce((acc, account) => {
-              if (accountType === "mortgageAccounts") {
-                return acc + (account.originationPrincipalAmount || 0);
-              } else if (accountType === "studentLoanAccounts") {
-                const studentLoanAccount = account as StudentLoanAccount;
+              if (accountType === 'mortgageAccounts') {
+                return acc + (account.originationPrincipalAmount || 0)
+              } else if (accountType === 'studentLoanAccounts') {
+                const studentLoanAccount = account as StudentLoanAccount
                 return (
                   acc +
                   (studentLoanAccount.originationPrincipalAmount || 0) +
                   (studentLoanAccount.outstandingInterestAmount || 0)
-                );
+                )
               }
-              return acc;
+              return acc
             }, 0)
-          );
+          )
         }
-        return total;
+        return total
       }, 0)
-    : 0;
-};
+    : 0
+}
 
 interface ConnectedAccountSummaryProps {
-  financialProfile?: FinancialUserProfile;
-  financialContext?: MelodyFinancialContext;
-  className?: string;
-  name: string;
-  demoMode?: boolean;
+  financialProfile?: FinancialUserProfile
+  financialContext?: MelodyFinancialContext
+  className?: string
+  name: string
+  demoMode?: boolean
 }
 
 // Component to display connected account summary
@@ -85,75 +85,75 @@ export const ConnectedAccountSummary: React.FC<
 > = ({ financialProfile, financialContext, name, demoMode = false }) => {
   useMemo(() => {
     if (demoMode || !financialProfile || !financialContext) {
-      financialProfile = FinancialDataGenerator.generateFinancialProfile();
-      financialContext = FinancialDataGenerator.generateFinancialContext();
+      financialProfile = FinancialDataGenerator.generateFinancialProfile()
+      financialContext = FinancialDataGenerator.generateFinancialContext()
     }
-  }, [financialProfile, financialContext, demoMode]);
+  }, [financialProfile, financialContext, demoMode])
 
   // Calculate balances and outstanding amounts
   const cashBalanceAcrossBankAccts = calculateCashBalance(
     financialProfile?.link,
-    "bankAccounts",
-  );
+    'bankAccounts',
+  )
   const cashBalanceAcrossInvestmentAccts = calculateCashBalance(
     financialProfile?.link,
-    "investmentAccounts",
-  );
+    'investmentAccounts',
+  )
   const cashBalanceAcrossCreditAccts = calculateCashBalance(
     financialProfile?.link,
-    "creditAccounts",
-  );
+    'creditAccounts',
+  )
   const outstandingBalanceAcrossMortgageAccts = calculateOutstandingBalance(
     financialProfile?.link,
-    "mortgageAccounts",
-  );
+    'mortgageAccounts',
+  )
   const outstandingBalanceAcrossStudentLoanAccts = calculateOutstandingBalance(
     financialProfile?.link,
-    "studentLoanAccounts",
-  );
+    'studentLoanAccounts',
+  )
 
   const debts =
     outstandingBalanceAcrossStudentLoanAccts +
     outstandingBalanceAcrossMortgageAccts +
-    cashBalanceAcrossCreditAccts;
-  const assets = cashBalanceAcrossBankAccts + cashBalanceAcrossInvestmentAccts;
+    cashBalanceAcrossCreditAccts
+  const assets = cashBalanceAcrossBankAccts + cashBalanceAcrossInvestmentAccts
 
   const expense =
-    financialContext?.expenses?.[0]?.averageMonthlyDiscretionarySpending || 0;
-  const income = financialContext?.income?.[0]?.incomeLastMonth || 0;
+    financialContext?.expenses?.[0]?.averageMonthlyDiscretionarySpending || 0
+  const income = financialContext?.income?.[0]?.incomeLastMonth || 0
   const topPaymentChannel =
-    financialContext?.paymentChannels?.[0]?.paymentChannel || "None";
+    financialContext?.paymentChannels?.[0]?.paymentChannel || 'None'
 
   const numberOfConnectedAccounts =
     (financialContext?.bankAccounts?.length ?? 0) +
     (financialContext?.creditAccounts?.length ?? 0) +
     (financialContext?.investmentAccounts?.length ?? 0) +
     (financialContext?.mortgageLoanAccounts?.length ?? 0) +
-    (financialContext?.studentLoanAccounts?.length ?? 0);
+    (financialContext?.studentLoanAccounts?.length ?? 0)
 
   const stats = [
     {
       id: 1,
-      name: "Connected Accounts",
+      name: 'Connected Accounts',
       value: numberOfConnectedAccounts,
     },
     {
       id: 2,
-      name: "Money Out This Month",
+      name: 'Money Out This Month',
       value: `$${expense.toFixed(2)}`,
     },
     {
       id: 3,
-      name: "Money In This Month",
+      name: 'Money In This Month',
       value: `$${income.toFixed(2)}`,
     },
-    { id: 4, name: "Top Payment Channel", value: `${topPaymentChannel}` },
-    { id: 5, name: "Total Debts", value: `$${debts.toFixed(2)}` },
-    { id: 5, name: "Total Assets", value: `$${assets.toFixed(2)}` },
-  ];
+    { id: 4, name: 'Top Payment Channel', value: `${topPaymentChannel}` },
+    { id: 5, name: 'Total Debts', value: `$${debts.toFixed(2)}` },
+    { id: 5, name: 'Total Assets', value: `$${assets.toFixed(2)}` },
+  ]
 
   return (
-    <Card className="rounded-2xl w-full">
+    <Card className="w-full rounded-2xl">
       <div className="mx-auto w-full p-6">
         <div className="mx-auto max-w-7xl lg:mx-0">
           <div className="flex flex-row justify-between">
@@ -162,10 +162,10 @@ export const ConnectedAccountSummary: React.FC<
             </p>
           </div>
 
-          <h2 className="mt-2 text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
+          <h2 className="text-foreground mt-2 text-4xl font-bold tracking-tight sm:text-6xl">
             Your financial command center, {name}
           </h2>
-          <p className="mt-6 text-lg leading-8 text-foreground/3">
+          <p className="text-foreground/3 mt-6 text-lg leading-8">
             Your Personalized Command Center for Wealth Management and Financial
             Freedom
           </p>
@@ -197,7 +197,7 @@ export const ConnectedAccountSummary: React.FC<
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2 p-[1%]">
-                  <BarChart currency={""} data={[]} disabled={true} />
+                  <BarChart currency={''} data={[]} disabled={true} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -215,7 +215,7 @@ export const ConnectedAccountSummary: React.FC<
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2 p-[1%]">
-                  <BarChart currency={""} data={[]} disabled={true} />
+                  <BarChart currency={''} data={[]} disabled={true} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -226,22 +226,22 @@ export const ConnectedAccountSummary: React.FC<
       <dl className="mt-16 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-2 lg:grid-cols-6">
         {stats.map((stat, idx) => (
           <div key={idx} className="flex flex-col bg-gray-400/5 p-8">
-            <dt className="text-sm font-semibold leading-6 text-foreground/3">
+            <dt className="text-foreground/3 text-sm font-semibold leading-6">
               {stat.name}
             </dt>
-            <dd className="order-first text-3xl font-semibold tracking-tight text-foreground">
+            <dd className="text-foreground order-first text-3xl font-semibold tracking-tight">
               {stat.value}
             </dd>
           </div>
         ))}
       </dl>
     </Card>
-  );
-};
+  )
+}
 
 interface ConnectedAccountsProps {
-  financialProfile?: FinancialUserProfile;
-  financialContext?: MelodyFinancialContext;
+  financialProfile?: FinancialUserProfile
+  financialContext?: MelodyFinancialContext
 }
 
 const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
@@ -250,37 +250,37 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
 }) => {
   useMemo(() => {
     if (!financialProfile || !financialContext) {
-      financialProfile = FinancialDataGenerator.generateFinancialProfile();
-      financialContext = FinancialDataGenerator.generateFinancialContext();
+      financialProfile = FinancialDataGenerator.generateFinancialProfile()
+      financialContext = FinancialDataGenerator.generateFinancialContext()
     }
-  }, [financialProfile, financialContext]);
+  }, [financialProfile, financialContext])
 
-  const linkedAccounts = financialProfile?.link;
-  const hasLinkedAccounts = linkedAccounts && linkedAccounts.length > 0;
+  const linkedAccounts = financialProfile?.link
+  const hasLinkedAccounts = linkedAccounts && linkedAccounts.length > 0
 
   // return null if no linked accounts
   if (!hasLinkedAccounts) {
-    return <div></div>;
+    return <div></div>
   }
 
   type CreditAccountMap = {
-    [key: string]: CreditAccount[];
-  };
+    [key: string]: CreditAccount[]
+  }
 
   const creditCardToInstitutionNameMap =
     linkedAccounts.reduce<CreditAccountMap>((acc, card) => {
       if (card.creditAccounts && card.institutionName) {
-        acc[card.institutionName] = card.creditAccounts;
+        acc[card.institutionName] = card.creditAccounts
       }
-      return acc;
-    }, {});
+      return acc
+    }, {})
 
   const allBankAccounts = linkedAccounts.flatMap(
     (link) => link.bankAccounts || [],
-  );
+  )
   const allCreditAccounts = linkedAccounts.flatMap(
     (link) => link.creditAccounts || [],
-  );
+  )
 
   return (
     <div className="scrollbar-hide overflow-hidden rounded-2xl bg-white p-5">
@@ -291,7 +291,7 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
         </TabsList>
         <TabsContent
           value="creditaccounts"
-          className="w-fit overflow-auto py-2 max-w-6xl"
+          className="w-fit max-w-6xl overflow-auto py-2"
         >
           <div className="grid md:flex md:flex-row md:gap-2">
             {allCreditAccounts.length === 0 ? (
@@ -338,20 +338,20 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
                       </DialogContent>
                     </Dialog> */}
                     <CreditCard
-                      cardholderName={account.name || ""}
-                      cardNumber={account.number || ""}
+                      cardholderName={account.name || ''}
+                      cardNumber={account.number || ''}
                       expiryDate="xxxx"
                       cvv="xxx"
                     />
                   </div>
-                );
+                )
               })
             )}
           </div>
         </TabsContent>
         <TabsContent
           value="bankaccounts"
-          className="overflow-auto py-2 max-w-6xl"
+          className="max-w-6xl overflow-auto py-2"
         >
           <div className="grid md:flex md:flex-row md:gap-2">
             {allBankAccounts.length === 0 ? (
@@ -399,21 +399,21 @@ const ConnectedAccounts: React.FC<ConnectedAccountsProps> = ({
                         </DialogFooter>
                       </DialogContent>
                     </Dialog> */}
-                    <div className="w-full ">
+                    <div className="w-full">
                       <CreditCard
-                        cardholderName={account.name || ""}
-                        cardNumber={account.number || ""}
-                        expiryDate={"xx/xx"}
-                        cvv={"xxx"}
+                        cardholderName={account.name || ''}
+                        cardNumber={account.number || ''}
+                        expiryDate={'xx/xx'}
+                        cvv={'xxx'}
                       />
                     </div>
                   </div>
-                );
+                )
               })
             )}
           </div>
         </TabsContent>
       </Tabs>
     </div>
-  );
-};
+  )
+}

@@ -1,15 +1,15 @@
-import * as React from "react";
+import * as React from 'react'
 
-import { MenuIcon, PanelsTopLeft } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../sheet";
+import { MenuIcon, PanelsTopLeft } from 'lucide-react'
+import { Sheet, SheetContent, SheetHeader, SheetTrigger } from '../sheet'
 
-import { Button } from "../button";
-import { Group } from "../../types/menu";
-import Link from "next/link";
-import { Menu } from "./menu";
+import Link from 'next/link'
+import { Group } from '../../types/menu'
+import { Button } from '../button'
+import { Menu } from './menu'
 
 interface SheetMenuProps {
-  menu: Group<string>[];
+  menu: Group<string>[]
 }
 
 export const SheetMenu: React.FC<SheetMenuProps> = ({ menu }) => {
@@ -33,8 +33,8 @@ export const SheetMenu: React.FC<SheetMenuProps> = ({ menu }) => {
             </Link>
           </Button>
         </SheetHeader>
-        <Menu isOpen menu={menu} onMenuItemClick={() => { }} />
+        <Menu isOpen menu={menu} onMenuItemClick={() => {}} />
       </SheetContent>
     </Sheet>
-  );
-};
+  )
+}

@@ -1,5 +1,6 @@
-"use client";
+'use client'
 
+import React, { useMemo } from 'react'
 import {
   Bar,
   BarChart as BaseBarChart,
@@ -9,32 +10,31 @@ import {
   TooltipProps,
   XAxis,
   YAxis,
-} from "recharts";
-import { BarChartMultiDataPoint, ChartDataPoint } from "../../../types/chart";
-import ChartWrapper, { useWrapperState } from "./chart-wrapper";
-import React, { useMemo } from "react";
+} from 'recharts'
 import {
   computeChartDataDifferenceOverTime,
   formatAmount,
   getYAxisWidth,
   roundToNearestFactor,
-} from "../../../lib/chart-utils";
+} from '../../../lib/chart-utils'
+import { BarChartMultiDataPoint, ChartDataPoint } from '../../../types/chart'
+import ChartWrapper, { useWrapperState } from './chart-wrapper'
 
-import { Button } from "../../button";
-import { ChartContainer } from "./chart-container";
-import { ContentType } from "recharts/types/component/Tooltip";
-import { Payload } from "recharts/types/component/DefaultTooltipContent";
-import { cn } from "../../../utils/cn";
-import { format } from "date-fns";
-import { generatePayloadArray } from "../../../lib/random/generator";
+import { format } from 'date-fns'
+import { Payload } from 'recharts/types/component/DefaultTooltipContent'
+import { ContentType } from 'recharts/types/component/Tooltip'
+import { generatePayloadArray } from '../../../lib/random/generator'
+import { cn } from '../../../utils/cn'
+import { Button } from '../../button'
+import { ChartContainer } from './chart-container'
 
 /**
  * Props for the ToolTipContent component.
  */
 interface ToolTipContentProps {
-  payload?: Array<Payload<number, string>>;
-  currency: string;
-  locale?: string;
+  payload?: Array<Payload<number, string>>
+  currency: string
+  locale?: string
 }
 
 /**
@@ -45,12 +45,12 @@ const ToolTipContent: React.FC<ToolTipContentProps> = ({
   currency,
   locale,
 }) => {
-  if (!payload) return null;
+  if (!payload) return null
 
-  const { value = 0, date } = payload[0]?.payload ?? {};
+  const { value = 0, date } = payload[0]?.payload ?? {}
 
   return (
-    <div className="w-[240px] border bg-background shadow-sm">
+    <div className="bg-background w-[240px] border shadow-sm">
       <div className="px-3 py-2">
         <div className="flex items-center justify-between">
           <p className="text-[13px] font-medium">
@@ -63,25 +63,25 @@ const ToolTipContent: React.FC<ToolTipContentProps> = ({
             })}
           </p>
           <p className="text-right text-xs text-[#606060]">
-            {date && format(new Date(date), "MMM, y")}
+            {date && format(new Date(date), 'MMM, y')}
           </p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 /**
  * Props for the BarChart component.
  */
 export interface BarChartProps {
-  currency: string;
-  data: Array<ChartDataPoint>;
-  height?: number;
-  locale?: string;
-  enableAssistantMode?: boolean;
-  enableComparison?: boolean;
-  disabled?: boolean;
+  currency: string
+  data: Array<ChartDataPoint>
+  height?: number
+  locale?: string
+  enableAssistantMode?: boolean
+  enableComparison?: boolean
+  disabled?: boolean
 }
 
 /**
@@ -105,31 +105,31 @@ export const BarChart: React.FC<BarChartProps> = ({
         count: 50,
         minValue: 100,
         maxValue: 500,
-      });
+      })
     }
-    return propData;
-  }, [disabled, propData]);
+    return propData
+  }, [disabled, propData])
 
-  const [enableCompare, setEnableCompare] = React.useState<boolean>(false);
-  const { isOpen, toggleOpen } = useWrapperState(false);
+  const [enableCompare, setEnableCompare] = React.useState<boolean>(false)
+  const { isOpen, toggleOpen } = useWrapperState(false)
   const [dataSet, setDataSet] = React.useState<
     Array<ChartDataPoint> | Array<BarChartMultiDataPoint>
-  >(data.length > 0 ? data : []);
+  >(data.length > 0 ? data : [])
   const [comparisonTimePeriod, setComparisonTimePeriod] = React.useState<
-    "monthly" | "weekly"
-  >("weekly");
+    'monthly' | 'weekly'
+  >('weekly')
 
   const filterDataByDateRange = (dateRange: { from: Date; to: Date }) => {
-    const { from, to } = dateRange;
+    const { from, to } = dateRange
     setDataSet(
       data.filter(({ date }) => new Date(date) >= from && new Date(date) <= to),
-    );
-  };
+    )
+  }
 
   // Add this useEffect hook to update dataSet when data changes
   React.useEffect(() => {
-    setDataSet(data);
-  }, [data]);
+    setDataSet(data)
+  }, [data])
 
   /**
    * Formats a number value as a currency string.
@@ -144,13 +144,13 @@ export const BarChart: React.FC<BarChartProps> = ({
       currency,
       amount: value,
       locale,
-    });
-  };
+    })
+  }
 
   // Calculate the maximum Y-axis value
-  const maxYAxisValue = roundToNearestFactor(data.map(({ value }) => value));
-  const yAxisLabelMaxValue: string = getLabel(maxYAxisValue);
-  const width = getYAxisWidth(yAxisLabelMaxValue);
+  const maxYAxisValue = roundToNearestFactor(data.map(({ value }) => value))
+  const yAxisLabelMaxValue: string = getLabel(maxYAxisValue)
+  const width = getYAxisWidth(yAxisLabelMaxValue)
 
   /**
    * Custom tooltip component for the BarChart.
@@ -164,27 +164,27 @@ export const BarChart: React.FC<BarChartProps> = ({
       locale={locale}
       currency={currency}
     />
-  );
+  )
 
   // get the earliest date in the data
   // sort the data by date in ascending order
   const sortedData = data.sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-  );
+  )
   const earliestDate = sortedData[0]?.date
     ? new Date(sortedData[0].date)
-    : undefined;
+    : undefined
   const latestDate = sortedData[sortedData.length - 1]?.date
     ? new Date(sortedData[sortedData.length - 1]!.date)
-    : undefined;
+    : undefined
 
   const differenceOverTime = computeChartDataDifferenceOverTime(
     data,
     comparisonTimePeriod,
-  );
+  )
 
   return (
-    <div className="flex flex-col gap-2 h-full sm:h-[calc(100%-150px)]">
+    <div className="flex h-full flex-col gap-2 sm:h-[calc(100%-150px)]">
       <ChartWrapper
         buttonText="Open"
         openButtonText="Close"
@@ -196,19 +196,19 @@ export const BarChart: React.FC<BarChartProps> = ({
           <p className="text-sm font-bold">Comparison Over Time</p>
           <div className="flex flex-1 gap-2">
             <Button
-              size={"sm"}
-              onClick={() => setComparisonTimePeriod("weekly")}
+              size={'sm'}
+              onClick={() => setComparisonTimePeriod('weekly')}
               variant={
-                comparisonTimePeriod === "weekly" ? "default" : "outline"
+                comparisonTimePeriod === 'weekly' ? 'default' : 'outline'
               }
             >
               Weekly
             </Button>
             <Button
-              size={"sm"}
-              onClick={() => setComparisonTimePeriod("monthly")}
+              size={'sm'}
+              onClick={() => setComparisonTimePeriod('monthly')}
               variant={
-                comparisonTimePeriod === "monthly" ? "default" : "outline"
+                comparisonTimePeriod === 'monthly' ? 'default' : 'outline'
               }
             >
               Monthly
@@ -245,7 +245,10 @@ export const BarChart: React.FC<BarChartProps> = ({
             className="stoke-[#DCDAD2] dark:stroke-[#2C2C2C]"
           />
 
-          <Tooltip content={CustomTooltip as ContentType<number, string>} cursor={false} />
+          <Tooltip
+            content={CustomTooltip as ContentType<number, string>}
+            cursor={false}
+          />
 
           <XAxis
             dataKey="date"
@@ -254,11 +257,11 @@ export const BarChart: React.FC<BarChartProps> = ({
             tickLine={false}
             axisLine={false}
             tickMargin={15}
-            tickFormatter={(value) => format(new Date(value), "MMM")}
+            tickFormatter={(value) => format(new Date(value), 'MMM')}
             tick={{
-              fill: "#606060",
+              fill: '#606060',
               fontSize: 12,
-              fontFamily: "var(--font-sans)",
+              fontFamily: 'var(--font-sans)',
             }}
           />
 
@@ -271,9 +274,9 @@ export const BarChart: React.FC<BarChartProps> = ({
             tickFormatter={getLabel}
             width={getYAxisWidth(yAxisLabelMaxValue)}
             tick={{
-              fill: "#606060",
+              fill: '#606060',
               fontSize: 12,
-              fontFamily: "var(--font-sans)",
+              fontFamily: 'var(--font-sans)',
             }}
           />
 
@@ -284,9 +287,9 @@ export const BarChart: React.FC<BarChartProps> = ({
                   <Cell
                     key={`cell-${index}`}
                     className={cn(
-                      "fill-[#41191A]",
+                      'fill-[#41191A]',
                       +entry.previous.value > 0 &&
-                      "fill-[#C6C6C6] dark:fill-[#323232]",
+                        'fill-[#C6C6C6] dark:fill-[#323232]',
                     )}
                   />
                 ))}
@@ -297,9 +300,9 @@ export const BarChart: React.FC<BarChartProps> = ({
                   <Cell
                     key={`cell-${index}`}
                     className={cn(
-                      "fill-[#FF3638]",
+                      'fill-[#FF3638]',
                       +entry.current.value > 0 &&
-                      "fill-[#121212] dark:fill-[#F5F5F3]",
+                        'fill-[#121212] dark:fill-[#F5F5F3]',
                     )}
                   />
                 ))}
@@ -317,8 +320,8 @@ export const BarChart: React.FC<BarChartProps> = ({
 
           <defs>
             <linearGradient id="growthGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={"#333"} stopOpacity={0.8} />
-              <stop offset="100%" stopColor={"#666"} stopOpacity={0.1} />
+              <stop offset="0%" stopColor={'#333'} stopOpacity={0.8} />
+              <stop offset="100%" stopColor={'#666'} stopOpacity={0.1} />
             </linearGradient>
           </defs>
         </BaseBarChart>
@@ -349,5 +352,5 @@ export const BarChart: React.FC<BarChartProps> = ({
             </ChartWrapper> */}
       </ChartContainer>
     </div>
-  );
-};
+  )
+}

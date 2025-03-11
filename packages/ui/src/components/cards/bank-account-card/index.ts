@@ -1,1 +1,1 @@
-export * from "./BankAccountCard";
+export * from './BankAccountCard'

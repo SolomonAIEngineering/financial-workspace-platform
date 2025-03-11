@@ -1,38 +1,38 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { FinancialDataGenerator } from "../../lib/random/financial-data-generator";
-import { BankAccountsOverviewSummary } from "./bank-account-portal-view";
+import type { Meta, StoryObj } from '@storybook/react'
+import { FinancialDataGenerator } from '../../lib/random/financial-data-generator'
+import { BankAccountsOverviewSummary } from './bank-account-portal-view'
 
 const meta: Meta<typeof BankAccountsOverviewSummary> = {
   component: BankAccountsOverviewSummary,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     financialProfile: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: FinancialDataGenerator.generateFinancialProfile(),
     },
     financialContext: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: FinancialDataGenerator.generateFinancialContext(),
     },
     transactions: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: FinancialDataGenerator.generateRandomTransactions(20),
     },
   },
   decorators: [(Story) => <Story />],
-} satisfies Meta<typeof BankAccountsOverviewSummary>;
+} satisfies Meta<typeof BankAccountsOverviewSummary>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
@@ -40,7 +40,7 @@ export const Default: Story = {
     financialContext: FinancialDataGenerator.generateFinancialContext(),
     transactions: FinancialDataGenerator.generateRandomTransactions(20),
   },
-};
+}
 
 export const WithMultipleLinkedAccounts: Story = {
   args: {
@@ -53,7 +53,7 @@ export const WithMultipleLinkedAccounts: Story = {
     financialContext: FinancialDataGenerator.generateFinancialContext(),
     transactions: FinancialDataGenerator.generateRandomTransactions(20),
   },
-};
+}
 
 export const NoLinkedAccounts: Story = {
   args: {
@@ -63,4 +63,4 @@ export const NoLinkedAccounts: Story = {
     },
     financialContext: FinancialDataGenerator.generateFinancialContext(),
   },
-};
+}

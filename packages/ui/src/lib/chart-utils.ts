@@ -1,81 +1,81 @@
-import { ChartDataPoint, ChartDatePointWithDifference } from "../types/chart";
-import { format, isSameYear } from "date-fns";
+import { format, isSameYear } from 'date-fns'
+import { ChartDataPoint, ChartDatePointWithDifference } from '../types/chart'
 
 export function formatSize(bytes: number): string {
-  const units = ["byte", "kilobyte", "megabyte", "gigabyte", "terabyte"];
+  const units = ['byte', 'kilobyte', 'megabyte', 'gigabyte', 'terabyte']
 
   const unitIndex = Math.max(
     0,
     Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1),
-  );
+  )
 
-  return Intl.NumberFormat("en-US", {
-    style: "unit",
+  return Intl.NumberFormat('en-US', {
+    style: 'unit',
     unit: units[unitIndex],
-  }).format(+Math.round(bytes / 1024 ** unitIndex));
+  }).format(+Math.round(bytes / 1024 ** unitIndex))
 }
 
 type FormatAmountParams = {
-  currency: string;
-  amount: number;
-  locale?: string;
-  maximumFractionDigits?: number;
-  minimumFractionDigits?: number;
-};
+  currency: string
+  amount: number
+  locale?: string
+  maximumFractionDigits?: number
+  minimumFractionDigits?: number
+}
 
 export function formatAmount({
   currency,
   amount,
-  locale = "en-US",
+  locale = 'en-US',
   minimumFractionDigits,
   maximumFractionDigits,
 }: FormatAmountParams) {
   if (!currency) {
-    return amount.toString();
+    return amount.toString()
   }
 
   return Intl.NumberFormat(locale, {
-    style: "currency",
+    style: 'currency',
     currency,
     minimumFractionDigits,
     maximumFractionDigits,
-  }).format(amount);
+  }).format(amount)
 }
 
 export function secondsToHoursAndMinutes(seconds: number) {
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
 
   if (hours) {
-    return `${hours}h`;
+    return `${hours}h`
   }
 
   if (minutes) {
-    return `${minutes}m`;
+    return `${minutes}m`
   }
 
-  return "0h";
+  return '0h'
 }
 
 type BurnRateData = {
-  value: number;
-  date: string;
-};
+  value: number
+  date: string
+}
 
 export function calculateAvgBurnRate(data: BurnRateData[] | null) {
   if (!data) {
-    return 0;
+    return 0
   }
 
-  return data?.reduce((acc, curr) => acc + curr.value, 0) / data?.length;
+  return data?.reduce((acc, curr) => acc + curr.value, 0) / data?.length
 }
 
 export function formatTransactionDate(date: string) {
   if (isSameYear(new Date(), new Date(date))) {
-    return format(new Date(date), "MMM d");
+    return format(new Date(date), 'MMM d')
   }
 
-  return format(new Date(date), "P");
+  return format(new Date(date), 'P')
 }
 
 /**
@@ -86,11 +86,11 @@ export function formatTransactionDate(date: string) {
  * @throws {Error} If the input is not a valid number or string
  */
 export function getYAxisWidth(value: number | string): number {
-  if (typeof value !== "number" && typeof value !== "string") {
-    throw new Error("Invalid input: value must be a number or string");
+  if (typeof value !== 'number' && typeof value !== 'string') {
+    throw new Error('Invalid input: value must be a number or string')
   }
-  const stringValue = value.toString();
-  return stringValue.length * 7 + 2;
+  const stringValue = value.toString()
+  return stringValue.length * 7 + 2
 }
 
 /**
@@ -103,27 +103,27 @@ export function getYAxisWidth(value: number | string): number {
 export function roundToNearestFactor(numbers: number[]): number {
   if (
     !Array.isArray(numbers) ||
-    numbers.some((num) => typeof num !== "number")
+    numbers.some((num) => typeof num !== 'number')
   ) {
-    throw new Error("Invalid input: numbers must be an array of numbers");
+    throw new Error('Invalid input: numbers must be an array of numbers')
   }
 
-  if (numbers.length === 0) return 0;
-  if (numbers.length === 1) return numbers[0] || 0;
+  if (numbers.length === 0) return 0
+  if (numbers.length === 1) return numbers[0] || 0
 
-  const maxNumber = Math.max(...numbers);
+  const maxNumber = Math.max(...numbers)
 
   // Determine the magnitude of the maximum number
-  const magnitude = Math.floor(Math.log10(maxNumber));
+  const magnitude = Math.floor(Math.log10(maxNumber))
 
   // Calculate potential rounding factors
-  const factors = [1, 2, 5].map((f) => f * Math.pow(10, magnitude));
+  const factors = [1, 2, 5].map((f) => f * Math.pow(10, magnitude))
 
   // Find the smallest factor that's larger than the maximum number
   const roundingFactor =
-    factors.find((f) => f > maxNumber) || factors[factors.length - 1];
+    factors.find((f) => f > maxNumber) || factors[factors.length - 1]
 
-  return roundingFactor || 0;
+  return roundingFactor || 0
 }
 
 /**
@@ -140,24 +140,24 @@ export function generateTickValues(
   desiredTickCount: number = 5,
 ): number[] {
   if (min >= max) {
-    throw new Error("Invalid input: min must be less than max");
+    throw new Error('Invalid input: min must be less than max')
   }
 
-  const range = max - min;
-  const roughTickSize = range / (desiredTickCount - 1);
-  const roundingFactor = Math.pow(10, Math.floor(Math.log10(roughTickSize)));
+  const range = max - min
+  const roughTickSize = range / (desiredTickCount - 1)
+  const roundingFactor = Math.pow(10, Math.floor(Math.log10(roughTickSize)))
   const normalizedTickSize =
-    Math.ceil(roughTickSize / roundingFactor) * roundingFactor;
+    Math.ceil(roughTickSize / roundingFactor) * roundingFactor
 
-  const ticks: number[] = [];
-  let currentTick = Math.floor(min / normalizedTickSize) * normalizedTickSize;
+  const ticks: number[] = []
+  let currentTick = Math.floor(min / normalizedTickSize) * normalizedTickSize
 
   while (currentTick <= max) {
-    ticks.push(Number(currentTick.toFixed(2)));
-    currentTick += normalizedTickSize;
+    ticks.push(Number(currentTick.toFixed(2)))
+    currentTick += normalizedTickSize
   }
 
-  return ticks;
+  return ticks
 }
 
 /**
@@ -195,27 +195,27 @@ export function generateTickValues(
  */
 export function computeChartDataDifferenceOverTime(
   inputData: ChartDataPoint[],
-  period: "weekly" | "monthly",
+  period: 'weekly' | 'monthly',
 ): ChartDatePointWithDifference {
   return {
     result: inputData.map((point, index) => {
-      const currentDate = new Date(point.date);
-      let previousValue = 0;
+      const currentDate = new Date(point.date)
+      let previousValue = 0
 
       if (index > 0) {
-        const previousPoint = inputData[index - 1];
+        const previousPoint = inputData[index - 1]
         if (previousPoint) {
-          const previousDate = new Date(previousPoint.date);
-          const timeDifference = currentDate.getTime() - previousDate.getTime();
-          const daysDifference = timeDifference / (1000 * 3600 * 24);
+          const previousDate = new Date(previousPoint.date)
+          const timeDifference = currentDate.getTime() - previousDate.getTime()
+          const daysDifference = timeDifference / (1000 * 3600 * 24)
 
           if (
-            (period === "weekly" && daysDifference >= 7) ||
-            (period === "monthly" && daysDifference >= 28)
+            (period === 'weekly' && daysDifference >= 7) ||
+            (period === 'monthly' && daysDifference >= 28)
           ) {
-            previousValue = point.value;
+            previousValue = point.value
           } else {
-            previousValue = previousPoint.value;
+            previousValue = previousPoint.value
           }
         }
       }
@@ -224,8 +224,8 @@ export function computeChartDataDifferenceOverTime(
         date: point.date,
         current: { value: point.value },
         previous: { value: previousValue },
-      };
+      }
     }),
     meta: { period },
-  };
+  }
 }

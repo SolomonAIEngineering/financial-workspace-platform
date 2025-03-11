@@ -1,35 +1,33 @@
-"use client";
+'use client'
 
-import * as React from "react";
-
-import { Ellipsis, LogOut } from "lucide-react";
+import { Ellipsis, LogOut } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../tooltip";
+} from '../tooltip'
 
-import { Button } from "../button";
-import { CollapseMenuButton } from "./collapse-menu-button";
-import { Group } from "../../types/menu";
-import Link from "next/link";
-import { ScrollArea } from "../scroll-area";
-import { cn } from "../../utils/cn";
-import { usePathname } from "next/navigation";
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Group } from '../../types/menu'
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
+import { ScrollArea } from '../scroll-area'
+import { CollapseMenuButton } from './collapse-menu-button'
 
 interface MenuProps {
-  isOpen: boolean | undefined;
-  menu: Group<string>[];
-  onMenuItemClick: (href: string) => void;
-  className?: string;
+  isOpen: boolean | undefined
+  menu: Group<string>[]
+  onMenuItemClick: (href: string) => void
+  className?: string
 }
 
 export function Menu({ isOpen, menu }: MenuProps) {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   function onMenuItemClick(href: string): void {
-    throw new Error("Function not implemented.");
+    throw new Error('Function not implemented.')
   }
 
   return (
@@ -37,9 +35,9 @@ export function Menu({ isOpen, menu }: MenuProps) {
       <nav className="mt-8 h-full w-full">
         <ul className="flex min-h-[calc(100vh-48px-36px-16px-32px)] flex-col items-start space-y-1 px-2 lg:min-h-[calc(100vh-32px-40px-32px)]">
           {menu.map(({ groupLabel, menus }, index) => (
-            <li className={cn("w-full", groupLabel ? "pt-5" : "")} key={index}>
+            <li className={cn('w-full', groupLabel ? 'pt-5' : '')} key={index}>
               {(isOpen && groupLabel) || isOpen === undefined ? (
-                <p className="max-w-[248px] truncate px-4 pb-2 text-sm font-medium text-muted-foreground">
+                <p className="text-muted-foreground max-w-[248px] truncate px-4 pb-2 text-sm font-medium">
                   {groupLabel}
                 </p>
               ) : !isOpen && isOpen !== undefined && groupLabel ? (
@@ -66,22 +64,22 @@ export function Menu({ isOpen, menu }: MenuProps) {
                         <Tooltip delayDuration={100}>
                           <TooltipTrigger asChild>
                             <Button
-                              variant={active ? "secondary" : "ghost"}
+                              variant={active ? 'secondary' : 'ghost'}
                               className="mb-1 h-10 w-full justify-start"
                               asChild
                             >
                               <Link href={href}>
                                 <span
-                                  className={cn(isOpen === false ? "" : "mr-4")}
+                                  className={cn(isOpen === false ? '' : 'mr-4')}
                                 >
                                   <Icon size={18} />
                                 </span>
                                 <p
                                   className={cn(
-                                    "max-w-[200px] truncate",
+                                    'max-w-[200px] truncate',
                                     isOpen === false
-                                      ? "-translate-x-96 opacity-0"
-                                      : "translate-x-0 opacity-100",
+                                      ? '-translate-x-96 opacity-0'
+                                      : 'translate-x-0 opacity-100',
                                   )}
                                 >
                                   {label}
@@ -117,17 +115,17 @@ export function Menu({ isOpen, menu }: MenuProps) {
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={() => { }}
+                    onClick={() => {}}
                     variant="outline"
                     className="mt-5 h-10 w-full justify-center"
                   >
-                    <span className={cn(isOpen === false ? "" : "mr-4")}>
+                    <span className={cn(isOpen === false ? '' : 'mr-4')}>
                       <LogOut size={18} />
                     </span>
                     <p
                       className={cn(
-                        "whitespace-nowrap",
-                        isOpen === false ? "hidden opacity-0" : "opacity-100",
+                        'whitespace-nowrap',
+                        isOpen === false ? 'hidden opacity-0' : 'opacity-100',
                       )}
                     >
                       Sign out
@@ -143,5 +141,5 @@ export function Menu({ isOpen, menu }: MenuProps) {
         </ul>
       </nav>
     </ScrollArea>
-  );
+  )
 }

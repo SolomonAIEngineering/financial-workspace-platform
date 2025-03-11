@@ -5,16 +5,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/custom/table";
+} from '@/components/custom/table'
 
-import { Skeleton } from "../skeleton";
+import { Skeleton } from '../skeleton'
 
 interface DataTableSkeletonProps {
   /**
    * Number of rows to render
    * @default 10
    */
-  rows?: number;
+  rows?: number
 }
 
 export function DataTableSkeleton({ rows = 10 }: DataTableSkeletonProps) {
@@ -59,5 +59,5 @@ export function DataTableSkeleton({ rows = 10 }: DataTableSkeletonProps) {
         ))}
       </TableBody>
     </Table>
-  );
+  )
 }

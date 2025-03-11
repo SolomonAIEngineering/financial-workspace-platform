@@ -1,14 +1,14 @@
-"use client";
+'use client'
 
-import React, { useContext } from "react";
-import { AccountBalanceChart } from "../../charts/financials/account-balance";
+import React, { useContext } from 'react'
+import { AccountBalanceChart } from '../../charts/financials/account-balance'
 
-import { CardFooter } from "../../card";
+import { CardFooter } from '../../card'
 
-import { AccountBalanceHistoryContext } from "./BankAccountCard";
+import { AccountBalanceHistoryContext } from './BankAccountCard'
 
 interface IBankAccountCardFooter {
-  className?: string;
+  className?: string
 }
 
 /**
@@ -46,16 +46,16 @@ interface IBankAccountCardFooter {
  * @returns {React.FC<IBankAccountCardFooter>} Returns a React Functional Component.
  */
 const BankAccountCardFooter: React.FC<IBankAccountCardFooter> = (props) => {
-  const { className } = props;
-  const historicalAccountBalance = useContext(AccountBalanceHistoryContext);
+  const { className } = props
+  const historicalAccountBalance = useContext(AccountBalanceHistoryContext)
 
   return (
     <CardFooter className={className}>
       <div className="w-full">
-        <AccountBalanceChart data={historicalAccountBalance} currency={"USD"} />
+        <AccountBalanceChart data={historicalAccountBalance} currency={'USD'} />
       </div>
     </CardFooter>
-  );
-};
+  )
+}
 
-export { BankAccountCardFooter };
+export { BankAccountCardFooter }

@@ -1,17 +1,17 @@
-import { UserIcon } from "@heroicons/react/24/outline";
-import React from "react";
+import { UserIcon } from '@heroicons/react/24/outline'
+import React from 'react'
 
-import { cn } from "../../utils/cn";
-import { Button } from "../button";
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
 
-import { ButtonProps } from "./ask-solomon-button";
+import { ButtonProps } from './ask-solomon-button'
 
 export interface MyProfileButtonProps extends ButtonProps {
-  asChild?: boolean;
-  active: boolean;
-  className?: string;
-  href: string;
-  label?: string;
+  asChild?: boolean
+  active: boolean
+  className?: string
+  href: string
+  label?: string
 }
 
 /**
@@ -33,10 +33,10 @@ const MyProfileButton: React.FC<MyProfileButtonProps> = ({
   return (
     <a href={href}>
       <Button
-        variant={"outline"}
+        variant={'outline'}
         className={cn(
-          "ml-3 items-center justify-center border font-bold text-foreground transition-colors duration-300 ease-in-out dark:border-white dark:bg-transparent dark:text-foreground",
-          "hover:bg-gray-200 hover:text-background dark:hover:bg-gray-800 dark:hover:text-foreground",
+          'text-foreground dark:text-foreground ml-3 items-center justify-center border font-bold transition-colors duration-300 ease-in-out dark:border-white dark:bg-transparent',
+          'hover:text-background dark:hover:text-foreground hover:bg-gray-200 dark:hover:bg-gray-800',
           className,
         )}
       >
@@ -44,7 +44,7 @@ const MyProfileButton: React.FC<MyProfileButtonProps> = ({
         {label ? <p>{label}</p> : <p>My Profile</p>}
       </Button>
     </a>
-  );
-};
+  )
+}
 
-export { MyProfileButton };
+export { MyProfileButton }

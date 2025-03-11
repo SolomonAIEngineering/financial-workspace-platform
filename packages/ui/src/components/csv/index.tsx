@@ -1,1 +1,1 @@
-export * from "./csv-upload-for-plaid-transaction-editable";
+export * from './csv-upload-for-plaid-transaction-editable'

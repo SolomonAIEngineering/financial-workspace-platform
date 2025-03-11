@@ -1,2 +1,2 @@
-export * from "./notification-banner";
-export * from "./simple-notification-banner";
+export * from './notification-banner'
+export * from './simple-notification-banner'

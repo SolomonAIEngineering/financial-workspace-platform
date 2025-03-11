@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { Check, GripVertical, Settings2 } from "lucide-react";
+import { Check, GripVertical, Settings2 } from 'lucide-react'
 import {
   Command,
   CommandEmpty,
@@ -8,38 +8,34 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "../command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../popover";
+} from '../command'
+import { Popover, PopoverContent, PopoverTrigger } from '../popover'
 import {
   Sortable,
   SortableDragHandle,
   SortableItem,
-} from "@/components/custom/sortable";
-import { useMemo, useState } from "react";
+} from '@/components/custom/sortable'
+import { useMemo, useState } from 'react'
 
-import { Button } from "../button";
-import { cn } from "@/lib/utils";
-import { useDataTable } from "@/components/data-table/data-table-provider";
+import { Button } from '../button'
+import { cn } from '@/lib/utils'
+import { useDataTable } from '@/components/data-table/data-table-provider'
 
 export function DataTableViewOptions() {
-  const { table, enableColumnOrdering } = useDataTable();
-  const [open, setOpen] = useState(false);
-  const [drag, setDrag] = useState(false);
-  const [search, setSearch] = useState("");
+  const { table, enableColumnOrdering } = useDataTable()
+  const [open, setOpen] = useState(false)
+  const [drag, setDrag] = useState(false)
+  const [search, setSearch] = useState('')
 
-  const columnOrder = table.getState().columnOrder;
+  const columnOrder = table.getState().columnOrder
 
   const sortedColumns = useMemo(
     () =>
       table.getAllColumns().sort((a, b) => {
-        return columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id);
+        return columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id)
       }),
     [columnOrder],
-  );
+  )
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -70,7 +66,7 @@ export function DataTableViewOptions() {
                 onValueChange={(items) =>
                   table.setColumnOrder(items.map((c) => c.id))
                 }
-                overlay={<div className="h-8 w-full rounded-md bg-muted/60" />}
+                overlay={<div className="bg-muted/60 h-8 w-full rounded-md" />}
                 onDragStart={() => setDrag(true)}
                 onDragEnd={() => setDrag(false)}
                 onDragCancel={() => setDrag(false)}
@@ -78,7 +74,7 @@ export function DataTableViewOptions() {
                 {sortedColumns
                   .filter(
                     (column) =>
-                      typeof column.accessorFn !== "undefined" &&
+                      typeof column.accessorFn !== 'undefined' &&
                       column.getCanHide(),
                   )
                   .map((column) => (
@@ -88,25 +84,25 @@ export function DataTableViewOptions() {
                         onSelect={() =>
                           column.toggleVisibility(!column.getIsVisible())
                         }
-                        className={"capitalize"}
+                        className={'capitalize'}
                         disabled={drag}
                       >
                         <div
                           className={cn(
-                            "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                            'border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
                             column.getIsVisible()
-                              ? "bg-primary text-primary-foreground"
-                              : "opacity-50 [&_svg]:invisible",
+                              ? 'bg-primary text-primary-foreground'
+                              : 'opacity-50 [&_svg]:invisible',
                           )}
                         >
-                          <Check className={cn("h-4 w-4")} />
+                          <Check className={cn('h-4 w-4')} />
                         </div>
                         <span>{column.id}</span>
                         {enableColumnOrdering && !search ? (
                           <SortableDragHandle
                             variant="ghost"
                             size="icon"
-                            className="ml-auto size-5 text-muted-foreground hover:text-foreground focus:bg-muted focus:text-foreground"
+                            className="text-muted-foreground hover:text-foreground focus:bg-muted focus:text-foreground ml-auto size-5"
                           >
                             <GripVertical
                               className="size-4"
@@ -123,5 +119,5 @@ export function DataTableViewOptions() {
         </Command>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

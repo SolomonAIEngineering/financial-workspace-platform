@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import type React from "react";
-import type { DateRange } from "react-day-picker";
-import { cn } from "../utils";
-import { Button } from "./button";
-import { Calendar } from "./calendar";
-import { Icons } from "./icons";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import type React from 'react'
+import type { DateRange } from 'react-day-picker'
+import { cn } from '../utils'
+import { Button } from './button'
+import { Calendar } from './calendar'
+import { Icons } from './icons'
+import { Popover, PopoverContent, PopoverTrigger } from './popover'
 
 type Props = {
-  range: DateRange;
-  className: React.HTMLAttributes<HTMLDivElement>;
-  onSelect: (range?: DateRange) => void;
-  placeholder: string;
-  disabled?: boolean;
-};
+  range: DateRange
+  className: React.HTMLAttributes<HTMLDivElement>
+  onSelect: (range?: DateRange) => void
+  placeholder: string
+  disabled?: boolean
+}
 
 export function DateRangePicker({
   className,
@@ -24,18 +24,18 @@ export function DateRangePicker({
   placeholder,
 }: Props) {
   return (
-    <div className={cn("grid gap-2", className)}>
+    <div className={cn('grid gap-2', className)}>
       <Popover>
         <PopoverTrigger asChild disabled={disabled}>
           <Button
             variant="outline"
-            className={cn("justify-start text-left font-medium space-x-2")}
+            className={cn('justify-start space-x-2 text-left font-medium')}
           >
             <span>{placeholder}</span>
             <Icons.ChevronDown />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 mt-2" align="end">
+        <PopoverContent className="mt-2 w-auto p-0" align="end">
           <Calendar
             initialFocus
             mode="range"
@@ -47,5 +47,5 @@ export function DateRangePicker({
         </PopoverContent>
       </Popover>
     </div>
-  );
+  )
 }

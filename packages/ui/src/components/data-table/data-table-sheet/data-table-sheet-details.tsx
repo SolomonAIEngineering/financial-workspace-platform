@@ -1,8 +1,7 @@
-"use client";
+'use client'
 
-import * as React from "react";
+import * as React from 'react'
 
-import { ChevronDown, ChevronUp, X } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -10,25 +9,26 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/components/custom/sheet";
+} from '@/components/custom/sheet'
+import { ChevronDown, ChevronUp, X } from 'lucide-react'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../../tooltip";
+} from '../../tooltip'
 
-import { Button } from "../../button";
-import { Kbd } from "@/components/custom/kbd";
-import { Separator } from "../../separator";
-import { Skeleton } from "../../skeleton";
-import { cn } from "@/lib/utils";
-import { useDataTable } from "@/components/data-table/data-table-provider";
+import { Kbd } from '@/components/custom/kbd'
+import { useDataTable } from '@/components/data-table/data-table-provider'
+import { cn } from '@/lib/utils'
+import { Button } from '../../button'
+import { Separator } from '../../separator'
+import { Skeleton } from '../../skeleton'
 
 export interface DataTableSheetDetailsProps {
-  title?: string;
-  titleClassName?: string;
-  children?: React.ReactNode;
+  title?: string
+  titleClassName?: string
+  children?: React.ReactNode
 }
 
 export function DataTableSheetDetails({
@@ -36,62 +36,62 @@ export function DataTableSheetDetails({
   titleClassName,
   children,
 }: DataTableSheetDetailsProps) {
-  const { table, rowSelection, isLoading } = useDataTable();
+  const { table, rowSelection, isLoading } = useDataTable()
 
-  const selectedRowKey = Object.keys(rowSelection)?.[0];
+  const selectedRowKey = Object.keys(rowSelection)?.[0]
 
   const selectedRow = React.useMemo(() => {
-    if (isLoading && !selectedRowKey) return;
+    if (isLoading && !selectedRowKey) return
     return table
       .getCoreRowModel()
-      .flatRows.find((row) => row.id === selectedRowKey);
-  }, [selectedRowKey, isLoading]);
+      .flatRows.find((row) => row.id === selectedRowKey)
+  }, [selectedRowKey, isLoading])
 
   const index = table
     .getCoreRowModel()
-    .flatRows.findIndex((row) => row.id === selectedRow?.id);
+    .flatRows.findIndex((row) => row.id === selectedRow?.id)
 
   const nextId = React.useMemo(
     () => table.getCoreRowModel().flatRows[index + 1]?.id,
     [index, isLoading],
-  );
+  )
 
   const prevId = React.useMemo(
     () => table.getCoreRowModel().flatRows[index - 1]?.id,
     [index, isLoading],
-  );
+  )
 
   const onPrev = React.useCallback(() => {
-    if (prevId) table.setRowSelection({ [prevId]: true });
-  }, [prevId, isLoading]);
+    if (prevId) table.setRowSelection({ [prevId]: true })
+  }, [prevId, isLoading])
 
   const onNext = React.useCallback(() => {
-    if (nextId) table.setRowSelection({ [nextId]: true });
-  }, [nextId, isLoading]);
+    if (nextId) table.setRowSelection({ [nextId]: true })
+  }, [nextId, isLoading])
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (!selectedRowKey) return;
+      if (!selectedRowKey) return
 
       // REMINDER: prevent dropdown navigation inside of sheet to change row selection
-      const activeElement = document.activeElement;
-      const isMenuActive = activeElement?.closest('[role="menu"]');
+      const activeElement = document.activeElement
+      const isMenuActive = activeElement?.closest('[role="menu"]')
 
-      if (isMenuActive) return;
+      if (isMenuActive) return
 
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        onPrev();
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        onPrev()
       }
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        onNext();
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        onNext()
       }
-    };
+    }
 
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, [selectedRowKey, onNext, onPrev]);
+    document.addEventListener('keydown', down)
+    return () => document.removeEventListener('keydown', down)
+  }, [selectedRowKey, onNext, onPrev])
 
   return (
     <Sheet
@@ -101,12 +101,12 @@ export function DataTableSheetDetails({
         // We need to manually focus back due to missing Trigger component
         const el = selectedRowKey
           ? document.getElementById(selectedRowKey)
-          : null;
-        table.resetRowSelection();
+          : null
+        table.resetRowSelection()
 
         // REMINDER: when navigating between tabs in the sheet and exit the sheet, the tab gets lost
         // We need a minimal delay to allow the sheet to close before focusing back to the row
-        setTimeout(() => el?.focus(), 0);
+        setTimeout(() => el?.focus(), 0)
       }}
     >
       <SheetContent
@@ -114,9 +114,9 @@ export function DataTableSheetDetails({
         className="overflow-y-auto p-0 sm:max-w-md"
         hideClose
       >
-        <SheetHeader className="sticky top-0 z-10 border-b bg-background p-4">
+        <SheetHeader className="bg-background sticky top-0 z-10 border-b p-4">
           <div className="flex items-center justify-between gap-2">
-            <SheetTitle className={cn(titleClassName, "truncate text-left")}>
+            <SheetTitle className={cn(titleClassName, 'truncate text-left')}>
               {isLoading && !selectedRowKey ? (
                 <Skeleton className="h-7 w-36" />
               ) : (
@@ -182,5 +182,5 @@ export function DataTableSheetDetails({
         <div className="p-4">{children}</div>
       </SheetContent>
     </Sheet>
-  );
+  )
 }

@@ -1,24 +1,13 @@
-"use client";
+'use client'
 
-import { CaretSortIcon, FaceIcon } from "@radix-ui/react-icons";
-import { CalendarIcon, Goal, GoalIcon, RocketIcon } from "lucide-react";
-import React, { useContext } from "react";
-import {
-  SmartGoal as ISmartGoal,
-  Milestone,
-  SmartGoal,
-} from "client-typescript-sdk";
-import { FinancialDataProcessor } from "../../../lib/financial-data-processor";
-import { cn } from "../../../utils/cn";
-
-import { Badge } from "../../badge";
-import { Button } from "../../button";
-import { Card, CardContent } from "../../card";
+import { CalendarIcon, Goal, GoalIcon, RocketIcon } from 'lucide-react'
+import { Card, CardContent } from '../../card'
+import { CaretSortIcon, FaceIcon } from '@radix-ui/react-icons'
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "../../collapsible";
+} from '../../collapsible'
 import {
   Command,
   CommandEmpty,
@@ -27,14 +16,25 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "../../command";
-import { Label } from "../../label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../tabs";
+} from '../../command'
+import {
+  SmartGoal as ISmartGoal,
+  Milestone,
+  SmartGoal,
+} from 'client-typescript-sdk'
+import React, { useContext } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../tabs'
 
-import { BankAccountContext } from "./BankAccountCard";
+import { Badge } from '../../badge'
+import { BankAccountContext } from './BankAccountCard'
+import { Button } from '../../button'
+import { Command as CommandPrimitive } from 'cmdk'
+import { FinancialDataProcessor } from '../../../lib/financial-data-processor'
+import { Label } from '../../label'
+import { cn } from '../../../utils/cn'
 
 interface BankAccountCardContentProps {
-  className?: string;
+  className?: string
 }
 
 /**
@@ -77,25 +77,25 @@ import { BankAccount as BankAccountInstance } from 'src/types/financial/bank-acc
 const BankAccountCardContent: React.FC<BankAccountCardContentProps> = (
   props,
 ) => {
-  const { className } = props;
-  const bankAccount = useContext(BankAccountContext);
+  const { className } = props
+  const bankAccount = useContext(BankAccountContext)
 
   if (bankAccount === undefined) {
-    return null;
+    return null
   }
 
   if (bankAccount.pockets === undefined || bankAccount.pockets.length === 0) {
-    return null;
+    return null
   }
 
   // get all goals from pockets
-  const goals = bankAccount.pockets.flatMap((pocket) => pocket.goals);
+  const goals = bankAccount.pockets.flatMap((pocket) => pocket.goals)
   if (goals === undefined || goals.length === 0) {
-    return null;
+    return null
   }
 
   return (
-    <CardContent className={cn("", className)}>
+    <CardContent className={cn('', className)}>
       <Tabs defaultValue="pockets" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="pockets">Pockets</TabsTrigger>
@@ -112,72 +112,72 @@ const BankAccountCardContent: React.FC<BankAccountCardContentProps> = (
       </Tabs>
       {/* if the historical account balance is not empty, we display a graph of the balance history */}
     </CardContent>
-  );
-};
+  )
+}
 
 const AccountGoalsCommandSearch: React.FC = () => {
-  const ref = React.useRef<HTMLDivElement | null>(null);
-  const [inputValue, setInputValue] = React.useState("");
+  const [commandElement, setCommandElement] = React.useState<HTMLElement | null>(null)
+  const [inputValue, setInputValue] = React.useState('')
 
-  const [pages, setPages] = React.useState<string[]>(["home"]);
+  const [pages, setPages] = React.useState<string[]>(['home'])
 
   const popPage = React.useCallback(() => {
     setPages((pages) => {
-      const x = [...pages];
-      x.splice(-1, 1);
-      return x;
-    });
-  }, []);
+      const x = [...pages]
+      x.splice(-1, 1)
+      return x
+    })
+  }, [])
 
-  const bankAccount = useContext(BankAccountContext);
+  const bankAccount = useContext(BankAccountContext)
   if (bankAccount === undefined) {
-    return null;
+    return null
   }
 
-  const goals = FinancialDataProcessor.getGoals(bankAccount);
+  const goals = FinancialDataProcessor.getGoals(bankAccount)
 
   // get milestones from pockets
-  const milestones = FinancialDataProcessor.getMilestones(bankAccount);
+  const milestones = FinancialDataProcessor.getMilestones(bankAccount)
 
-  const activePage = pages[pages.length - 1];
-  const isHome = activePage === "home";
+  const activePage = pages[pages.length - 1]
+  const isHome = activePage === 'home'
 
   function bounce() {
-    if (ref.current) {
-      ref.current.style.transform = "scale(0.96)";
+    if (commandElement) {
+      commandElement.style.transform = 'scale(0.96)'
       setTimeout(() => {
-        if (ref.current) {
-          ref.current.style.transform = "";
+        if (commandElement) {
+          commandElement.style.transform = ''
         }
-      }, 100);
+      }, 100)
 
-      setInputValue("");
+      setInputValue('')
     }
   }
 
   return (
     <Command
       className="shadow-0 rounded-lg border"
-      ref={ref}
+      ref={setCommandElement}
       onKeyDown={(e: React.KeyboardEvent) => {
-        if (e.key === "Enter") {
-          bounce();
+        if (e.key === 'Enter') {
+          bounce()
         }
 
         if (isHome || inputValue.length) {
-          return;
+          return
         }
 
-        if (e.key === "Backspace") {
-          e.preventDefault();
-          popPage();
-          bounce();
+        if (e.key === 'Backspace') {
+          e.preventDefault()
+          popPage()
+          bounce()
         }
       }}
     >
       <div className="p-2">
         {pages.map((p) => (
-          <Badge key={p} cmdk-vercel-badge="" variant={"outline"}>
+          <Badge key={p} cmdk-vercel-badge="" variant={'outline'}>
             {p}
           </Badge>
         ))}
@@ -185,17 +185,17 @@ const AccountGoalsCommandSearch: React.FC = () => {
       <CommandInput
         placeholder="Search across your goals ..."
         onValueChange={(value) => {
-          setInputValue(value);
+          setInputValue(value)
         }}
         className="border-none"
       />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
-        {activePage === "home" && (
+        {activePage === 'home' && (
           <CommandGroup heading="Suggestions">
             <CommandItem
               onSelect={() => {
-                setPages([...pages, "smart-goals"]);
+                setPages([...pages, 'smart-goals'])
               }}
             >
               <Goal className="mr-2 h-4 w-4" />
@@ -203,7 +203,7 @@ const AccountGoalsCommandSearch: React.FC = () => {
             </CommandItem>
             <CommandItem
               onSelect={() => {
-                setPages([...pages, "milestones"]);
+                setPages([...pages, 'milestones'])
               }}
             >
               <FaceIcon className="mr-2 h-4 w-4" />
@@ -211,7 +211,7 @@ const AccountGoalsCommandSearch: React.FC = () => {
             </CommandItem>
             <CommandItem
               onSelect={() => {
-                setPages([...pages, "target"]);
+                setPages([...pages, 'target'])
               }}
             >
               <RocketIcon className="mr-2 h-4 w-4" />
@@ -220,23 +220,23 @@ const AccountGoalsCommandSearch: React.FC = () => {
           </CommandGroup>
         )}
         <CommandSeparator />
-        {activePage === "smart-goals" && (
+        {activePage === 'smart-goals' && (
           <>
             <GoalsCommandItems goals={goals as Array<SmartGoal>} />
           </>
         )}
-        {activePage === "milestones" && (
+        {activePage === 'milestones' && (
           <div className="py-4">
             <GoalMilestones milestones={milestones as Array<Milestone>} />
           </div>
         )}
       </CommandList>
     </Command>
-  );
-};
+  )
+}
 
 const GoalMilestones: React.FC<{
-  milestones: Milestone[];
+  milestones: Milestone[]
 }> = ({ milestones }) => {
   return (
     <>
@@ -245,19 +245,19 @@ const GoalMilestones: React.FC<{
           <div className="flex justify-between gap-4 px-2">
             <Label className="font-bold">{milestone.name}</Label>
             <Label className="rounded-2xl border px-3 text-xs font-bold">
-              {" "}
-              {milestone.isCompleted ? "Completed" : "Active"}
+              {' '}
+              {milestone.isCompleted ? 'Completed' : 'Active'}
             </Label>
             <Label>{milestone.targetAmount} Target</Label>
           </div>
         </CommandItem>
       ))}
     </>
-  );
-};
+  )
+}
 
 const GoalsCommandItems: React.FC<{
-  goals: ISmartGoal[];
+  goals: ISmartGoal[]
 }> = ({ goals }) => {
   return (
     <>
@@ -267,8 +267,8 @@ const GoalsCommandItems: React.FC<{
             <GoalIcon className="mr-2 h-4 w-4" />
             <Label className="font-bold">{goal.name}</Label>
             <Label className="font-bold">
-              {" "}
-              {goal.isCompleted ? "Completed" : "Active"}
+              {' '}
+              {goal.isCompleted ? 'Completed' : 'Active'}
             </Label>
             <p>{goal.targetAmount} Target</p>
             <div className="flex flex-row items-center">
@@ -279,26 +279,26 @@ const GoalsCommandItems: React.FC<{
         </CommandItem>
       ))}
     </>
-  );
-};
+  )
+}
 
 const AccountPockets: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const bankAccount = useContext(BankAccountContext);
+  const [isOpen, setIsOpen] = React.useState(false)
+  const bankAccount = useContext(BankAccountContext)
   if (bankAccount === undefined) {
-    return null;
+    return null
   }
 
   // Check if there are pockets associated with the bank account.
   if (bankAccount.pockets == undefined || bankAccount.pockets?.length === 0) {
-    return null;
+    return null
   }
 
   // get the first pocket name
   const pocketName =
     bankAccount.pockets[0]?.type !== undefined
       ? bankAccount.pockets[0].type!.toString()
-      : "";
+      : ''
 
   return (
     <Collapsible
@@ -333,12 +333,12 @@ const AccountPockets: React.FC = () => {
                     pocket.type.toString(),
                   )}
               </div>
-            );
+            )
           })}
         </CollapsibleContent>
       )}
     </Collapsible>
-  );
-};
+  )
+}
 
-export { BankAccountCardContent };
+export { BankAccountCardContent }

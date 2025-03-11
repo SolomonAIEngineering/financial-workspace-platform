@@ -1,18 +1,18 @@
-import { Transaction } from "client-typescript-sdk";
-import React, { useMemo } from "react";
-import { Button } from "../../../../components/button";
+import { Transaction } from 'client-typescript-sdk'
+import React, { useMemo } from 'react'
+import { Button } from '../../../../components/button'
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../../../components/card";
-import { FinancialMetricsTransactionConverter } from "../../../../lib/converters/expense-and-income-metrics-converter";
-import { MonthlyTransactions } from "./transactions-chart";
+} from '../../../../components/card'
+import { FinancialMetricsTransactionConverter } from '../../../../lib/converters/expense-and-income-metrics-converter'
+import { MonthlyTransactions } from './transactions-chart'
 
 export interface TransactionsToReviewProps {
-  transactions: Transaction[];
+  transactions: Transaction[]
 }
 
 const TransactionsToReview: React.FC<TransactionsToReviewProps> = ({
@@ -23,8 +23,8 @@ const TransactionsToReview: React.FC<TransactionsToReviewProps> = ({
       ? FinancialMetricsTransactionConverter.breakTransactionsByMonth(
           transactions,
         )
-      : {};
-  }, [transactions]);
+      : {}
+  }, [transactions])
 
   return (
     <Card className="space-y-4">
@@ -62,7 +62,7 @@ const TransactionsToReview: React.FC<TransactionsToReviewProps> = ({
         </div>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}
 
-export { TransactionsToReview };
+export { TransactionsToReview }

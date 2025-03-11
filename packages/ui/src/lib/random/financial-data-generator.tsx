@@ -53,9 +53,9 @@ import {
   type TransactionAggregatesByMonth,
   type TransactionSplit,
   type UserAccount,
-} from "client-typescript-sdk";
+} from 'client-typescript-sdk'
 
-const countries = ["US", "GB", "FR", "JP"];
+const countries = ['US', 'GB', 'FR', 'JP']
 
 export class FinancialDataGenerator {
   static generateTransactionAggregatesArray = (
@@ -64,30 +64,30 @@ export class FinancialDataGenerator {
     paymentChannel?: string,
   ): TransactionAggregatesByMonth[] => {
     const categories = [
-      "Groceries",
-      "Dining",
-      "Transport",
-      "Entertainment",
-      "Utilities",
-    ];
-    const cities = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix"];
-    const channels = ["Online", "In-Store", "Mobile"];
-    const merchants = ["Amazon", "Walmart", "Starbucks", "McDonalds", "Apple"];
-    const profileTypes = Object.values(FinancialUserProfileType);
+      'Groceries',
+      'Dining',
+      'Transport',
+      'Entertainment',
+      'Utilities',
+    ]
+    const cities = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix']
+    const channels = ['Online', 'In-Store', 'Mobile']
+    const merchants = ['Amazon', 'Walmart', 'Starbucks', 'McDonalds', 'Apple']
+    const profileTypes = Object.values(FinancialUserProfileType)
 
-    const transactions: TransactionAggregatesByMonth[] = [];
+    const transactions: TransactionAggregatesByMonth[] = []
 
     for (let i = 0; i < numEntries; i++) {
-      const month = 2024 * 100 + Math.floor(Math.random() * 12) + 1;
-      const transactionCount = Math.floor(Math.random() * 100).toString();
-      const totalAmount = Math.random() * 1000;
+      const month = 2024 * 100 + Math.floor(Math.random() * 12) + 1
+      const transactionCount = Math.floor(Math.random() * 100).toString()
+      const totalAmount = Math.random() * 1000
 
       const currentCategory = category
         ? category
-        : categories[Math.floor(Math.random() * categories.length)];
+        : categories[Math.floor(Math.random() * categories.length)]
       const currentPaymentChannel = paymentChannel
         ? paymentChannel
-        : channels[Math.floor(Math.random() * channels.length)];
+        : channels[Math.floor(Math.random() * channels.length)]
 
       transactions.push({
         month: month,
@@ -100,11 +100,11 @@ export class FinancialDataGenerator {
         userId: `user${i + 1}`,
         profileType:
           profileTypes[Math.floor(Math.random() * profileTypes.length)],
-      });
+      })
     }
 
-    return transactions;
-  };
+    return transactions
+  }
 
   /**
    * Returns a random transaction category from a predefined list of categories.
@@ -113,30 +113,30 @@ export class FinancialDataGenerator {
    */
   static getRandomTransactionCategory(): string {
     const categories = [
-      "Groceries",
-      "Utilities",
-      "Rent",
-      "Entertainment",
-      "Transportation",
-      "Eating Out",
-      "Shopping",
-      "Healthcare",
-      "Insurance",
-      "Education",
-      "Travel",
-      "Personal Care",
-      "Gifts",
-      "Investments",
-      "Savings",
-      "Loans",
-      "Taxes",
-      "Charity",
-      "Childcare",
-      "Miscellaneous",
-    ];
+      'Groceries',
+      'Utilities',
+      'Rent',
+      'Entertainment',
+      'Transportation',
+      'Eating Out',
+      'Shopping',
+      'Healthcare',
+      'Insurance',
+      'Education',
+      'Travel',
+      'Personal Care',
+      'Gifts',
+      'Investments',
+      'Savings',
+      'Loans',
+      'Taxes',
+      'Charity',
+      'Childcare',
+      'Miscellaneous',
+    ]
 
-    const randomIndex = Math.floor(Math.random() * categories.length);
-    return categories[randomIndex]!;
+    const randomIndex = Math.floor(Math.random() * categories.length)
+    return categories[randomIndex]!
   }
 
   /**
@@ -148,8 +148,8 @@ export class FinancialDataGenerator {
    */
   static randomIntFromInterval = (min: number, max: number) => {
     // min and max included
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
+    return Math.floor(Math.random() * (max - min + 1) + min)
+  }
 
   /**
    * Generates a random number within the specified range.
@@ -159,7 +159,7 @@ export class FinancialDataGenerator {
    * @returns {number} - The randomly generated number within the specified range.
    */
   static getRandomNumber(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1) + min);
+    return Math.floor(Math.random() * (max - min + 1) + min)
   }
 
   /**
@@ -171,14 +171,12 @@ export class FinancialDataGenerator {
    */
   static getRandomString(length: number): string {
     const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let result = ''
     for (let i = 0; i < length; i++) {
-      result += characters.charAt(
-        Math.floor(Math.random() * characters.length),
-      );
+      result += characters.charAt(Math.floor(Math.random() * characters.length))
     }
-    return result;
+    return result
   }
 
   /**
@@ -188,7 +186,7 @@ export class FinancialDataGenerator {
    * @returns {T} The randomly selected item from the array.
    */
   static getRandomArrayItem<T>(arr: T[]): T {
-    return arr[Math.floor(Math.random() * arr.length)] as T;
+    return arr[Math.floor(Math.random() * arr.length)] as T
   }
 
   /**
@@ -202,8 +200,8 @@ export class FinancialDataGenerator {
   static getRandomDate(start: Date, end: Date): string {
     const randomDate = new Date(
       start.getTime() + Math.random() * (end.getTime() - start.getTime()),
-    );
-    return randomDate.toISOString().split("T")[0]!;
+    )
+    return randomDate.toISOString().split('T')[0]!
   }
 
   /**
@@ -216,9 +214,9 @@ export class FinancialDataGenerator {
   static getRandomDateObject(start: Date, end: Date): Date {
     const randomDate = new Date(
       start.getTime() + Math.random() * (end.getTime() - start.getTime()),
-    );
+    )
 
-    return randomDate;
+    return randomDate
   }
 
   /**
@@ -227,7 +225,7 @@ export class FinancialDataGenerator {
    * @returns {boolean} A randomly generated boolean value.
    */
   static getRandomBoolean(): boolean {
-    return Math.random() > 0.5;
+    return Math.random() > 0.5
   }
 
   /**
@@ -236,12 +234,12 @@ export class FinancialDataGenerator {
    * @returns {string[]} An array of random subcategories.
    */
   static getRandomSubcategories(): string[] {
-    const count = FinancialDataGenerator.getRandomNumber(1, 5); // for instance, each category can have 1 to 5 subcategories
-    const subcategories: string[] = [];
+    const count = FinancialDataGenerator.getRandomNumber(1, 5) // for instance, each category can have 1 to 5 subcategories
+    const subcategories: string[] = []
     for (let i = 0; i < count; i++) {
-      subcategories.push(FinancialDataGenerator.getRandomString(5));
+      subcategories.push(FinancialDataGenerator.getRandomString(5))
     }
-    return subcategories;
+    return subcategories
   }
 
   /**
@@ -250,7 +248,7 @@ export class FinancialDataGenerator {
    * @returns {string} The randomly generated amount as a string.
    */
   static getRandomAmount(): string {
-    return (Math.random() * 10000).toFixed(2);
+    return (Math.random() * 10000).toFixed(2)
   }
 
   /**
@@ -259,7 +257,7 @@ export class FinancialDataGenerator {
    * @returns {number} A randomly generated balance value.
    */
   static getRandomBalance(): number {
-    return +(Math.random() * 10000).toFixed(2);
+    return +(Math.random() * 10000).toFixed(2)
   }
 
   /**
@@ -270,16 +268,14 @@ export class FinancialDataGenerator {
    *   string. Default is `''`
    * @returns {string} - The randomly generated string with the prefix.
    */
-  static getRandomStringWithPrefix(length: number, prefix = ""): string {
+  static getRandomStringWithPrefix(length: number, prefix = ''): string {
     const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let result = ''
     for (let i = 0; i < length; i++) {
-      result += characters.charAt(
-        Math.floor(Math.random() * characters.length),
-      );
+      result += characters.charAt(Math.floor(Math.random() * characters.length))
     }
-    return prefix + result;
+    return prefix + result
   }
 
   /**
@@ -299,8 +295,8 @@ export class FinancialDataGenerator {
       preferredLanguage: FinancialDataGenerator.getRandomString(10),
       riskTolerance: RiskToleranceSettings.Low,
       likedDashboardPanels: [
-        "LIKED_DASHBOARD_PANELS_TRANSACTIONS_OVERVIEW",
-        "LIKED_DASHBOARD_PANELS_CREDIT_SCORE_MONITOR",
+        'LIKED_DASHBOARD_PANELS_TRANSACTIONS_OVERVIEW',
+        'LIKED_DASHBOARD_PANELS_CREDIT_SCORE_MONITOR',
       ],
       digitalWorkerSettings: {
         id: FinancialDataGenerator.getRandomString(10),
@@ -315,7 +311,7 @@ export class FinancialDataGenerator {
         taxPercentage: FinancialDataGenerator.getRandomNumber(0, 100),
         taxCode: FinancialDataGenerator.getRandomString(10),
       },
-    };
+    }
   }
 
   /**
@@ -333,7 +329,7 @@ export class FinancialDataGenerator {
       unit: FinancialDataGenerator.getRandomString(10),
       lattitude: FinancialDataGenerator.getRandomString(10),
       longitude: FinancialDataGenerator.getRandomString(10),
-    };
+    }
   }
 
   /**
@@ -343,7 +339,7 @@ export class FinancialDataGenerator {
    *   tagDescription, and metadata.
    */
   static generateRandomTags(): Tags[] {
-    const tags: Tags[] = [];
+    const tags: Tags[] = []
     for (let i = 0; i < 5; i++) {
       tags.push({
         id: FinancialDataGenerator.getRandomString(10),
@@ -353,9 +349,9 @@ export class FinancialDataGenerator {
           FinancialDataGenerator.getRandomString(10),
           FinancialDataGenerator.getRandomString(10),
         ],
-      });
+      })
     }
-    return tags;
+    return tags
   }
 
   /**
@@ -374,7 +370,7 @@ export class FinancialDataGenerator {
       email: FinancialDataGenerator.getRandomString(10),
       profileType: FinancialUserProfileType.User,
       link: FinancialDataGenerator.generateRandomLinks(3),
-    };
+    }
   }
 
   /**
@@ -402,7 +398,7 @@ export class FinancialDataGenerator {
       studentLoanAccounts:
         FinancialDataGenerator.generateRandomStudentLoanAccounts(5),
       financialUserProfileType: FinancialUserProfileType.User,
-    };
+    }
   }
 
   /**
@@ -437,9 +433,9 @@ export class FinancialDataGenerator {
       ),
       settings: FinancialDataGenerator.generateRandomSettings(),
       supabaseAuth0UserId: FinancialDataGenerator.getRandomString(10),
-      profileImageUrl: "https://github.com/shadcn.png",
+      profileImageUrl: 'https://github.com/shadcn.png',
       algoliaUserId: FinancialDataGenerator.getRandomString(10),
-    };
+    }
   }
 
   /**
@@ -451,16 +447,16 @@ export class FinancialDataGenerator {
    */
   static generateAccountBalanceHistory(): AccountBalanceHistory {
     return {
-      id: FinancialDataGenerator.getRandomStringWithPrefix(5, "BAL-"),
+      id: FinancialDataGenerator.getRandomStringWithPrefix(5, 'BAL-'),
       time: FinancialDataGenerator.getRandomDateInRange(2021, 2023),
-      accountId: FinancialDataGenerator.getRandomStringWithPrefix(5, "ACC-"),
-      isoCurrencyCode: ["USD", "EUR", "GBP", "JPY", "AUD"][
+      accountId: FinancialDataGenerator.getRandomStringWithPrefix(5, 'ACC-'),
+      isoCurrencyCode: ['USD', 'EUR', 'GBP', 'JPY', 'AUD'][
         FinancialDataGenerator.getRandomNumber(0, 4)
       ],
       balance: FinancialDataGenerator.getRandomBalance(),
       userId: FinancialDataGenerator.getRandomString(10),
       sign: [1, -1][FinancialDataGenerator.getRandomNumber(0, 1)],
-    };
+    }
   }
 
   /**
@@ -475,13 +471,13 @@ export class FinancialDataGenerator {
   static generateRandomAccountBalanceHistoryList(
     count: number,
   ): AccountBalanceHistory[] {
-    const accountBalanceHistoryList: AccountBalanceHistory[] = [];
+    const accountBalanceHistoryList: AccountBalanceHistory[] = []
     for (let i = 0; i < count; i++) {
       accountBalanceHistoryList.push(
         FinancialDataGenerator.generateAccountBalanceHistory(),
-      );
+      )
     }
-    return accountBalanceHistoryList;
+    return accountBalanceHistoryList
   }
 
   /**
@@ -494,10 +490,10 @@ export class FinancialDataGenerator {
     return {
       id: Math.floor(Math.random() * 100).toString(),
       percentage: Math.floor(Math.random() * 100),
-      type: "random type",
+      type: 'random type',
       balanceSubjectToApr: Math.floor(Math.random() * 100),
       interestChargeAmount: Math.floor(Math.random() * 100),
-    };
+    }
   }
 
   /**
@@ -511,7 +507,7 @@ export class FinancialDataGenerator {
       name: FinancialDataGenerator.getRandomString(5),
       description: FinancialDataGenerator.getRandomString(10),
       subcategories: FinancialDataGenerator.getRandomSubcategories(),
-    };
+    }
   }
 
   /**
@@ -533,7 +529,7 @@ export class FinancialDataGenerator {
         new Date(2025, 0, 1),
       ),
       category: FinancialDataGenerator.generateCategory(),
-    };
+    }
   }
 
   /**
@@ -556,7 +552,7 @@ export class FinancialDataGenerator {
         Math.random() > 0.5
           ? FinancialDataGenerator.generateBudget()
           : undefined,
-    };
+    }
   }
 
   /**
@@ -573,7 +569,7 @@ export class FinancialDataGenerator {
       ),
       varianceAmount: FinancialDataGenerator.getRandomAmount(),
       id: FinancialDataGenerator.getRandomNumber(1, 10000).toString(),
-    };
+    }
   }
 
   /*
@@ -583,10 +579,10 @@ export class FinancialDataGenerator {
    * @returns {SmartGoal}
    * */
   static generateSmartGoal(): SmartGoal {
-    const numberOfMilestones = FinancialDataGenerator.getRandomNumber(5, 10); // Assuming a random number of milestones between 0 to 5 for each goal
+    const numberOfMilestones = FinancialDataGenerator.getRandomNumber(5, 10) // Assuming a random number of milestones between 0 to 5 for each goal
     const milestones = Array.from({ length: numberOfMilestones }, () =>
       FinancialDataGenerator.generateMilestone(),
-    );
+    )
 
     return {
       id: FinancialDataGenerator.getRandomNumber(1, 10000).toString(),
@@ -594,7 +590,7 @@ export class FinancialDataGenerator {
       name: FinancialDataGenerator.getRandomString(5),
       description: FinancialDataGenerator.getRandomString(10),
       isCompleted: FinancialDataGenerator.getRandomBoolean(),
-      goalType: "GOAL_TYPE_INVESTMENT",
+      goalType: 'GOAL_TYPE_INVESTMENT',
       duration: `${FinancialDataGenerator.getRandomNumber(1, 5)} weeks`,
       startDate: FinancialDataGenerator.getRandomDate(
         new Date(2020, 0, 1),
@@ -608,7 +604,7 @@ export class FinancialDataGenerator {
       currentAmount: `$${FinancialDataGenerator.getRandomNumber(0, 5000)}`,
       milestones: milestones,
       forecasts: FinancialDataGenerator.generateForecast(),
-    };
+    }
   }
 
   /*
@@ -618,16 +614,16 @@ export class FinancialDataGenerator {
    * @returns {Pocket}
    * */
   static generatePocket(): Pocket {
-    const numberOfGoals = FinancialDataGenerator.getRandomNumber(0, 5); // Assuming a random number of goals between 0 to 5 for each pocket
+    const numberOfGoals = FinancialDataGenerator.getRandomNumber(0, 5) // Assuming a random number of goals between 0 to 5 for each pocket
     const goals = Array.from({ length: numberOfGoals }, () =>
       FinancialDataGenerator.generateSmartGoal(),
-    );
+    )
 
     return {
       id: FinancialDataGenerator.getRandomNumber(1, 10000).toString(),
       goals: goals,
-      type: "POCKET_TYPE_LONG_TERM_SAVINGS",
-    };
+      type: 'POCKET_TYPE_LONG_TERM_SAVINGS',
+    }
   }
 
   /*
@@ -640,10 +636,10 @@ export class FinancialDataGenerator {
     const numberOfPocketsToGenerate = FinancialDataGenerator.getRandomNumber(
       0,
       5,
-    ); // Assuming a random number of goals between 0 to 5 for each pocket
+    ) // Assuming a random number of goals between 0 to 5 for each pocket
     const pockets = Array.from({ length: numberOfPocketsToGenerate }, () =>
       FinancialDataGenerator.generatePocket(),
-    );
+    )
 
     return {
       id: FinancialDataGenerator.getRandomNumber(1, 10000).toString(),
@@ -653,10 +649,10 @@ export class FinancialDataGenerator {
       type: BankAccountType.Plaid,
       balance: FinancialDataGenerator.getRandomNumber(1000, 10000),
       currency: FinancialDataGenerator.getRandomArrayItem([
-        "USD",
-        "EUR",
-        "GBP",
-        "JPY",
+        'USD',
+        'EUR',
+        'GBP',
+        'JPY',
       ]),
       currentFunds: FinancialDataGenerator.getRandomNumber(500, 5000),
       balanceLimit: FinancialDataGenerator.getRandomNumber(0, 1000).toString(),
@@ -666,7 +662,7 @@ export class FinancialDataGenerator {
       status: BankAccountStatus.Active,
       transactions: [],
       recurringTransactions: [],
-    };
+    }
   }
 
   /**
@@ -680,34 +676,34 @@ export class FinancialDataGenerator {
     return Array.from(
       { length: count },
       FinancialDataGenerator.generateRandomBankAccount,
-    );
-  };
+    )
+  }
 
   // Helper function to generate a random date within the last year
   static getTrulyRandomDate = () => {
-    const start = new Date();
-    start.setFullYear(start.getFullYear() - 1);
-    const end = new Date();
+    const start = new Date()
+    start.setFullYear(start.getFullYear() - 1)
+    const end = new Date()
     return new Date(
       start.getTime() + Math.random() * (end.getTime() - start.getTime()),
-    );
-  };
+    )
+  }
 
   static getTrulyRandomString = () =>
-    Math.random().toString(36).substring(2, 15);
+    Math.random().toString(36).substring(2, 15)
 
   // Mock data for currencies and countries for more realistic mock data
   static getRandomFromArray = (arr: any[]): any =>
-    arr[Math.floor(Math.random() * arr.length)];
+    arr[Math.floor(Math.random() * arr.length)]
 
   static getRandomCountry = () =>
-    FinancialDataGenerator.getRandomFromArray(countries);
+    FinancialDataGenerator.getRandomFromArray(countries)
 
   // Example helper function to generate a random Transaction object
   static generateRandomTransaction = (): Transaction => ({
     accountId: FinancialDataGenerator.getRandomString(10),
     amount: FinancialDataGenerator.getRandomNumber(1, 10000),
-    isoCurrencyCode: "USD",
+    isoCurrencyCode: 'USD',
     currentDate: FinancialDataGenerator.getTrulyRandomDate().toISOString(),
     name: FinancialDataGenerator.getRandomString(10),
     merchantName: FinancialDataGenerator.generateMerchant(),
@@ -743,12 +739,12 @@ export class FinancialDataGenerator {
     paymentMetaByOrderOf: FinancialDataGenerator.getTrulyRandomString(),
     paymentMetaPayee: FinancialDataGenerator.getTrulyRandomString(),
     paymentMetaPayer: FinancialDataGenerator.getTrulyRandomString(),
-    paymentMetaPaymentMethod: "credit card",
+    paymentMetaPaymentMethod: 'credit card',
     paymentMetaPaymentProcessor: FinancialDataGenerator.getTrulyRandomString(),
     paymentMetaPpdId: FinancialDataGenerator.getTrulyRandomString(),
     paymentMetaReason: FinancialDataGenerator.getTrulyRandomString(),
     paymentMetaReferenceNumber: FinancialDataGenerator.getTrulyRandomString(),
-    additionalProperties: { someKey: "someValue" }, // Example of an Any1 object
+    additionalProperties: { someKey: 'someValue' }, // Example of an Any1 object
     categories: [
       FinancialDataGenerator.getTrulyRandomString(),
       FinancialDataGenerator.getTrulyRandomString(),
@@ -756,7 +752,7 @@ export class FinancialDataGenerator {
     profileType: FinancialDataGenerator.getRandomBoolean()
       ? FinancialUserProfileType.User
       : FinancialUserProfileType.Business, // Example if FinancialUserProfileType is an enum or union type
-  });
+  })
 
   /**
    * Generates a random TransactionSplit object.
@@ -794,8 +790,8 @@ export class FinancialDataGenerator {
       authorizedDate: FinancialDataGenerator.getTrulyRandomDate(),
       authorizedDatetime: FinancialDataGenerator.getTrulyRandomDate(),
       timeOfSplit: FinancialDataGenerator.getTrulyRandomDate(),
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of random TransactionSplit objects.
@@ -809,8 +805,8 @@ export class FinancialDataGenerator {
     return Array.from(
       { length: count },
       FinancialDataGenerator.generateRandomTransactionSplit,
-    );
-  };
+    )
+  }
 
   /**
    * Generates an array of random categories.
@@ -820,30 +816,30 @@ export class FinancialDataGenerator {
    */
   static generateRandomCategories = (count: number): string[] => {
     const categories: string[] = [
-      "Groceries",
-      "Utilities",
-      "Rent",
-      "Entertainment",
-      "Transportation",
-      "Eating Out",
-      "Shopping",
-      "Healthcare",
-      "Insurance",
-      "Education",
-    ];
+      'Groceries',
+      'Utilities',
+      'Rent',
+      'Entertainment',
+      'Transportation',
+      'Eating Out',
+      'Shopping',
+      'Healthcare',
+      'Insurance',
+      'Education',
+    ]
 
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.getRandomFromArray(categories),
-    );
-  };
+    )
+  }
 
   // Function to generate an array of random Transaction objects
   static generateRandomTransactions = (count: number): Transaction[] => {
     return Array.from(
       { length: count },
       FinancialDataGenerator.generateRandomTransaction,
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random primary category.
@@ -852,24 +848,24 @@ export class FinancialDataGenerator {
    */
   static generatePrimaryCategory = (): string => {
     const categories = [
-      "dining",
-      "transportation",
-      "entertainment",
-      "rent",
-      "fun",
-      "bills",
-      "groceries",
-      "health",
-      "travel",
-      "shopping",
-      "education",
-    ];
+      'dining',
+      'transportation',
+      'entertainment',
+      'rent',
+      'fun',
+      'bills',
+      'groceries',
+      'health',
+      'travel',
+      'shopping',
+      'education',
+    ]
 
     // randomly select a category
     // Randomly select a category
-    const randomIndex = Math.floor(Math.random() * categories.length);
-    return categories[randomIndex]!;
-  };
+    const randomIndex = Math.floor(Math.random() * categories.length)
+    return categories[randomIndex]!
+  }
 
   /**
    * Generates a random payment channel.
@@ -877,13 +873,13 @@ export class FinancialDataGenerator {
    * @returns {string}
    */
   static generatePaymentChannels = (): string => {
-    const paymentChannels = ["online", "in-store", "mobile", "web", "phone"];
+    const paymentChannels = ['online', 'in-store', 'mobile', 'web', 'phone']
 
     // randomly select a category
     // Randomly select a category
-    const randomIndex = Math.floor(Math.random() * paymentChannels.length);
-    return paymentChannels[randomIndex]!;
-  };
+    const randomIndex = Math.floor(Math.random() * paymentChannels.length)
+    return paymentChannels[randomIndex]!
+  }
 
   /**
    * Generates a random merchant from a predefined list.
@@ -892,32 +888,32 @@ export class FinancialDataGenerator {
    */
   static generateMerchant = (): string => {
     const merchants = [
-      "Amazon",
-      "Walmart",
-      "Starbucks",
+      'Amazon',
+      'Walmart',
+      'Starbucks',
       "McDonald's",
-      "Apple",
-      "Target",
-      "Uber",
-      "Home Depot",
-      "Airbnb",
-      "Subway",
-      "Nike",
-      "Adidas",
-      "Costco",
-      "Best Buy",
-      "Netflix",
-      "Spotify",
-      "Taco Bell",
-      "KFC",
-      "Dell",
-      "Samsung",
-    ];
+      'Apple',
+      'Target',
+      'Uber',
+      'Home Depot',
+      'Airbnb',
+      'Subway',
+      'Nike',
+      'Adidas',
+      'Costco',
+      'Best Buy',
+      'Netflix',
+      'Spotify',
+      'Taco Bell',
+      'KFC',
+      'Dell',
+      'Samsung',
+    ]
 
     // Randomly select a merchant
-    const randomIndex = Math.floor(Math.random() * merchants.length);
-    return merchants[randomIndex]!;
-  };
+    const randomIndex = Math.floor(Math.random() * merchants.length)
+    return merchants[randomIndex]!
+  }
 
   /**
    * Generates a random city from a predefined list of cities.
@@ -926,50 +922,50 @@ export class FinancialDataGenerator {
    */
   static generateLocationCity = (): string => {
     const cities = [
-      "New York",
-      "Los Angeles",
-      "Chicago",
-      "Houston",
-      "Phoenix",
-      "Philadelphia",
-      "San Antonio",
-      "San Diego",
-      "Dallas",
-      "San Jose",
-      "Austin",
-      "Jacksonville",
-      "Fort Worth",
-      "Columbus",
-      "San Francisco",
-      "Charlotte",
-      "Indianapolis",
-      "Seattle",
-      "Denver",
-      "Washington",
-      "Boston",
-      "El Paso",
-      "Nashville",
-      "Detroit",
-      "Memphis",
-      "Portland",
-      "Oklahoma City",
-      "Las Vegas",
-      "Louisville",
-      "Baltimore",
-      "Milwaukee",
-      "Albuquerque",
-      "Tucson",
-      "Fresno",
-      "Mesa",
-      "Sacramento",
-      "Long Beach",
-      "Kansas City",
-    ];
+      'New York',
+      'Los Angeles',
+      'Chicago',
+      'Houston',
+      'Phoenix',
+      'Philadelphia',
+      'San Antonio',
+      'San Diego',
+      'Dallas',
+      'San Jose',
+      'Austin',
+      'Jacksonville',
+      'Fort Worth',
+      'Columbus',
+      'San Francisco',
+      'Charlotte',
+      'Indianapolis',
+      'Seattle',
+      'Denver',
+      'Washington',
+      'Boston',
+      'El Paso',
+      'Nashville',
+      'Detroit',
+      'Memphis',
+      'Portland',
+      'Oklahoma City',
+      'Las Vegas',
+      'Louisville',
+      'Baltimore',
+      'Milwaukee',
+      'Albuquerque',
+      'Tucson',
+      'Fresno',
+      'Mesa',
+      'Sacramento',
+      'Long Beach',
+      'Kansas City',
+    ]
 
     // Randomly select a city
-    const randomIndex = Math.floor(Math.random() * cities.length);
-    return cities[randomIndex]!;
-  };
+    const randomIndex = Math.floor(Math.random() * cities.length)
+    return cities[randomIndex]!
+  }
 
   /**
    * Generates a random Plaid account transaction with various properties such as
@@ -983,7 +979,7 @@ export class FinancialDataGenerator {
       return {
         accountId: FinancialDataGenerator.getRandomString(10),
         amount: FinancialDataGenerator.getRandomNumber(1, 10000),
-        isoCurrencyCode: "USD",
+        isoCurrencyCode: 'USD',
         currentDate: FinancialDataGenerator.getTrulyRandomDate(),
         transactionName: FinancialDataGenerator.getRandomString(10),
         merchantName: FinancialDataGenerator.generateMerchant(),
@@ -1018,14 +1014,14 @@ export class FinancialDataGenerator {
         paymentMetaByOrderOf: FinancialDataGenerator.getTrulyRandomString(),
         paymentMetaPayee: FinancialDataGenerator.getTrulyRandomString(),
         paymentMetaPayer: FinancialDataGenerator.getTrulyRandomString(),
-        paymentMetaPaymentMethod: "credit card",
+        paymentMetaPaymentMethod: 'credit card',
         paymentMetaPaymentProcessor:
           FinancialDataGenerator.getTrulyRandomString(),
         paymentMetaPpdId: FinancialDataGenerator.getTrulyRandomString(),
         paymentMetaReason: FinancialDataGenerator.getTrulyRandomString(),
         paymentMetaReferenceNumber:
           FinancialDataGenerator.getTrulyRandomString(),
-        additionalProperties: { someKey: "someValue" }, // Example of an Any1 object
+        additionalProperties: { someKey: 'someValue' }, // Example of an Any1 object
         categories: FinancialDataGenerator.generateRandomCategories(5),
         tags: [
           FinancialDataGenerator.getTrulyRandomString(),
@@ -1035,8 +1031,8 @@ export class FinancialDataGenerator {
         ],
         splits: FinancialDataGenerator.generateRandomTransactionSplits(5),
         notes: FinancialDataGenerator.generateRandomSmartNotes(5),
-      };
-    };
+      }
+    }
 
   /**
    * Generates an array of random PlaidAccountTransactions.
@@ -1049,8 +1045,8 @@ export class FinancialDataGenerator {
     return Array.from(
       { length: count },
       FinancialDataGenerator.generateRandomPlaidAccountTransaction,
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random AccountBalanceHistory object with random values for id,
@@ -1061,20 +1057,20 @@ export class FinancialDataGenerator {
    */
   static generateRandomAccountBalanceHistory = (): AccountBalanceHistory => {
     return {
-      id: FinancialDataGenerator.getRandomStringWithPrefix(5, "BAL-"),
+      id: FinancialDataGenerator.getRandomStringWithPrefix(5, 'BAL-'),
       time: FinancialDataGenerator.getRandomDateInRange(
         new Date(2020, 0, 1).getTime(),
         new Date(2023, 11, 31).getTime(),
       ),
-      accountId: FinancialDataGenerator.getRandomStringWithPrefix(5, "ACC-"),
-      isoCurrencyCode: ["USD", "EUR", "GBP", "JPY", "AUD"][
+      accountId: FinancialDataGenerator.getRandomStringWithPrefix(5, 'ACC-'),
+      isoCurrencyCode: ['USD', 'EUR', 'GBP', 'JPY', 'AUD'][
         FinancialDataGenerator.getRandomNumber(0, 4)
       ],
       balance: FinancialDataGenerator.getRandomBalance(),
       userId: FinancialDataGenerator.getRandomString(10),
       sign: [1, -1][FinancialDataGenerator.getRandomNumber(0, 1)],
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of random AccountBalanceHistory objects with the given
@@ -1089,22 +1085,22 @@ export class FinancialDataGenerator {
     return Array.from(
       { length: count },
       FinancialDataGenerator.generateRandomAccountBalanceHistory,
-    );
-  };
+    )
+  }
 
   static generateRandomMonthlyBalances = (count: number) => {
-    const balances: MonthlyBalance[] = [];
+    const balances: MonthlyBalance[] = []
     for (let i = 0; i < count; i++) {
       balances.push({
         month: (i % 12) + 1, // Ensure month ranges from 1 to 12
         netBalance: Math.random() * 10000, // Example net balance generation
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return balances;
-  };
+    return balances
+  }
 
   /**
    * Generates a random Student Loan Account object with various properties such
@@ -1121,46 +1117,46 @@ export class FinancialDataGenerator {
         1,
         10000,
       ).toString(),
-      disbursementDates: ["2028-01-01", "2028-02-01"],
-      expectedPayoffDate: "2028-01-01",
-      guarantor: "US Department of Education",
+      disbursementDates: ['2028-01-01', '2028-02-01'],
+      expectedPayoffDate: '2028-01-01',
+      guarantor: 'US Department of Education',
       interestRatePercentage:
         (FinancialDataGenerator.getRandomNumber(0, 1) * 1) /
         FinancialDataGenerator.getRandomNumber(1, 100),
       isOverdue: false,
       lastPaymentAmount: FinancialDataGenerator.getRandomNumber(1, 100),
-      lastPaymentDate: "2028-01-01",
-      lastStatementIssueDate: "2028-01-01",
-      loanName: "Loan Name",
-      loanEndDate: "2028-01-01",
+      lastPaymentDate: '2028-01-01',
+      lastStatementIssueDate: '2028-01-01',
+      loanName: 'Loan Name',
+      loanEndDate: '2028-01-01',
       minimumPaymentAmount: FinancialDataGenerator.getRandomNumber(1, 100),
-      nextPaymentDueDate: "2028-01-01",
-      originationDate: "2028-01-01",
+      nextPaymentDueDate: '2028-01-01',
+      originationDate: '2028-01-01',
       originationPrincipalAmount: 100000,
       outstandingInterestAmount: 100,
-      paymentReferenceNumber: "123456789",
-      sequenceNumber: "123456789",
+      paymentReferenceNumber: '123456789',
+      sequenceNumber: '123456789',
       ytdInterestPaid: 5000,
       ytdPrincipalPaid: 50000,
-      loanType: "Loan Type",
-      pslfStatusEstimatedEligibilityDate: "2028-01-01",
+      loanType: 'Loan Type',
+      pslfStatusEstimatedEligibilityDate: '2028-01-01',
       pslfStatusPaymentsMade: FinancialDataGenerator.getRandomNumber(1, 100),
       pslfStatusPaymentsRemaining: FinancialDataGenerator.getRandomNumber(
         1,
         100,
       ),
-      repaymentPlanType: "Repayment Plan Type",
-      repaymentPlanDescription: "Repayment Plan Description",
-      servicerAddressCity: "Servicer Address City",
-      servicerAddressPostalCode: "Servicer Address Postal Code",
-      servicerAddressState: "Servicer Address State",
-      servicerAddressStreet: "Servicer Address Street",
-      servicerAddressRegion: "Servicer Address Region",
-      servicerAddressCountry: "Servicer Address Country",
+      repaymentPlanType: 'Repayment Plan Type',
+      repaymentPlanDescription: 'Repayment Plan Description',
+      servicerAddressCity: 'Servicer Address City',
+      servicerAddressPostalCode: 'Servicer Address Postal Code',
+      servicerAddressState: 'Servicer Address State',
+      servicerAddressStreet: 'Servicer Address Street',
+      servicerAddressRegion: 'Servicer Address Region',
+      servicerAddressCountry: 'Servicer Address Country',
       userId: FinancialDataGenerator.getRandomNumber(1, 10000).toString(),
       name: `Account ${FinancialDataGenerator.getRandomNumber(1, 10000)}`,
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of random student loan accounts.
@@ -1172,27 +1168,27 @@ export class FinancialDataGenerator {
     return Array.from(
       { length: count },
       FinancialDataGenerator.generateRandomStudentLoanAccount,
-    );
-  };
+    )
+  }
 
   static generateRandomIncomeMetrics = (count: number, year: number) => {
-    const incomeMetrics: IncomeMetrics[] = [];
+    const incomeMetrics: IncomeMetrics[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       incomeMetrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         personalFinanceCategoryPrimary:
           FinancialDataGenerator.getRandomTransactionCategory(),
-        transactionCount: FinancialDataGenerator.getRandomNumber(1, 500) + "",
+        transactionCount: FinancialDataGenerator.getRandomNumber(1, 500) + '',
         totalIncome: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
     // sort the incomeMetrics by month
-    return incomeMetrics.sort((a, b) => a.month! - b.month!);
-  };
+    return incomeMetrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of random expense metrics for a given number of months and
@@ -1204,23 +1200,23 @@ export class FinancialDataGenerator {
    *   month.
    */
   static generateRandomExpenseMetrics = (count: number, year: number) => {
-    const expenseMetrics: ExpenseMetrics[] = [];
+    const expenseMetrics: ExpenseMetrics[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       expenseMetrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         personalFinanceCategoryPrimary:
           FinancialDataGenerator.getRandomTransactionCategory(),
-        transactionCount: FinancialDataGenerator.getRandomNumber(1, 500) + "",
+        transactionCount: FinancialDataGenerator.getRandomNumber(1, 500) + '',
         totalExpenses: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
     // sort the incomeMetrics by month
-    return expenseMetrics.sort((a, b) => a.month! - b.month!);
-  };
+    return expenseMetrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates a random SmartNote object with random values for id, userId,
@@ -1235,8 +1231,8 @@ export class FinancialDataGenerator {
       content: `<p>Example Text to demonstrate adding a note and viewing it. Ideally this is for example purposes</p>`,
       createdAt: new Date(),
       updatedAt: new Date(),
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of random SmartNotes.
@@ -1248,8 +1244,8 @@ export class FinancialDataGenerator {
     return Array.from(
       { length: count },
       FinancialDataGenerator.generateRandomSmartNote,
-    );
-  };
+    )
+  }
 
   /**
    * Generates an array of random MerchantMonthlyExpenditure objects.
@@ -1264,21 +1260,21 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): MerchantMonthlyExpenditure[] => {
-    const metrics: MerchantMonthlyExpenditure[] = [];
+    const metrics: MerchantMonthlyExpenditure[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         merchantName: FinancialDataGenerator.generateMerchant(),
         totalSpending: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
     // sort the incomeMetrics by month
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of random CategoryMonthlyExpenditure objects for a user
@@ -1294,9 +1290,9 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): CategoryMonthlyExpenditure[] => {
-    const metrics: CategoryMonthlyExpenditure[] = [];
+    const metrics: CategoryMonthlyExpenditure[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         personalFinanceCategoryPrimary:
@@ -1304,12 +1300,12 @@ export class FinancialDataGenerator {
         totalSpending: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
     // sort the incomeMetrics by month
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of random MonthlyExpenditure objects for a given year.
@@ -1323,21 +1319,21 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): MonthlyExpenditure[] => {
-    const metrics: MonthlyExpenditure[] = [];
+    const metrics: MonthlyExpenditure[] = []
 
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         totalSpending: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
     // sort the incomeMetrics by month
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of PaymentChannelMonthlyExpenditure objects for a given
@@ -1354,21 +1350,21 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): PaymentChannelMonthlyExpenditure[] => {
-    const metrics: PaymentChannelMonthlyExpenditure[] = [];
+    const metrics: PaymentChannelMonthlyExpenditure[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         paymentChannel: FinancialDataGenerator.generatePaymentChannels(),
         totalSpending: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
     // sort the incomeMetrics by month
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of IncomeMetrics objects for a given year.
@@ -1382,9 +1378,9 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): IncomeMetrics[] => {
-    const metrics: IncomeMetrics[] = [];
+    const metrics: IncomeMetrics[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         totalIncome: FinancialDataGenerator.getRandomNumber(1, 10000),
@@ -1396,12 +1392,12 @@ export class FinancialDataGenerator {
         ).toString(),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
     // sort the incomeMetrics by month
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates sample income metrics spanning multiple years.
@@ -1413,32 +1409,32 @@ export class FinancialDataGenerator {
     startYear: number,
     endYear: number,
   ): IncomeMetrics[] {
-    const sampleData: IncomeMetrics[] = [];
+    const sampleData: IncomeMetrics[] = []
     const categories = [
-      "Salary",
-      "Investments",
-      "Freelance",
-      "Rental Income",
-      "Other",
-    ];
+      'Salary',
+      'Investments',
+      'Freelance',
+      'Rental Income',
+      'Other',
+    ]
 
     for (let year = startYear; year <= endYear; year++) {
       for (let month = 1; month <= 12; month++) {
         categories.forEach((category) => {
-          const baseIncome = Math.random() * 10000 + 1000; // Random income between 1000 and 11000
-          const variance = (Math.random() - 0.5) * 2000; // Random variance between -1000 and 1000
+          const baseIncome = Math.random() * 10000 + 1000 // Random income between 1000 and 11000
+          const variance = (Math.random() - 0.5) * 2000 // Random variance between -1000 and 1000
 
           sampleData.push({
             month: year * 100 + month,
             personalFinanceCategoryPrimary: category,
             totalIncome: Math.round(baseIncome + variance),
             transactionCount: (Math.floor(Math.random() * 10) + 1).toString(), // Random transaction count between 1 and 10
-          });
-        });
+          })
+        })
       }
     }
 
-    return sampleData;
+    return sampleData
   }
 
   /**
@@ -1451,32 +1447,32 @@ export class FinancialDataGenerator {
     startYear: number,
     endYear: number,
   ): ExpenseMetrics[] {
-    const sampleData: ExpenseMetrics[] = [];
+    const sampleData: ExpenseMetrics[] = []
     const categories = [
-      "Salary",
-      "Investments",
-      "Freelance",
-      "Rental Income",
-      "Other",
-    ];
+      'Salary',
+      'Investments',
+      'Freelance',
+      'Rental Income',
+      'Other',
+    ]
 
     for (let year = startYear; year <= endYear; year++) {
       for (let month = 1; month <= 12; month++) {
         categories.forEach((category) => {
-          const baseIncome = Math.random() * 10000 + 1000; // Random income between 1000 and 11000
-          const variance = (Math.random() - 0.5) * 2000; // Random variance between -1000 and 1000
+          const baseIncome = Math.random() * 10000 + 1000 // Random income between 1000 and 11000
+          const variance = (Math.random() - 0.5) * 2000 // Random variance between -1000 and 1000
 
           sampleData.push({
             month: year * 100 + month,
             personalFinanceCategoryPrimary: category,
             totalExpenses: Math.round(baseIncome + variance),
             transactionCount: (Math.floor(Math.random() * 10) + 1).toString(), // Random transaction count between 1 and 10
-          });
-        });
+          })
+        })
       }
     }
 
-    return sampleData;
+    return sampleData
   }
 
   /**
@@ -1491,20 +1487,20 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): MonthlyIncome[] => {
-    const metrics: MonthlyIncome[] = [];
+    const metrics: MonthlyIncome[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         totalIncome: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
     // sort the incomeMetrics by month
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of CategoryMonthlyIncome objects for a given year.
@@ -1519,9 +1515,9 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): CategoryMonthlyIncome[] => {
-    const metrics: CategoryMonthlyIncome[] = [];
+    const metrics: CategoryMonthlyIncome[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         personalFinanceCategoryPrimary:
@@ -1529,12 +1525,12 @@ export class FinancialDataGenerator {
         totalIncome: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
     // sort the incomeMetrics by month
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates random financial data for user categories on a monthly basis.
@@ -1548,35 +1544,35 @@ export class FinancialDataGenerator {
   static generateUserCategoryMonthlyData = (
     count: number,
     year: number,
-    type: "income" | "expense",
+    type: 'income' | 'expense',
   ): (CategoryMonthlyIncome | CategoryMonthlyExpenditure)[] => {
-    const metrics: (CategoryMonthlyIncome | CategoryMonthlyExpenditure)[] = [];
+    const metrics: (CategoryMonthlyIncome | CategoryMonthlyExpenditure)[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       const baseData = {
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         personalFinanceCategoryPrimary:
           FinancialDataGenerator.getRandomTransactionCategory(),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      };
+      }
 
-      if (type === "income") {
+      if (type === 'income') {
         metrics.push({
           ...baseData,
           totalIncome: FinancialDataGenerator.getRandomNumber(1, 10000),
-        } as CategoryMonthlyIncome);
+        } as CategoryMonthlyIncome)
       } else {
         metrics.push({
           ...baseData,
           totalSpending: FinancialDataGenerator.getRandomNumber(1, 10000),
-        } as CategoryMonthlyExpenditure);
+        } as CategoryMonthlyExpenditure)
       }
     }
 
     // sort the metrics by month
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of PaymentChannelMetricsFinancialSubProfile objects for a
@@ -1591,9 +1587,9 @@ export class FinancialDataGenerator {
   static generateRandomPaymentChannelMetricsFinancialSubProfile = (
     count: number,
   ): PaymentChannelMetricsFinancialSubProfile[] => {
-    const metrics: PaymentChannelMetricsFinancialSubProfile[] = [];
+    const metrics: PaymentChannelMetricsFinancialSubProfile[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: month, // e.g., for year 2023 and month 4, it becomes 202304
         paymentChannel: FinancialDataGenerator.generatePaymentChannels(),
@@ -1605,11 +1601,11 @@ export class FinancialDataGenerator {
         spentLastTwoYears: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of random Merchant Metrics Financial Sub Profiles based on
@@ -1623,9 +1619,9 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): MerchantMetricsFinancialSubProfile[] => {
-    const metrics: MerchantMetricsFinancialSubProfile[] = [];
+    const metrics: MerchantMetricsFinancialSubProfile[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         merchantName: FinancialDataGenerator.generateMerchant(),
@@ -1637,11 +1633,11 @@ export class FinancialDataGenerator {
         spentLastTwoYears: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of LocationFinancialSubProfile objects with random metrics
@@ -1656,9 +1652,9 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): LocationFinancialSubProfile[] => {
-    const metrics: LocationFinancialSubProfile[] = [];
+    const metrics: LocationFinancialSubProfile[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         locationCity: FinancialDataGenerator.generateLocationCity(),
@@ -1670,11 +1666,11 @@ export class FinancialDataGenerator {
         spentLastTwoYears: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of IncomeMetricsFinancialSubProfile objects with random
@@ -1688,9 +1684,9 @@ export class FinancialDataGenerator {
   static generateRandomIncomeMetricsFinancialSubProfile = (
     count: number,
   ): IncomeMetricsFinancialSubProfile[] => {
-    const metrics: IncomeMetricsFinancialSubProfile[] = [];
+    const metrics: IncomeMetricsFinancialSubProfile[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: month, // e.g., for year 2023 and month 4, it becomes 202304
         incomeLastTwoWeeks: FinancialDataGenerator.getRandomNumber(1, 10000),
@@ -1700,11 +1696,11 @@ export class FinancialDataGenerator {
         incomeLastYear: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of random ExpenseMetricsFinancialSubProfileMetrics
@@ -1717,9 +1713,9 @@ export class FinancialDataGenerator {
   static generateRandomExpenseMetricsFinancialSubProfile = (
     count: number,
   ): ExpenseMetricsFinancialSubProfileMetrics[] => {
-    const metrics: ExpenseMetricsFinancialSubProfileMetrics[] = [];
+    const metrics: ExpenseMetricsFinancialSubProfileMetrics[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: month, // e.g., for year 2023 and month 4, it becomes 202304
         spentLastWeek: FinancialDataGenerator.getRandomNumber(1, 10000),
@@ -1733,11 +1729,11 @@ export class FinancialDataGenerator {
         ),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates an array of random CategoryMetricsFinancialSubProfile objects.
@@ -1750,9 +1746,9 @@ export class FinancialDataGenerator {
   static generateRandomCategoryMetricsFinancialSubProfile = (
     count: number,
   ): CategoryMetricsFinancialSubProfile[] => {
-    const metrics: CategoryMetricsFinancialSubProfile[] = [];
+    const metrics: CategoryMetricsFinancialSubProfile[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
       metrics.push({
         month: month, // e.g., for year 2023 and month 4, it becomes 202304
         personalFinanceCategoryPrimary:
@@ -1769,11 +1765,11 @@ export class FinancialDataGenerator {
         spentLastTwoYears: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return metrics.sort((a, b) => a.month! - b.month!);
-  };
+    return metrics.sort((a, b) => a.month! - b.month!)
+  }
 
   /**
    * Generates and returns a MelodyFinancialContext object with random values for
@@ -1820,8 +1816,8 @@ export class FinancialDataGenerator {
       studentLoanAccounts:
         FinancialDataGenerator.generateRandomStudentLoanAccounts(5),
       financialUserProfileType: FinancialUserProfileType.User,
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of DebtToIncomeRatio objects with random values for the
@@ -1836,20 +1832,20 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): DebtToIncomeRatio[] => {
-    const debtToIncomeRatios: DebtToIncomeRatio[] = [];
+    const debtToIncomeRatios: DebtToIncomeRatio[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
 
       debtToIncomeRatios.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         ratio: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return debtToIncomeRatios;
-  };
+    return debtToIncomeRatios
+  }
 
   /**
    * Generates an array of IncomeExpenseRatio objects with random values for the
@@ -1864,20 +1860,20 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): IncomeExpenseRatio[] => {
-    const incomeExpenseRatios: IncomeExpenseRatio[] = [];
+    const incomeExpenseRatios: IncomeExpenseRatio[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
 
       incomeExpenseRatios.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         ratio: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return incomeExpenseRatios;
-  };
+    return incomeExpenseRatios
+  }
 
   /**
    * Generates an array of CategoryMonthlyTransactionCount objects with random
@@ -1896,9 +1892,9 @@ export class FinancialDataGenerator {
     year: number,
   ): CategoryMonthlyTransactionCount[] => {
     const categoryMonthlyTransactionCounts: CategoryMonthlyTransactionCount[] =
-      [];
+      []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
 
       categoryMonthlyTransactionCounts.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
@@ -1907,11 +1903,11 @@ export class FinancialDataGenerator {
         transactionCount: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return categoryMonthlyTransactionCounts;
-  };
+    return categoryMonthlyTransactionCounts
+  }
 
   /**
    * Generates an array of MonthlyTransactionCount objects with random data.
@@ -1927,9 +1923,9 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): MonthlyTransactionCount[] => {
-    const monthlyTransactionCounts: MonthlyTransactionCount[] = [];
+    const monthlyTransactionCounts: MonthlyTransactionCount[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
 
       monthlyTransactionCounts.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
@@ -1939,11 +1935,11 @@ export class FinancialDataGenerator {
         ).toString(),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return monthlyTransactionCounts;
-  };
+    return monthlyTransactionCounts
+  }
 
   /**
    * Generates an array of MonthlySavings objects with random data.
@@ -1957,20 +1953,20 @@ export class FinancialDataGenerator {
     count: number,
     year: number,
   ): MonthlySavings[] => {
-    const monthlySavings: MonthlySavings[] = [];
+    const monthlySavings: MonthlySavings[] = []
     for (let i = 0; i < count; i++) {
-      const month = FinancialDataGenerator.getRandomNumber(1, 12);
+      const month = FinancialDataGenerator.getRandomNumber(1, 12)
 
       monthlySavings.push({
         month: year * 100 + month, // e.g., for year 2023 and month 4, it becomes 202304
         netSavings: FinancialDataGenerator.getRandomNumber(1, 10000),
         userId: FinancialDataGenerator.getRandomString(10),
         profileType: FinancialUserProfileType.User,
-      });
+      })
     }
 
-    return monthlySavings;
-  };
+    return monthlySavings
+  }
 
   /**
    * Generates a random investment holding object with random data.
@@ -1991,8 +1987,8 @@ export class FinancialDataGenerator {
       quantity: FinancialDataGenerator.getRandomNumber(1, 100),
       securityId: FinancialDataGenerator.getRandomString(10),
       unofficialCurrencyCode: FinancialDataGenerator.getRandomString(10),
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of random investment holdings.
@@ -2006,8 +2002,8 @@ export class FinancialDataGenerator {
   ) => InvesmentHolding[] = (count) => {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomInvestmentHolding(),
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random InvestmentSecurity object with various random properties.
@@ -2024,17 +2020,17 @@ export class FinancialDataGenerator {
       institutionSecurityId: Math.random().toString(36).substring(2),
       isCashEquivalent: Math.random() < 0.5,
       isin: Math.random().toString(36).substring(2),
-      isoCurrencyCode: ["USD", "EUR", "GBP"][Math.floor(Math.random() * 3)],
-      name: "Security " + Math.random().toString(36).substring(2),
+      isoCurrencyCode: ['USD', 'EUR', 'GBP'][Math.floor(Math.random() * 3)],
+      name: 'Security ' + Math.random().toString(36).substring(2),
       proxySecurityId: Math.random().toString(36).substring(2),
       securityId: Math.random().toString(36).substring(2),
       sedol: Math.random().toString(36).substring(2),
       tickerSymbol: Math.random().toString(36).substring(2).toUpperCase(),
-      type: ["Stock", "Bond", "Mutual Fund"][Math.floor(Math.random() * 3)],
+      type: ['Stock', 'Bond', 'Mutual Fund'][Math.floor(Math.random() * 3)],
       unofficialCurrencyCode: Math.random().toString(36).substring(2),
       updateDatetime: new Date().toISOString(),
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of random investment securities.
@@ -2048,8 +2044,8 @@ export class FinancialDataGenerator {
   ) => InvestmentSecurity[] = (count) => {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomInvestmentSecurity(),
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random investment account object with randomly generated
@@ -2071,8 +2067,8 @@ export class FinancialDataGenerator {
       subtype: FinancialDataGenerator.getRandomString(10),
       holdings: FinancialDataGenerator.generateRandomInvestmentHoldings(20),
       securities: FinancialDataGenerator.generateRandomInvestmentSecurities(20),
-    } as InvestmentAccount;
-  };
+    } as InvestmentAccount
+  }
 
   /**
    * Generates an array of random investment accounts.
@@ -2086,8 +2082,8 @@ export class FinancialDataGenerator {
   ) => InvestmentAccount[] = (count) => {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomInvestmentAccount(),
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random category object with an ID, name, description, and
@@ -2107,8 +2103,8 @@ export class FinancialDataGenerator {
       name: FinancialDataGenerator.getRandomString(5),
       description: FinancialDataGenerator.getRandomString(10),
       subcategories: FinancialDataGenerator.getRandomSubcategories(),
-    };
-  };
+    }
+  }
 
   /**
    * Generates a random budget object with an ID, name, description, start date,
@@ -2138,8 +2134,8 @@ export class FinancialDataGenerator {
         new Date(2025, 0, 1),
       ),
       category: FinancialDataGenerator.generateRandomCategory(),
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of random budget objects.
@@ -2150,8 +2146,8 @@ export class FinancialDataGenerator {
   static generateRandomBudgets: (count: number) => Budget[] = (count) => {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomBudget(),
-    );
-  };
+    )
+  }
 
   static generateRandomMilestone: () => Milestone = () => {
     return {
@@ -2165,8 +2161,8 @@ export class FinancialDataGenerator {
       targetAmount: `$${FinancialDataGenerator.getRandomNumber(100, 1000)}`,
       isCompleted: FinancialDataGenerator.getRandomBoolean(),
       budget: FinancialDataGenerator.generateRandomBudget(),
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of random Milestone objects.
@@ -2177,8 +2173,8 @@ export class FinancialDataGenerator {
   static generateRandomMilestones: (count: number) => Milestone[] = (count) => {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomMilestone(),
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random Forecast object.
@@ -2194,8 +2190,8 @@ export class FinancialDataGenerator {
         new Date(2025, 0, 1),
       ),
       varianceAmount: FinancialDataGenerator.getRandomAmount(),
-    };
-  };
+    }
+  }
 
   /**
    * Generates a random SmartGoal object with random values for all its
@@ -2210,7 +2206,7 @@ export class FinancialDataGenerator {
       name: FinancialDataGenerator.getRandomString(5),
       description: FinancialDataGenerator.getRandomString(10),
       isCompleted: FinancialDataGenerator.getRandomBoolean(),
-      goalType: "GOAL_TYPE_INVESTMENT",
+      goalType: 'GOAL_TYPE_INVESTMENT',
       duration: `${FinancialDataGenerator.getRandomNumber(1, 5)} weeks`,
       startDate: FinancialDataGenerator.getRandomDate(
         new Date(2020, 0, 1),
@@ -2227,8 +2223,8 @@ export class FinancialDataGenerator {
         Math.random() > 0.1
           ? FinancialDataGenerator.generateRandomForecast()
           : undefined,
-    };
-  };
+    }
+  }
 
   /**
    * Generates an array of random SmartGoals based on the count provided.
@@ -2239,8 +2235,8 @@ export class FinancialDataGenerator {
   static generateRandomGoals: (count: number) => SmartGoal[] = (count) => {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomGoal(),
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random Pocket object with random values for all its properties.
@@ -2251,9 +2247,9 @@ export class FinancialDataGenerator {
     return {
       id: FinancialDataGenerator.getRandomNumber(1, 10000).toString(),
       goals: FinancialDataGenerator.generateRandomGoals(5),
-      type: "POCKET_TYPE_LONG_TERM_SAVINGS",
-    };
-  };
+      type: 'POCKET_TYPE_LONG_TERM_SAVINGS',
+    }
+  }
 
   /**
    * Generates an array of random Pocket objects based on the count provided.
@@ -2264,8 +2260,8 @@ export class FinancialDataGenerator {
   static generateRandomPockets: (count: number) => Pocket[] = (count) => {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomPocket(),
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random CreditAccount object with random values for all its
@@ -2282,10 +2278,10 @@ export class FinancialDataGenerator {
       type: BankAccountType.Plaid,
       balance: FinancialDataGenerator.getRandomNumber(1000, 10000),
       currency: FinancialDataGenerator.getRandomArrayItem([
-        "USD",
-        "EUR",
-        "GBP",
-        "JPY",
+        'USD',
+        'EUR',
+        'GBP',
+        'JPY',
       ]),
       currentFunds: FinancialDataGenerator.getRandomNumber(500, 5000),
       balanceLimit: FinancialDataGenerator.getRandomNumber(0, 1000).toString(),
@@ -2315,8 +2311,8 @@ export class FinancialDataGenerator {
         new Date(2025, 0, 1),
       ),
       status: BankAccountStatus.Active,
-    } as CreditAccount;
-  };
+    } as CreditAccount
+  }
 
   /**
    * Generates an array of random CreditAccount objects with the specified count.
@@ -2330,8 +2326,8 @@ export class FinancialDataGenerator {
   ) => {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomCreditAccount(),
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random PlaidAccountRecurringTransaction object.
@@ -2368,7 +2364,7 @@ export class FinancialDataGenerator {
       time: FinancialDataGenerator.getTrulyRandomDate(),
       additionalProperties: {}, // You may adjust this if you have a specific structure for additional properties
       notes: [], // You may adjust this if you have a specific structure for notes
-    };
+    }
   }
 
   /**
@@ -2385,8 +2381,8 @@ export class FinancialDataGenerator {
   ) => PlaidAccountRecurringTransaction[] = (count) => {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomPlaidAccountRecurringTransaction(),
-    );
-  };
+    )
+  }
 
   /**
    * Generates a random Link object with random values for all properties.
@@ -2398,7 +2394,7 @@ export class FinancialDataGenerator {
       shouldBeUpdated: false,
       newAccountsAvailable: false,
       updatedAt: new Date().toISOString(),
-      linkType: "LINK_TYPE_PLAID",
+      linkType: 'LINK_TYPE_PLAID',
       institutionName: FinancialDataGenerator.getRandomString(8),
       plaidInstitutionId: FinancialDataGenerator.getRandomString(10),
       studentLoanAccounts:
@@ -2408,7 +2404,7 @@ export class FinancialDataGenerator {
       investmentAccounts:
         FinancialDataGenerator.generateRandomInvestmentAccounts(5),
       bankAccounts: FinancialDataGenerator.generateRandomBankAccounts(5),
-    };
+    }
   }
 
   /**
@@ -2420,7 +2416,7 @@ export class FinancialDataGenerator {
   static generateRandomLinks(count: number): Link[] {
     return Array.from({ length: count }, () =>
       FinancialDataGenerator.generateRandomLink(),
-    );
+    )
   }
 
   /**
@@ -2437,22 +2433,22 @@ export class FinancialDataGenerator {
   ): Date | undefined {
     // Check if the start timestamp is greater than the end timestamp
     if (startTimestamp > endTimestamp) {
-      return undefined;
+      return undefined
     }
 
     // Generate a random date within the range
     const randomTimestamp =
-      startTimestamp + Math.random() * (endTimestamp - startTimestamp);
+      startTimestamp + Math.random() * (endTimestamp - startTimestamp)
 
-    return new Date(randomTimestamp);
+    return new Date(randomTimestamp)
   }
 
   static getNumberOfGoals = (account: BankAccount | CreditAccount) => {
     // iterate over all pockets and sum the number of goals
     return account.pockets?.reduce((acc, pocket) => {
-      return acc + (pocket.goals?.length ?? 0);
-    }, 0);
-  };
+      return acc + (pocket.goals?.length ?? 0)
+    }, 0)
+  }
 
   static getNumberMilestones = (account: BankAccount | CreditAccount) => {
     // iterate over all pockets and sum the number of milestones
@@ -2463,7 +2459,7 @@ export class FinancialDataGenerator {
           (acc, goal) => acc + (goal.milestones?.length ?? 0),
           0,
         ) ?? 0)
-      );
-    }, 0);
-  };
+      )
+    }, 0)
+  }
 }

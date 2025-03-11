@@ -1,25 +1,25 @@
-import { type Meta, type StoryObj } from "@storybook/react";
+import { type Meta, type StoryObj } from '@storybook/react'
 
-import { SignUpButton } from "./signup-button";
+import { SignUpButton } from './signup-button'
 
 const meta: Meta<typeof SignUpButton> = {
   component: SignUpButton,
   argTypes: {
     className: {
-      control: "text",
-      defaultValue: "", // Default value
+      control: 'text',
+      defaultValue: '', // Default value
     },
   },
-};
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof SignUpButton>;
+type Story = StoryObj<typeof SignUpButton>
 
-export const Default: Story = {};
+export const Default: Story = {}
 
 export const ButtonWithClassName: Story = {
   args: {
-    className: "w-full rounded-2xl border-black",
+    className: 'w-full rounded-2xl border-black',
   },
-};
+}

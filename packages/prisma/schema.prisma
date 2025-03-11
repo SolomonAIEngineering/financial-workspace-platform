@@ -1,0 +1,1586 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres", "driverAdapters"]
+}
+
+generator jsonSchema {
+  provider              = "prisma-json-schema-generator"
+  includeRequiredFields = "true"
+}
+
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
+generator types {
+  provider = "prisma-type-generator"
+  output   = "./server"
+}
+
+generator zod {
+  provider         = "zod-prisma-types"
+  createInputTypes = false
+  writeBarrelFiles = true
+  useMultipleFiles = true
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator kysely {
+  provider        = "prisma-kysely"
+  previewFeatures = ["fullTextSearchPostgres"]
+  output          = "./kysely"
+}
+
+model Session {
+  id         String   @id
+  user_id    String
+  expires_at DateTime
+  user       User     @relation(references: [id], fields: [user_id], onDelete: Cascade)
+  ip_address String?  @db.VarChar(45)
+  user_agent String?
+}
+
+model OauthAccount {
+  id             String @id @default(cuid())
+  providerId     String
+  providerUserId String
+  userId         String
+  user           User   @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@unique([providerId, providerUserId])
+}
+
+model User {
+  id            String         @id
+  username      String         @unique
+  password_hash String?
+  email         String?        @unique
+  sessions      Session[]
+  oauthAccounts OauthAccount[]
+  role          UserRole       @default(USER)
+
+  // User profile information
+  name            String?
+  firstName       String?
+  lastName        String?
+  profileImageUrl String? @db.Text
+  bio             String? @db.Text
+  timezone        String?
+  language        String? @default("en")
+
+  // Professional details
+  jobTitle          String?
+  department        String?
+  employeeId        String?
+  hireDate          DateTime?
+  yearsOfExperience Int?
+  skills            String[]  @default([])
+
+  // Contact information
+  phoneNumber    String?
+  businessEmail  String?
+  businessPhone  String?
+  officeLocation String?
+
+  // Organization data
+  organizationName String?
+  organizationUnit String?
+  managerUserId    String? // Self-relation to manager
+  manager          User?   @relation("UserManagement", fields: [managerUserId], references: [id], onDelete: SetNull)
+  directReports    User[]  @relation("UserManagement")
+  teamName         String?
+
+  // Business address
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  postalCode   String?
+  country      String?
+
+  // Preferences
+  notificationPreferences Json?
+  displayPreferences      Json?
+  documentPreferences     Json?
+  notificationsEnabled    Boolean @default(true) // Whether notifications are enabled for this user
+
+  // Notification tracking
+  lastTransactionNotificationAt DateTime? // When the last transaction notification was sent
+
+  // Social profiles
+  linkedinProfile String?
+  twitterProfile  String?
+  githubProfile   String?
+
+  // System information
+  version          Int           @default(1)
+  stripeCustomerId String?       @unique
+  accountStatus    AccountStatus @default(ACTIVE)
+  lastLoginAt      DateTime?
+  uploadLimit      Int           @default(100000000)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
+
+  documents        Document[]
+  comments         Comment[]
+  files            File[]
+  discussions      Discussion[]
+  documentVersions DocumentVersion[]
+
+  // Bank accounts related models
+  bankConnections  BankConnection[]
+  bankAccounts     BankAccount[]
+  spendingInsights SpendingInsight[]
+
+  // Add this relation field
+  activities UserActivity[]
+
+  // Add the notifications relation
+  notifications Notification[]
+
+  // New models from database schema
+  team           Team?           @relation(fields: [teamId], references: [id])
+  teamId         String?
+  usersOnTeams   UsersOnTeam[]
+  sentInvites    UserInvite[]    @relation("invites")
+  trackerEntries TrackerEntry[]
+  reports        Report[]
+  trackerReports TrackerReport[]
+  apps           App[]
+  Invoice        Invoice[]
+  Discussion     Discussion[]    @relation("SolutionProvider")
+  Reaction       Reaction[]
+  Mention        Mention[]
+
+  @@index([username])
+  @@index([email])
+  @@index([organizationName])
+}
+
+model Document {
+  id         String  @id
+  templateId String?
+
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           String
+  parentDocumentId String?
+  parentDocument   Document?  @relation("ParentChild", fields: [parentDocumentId], references: [id])
+  children         Document[] @relation("ParentChild")
+
+  title       String?
+  content     String?
+  contentRich Json?
+  coverImage  String?
+  icon        String?
+  isPublished Boolean  @default(false)
+  isArchived  Boolean  @default(false)
+  pinned      Boolean  @default(false)
+  tags        String[] @default([])
+  isTemplate  Boolean  @default(false)
+  status      String   @default("draft")
+
+  textStyle TextStyle @default(DEFAULT)
+  smallText Boolean   @default(false)
+  fullWidth Boolean   @default(false)
+  lockPage  Boolean   @default(false)
+  toc       Boolean   @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  discussions      Discussion[]
+  documentVersions DocumentVersion[]
+  files            File[]
+
+  @@unique([userId, templateId])
+}
+
+model DocumentVersion {
+  id         String   @id
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String?
+  contentRich Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Discussion {
+  id String @id
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  documentContent     String
+  documentContentRich Json?
+  isResolved          Boolean   @default(false)
+  comments            Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // Discussion Resolution Feature: Add solution tracking
+  solutionCommentId String?
+  solutionComment   Comment? @relation("SolutionComment", fields: [solutionCommentId], references: [id])
+
+  // Discussion Resolution Feature: Add metadata about solution
+  solvedAt     DateTime?
+  solvedBy     String?
+  solvedByUser User?     @relation("SolutionProvider", fields: [solvedBy], references: [id])
+}
+
+// Enum for comment moderation status
+enum FollowStatus {
+  NONE
+  FOLLOWING
+  MUTED
+  BOOKMARKED
+}
+
+enum SentimentType {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+  MIXED
+}
+
+model Comment {
+  id String @id
+
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userIp    String? /// @zod.string.describe("We store the IP address of the user who made the comment for security reasons.")
+  userAgent String? /// @zod.string.describe("We store the user agent of the user who made the comment for security reasons.")
+
+  discussionId String
+  discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+
+  // Language and localization
+  language          String? // ISO language code
+  translatedContent Json? // Translations in other languages
+
+  content     String
+  contentRich Json?
+  isEdited    Boolean @default(false)
+  hasMedia    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  // Content analytics
+  readingTimeMinutes Decimal        @default(0)
+  wordCount          Int            @default(0)
+  sentiment          SentimentType? // Automated sentiment analysis
+  toxicityScore      Decimal? // Content moderation score
+
+  // Parent-child relationship for nested comments
+  parentId String?
+  parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: SetNull)
+  replies  Comment[] @relation("CommentToComment")
+
+  // Comment depth control
+  depth Int @default(0) // Root comments have depth 0, replies increment
+
+  // Reactions and engagement
+  reactions Reaction[]
+  likeCount Int        @default(0)
+  viewCount Int        @default(0)
+
+  // Status fields
+  isDeleted Boolean @default(false)
+  isPinned  Boolean @default(false)
+  isHidden  Boolean @default(false)
+
+  // Metadata relationships
+  mentions Mention[]
+  tags     Tag[]
+
+  // Analytics and history
+  editHistory     Json? // Store previous versions
+  lastReadAt      DateTime?
+  viewsByUser     Json? // Track which users viewed the comment
+  impressionCount Int       @default(0) // How many times shown in feed
+
+  // Scheduling
+  publishedAt  DateTime?
+  scheduledFor DateTime?
+  expiresAt    DateTime?
+
+  // Moderation fields
+  isReported        Boolean   @default(false)
+  reportCount       Int       @default(0)
+  moderatedBy       String?
+  moderatedAt       DateTime?
+  moderationReason  String?
+  moderationHistory Json?
+  autoModerated     Boolean   @default(false)
+
+  // User experience settings
+  notifyReplies Boolean      @default(true)
+  followStatus  FollowStatus @default(NONE) // If user is following this comment thread
+
+  // System settings
+  maxChildDepth Int? // Optional override of system default depth limit
+
+  // Add relation for solved discussions
+  solvedDiscussions Discussion[] @relation("SolutionComment")
+
+  // Add fields to track solution status
+  isSolution         Boolean   @default(false)
+  markedAsSolutionBy String?
+  markedAsSolutionAt DateTime?
+}
+
+model Reaction {
+  id String @id @default(cuid())
+
+  type  String // Like, Love, Laugh, etc.
+  emoji String? // Unicode emoji
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, commentId, type])
+}
+
+enum MentionType {
+  USER
+  TEAM
+  ALL
+  ROLE
+  CUSTOM
+}
+
+model Mention {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  // Mention status tracking
+  isRead     Boolean   @default(false)
+  readAt     DateTime?
+  isNotified Boolean   @default(false)
+  notifiedAt DateTime?
+
+  // Mention position in text
+  positionX Decimal @default(0)
+  positionY Decimal @default(0)
+  length    Int? // Length of the mention
+
+  // Mention context
+  mentionType MentionType @default(USER) // USER, TEAM, ALL, etc.
+  context     String? // Additional context about the mention
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, commentId])
+}
+
+model File {
+  id String @id
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  documentId String?
+  document   Document? @relation(fields: [documentId], references: [id])
+
+  size   Int
+  url    String @db.Text
+  appUrl String @db.Text
+  type   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// Enhanced BankConnection model
+model BankConnection {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Plaid specific fields
+  institutionId   String
+  institutionName String
+  accessToken     String @db.Text // Encrypted access token
+  itemId          String @unique // Plaid item ID
+
+  // Enhanced status tracking
+  status              BankConnectionStatus @default(ACTIVE)
+  errorCode           String? // Plaid error code if status is error
+  errorMessage        String?              @db.Text // Plaid error message if status is error
+  lastStatusChangedAt DateTime? // When the status last changed
+
+  // Enhanced metadata
+  logo           String? // Institution logo URL
+  primaryColor   String? // Brand primary color
+  oauthSupported Boolean @default(false) // Whether the institution supports OAuth
+  mfaSupported   Boolean @default(false) // Whether MFA is supported
+
+  // Sync status tracking
+  lastSyncedAt        DateTime?
+  nextSyncScheduledAt DateTime?
+  syncStatus          SyncStatus @default(IDLE)
+  balanceLastUpdated  DateTime? // Last time account balances were updated
+
+  // Notification tracking
+  lastNotifiedAt    DateTime? // Last time a notification was sent for this connection
+  notificationCount Int       @default(0) // Count of notifications sent
+
+  // Webhook handling
+  webhookUrl       String?   @db.Text
+  consentExpiresAt DateTime?
+
+  // Status fields
+  disabled Boolean @default(false) // Whether this connection is disabled
+
+  // Accounts associated with this connection
+  accounts BankAccount[]
+
+  // Audit trail
+  lastUpdated DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Add these fields
+  lastAlertedAt DateTime?
+  alertCount    Int       @default(0)
+  lastCheckedAt DateTime?
+
+  // Fields for expiring connection notifications
+  lastAccessedAt          DateTime?
+  lastExpiryNotifiedAt    DateTime?
+  expiryNotificationCount Int       @default(0)
+  expiresAt               DateTime?
+
+  @@index([userId])
+  @@index([itemId])
+  @@index([status])
+  @@index([institutionId])
+}
+
+// Enhanced BankAccount model
+model BankAccount {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Connection this account belongs to
+  bankConnectionId String
+  bankConnection   BankConnection @relation(fields: [bankConnectionId], references: [id], onDelete: Cascade)
+
+  // Plaid specific fields
+  plaidAccountId     String // Plaid's account ID
+  name               String
+  officialName       String?
+  type               AccountType
+  subtype            AccountSubtype?
+  verificationStatus VerificationStatus @default(NONE)
+
+  // Enhanced account information
+  mask          String? // Last 4 digits of account number
+  displayName   String? // Custom name for the account (user-defined)
+  accountNumber String? // Full account number (encrypted)
+  routingNumber String? // Routing number (encrypted)
+  iban          String? // International account number (encrypted)
+  swift         String? // SWIFT code
+
+  // Enhanced balance information
+  availableBalance   Float?
+  currentBalance     Float?
+  limit              Float?
+  isoCurrencyCode    String?
+  balanceLastUpdated DateTime?
+
+  // Account permissions and capabilities
+  capabilities       AccountCapabilities[]
+  permissionsGranted String[]              @default([])
+
+  // Account status and visibility
+  status     AccountStatus @default(ACTIVE)
+  isHidden   Boolean       @default(false)
+  isPrimary  Boolean       @default(false)
+  isFavorite Boolean       @default(false)
+  enabled    Boolean       @default(true) // Whether the account is enabled
+
+  // Transaction data
+  transactions Transaction[]
+
+  // Statistics and analytics
+  monthlySpending Float?
+  monthlyIncome   Float?
+  averageBalance  Float?
+
+  // Custom categorization
+  tags           String[] @default([])
+  budgetCategory String?
+
+  // Sync and error tracking
+  lastSyncedAt DateTime? // When the account was last synced
+  errorCount   Int       @default(0) // Number of consecutive sync errors
+  errorMessage String?   @db.Text // Last error message
+
+  // Metadata
+  lastUpdated DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  // Add this relation
+  recurringTransactions         RecurringTransaction[]
+  recurringTransferDestinations RecurringTransaction[] @relation("RecurringTransferDestination")
+
+  // Add bank account balance projections
+  balanceProjections Json? // Projected daily balances
+  scheduledInflows   Float? @default(0) // Sum of upcoming inflows
+  scheduledOutflows  Float? @default(0) // Sum of upcoming outflows
+
+  // Add recurring transaction statistics
+  recurringMonthlyInflow   Float?    @default(0) // Sum of recurring monthly inflows
+  recurringMonthlyOutflow  Float?    @default(0) // Sum of recurring monthly outflows
+  nextScheduledTransaction DateTime? // Date of next scheduled transaction
+  Team                     Team[]
+
+  @@unique([userId, plaidAccountId])
+  @@index([userId])
+  @@index([bankConnectionId])
+  @@index([type])
+  @@index([status])
+}
+
+// New Transaction model for enhanced financial tracking
+model Transaction {
+  id     String @id @default(cuid())
+  userId String
+
+  // Relationship to accounts
+  bankAccountId String
+  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+
+  // Transaction details
+  plaidTransactionId String?  @unique // Plaid's transaction ID (null for manual transactions)
+  amount             Float
+  isoCurrencyCode    String?
+  date               DateTime
+  name               String
+  merchantName       String?
+  description        String?
+  pending            Boolean  @default(false)
+
+  // Enhanced categorization
+  category        TransactionCategory?
+  subCategory     String?
+  categoryIconUrl String?
+  customCategory  String?
+
+  // Comprehensive merchant data
+  merchantId       String? // Unique identifier for the merchant
+  merchantLogoUrl  String?
+  merchantCategory String? // Merchant category code (MCC)
+  merchantWebsite  String?
+  merchantPhone    String?
+  merchantAddress  String?
+  merchantCity     String?
+  merchantState    String?
+  merchantZip      String?
+  merchantCountry  String?
+
+  // Location data
+  location  Json? // Stores address, city, region, postal code, country, lat/long
+  latitude  Float?
+  longitude Float?
+
+  // Payment metadata
+  paymentChannel       String?
+  paymentMethod        String?
+  paymentProcessor     String? // Stripe, PayPal, Square, etc.
+  paymentGateway       String?
+  transactionReference String? // Reference number
+  authorizationCode    String?
+  checkNumber          String?
+  wireReference        String?
+  accountNumber        String? // Last 4 digits
+  cardType             String? // Visa, Mastercard, etc.
+  cardNetwork          String?
+  cardLastFour         String?
+
+  // Enhanced metadata
+  originalDescription  String?
+  originalCategory     String?
+  originalMerchantName String?
+
+  // Financial reporting & analysis
+  fiscalYear    Int?
+  fiscalMonth   Int?
+  fiscalQuarter Int?
+  vatAmount     Float? // Value-added tax amount
+  vatRate       Float? // VAT percentage
+  taxAmount     Float? // Tax amount
+  taxRate       Float? // Tax percentage
+  taxDeductible Boolean @default(false)
+  taxExempt     Boolean @default(false)
+  taxCategory   String? // Income, capital gains, etc.
+
+  // Enhanced transaction attributes
+  status             String? // Cleared, reconciled, voided, etc.
+  transactionType    String? // Purchase, refund, payment, transfer, etc.
+  transactionMethod  String? // ACH, wire, card, cash, check, etc.
+  transactionChannel String? // In-person, online, mobile, ATM, etc.
+
+  // Budgeting & financial planning
+  budgetCategory     String?
+  budgetSubcategory  String?
+  budgetId           String? // Reference to a budget
+  plannedExpense     Boolean @default(false) // Part of planned spending
+  discretionary      Boolean @default(false) // Discretionary vs. essential
+  needsWantsCategory String? // Needs, wants, savings
+  spendingGoalId     String? // Reference to a spending goal
+
+  // Investment & business categorization
+  investmentCategory String? // For investment transactions
+  businessPurpose    String? // For business expenses
+  costCenter         String? // For business accounting
+  projectCode        String? // For project-based accounting
+  reimbursable       Boolean @default(false) // For expense reimbursement
+  clientId           String? // For client billing
+  invoiceId          String? // Related invoice
+
+  // Personal finance management
+  excludeFromBudget   Boolean   @default(false)
+  isRecurring         Boolean   @default(false)
+  recurrenceId        String?
+  recurringFrequency  String? // Weekly, monthly, etc.
+  recurringDay        Int? // Day of month/week
+  estimatedNextDate   DateTime?
+  similarTransactions Int? // Count of similar transactions
+
+  // Enrichment & insights
+  cashFlowCategory  String? // Income, expense, transfer, excluded
+  cashFlowType      String? // Fixed, variable
+  inflationCategory String? // For inflation analysis
+  confidenceScore   Float? // Confidence in categorization (0-1)
+  anomalyScore      Float? // How unusual this transaction is (0-1)
+  insightTags       String[] @default([]) // Auto-generated insights
+
+  // User interaction & management
+  isManual       Boolean @default(false) // Manually entered
+  isModified     Boolean @default(false) // Modified from original
+  isVerified     Boolean @default(false) // Verified by user
+  isFlagged      Boolean @default(false) // Flagged for review
+  isHidden       Boolean @default(false) // Hidden from views
+  isLocked       Boolean @default(false) // Prevent edits
+  isReconciled   Boolean @default(false) // Reconciled with statement
+  needsAttention Boolean @default(false) // Needs user attention
+  reviewStatus   String? // Not reviewed, reviewed, needs review
+  userNotes      String? // User notes
+
+  // Tagging and organization
+  tags         String[]     @default([])
+  notes        String?
+  attachments  Attachment[]
+  customFields Json? // For user-defined fields
+  labels       String[]     @default([]) // Custom labels
+
+  // Split transaction support
+  parentTransactionId String?
+  parentTransaction   Transaction?  @relation("SplitTransactions", fields: [parentTransactionId], references: [id])
+  splitTransactions   Transaction[] @relation("SplitTransactions")
+  isSplit             Boolean       @default(false)
+  splitTotal          Float? // Total of split transactions
+  splitCount          Int? // Number of splits
+
+  // Enhanced search & filtering
+  searchableText String?                  @db.Text // For full-text search
+  ftsIndex       Unsupported("tsvector")? // Full text search index
+  dateYear       Int? // Year component of date
+  dateMonth      Int? // Month component of date
+  dateDay        Int? // Day component of date
+  dateDayOfWeek  Int? // Day of week (0-6)
+  dateWeekOfYear Int? // Week of year
+
+  // Audit trail
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  importedAt        DateTime? // When transaction was imported
+  lastReviewedAt    DateTime? // When last reviewed
+  lastModifiedAt    DateTime? // When last modified by user
+  lastCategorizedAt DateTime? // When last categorized
+
+  categorySlug String?               @map("category_slug")
+  frequency    TransactionFrequency?
+  internal     Boolean?
+  notified     Boolean?
+  baseAmount   Float?                @map("base_amount")
+  baseCurrency String?               @map("base_currency")
+
+  // New relations
+  transactionCategory CustomTransactionCategory? @relation("customCategoryToTransaction", fields: [categorySlug], references: [id])
+  transactionTags     TransactionTag[]
+  customAttachments   TransactionAttachment[]
+  inboxItems          Inbox[]
+
+  // Add this field for recurring transaction reference
+  recurringTransactionId String?
+  recurringTransaction   RecurringTransaction? @relation("TransactionToRecurringTransaction", fields: [recurringTransactionId], references: [id])
+
+  // Indexes for fast querying
+  @@index([userId])
+  @@index([bankAccountId])
+  @@index([date])
+  @@index([category])
+  @@index([pending])
+  @@index([isRecurring])
+  @@index([merchantName])
+  @@index([isManual])
+  @@index([transactionType])
+  @@index([dateYear, dateMonth]) // For monthly reports
+  @@index([excludeFromBudget]) // For budget calculations
+  @@index([recurringTransactionId])
+  @@map("transactions")
+}
+
+// Recurring Transaction model for subscriptions, bills, and scheduled payments
+model RecurringTransaction {
+  id String @id @default(cuid())
+
+  // Make bank account required
+  bankAccountId String // Required bank account ID
+  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id])
+
+  // Basic information
+  title       String // E.g., "Netflix Subscription", "Rent Payment"
+  description String?
+  amount      Float
+  currency    String
+
+  // Add original bank account balance at time of setup
+  initialAccountBalance Float?
+
+  // Schedule information
+  frequency     TransactionFrequency // Weekly, monthly, annually, etc.
+  interval      Int                  @default(1) // Every X days/weeks/months
+  startDate     DateTime // When this recurring schedule starts
+  endDate       DateTime? // When this recurring schedule ends (null = indefinite)
+  dayOfMonth    Int? // For monthly: which day (1-31)
+  dayOfWeek     Int? // For weekly: which day (0-6, 0=Sunday)
+  weekOfMonth   Int? // For monthly: which week (1-5, -1=last)
+  monthOfYear   Int? // For yearly: which month (1-12)
+  executionDays Int[] // For custom frequencies: which days to execute
+
+  // Additional schedule options
+  skipWeekends      Boolean @default(false) // Move to previous Friday or next Monday
+  adjustForHolidays Boolean @default(false) // Adjust for banking holidays
+  allowExecution    Boolean @default(true) // Whether execution is currently allowed
+  limitExecutions   Int? // Maximum number of executions
+
+  // Template for created transactions
+  transactionTemplate Json? // Template data for created transactions
+  categorySlug        String? // Default category
+  tags                String[] @default([]) // Default tags
+  notes               String? // Default notes
+  customFields        Json? // Default custom fields
+
+  // Add bank account specific details
+  targetAccountId        String? // For transfers: destination account
+  targetAccount          BankAccount? @relation("RecurringTransferDestination", fields: [targetAccountId], references: [id])
+  affectAvailableBalance Boolean      @default(true) // Whether this affects available balance calculations
+
+  // Execution tracking
+  lastExecutedAt      DateTime? // When last transaction was created
+  nextScheduledDate   DateTime? // Next scheduled execution date
+  executionCount      Int       @default(0) // How many times this has executed
+  totalExecuted       Float     @default(0) // Total amount executed
+  lastExecutionStatus String? // Success, failed, skipped, etc.
+  lastExecutionError  String? // Error message if last execution failed
+
+  // Account health monitoring
+  minBalanceRequired     Float? // Minimum balance required to execute
+  overspendAction        String? @default("block") // block, notify, proceed
+  insufficientFundsCount Int     @default(0) // Count of insufficient funds incidents
+
+  // Smart variance handling
+  expectedAmount  Float? // Expected amount (for variable amounts)
+  allowedVariance Float? // Allowed variance percentage
+  varianceAction  String? // What to do on variance (notify, block, auto-adjust)
+
+  // Reminders and notifications
+  reminderDays      Int[]     @default([]) // Days before to send reminder
+  reminderSentAt    DateTime? // When last reminder was sent
+  notifyOnExecution Boolean   @default(true) // Notify user on execution
+  notifyOnFailure   Boolean   @default(true) // Notify user on failure
+
+  // Status fields
+  status           String  @default("active") // active, paused, completed, cancelled
+  isAutomated      Boolean @default(true) // Auto-create transactions
+  requiresApproval Boolean @default(false) // Require approval before creating transaction
+  isVariable       Boolean @default(false) // Variable amount (vs. fixed)
+
+  // Metadata
+  source          String? // Source of this recurring transaction (manual, detected, imported)
+  confidenceScore Float? // For auto-detected recurring transactions (0-1)
+  merchantId      String? // Associated merchant
+  merchantName    String? // Associated merchant name
+
+  // Categorization
+  transactionType String? // Purchase, subscription, bill, income, transfer
+  importanceLevel String? // Critical, high, medium, low
+
+  // Historical transactions
+  transactions Transaction[] @relation("TransactionToRecurringTransaction")
+
+  // Audit trail
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  lastModifiedBy String?
+
+  @@index([bankAccountId])
+  @@index([status])
+  @@index([frequency])
+  @@index([nextScheduledDate])
+  @@index([merchantName])
+  @@map("recurring_transactions")
+}
+
+// Attachment model for transaction receipts and documents
+model Attachment {
+  id            String      @id @default(cuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  name     String
+  fileUrl  String @db.Text
+  fileType String
+  fileSize Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([transactionId])
+}
+
+// Enhanced enums for more specific classifications
+enum BankConnectionStatus {
+  ACTIVE
+  ERROR
+  DISCONNECTED
+  PENDING
+  REQUIRES_ATTENTION
+  LOGIN_REQUIRED
+  REQUIRES_REAUTH
+}
+
+enum SyncStatus {
+  IDLE
+  SYNCING
+  FAILED
+  SCHEDULED
+}
+
+enum AccountType {
+  DEPOSITORY
+  CREDIT
+  LOAN
+  INVESTMENT
+  MORTGAGE
+  BROKERAGE
+  OTHER
+}
+
+enum AccountSubtype {
+  CHECKING
+  SAVINGS
+  CD
+  MONEY_MARKET
+  CREDIT_CARD
+  PAYPAL
+  AUTO_LOAN
+  STUDENT_LOAN
+  MORTGAGE
+  RETIREMENT
+  MUTUAL_FUND
+  ETF
+  STOCK
+  CASH_MANAGEMENT
+  PREPAID
+  HEALTH_SAVINGS
+  OTHER
+}
+
+enum AccountStatus {
+  ACTIVE
+  CLOSED
+  FROZEN
+  INACTIVE
+  PENDING
+  DISCONNECTED
+  SUSPENDED
+  ARCHIVED
+}
+
+enum VerificationStatus {
+  NONE
+  PENDING_AUTOMATIC_VERIFICATION
+  PENDING_MANUAL_VERIFICATION
+  MANUALLY_VERIFIED
+  AUTOMATICALLY_VERIFIED
+  VERIFICATION_FAILED
+}
+
+enum AccountCapabilities {
+  BALANCE
+  OWNERSHIP
+  PAYMENT
+  TRANSACTIONS
+  STATEMENTS
+  IDENTITY
+  AUTH
+}
+
+enum TransactionCategory {
+  INCOME
+  TRANSFER
+  LOAN_PAYMENTS
+  BANK_FEES
+  ENTERTAINMENT
+  FOOD_AND_DRINK
+  GENERAL_MERCHANDISE
+  HOME_IMPROVEMENT
+  MEDICAL
+  PERSONAL_CARE
+  GENERAL_SERVICES
+  GOVERNMENT_AND_NON_PROFIT
+  TRANSPORTATION
+  TRAVEL
+  UTILITIES
+  OTHER
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPERADMIN
+  MANAGER
+  EDITOR
+  VIEWER
+  GUEST
+}
+
+enum TextStyle {
+  DEFAULT
+  SERIF
+  MONO
+}
+
+// Optional: Add UserActivity model if you want to track notifications
+model UserActivity {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  detail    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+// Notification model for system and user notifications
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([read])
+}
+
+// SpendingInsight model for financial analytics
+model SpendingInsight {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Time period
+  startDate DateTime
+  endDate   DateTime
+  timeframe SpendingTimeframe @default(MONTH) // The timeframe this insight covers
+  year      Int // Year of the insight
+  month     Int? // Month number (1-12) if applicable
+  quarter   Int? // Quarter (1-4) if applicable
+  week      Int? // Week number if applicable
+
+  // Transaction insights
+  totalTransactions  Int
+  totalSpending      Float
+  avgTransactionSize Float
+
+  // Category breakdown
+  categoryStats Json // Structured data for category spending
+  merchantStats Json? // Structured data for merchant spending
+
+  // Trends
+  spendingTrend Float? // Percentage change from previous period
+  incomeTotal   Float?
+  incomeTrend   Float? // Percentage change from previous period
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([startDate, endDate])
+  @@index([timeframe, year, month])
+  @@index([userId, timeframe, year, month])
+}
+
+// Add a new enum for spending timeframes
+enum SpendingTimeframe {
+  DAY
+  WEEK
+  MONTH
+  QUARTER
+  YEAR
+  CUSTOM
+}
+
+// New models from database schema
+
+model Team {
+  id                     String   @id @default(cuid())
+  name                   String?
+  baseCurrency           String?  @map("base_currency")
+  email                  String?
+  logoUrl                String?  @map("logo_url")
+  inboxEmail             String?  @map("inbox_email")
+  inboxId                String?  @map("inbox_id")
+  inboxForwarding        Boolean? @map("inbox_forwarding")
+  documentClassification Boolean? @map("document_classification")
+  flags                  String[] @default([])
+  createdAt              DateTime @default(now()) @map("created_at")
+
+  // Relations
+  users                  User[]
+  usersOnTeam            UsersOnTeam[]
+  customers              Customer[]
+  tags                   Tag[]
+  invoices               Invoice[]
+  bankAccounts           BankAccount[]
+  transactionCategories  CustomTransactionCategory[]
+  transactionEnrichments TransactionEnrichment[]
+  inboxItems             Inbox[]
+  transactionAttachments TransactionAttachment[]
+  apps                   App[]
+  reports                Report[]
+  trackerProjects        TrackerProject[]
+  trackerReports         TrackerReport[]
+  UserInvite             UserInvite[]
+  CustomerTag            CustomerTag[]
+  TransactionTag         TransactionTag[]
+  InvoiceTemplate        InvoiceTemplate[]
+  TrackerEntry           TrackerEntry[]
+  TrackerProjectTag      TrackerProjectTag[]
+
+  @@map("teams")
+}
+
+model UsersOnTeam {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  teamId    String    @map("team_id")
+  role      TeamRole  @default(MEMBER)
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@unique([userId, teamId])
+  @@map("users_on_team")
+}
+
+model UserInvite {
+  id        String    @id @default(cuid())
+  email     String?
+  code      String?
+  teamId    String?   @map("team_id")
+  invitedBy String?   @map("invited_by")
+  role      TeamRole?
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  team    Team? @relation(fields: [teamId], references: [id])
+  inviter User? @relation("invites", fields: [invitedBy], references: [id])
+
+  @@map("user_invites")
+}
+
+model Customer {
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  token        String
+  phone        String?
+  contact      String?
+  website      String?
+  note         String?
+  vatNumber    String?  @map("vat_number")
+  addressLine1 String?  @map("address_line_1")
+  addressLine2 String?  @map("address_line_2")
+  city         String?
+  state        String?
+  zip          String?
+  country      String?
+  countryCode  String?  @map("country_code")
+  teamId       String   @map("team_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  team            Team             @relation(fields: [teamId], references: [id])
+  customerTags    CustomerTag[]
+  invoices        Invoice[]
+  trackerProjects TrackerProject[]
+
+  @@map("customers")
+}
+
+model Tag {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  teamId      String   @map("team_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Tag categorization
+  category String?
+  color    String? // Hex color code
+  icon     String? // Icon identifier
+
+  isPublic Boolean @default(true)
+
+  // Relations
+  team            Team                @relation(fields: [teamId], references: [id])
+  customerTags    CustomerTag[]
+  transactionTags TransactionTag[]
+  projectTags     TrackerProjectTag[]
+  Comment         Comment[]
+
+  @@map("tags")
+}
+
+model CustomerTag {
+  id         String   @id @default(cuid())
+  customerId String   @map("customer_id")
+  tagId      String   @map("tag_id")
+  teamId     String   @map("team_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  customer Customer @relation(fields: [customerId], references: [id])
+  tag      Tag      @relation(fields: [tagId], references: [id])
+  team     Team     @relation(fields: [teamId], references: [id])
+
+  @@map("customer_tags")
+}
+
+model TransactionTag {
+  id            String   @id @default(cuid())
+  transactionId String   @map("transaction_id")
+  tagId         String   @map("tag_id")
+  teamId        String   @map("team_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+  tag         Tag         @relation(fields: [tagId], references: [id])
+  team        Team        @relation(fields: [teamId], references: [id])
+
+  @@map("transaction_tags")
+}
+
+model CustomTransactionCategory {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String
+  description String?
+  color       String?
+  vat         Float?
+  system      Boolean?
+  embedding   String?
+  teamId      String    @map("team_id")
+  createdAt   DateTime? @default(now()) @map("created_at")
+
+  // Relations
+  team         Team          @relation(fields: [teamId], references: [id])
+  transactions Transaction[] @relation("customCategoryToTransaction")
+
+  @@unique([slug, teamId])
+  @@map("transaction_categories")
+}
+
+model TransactionEnrichment {
+  id           String   @id @default(cuid())
+  name         String?
+  categorySlug String?  @map("category_slug")
+  teamId       String?  @map("team_id")
+  system       Boolean?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  team Team? @relation(fields: [teamId], references: [id])
+
+  @@map("transaction_enrichments")
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  teamId          String        @map("team_id")
+  status          InvoiceStatus @default(DRAFT)
+  customerId      String?       @map("customer_id")
+  customerName    String?       @map("customer_name")
+  invoiceNumber   String?       @map("invoice_number")
+  amount          Float?
+  subtotal        Float?
+  tax             Float?
+  vat             Float?
+  discount        Float?
+  currency        String?
+  issueDate       DateTime?     @map("issue_date")
+  dueDate         DateTime?     @map("due_date")
+  paidAt          DateTime?     @map("paid_at")
+  viewedAt        DateTime?     @map("viewed_at")
+  reminderSentAt  DateTime?     @map("reminder_sent_at")
+  lineItems       Json?         @map("line_items")
+  fromDetails     Json?         @map("from_details")
+  customerDetails Json?         @map("customer_details")
+  paymentDetails  Json?         @map("payment_details")
+  note            String?
+  internalNote    String?       @map("internal_note")
+  noteDetails     Json?         @map("note_details")
+  topBlock        Json?         @map("top_block")
+  bottomBlock     Json?         @map("bottom_block")
+  template        Json?
+  url             String?
+  token           String
+  fileSize        Int?          @map("file_size")
+  filePath        String[]      @default([]) @map("file_path")
+  sentTo          String?       @map("sent_to")
+  userId          String?       @map("user_id")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime?     @map("updated_at")
+
+  // Relations
+  team     Team      @relation(fields: [teamId], references: [id])
+  customer Customer? @relation(fields: [customerId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id])
+
+  @@map("invoices")
+}
+
+model InvoiceTemplate {
+  id                String              @id @default(cuid())
+  teamId            String              @map("team_id")
+  title             String?
+  deliveryType      InvoiceDeliveryType @default(CREATE) @map("delivery_type")
+  size              InvoiceSize?
+  logoUrl           String?             @map("logo_url")
+  currency          String?
+  fromLabel         String?             @map("from_label")
+  fromDetails       Json?               @map("from_details")
+  customerLabel     String?             @map("customer_label")
+  invoiceNoLabel    String?             @map("invoice_no_label")
+  issueDateLabel    String?             @map("issue_date_label")
+  dueDateLabel      String?             @map("due_date_label")
+  descriptionLabel  String?             @map("description_label")
+  quantityLabel     String?             @map("quantity_label")
+  priceLabel        String?             @map("price_label")
+  taxLabel          String?             @map("tax_label")
+  discountLabel     String?             @map("discount_label")
+  vatLabel          String?             @map("vat_label")
+  totalLabel        String?             @map("total_label")
+  totalSummaryLabel String?             @map("total_summary_label")
+  noteLabel         String?             @map("note_label")
+  paymentLabel      String?             @map("payment_label")
+  paymentDetails    Json?               @map("payment_details")
+  taxRate           Float?              @map("tax_rate")
+  vatRate           Float?              @map("vat_rate")
+  dateFormat        String?             @map("date_format")
+  includeDecimals   Boolean?            @map("include_decimals")
+  includeDiscount   Boolean?            @map("include_discount")
+  includeTax        Boolean?            @map("include_tax")
+  includeVat        Boolean?            @map("include_vat")
+  includeUnits      Boolean?            @map("include_units")
+  includeQr         Boolean?            @map("include_qr")
+  createdAt         DateTime            @default(now()) @map("created_at")
+
+  // Relations
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@map("invoice_templates")
+}
+
+model TrackerProject {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  status      TrackerStatus @default(IN_PROGRESS)
+  customerId  String?       @map("customer_id")
+  billable    Boolean?
+  currency    String?
+  rate        Float?
+  estimate    Float?
+  teamId      String?       @map("team_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  // Relations
+  team        Team?               @relation(fields: [teamId], references: [id])
+  customer    Customer?           @relation(fields: [customerId], references: [id])
+  entries     TrackerEntry[]
+  projectTags TrackerProjectTag[]
+  reports     TrackerReport[]
+
+  @@map("tracker_projects")
+}
+
+model TrackerProjectTag {
+  id               String   @id @default(cuid())
+  trackerProjectId String   @map("tracker_project_id")
+  tagId            String   @map("tag_id")
+  teamId           String   @map("team_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // Relations
+  trackerProject TrackerProject @relation(fields: [trackerProjectId], references: [id])
+  tag            Tag            @relation(fields: [tagId], references: [id])
+  team           Team           @relation(fields: [teamId], references: [id])
+
+  @@map("tracker_project_tags")
+}
+
+model TrackerEntry {
+  id          String    @id @default(cuid())
+  projectId   String?   @map("project_id")
+  assignedId  String?   @map("assigned_id")
+  description String?
+  date        DateTime?
+  start       DateTime?
+  stop        DateTime?
+  duration    Int?
+  rate        Float?
+  currency    String?
+  billed      Boolean?
+  teamId      String?   @map("team_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  project  TrackerProject? @relation(fields: [projectId], references: [id])
+  assigned User?           @relation(fields: [assignedId], references: [id])
+  team     Team?           @relation(fields: [teamId], references: [id])
+
+  @@map("tracker_entries")
+}
+
+model TrackerReport {
+  id        String   @id @default(cuid())
+  projectId String?  @map("project_id")
+  createdBy String?  @map("created_by")
+  linkId    String?  @map("link_id")
+  shortLink String?  @map("short_link")
+  teamId    String?  @map("team_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  project TrackerProject? @relation(fields: [projectId], references: [id])
+  creator User?           @relation(fields: [createdBy], references: [id])
+  team    Team?           @relation(fields: [teamId], references: [id])
+
+  @@map("tracker_reports")
+}
+
+model Report {
+  id        String      @id @default(cuid())
+  type      ReportType?
+  from      DateTime?
+  to        DateTime?
+  currency  String?
+  linkId    String?     @map("link_id")
+  shortLink String?     @map("short_link")
+  expireAt  DateTime?   @map("expire_at")
+  createdBy String?     @map("created_by")
+  teamId    String?     @map("team_id")
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  // Relations
+  creator User? @relation(fields: [createdBy], references: [id])
+  team    Team? @relation(fields: [teamId], references: [id])
+
+  @@map("reports")
+}
+
+model ExchangeRate {
+  id        String    @id @default(cuid())
+  base      String?
+  target    String?
+  rate      Float?
+  updatedAt DateTime? @map("updated_at")
+
+  @@map("exchange_rates")
+}
+
+model Inbox {
+  id            String       @id @default(cuid())
+  type          InboxType?
+  status        InboxStatus? @default(NEW)
+  displayName   String?      @map("display_name")
+  description   String?
+  date          DateTime?
+  amount        Float?
+  currency      String?
+  baseAmount    Float?       @map("base_amount")
+  baseCurrency  String?      @map("base_currency")
+  website       String?
+  fileName      String?      @map("file_name")
+  contentType   String?      @map("content_type")
+  size          Int?
+  filePath      String[]     @default([]) @map("file_path")
+  attachmentId  String?      @map("attachment_id")
+  transactionId String?      @map("transaction_id")
+  referenceId   String?      @map("reference_id")
+  forwardedTo   String?      @map("forwarded_to")
+  meta          Json?
+  teamId        String?      @map("team_id")
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  // Relations
+  team        Team?                  @relation(fields: [teamId], references: [id])
+  transaction Transaction?           @relation(fields: [transactionId], references: [id])
+  attachment  TransactionAttachment? @relation(fields: [attachmentId], references: [id])
+
+  @@map("inbox")
+}
+
+model TransactionAttachment {
+  id            String   @id @default(cuid())
+  transactionId String?  @map("transaction_id")
+  name          String?
+  type          String?
+  size          Int?
+  path          String[] @default([]) @map("path")
+  teamId        String?  @map("team_id")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  transaction Transaction? @relation(fields: [transactionId], references: [id])
+  team        Team?        @relation(fields: [teamId], references: [id])
+  inboxItems  Inbox[]
+
+  @@map("transaction_attachments")
+}
+
+model App {
+  id        String    @id @default(cuid())
+  appId     String    @map("app_id")
+  config    Json?
+  settings  Json?
+  teamId    String?   @map("team_id")
+  createdBy String?   @map("created_by")
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  // Relations
+  team    Team? @relation(fields: [teamId], references: [id])
+  creator User? @relation(fields: [createdBy], references: [id])
+
+  @@map("apps")
+}
+
+// Add new enums
+enum TeamRole {
+  OWNER
+  MEMBER
+}
+
+enum InvoiceStatus {
+  DRAFT
+  UNPAID
+  PAID
+  OVERDUE
+  CANCELED
+}
+
+enum InvoiceDeliveryType {
+  CREATE
+  CREATE_AND_SEND
+}
+
+enum InvoiceSize {
+  A4
+  LETTER
+}
+
+enum TrackerStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum InboxType {
+  INVOICE
+  EXPENSE
+}
+
+enum InboxStatus {
+  NEW
+  PROCESSING
+  PENDING
+  ARCHIVED
+  DELETED
+}
+
+enum ReportType {
+  PROFIT
+  REVENUE
+  BURN_RATE
+  EXPENSE
+}
+
+// Add TransactionFrequency enum
+enum TransactionFrequency {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  SEMI_MONTHLY
+  ANNUALLY
+  IRREGULAR
+  UNKNOWN
+}

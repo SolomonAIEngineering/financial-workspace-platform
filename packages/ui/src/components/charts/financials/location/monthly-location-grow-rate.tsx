@@ -1,24 +1,24 @@
-import { AreaChart, AreaChartProps } from "../../base/area-chart";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@radix-ui/react-select";
-import { useEffect, useMemo, useState } from "react";
+} from '@radix-ui/react-select'
+import { useEffect, useMemo, useState } from 'react'
+import { AreaChart, AreaChartProps } from '../../base/area-chart'
 
-import { ChartDataPoint } from "../../../../types/chart";
-import { HiSquare3Stack3D } from "react-icons/hi2";
-import { LocationFinancialMetricsConverter } from "../../../../lib/converters/location-sub-profile-converter";
-import { LocationFinancialSubProfile } from "client-typescript-sdk";
-import { SpendingPeriod } from "../../../../types/merchant";
+import { LocationFinancialSubProfile } from 'client-typescript-sdk'
+import { HiSquare3Stack3D } from 'react-icons/hi2'
+import { LocationFinancialMetricsConverter } from '../../../../lib/converters/location-sub-profile-converter'
+import { ChartDataPoint } from '../../../../types/chart'
+import { SpendingPeriod } from '../../../../types/merchant'
 
 export interface MonthlyLocationGrowthRateChartProps
-  extends Omit<AreaChartProps, "data"> {
-  locations: Array<string>;
-  selectedSpendingPeriod: SpendingPeriod;
-  records: Array<LocationFinancialSubProfile>;
+  extends Omit<AreaChartProps, 'data'> {
+  locations: Array<string>
+  selectedSpendingPeriod: SpendingPeriod
+  records: Array<LocationFinancialSubProfile>
 }
 
 export const MonthlyLocationGrowthRateChart: React.FC<
@@ -33,30 +33,30 @@ export const MonthlyLocationGrowthRateChart: React.FC<
   selectedSpendingPeriod,
 }) => {
   const [selectedLocation, setSelectedLocation] = useState<string>(
-    locations[0] || "",
-  );
+    locations[0] || '',
+  )
 
   const allChartData = useMemo(() => {
     return LocationFinancialMetricsConverter.calculateMonthlyGrowthRate(
       records,
       selectedSpendingPeriod,
-    );
-  }, [records, selectedSpendingPeriod]);
+    )
+  }, [records, selectedSpendingPeriod])
 
   const chartData = useMemo(() => {
-    const data = allChartData[selectedLocation] || [];
+    const data = allChartData[selectedLocation] || []
 
     // convert to scatter data points
     return data.map(
       ({ month, growthRate }) =>
         ({ date: month, value: growthRate }) as ChartDataPoint,
-    );
-  }, [allChartData, selectedLocation]);
+    )
+  }, [allChartData, selectedLocation])
 
   useEffect(() => {
-    console.info("Component re-rendered. Selected location:", selectedLocation);
-    console.info("Chart data:", chartData);
-  }, [selectedLocation, chartData]);
+    console.info('Component re-rendered. Selected location:', selectedLocation)
+    console.info('Chart data:', chartData)
+  }, [selectedLocation, chartData])
 
   return (
     <div>
@@ -89,5 +89,5 @@ export const MonthlyLocationGrowthRateChart: React.FC<
         />
       </div>
     </div>
-  );
-};
+  )
+}

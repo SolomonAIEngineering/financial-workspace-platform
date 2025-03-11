@@ -1,33 +1,26 @@
-import { BarChartMulti, BarChartMultiProps } from "./bar-chart-multi";
-import { Meta, StoryFn } from "@storybook/react";
+import { Meta, StoryFn } from '@storybook/react'
+import { BarChartMulti, BarChartMultiProps } from './bar-chart-multi'
 
-import { BarChartMultiDataPoint } from "../../../types/chart";
-import { JSX } from "react/jsx-runtime";
-import React from "react";
-import { generatePayloadArray } from "../../../lib/random/generator";
-import { useAssistant } from "@ai-sdk/react";
-import { useVercelUseAssistantRuntime } from "@assistant-ui/react-ai-sdk";
+import { JSX } from 'react/jsx-runtime'
+import { generatePayloadArray } from '../../../lib/random/generator'
+import { BarChartMultiDataPoint } from '../../../types/chart'
 
 export default {
   component: BarChartMulti,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     currency: {
-      control: "select",
-      options: ["USD", "EUR", "GBP", "JPY"],
+      control: 'select',
+      options: ['USD', 'EUR', 'GBP', 'JPY'],
     },
     height: {
-      control: { type: "range", min: 200, max: 600, step: 10 },
+      control: { type: 'range', min: 200, max: 600, step: 10 },
     },
   },
-  decorators: [
-    (Story) => (
-      <Story />
-    ),
-  ],
-} as Meta;
+  decorators: [(Story) => <Story />],
+} as Meta
 
 const payloads = generatePayloadArray({
   count: 5,
@@ -40,10 +33,10 @@ const payloads = generatePayloadArray({
     date: value.date,
     current: value.value,
     previous: index * 100,
-  };
+  }
 
-  return dataPoint;
-});
+  return dataPoint
+})
 
 const Template: StoryFn<BarChartMultiProps> = (
   args: JSX.IntrinsicAttributes & BarChartMultiProps,
@@ -51,76 +44,76 @@ const Template: StoryFn<BarChartMultiProps> = (
   <div className="w-[900px]">
     <BarChartMulti {...args} />
   </div>
-);
+)
 
-export const Default = Template.bind({});
+export const Default = Template.bind({})
 Default.args = {
-  currency: "USD",
+  currency: 'USD',
   data: payloads,
   height: 290,
-  locale: "en-US",
+  locale: 'en-US',
   enableAssistantMode: true,
-};
+}
 
-export const Group = Template.bind({});
+export const Group = Template.bind({})
 Group.args = {
   ...Default.args,
-  currency: "EUR",
+  currency: 'EUR',
   enableAssistantMode: true,
-};
+}
 
-export const Stack = Template.bind({});
+export const Stack = Template.bind({})
 Stack.args = {
   ...Default.args,
-  currency: "EUR",
+  currency: 'EUR',
   enableAssistantMode: true,
-  chartType: "stack",
-};
+  chartType: 'stack',
+}
 
-export const LargeDataset = Template.bind({});
+export const LargeDataset = Template.bind({})
 LargeDataset.args = {
   ...Default.args,
   data: payloads,
-};
+}
 
-export const SmallHeight = Template.bind({});
+export const SmallHeight = Template.bind({})
 SmallHeight.args = {
   ...Default.args,
   height: 200,
-};
+}
 
-export const LargeHeight = Template.bind({});
+export const LargeHeight = Template.bind({})
 LargeHeight.args = {
   ...Default.args,
   height: 500,
-};
+}
 
-export const VolatileData = Template.bind({});
+export const VolatileData = Template.bind({})
 VolatileData.args = {
   ...Default.args,
   data: payloads,
-};
+}
 
-export const DataWithComparison = Template.bind({});
+export const DataWithComparison = Template.bind({})
 DataWithComparison.args = {
   ...Default.args,
   data: payloads,
-};
+}
 
-export const SingleDataPoint = Template.bind({});
+export const SingleDataPoint = Template.bind({})
 SingleDataPoint.args = {
   ...Default.args,
   data: payloads,
-};
+}
 
-export const EmptyDataset = Template.bind({});
+export const EmptyDataset = Template.bind({})
 EmptyDataset.args = {
   ...Default.args,
   data: [],
-};
+}
 
-export const Disabled = Template.bind({});
+export const Disabled = Template.bind({})
 Disabled.args = {
   ...Default.args,
   disabled: true,
-};
+}

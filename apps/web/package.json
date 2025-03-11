@@ -43,6 +43,7 @@
     "trigger:whoami": "pnpm dlx trigger.dev@3.3.12 whoami"
   },
   "dependencies": {
+    "@solomonai/prisma": "workspace:*",
     "@ai-sdk/openai": "^1.1.9",
     "@ariakit/react": "0.4.15",
     "@emoji-mart/data": "^1.2.1",

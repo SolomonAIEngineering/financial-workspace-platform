@@ -1,50 +1,50 @@
 // CalendarDatePicker.stories.tsx
 
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react'
 
-import { CalendarPicker } from "./calendar-picker";
+import { CalendarPicker } from './calendar-picker'
 
 const meta: Meta<typeof CalendarPicker> = {
   component: CalendarPicker,
   // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     initialFrom: {
-      control: "date",
+      control: 'date',
     },
     initialTo: {
-      control: "date",
+      control: 'date',
     },
     className: {
-      control: "text",
+      control: 'text',
     },
-    onClick: { action: "clicked" },
-    onDateChange: { action: "date changed" },
+    onClick: { action: 'clicked' },
+    onDateChange: { action: 'date changed' },
   },
-};
+}
 
-export default meta;
-type Story = StoryObj<typeof CalendarPicker>;
+export default meta
+type Story = StoryObj<typeof CalendarPicker>
 
 export const Default: Story = {
   args: {},
-};
+}
 
 export const WithInitialDateRange: Story = {
   args: {
     initialFrom: new Date(2024, 0, 1), // January 1, 2024
     initialTo: new Date(2024, 11, 31), // December 31, 2024
   },
-};
+}
 
 export const WithCustomClassName: Story = {
   args: {
-    className: "bg-gray-100 rounded-lg shadow-md",
+    className: 'bg-gray-100 rounded-lg shadow-md',
   },
-};
+}
 
 export const WithCallbacks: Story = {
   args: {
-    onClick: () => console.info("CalendarPicker clicked"),
-    onDateChange: (from, to) => console.info("Date range changed:", from, to),
+    onClick: () => console.info('CalendarPicker clicked'),
+    onDateChange: (from, to) => console.info('Date range changed:', from, to),
   },
-};
+}

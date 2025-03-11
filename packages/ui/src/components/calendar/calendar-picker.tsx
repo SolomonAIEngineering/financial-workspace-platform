@@ -1,8 +1,12 @@
-"use client";
+'use client'
 
-import React from "react";
-import { Button } from "../button";
-import { Card } from "../card";
+import { zodResolver } from '@hookform/resolvers/zod'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { Button } from '../button'
+import { Card } from '../card'
 import {
   Form,
   FormControl,
@@ -11,28 +15,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+} from '../form'
 
-import { CalendarDatePicker } from "./calendar-date-picker";
+import { CalendarDatePicker } from './calendar-date-picker'
 
 const FormSchema = z.object({
   calendar: z.object({
     from: z.date(),
     to: z.date(),
   }),
-});
+})
 
 export interface CalendarPickerProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  className?: string;
-  onClick?: () => void;
-  initialFrom?: Date;
-  initialTo?: Date;
-  onDateChange?: (from: Date, to: Date) => void;
+  className?: string
+  onClick?: () => void
+  initialFrom?: Date
+  initialTo?: Date
+  onDateChange?: (from: Date, to: Date) => void
 }
 
 export const CalendarPicker: React.FC<CalendarPickerProps> = ({
@@ -51,16 +51,16 @@ export const CalendarPicker: React.FC<CalendarPickerProps> = ({
         to: initialTo,
       },
     },
-  });
+  })
 
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
     toast(
       `Date range: ${data.calendar.from.toDateString()} - ${data.calendar.to.toDateString()}`,
-    );
+    )
     if (onDateChange) {
-      onDateChange(data.calendar.from, data.calendar.to);
+      onDateChange(data.calendar.from, data.calendar.to)
     }
-  };
+  }
 
   return (
     <div className={className} onClick={onClick} {...props}>
@@ -81,12 +81,12 @@ export const CalendarPicker: React.FC<CalendarPickerProps> = ({
                           from,
                           to,
                         }: {
-                          from: Date;
-                          to: Date;
+                          from: Date
+                          to: Date
                         }) => {
-                          form.setValue("calendar", { from, to });
+                          form.setValue('calendar', { from, to })
                           if (onDateChange) {
-                            onDateChange(from, to);
+                            onDateChange(from, to)
                           }
                         }}
                         variant="ghost"
@@ -107,5 +107,5 @@ export const CalendarPicker: React.FC<CalendarPickerProps> = ({
         </Form>
       </Card>
     </div>
-  );
-};
+  )
+}

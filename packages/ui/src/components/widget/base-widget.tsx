@@ -1,33 +1,33 @@
-"use client";
+'use client'
 
-import React from "react";
-import Script from "next/script";
+import Script from 'next/script'
+import React from 'react'
 
 /**
  * Represents a user in the Featurebase system.
  */
 export type FeaturebaseUser = {
   /** The user's email address */
-  email: string;
+  email: string
   /** The user's name */
-  name: string;
+  name: string
   /** A unique identifier for the user */
-  id: string;
+  id: string
   /** Optional URL to the user's profile picture */
-  profilePicture?: string;
-};
+  profilePicture?: string
+}
 
 /**
  * Props for the FeaturebaseIntegration component.
  */
 export type FeaturebaseProps = {
   /** The organization's identifier in Featurebase */
-  organization: string;
+  organization: string
   /** The user to be identified */
-  user: FeaturebaseUser;
+  user: FeaturebaseUser
   /** Callback function called when the identification process completes */
-  onIdentifyComplete?: (error?: Error) => void;
-};
+  onIdentifyComplete?: (error?: Error) => void
+}
 
 /**
  * Extends the global Window interface to include Featurebase.
@@ -35,9 +35,9 @@ export type FeaturebaseProps = {
 declare global {
   interface Window {
     Featurebase: {
-      (action: string, data: any, callback?: (err?: Error) => void): void;
-      q?: any[];
-    };
+      (action: string, data: any, callback?: (err?: Error) => void): void
+      q?: any[]
+    }
   }
 }
 
@@ -45,12 +45,12 @@ declare global {
  * Initializes the Featurebase function on the global window object.
  */
 const initFeaturebase = () => {
-  if (typeof window.Featurebase !== "function") {
+  if (typeof window.Featurebase !== 'function') {
     window.Featurebase = function () {
-      (window.Featurebase.q = window.Featurebase.q || []).push(arguments);
-    };
+      ;(window.Featurebase.q = window.Featurebase.q || []).push(arguments)
+    }
   }
-};
+}
 
 /**
  * Identifies a user with Featurebase.
@@ -65,14 +65,14 @@ const identifyUser = (
   callback?: (err?: Error) => void,
 ) => {
   window.Featurebase(
-    "identify",
+    'identify',
     {
       organization,
       ...user,
     },
     callback,
-  );
-};
+  )
+}
 
 /**
  * A component that integrates Featurebase into a React application.
@@ -102,16 +102,16 @@ export const FeaturebaseIntegration: React.FC<FeaturebaseProps> = ({
   onIdentifyComplete,
 }) => {
   React.useEffect(() => {
-    initFeaturebase();
+    initFeaturebase()
     identifyUser(organization, user, (err) => {
       if (err) {
-        console.error("Featurebase identification failed:", err);
+        console.error('Featurebase identification failed:', err)
       } else {
-        console.info("Featurebase identification successful");
+        console.info('Featurebase identification successful')
       }
-      onIdentifyComplete?.(err);
-    });
-  }, [organization, user, onIdentifyComplete]);
+      onIdentifyComplete?.(err)
+    })
+  }, [organization, user, onIdentifyComplete])
 
   return (
     <Script
@@ -119,5 +119,5 @@ export const FeaturebaseIntegration: React.FC<FeaturebaseProps> = ({
       id="featurebase-sdk"
       strategy="afterInteractive"
     />
-  );
-};
+  )
+}

@@ -1,11 +1,11 @@
-import { CardContent, CardHeader } from "../card";
+import { CardContent, CardHeader } from '../card'
 
-import { AreaChart } from "../charts/base/area-chart";
-import { BarChart } from "../charts/base/bar-chart";
-import React from "react";
+import React from 'react'
+import { AreaChart } from '../charts/base/area-chart'
+import { BarChart } from '../charts/base/bar-chart'
 
 function getRandomNumber(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1) + min);
+  return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
 /**
@@ -25,8 +25,8 @@ export const RandomStatisticCard: React.FC = () => {
         </div>
       </CardContent>
     </div>
-  );
-};
+  )
+}
 
 /**
  * Renders a content placeholder component based on the specified chart type and enables stats if specified.
@@ -37,23 +37,23 @@ export const RandomStatisticCard: React.FC = () => {
  * @return {JSX.Element} The rendered content placeholder component.
  */
 export const ContentPlaceholder: React.FC<{
-  enableStats?: boolean;
-  chartType?: "bar" | "line" | "stats";
-}> = ({ enableStats, chartType = "line" }) => {
-  let component: React.ReactNode | null = null;
+  enableStats?: boolean
+  chartType?: 'bar' | 'line' | 'stats'
+}> = ({ enableStats, chartType = 'line' }) => {
+  let component: React.ReactNode | null = null
   switch (chartType) {
-    case "bar":
-      component = <BarChart currency={""} data={[]} disabled={true} />;
-      break;
-    case "line":
-      component = <AreaChart currency={""} data={[]} disabled={true} />;
-      break;
-    case "stats":
-      component = <RandomStatisticCard />;
-      break;
+    case 'bar':
+      component = <BarChart currency={''} data={[]} disabled={true} />
+      break
+    case 'line':
+      component = <AreaChart currency={''} data={[]} disabled={true} />
+      break
+    case 'stats':
+      component = <RandomStatisticCard />
+      break
     default:
-      component = <AreaChart currency={""} data={[]} disabled={true} />;
-      break;
+      component = <AreaChart currency={''} data={[]} disabled={true} />
+      break
   }
 
   return (
@@ -83,5 +83,5 @@ export const ContentPlaceholder: React.FC<{
       </svg>
       {enableStats && component}
     </div>
-  );
-};
+  )
+}

@@ -1,13 +1,13 @@
-import type * as React from "react";
-import { cn } from "../utils";
+import type * as React from 'react'
+import { cn } from '../utils'
 
 function Skeleton({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("animate-pulse bg-primary/10", className)} {...props} />
-  );
+    <div className={cn('bg-primary/10 animate-pulse', className)} {...props} />
+  )
 }
 
-export { Skeleton };
+export { Skeleton }

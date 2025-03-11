@@ -1,16 +1,16 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import React, { ChangeEvent, useEffect, useRef, useState } from "react";
+import { motion } from 'framer-motion'
+import React from 'react'
 
-import "../../styles/assistant-button.css";
+import '../../styles/assistant-button.css'
 
-import { cn } from "../../utils/cn";
+import { cn } from '../../utils/cn'
 
 export interface AssistantButtonProps
   extends React.HTMLAttributes<HTMLButtonElement> {
-  callback?: () => void;
-  className?: string;
+  callback?: () => void
+  className?: string
 }
 
 const AssistantButton: React.FC<AssistantButtonProps> = ({
@@ -19,7 +19,7 @@ const AssistantButton: React.FC<AssistantButtonProps> = ({
 }) => {
   return (
     <div className={cn(className)}>
-      <div className={cn("absolute bottom-0 right-0 pb-10 pr-10")}>
+      <div className={cn('absolute bottom-0 right-0 pb-10 pr-10')}>
         <motion.div className="text-[70px] duration-500 ease-in-out hover:scale-105 hover:cursor-pointer">
           <div className="rainbow-container">
             <div className="green"></div>
@@ -28,7 +28,7 @@ const AssistantButton: React.FC<AssistantButtonProps> = ({
         </motion.div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AssistantButton;
+export default AssistantButton

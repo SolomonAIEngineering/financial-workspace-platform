@@ -1,1 +1,1 @@
-export * from "./account-balance-chart";
+export * from './account-balance-chart'

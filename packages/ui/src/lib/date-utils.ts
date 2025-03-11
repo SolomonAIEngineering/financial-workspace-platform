@@ -2,9 +2,9 @@
  * Options for generating a random date.
  */
 interface RandomDateOptions {
-  start?: Date;
-  end?: Date;
-  inclusiveEnd?: boolean;
+  start?: Date
+  end?: Date
+  inclusiveEnd?: boolean
 }
 
 /**
@@ -33,17 +33,17 @@ export function generateRandomDate(options: RandomDateOptions = {}): Date {
     start = new Date(1970, 0, 1),
     end = new Date(),
     inclusiveEnd = false,
-  } = options;
+  } = options
 
   if (start > end) {
-    throw new Error("Start date must be before end date");
+    throw new Error('Start date must be before end date')
   }
 
-  const startTime = start.getTime();
-  const endTime = inclusiveEnd ? end.getTime() + 86400000 : end.getTime(); // Add a day if inclusive
-  const randomTime = startTime + Math.random() * (endTime - startTime);
+  const startTime = start.getTime()
+  const endTime = inclusiveEnd ? end.getTime() + 86400000 : end.getTime() // Add a day if inclusive
+  const randomTime = startTime + Math.random() * (endTime - startTime)
 
-  return new Date(randomTime);
+  return new Date(randomTime)
 }
 
 /**
@@ -53,7 +53,7 @@ export function generateRandomDate(options: RandomDateOptions = {}): Date {
  * @returns A string representation of the date in YYYY-MM-DD format
  */
 export function formatDateToISO(date: Date): string {
-  return date.toISOString().split("T")[0] || "";
+  return date.toISOString().split('T')[0] || ''
 }
 
 // Example usage:

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { ClipboardDocumentCheckIcon } from "@heroicons/react/24/outline";
+import { ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline'
+import React, { useState } from 'react'
 
 /** Props for the CopyToClipboard component. */
 export interface CopyToClipboardProps {
   /** The text to be copied when the button is clicked. */
-  text: string;
+  text: string
 }
 
 /**
@@ -15,15 +15,15 @@ export interface CopyToClipboardProps {
  * @returns The `CopyToClipboard` component.
  */
 const CopyToClipboard: React.FC<CopyToClipboardProps> = ({ text }) => {
-  const [isCopied, setIsCopied] = useState(false);
+  const [isCopied, setIsCopied] = useState(false)
 
   const handleCopyClick = async () => {
-    await navigator.clipboard.writeText(text);
-    setIsCopied(true);
+    await navigator.clipboard.writeText(text)
+    setIsCopied(true)
 
     // Reset the copied state after a short delay
-    setTimeout(() => setIsCopied(false), 2000);
-  };
+    setTimeout(() => setIsCopied(false), 2000)
+  }
 
   return (
     <button
@@ -36,13 +36,13 @@ const CopyToClipboard: React.FC<CopyToClipboardProps> = ({ text }) => {
       <p
         className="text-xs"
         style={{
-          fontSize: "0.5rem",
+          fontSize: '0.5rem',
         }}
       >
-        {isCopied ? "Copied!" : "Copy To Clipboard"}
+        {isCopied ? 'Copied!' : 'Copy To Clipboard'}
       </p>
     </button>
-  );
-};
+  )
+}
 
-export { CopyToClipboard };
+export { CopyToClipboard }

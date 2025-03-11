@@ -1,30 +1,26 @@
-"use client";
+'use client'
 
+import { motion, useAnimation, useInView } from 'framer-motion'
 import {
   BarChart,
-  BrainCircuit,
-  ChevronRight,
   File,
   Globe,
   HeartHandshake,
   Lightbulb,
   Rss,
   Shield,
-} from "lucide-react";
-import React, { JSX, useEffect, useId, useRef, useState } from "react";
-import { motion, useAnimation, useInView } from "framer-motion";
+} from 'lucide-react'
+import React, { JSX, useEffect, useId, useRef, useState } from 'react'
 
-import Link from "next/link";
-import Marquee from "../magicui/marquee";
-import { buttonVariants } from "../button";
-import { cn } from "../../utils";
+import { cn } from '../../utils'
+import Marquee from '../magicui/marquee'
 
 /**
  * Interface for tile object
  */
 interface Tile {
-  icon: JSX.Element;
-  bg: JSX.Element;
+  icon: JSX.Element
+  bg: JSX.Element
 }
 
 /**
@@ -67,7 +63,7 @@ const tiles: Tile[] = [
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-1/2 w-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible rounded-full bg-gradient-to-r from-gray-600 via-gray-500 to-gray-400 opacity-70 blur-[20px] filter"></div>
     ),
   },
-];
+]
 
 /**
  * Shuffles an array randomly
@@ -75,20 +71,20 @@ const tiles: Tile[] = [
  * @returns {T[]} Shuffled array
  */
 function shuffleArray<T>(array: T[]): T[] {
-  const newArray = [...array];
+  const newArray = [...array]
   for (let i = newArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [newArray[i], newArray[j]] = [newArray[j]!, newArray[i]!];
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[newArray[i], newArray[j]] = [newArray[j]!, newArray[i]!]
   }
-  return newArray;
+  return newArray
 }
 
 /**
  * Card component props
  */
 interface CardProps {
-  icon: JSX.Element;
-  bg: JSX.Element;
+  icon: JSX.Element
+  bg: JSX.Element
 }
 
 /**
@@ -97,19 +93,19 @@ interface CardProps {
  * @returns {JSX.Element} Rendered Card component
  */
 const Card: React.FC<CardProps> = ({ icon, bg }) => {
-  const id = useId();
-  const controls = useAnimation();
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
+  const id = useId()
+  const controls = useAnimation()
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true })
 
   useEffect(() => {
     if (inView) {
       controls.start({
         opacity: 1,
-        transition: { delay: Math.random() * 2, ease: "easeOut", duration: 1 },
-      });
+        transition: { delay: Math.random() * 2, ease: 'easeOut', duration: 1 },
+      })
     }
-  }, [controls, inView]);
+  }, [controls, inView])
 
   return (
     <motion.div
@@ -118,39 +114,39 @@ const Card: React.FC<CardProps> = ({ icon, bg }) => {
       initial={{ opacity: 0 }}
       animate={controls}
       className={cn(
-        "relative size-20 cursor-pointer overflow-hidden rounded-2xl border p-4",
-        "bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
-        "transform-gpu dark:bg-transparent dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]",
+        'relative size-20 cursor-pointer overflow-hidden rounded-2xl border p-4',
+        'bg-white [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]',
+        'transform-gpu dark:bg-transparent dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]',
       )}
     >
       {icon}
       {bg}
     </motion.div>
-  );
-};
+  )
+}
 
 /**
  * CallToActionSection component
  * @returns {JSX.Element} Rendered CallToActionSection component
  */
 export const CallToActionSection: React.FC<{
-  title: string;
-  description: string;
-  children?: React.ReactNode;
+  title: string
+  description: string
+  children?: React.ReactNode
 }> = ({ title, description, children }) => {
-  const [randomTiles1, setRandomTiles1] = useState<Tile[]>([]);
-  const [randomTiles2, setRandomTiles2] = useState<Tile[]>([]);
-  const [randomTiles3, setRandomTiles3] = useState<Tile[]>([]);
-  const [randomTiles4, setRandomTiles4] = useState<Tile[]>([]);
+  const [randomTiles1, setRandomTiles1] = useState<Tile[]>([])
+  const [randomTiles2, setRandomTiles2] = useState<Tile[]>([])
+  const [randomTiles3, setRandomTiles3] = useState<Tile[]>([])
+  const [randomTiles4, setRandomTiles4] = useState<Tile[]>([])
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setRandomTiles1(shuffleArray([...tiles]));
-      setRandomTiles2(shuffleArray([...tiles]));
-      setRandomTiles3(shuffleArray([...tiles]));
-      setRandomTiles4(shuffleArray([...tiles]));
+    if (typeof window !== 'undefined') {
+      setRandomTiles1(shuffleArray([...tiles]))
+      setRandomTiles2(shuffleArray([...tiles]))
+      setRandomTiles3(shuffleArray([...tiles]))
+      setRandomTiles4(shuffleArray([...tiles]))
     }
-  }, []);
+  }, [])
 
   return (
     <section id="cta">
@@ -171,17 +167,17 @@ export const CallToActionSection: React.FC<{
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
 /**
  * MarqueeRows component props
  */
 interface MarqueeRowsProps {
-  tiles1: Tile[];
-  tiles2: Tile[];
-  tiles3: Tile[];
-  tiles4: Tile[];
+  tiles1: Tile[]
+  tiles2: Tile[]
+  tiles3: Tile[]
+  tiles4: Tile[]
 }
 
 /**
@@ -227,34 +223,34 @@ const MarqueeRows: React.FC<MarqueeRowsProps> = ({
       ))}
     </Marquee>
   </>
-);
+)
 
 /**
  * CTAContent component
  * @returns {JSX.Element} Rendered CTAContent component
  */
 const CTAContent: React.FC<{
-  title: string;
-  description: string;
-  children?: React.ReactNode;
+  title: string
+  description: string
+  children?: React.ReactNode
 }> = ({ title, description, children }) => (
   <div className="absolute z-10">
-    <div className="mx-auto size-24 rounded-[2rem] border bg-white/10 p-3 shadow-2xl backdrop-blur-md dark:bg-black/10 lg:size-32">
-      <Lightbulb className="mx-auto size-14 text-black dark:text-white lg:size-24" />
+    <div className="mx-auto size-24 rounded-[2rem] border bg-white/10 p-3 shadow-2xl backdrop-blur-md lg:size-32 dark:bg-black/10">
+      <Lightbulb className="mx-auto size-14 text-black lg:size-24 dark:text-white" />
     </div>
-    <div className="z-10 mt-4 flex flex-col items-center text-center text-primary">
+    <div className="text-primary z-10 mt-4 flex flex-col items-center text-center">
       <h1 className="text-3xl font-bold lg:text-4xl">{title}</h1>
       <p className="mt-2">{description}</p>
       {children}
     </div>
-    <div className="bg-backtround absolute inset-0 -z-10 rounded-full opacity-40 blur-xl dark:bg-background" />
+    <div className="bg-backtround dark:bg-background absolute inset-0 -z-10 rounded-full opacity-40 blur-xl" />
   </div>
-);
+)
 
 /**
  * BottomGradient component
  * @returns {JSX.Element} Rendered BottomGradient component
  */
 const BottomGradient: React.FC = () => (
-  <div className="to-backtround absolute inset-x-0 bottom-0 h-full bg-gradient-to-b from-transparent to-70% dark:to-background" />
-);
+  <div className="to-backtround dark:to-background absolute inset-x-0 bottom-0 h-full bg-gradient-to-b from-transparent to-70%" />
+)

@@ -1,63 +1,62 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
-import { FinancialDataGenerator } from "../../../lib/random/financial-data-generator";
-import { CreditAccountCard } from "./CreditAccountCard";
+import type { Meta, StoryObj } from '@storybook/react'
+import { FinancialDataGenerator } from '../../../lib/random/financial-data-generator'
+import { CreditAccountCard } from './CreditAccountCard'
 
 const meta: Meta<typeof CreditAccountCard> = {
   component: CreditAccountCard,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     creditAccount: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: FinancialDataGenerator.generateRandomCreditAccount(),
     },
     financialProfile: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: {},
     },
     className: {
       control: {
-        type: "text",
+        type: 'text',
       },
-      defaultValue: "",
+      defaultValue: '',
     },
     contextQuestions: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue: [
-        "How much money do I have in my account?",
-        "Am l spending too much in my account?",
-        "What fees are associated with my account?",
-        "How can l optimize my spending on this account?",
+        'How much money do I have in my account?',
+        'Am l spending too much in my account?',
+        'What fees are associated with my account?',
+        'How can l optimize my spending on this account?',
       ],
     },
     enableDemoMode: {
       control: {
-        type: "boolean",
+        type: 'boolean',
       },
       defaultValue: false,
     },
     historicalAccountBalance: {
       control: {
-        type: "object",
+        type: 'object',
       },
       defaultValue:
         FinancialDataGenerator.generateRandomAccountBalanceHistories(50),
     },
   },
   decorators: [(Story) => <Story />],
-} satisfies Meta<typeof CreditAccountCard>;
+} satisfies Meta<typeof CreditAccountCard>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const CreditAccountCardDefault: Story = {
   args: {
@@ -66,9 +65,9 @@ export const CreditAccountCardDefault: Story = {
     // label: 'CreditAccountCard',
     creditAccount: FinancialDataGenerator.generateRandomCreditAccount(),
     enableDemoMode: false,
-    institutionName: "Chase",
+    institutionName: 'Chase',
   },
-};
+}
 
 export const CreditAccountCardAccountBalanceHistory: Story = {
   args: {
@@ -77,10 +76,10 @@ export const CreditAccountCardAccountBalanceHistory: Story = {
     // label: 'CreditAccountCard',
     creditAccount: FinancialDataGenerator.generateRandomCreditAccount(),
     enableDemoMode: false,
-    institutionName: "Chase",
+    institutionName: 'Chase',
     historicalAccountBalance:
       FinancialDataGenerator.generateRandomAccountBalanceHistories(100).sort(
         (a, b) => new Date(a.time!).getTime() - new Date(b.time!).getTime(),
       ),
   },
-};
+}

@@ -1,3 +1,4 @@
+import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from 'recharts'
 import {
   Card,
   CardContent,
@@ -5,25 +6,24 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../../card";
+} from '../../../card'
 import {
   ChartConfig,
   ChartTooltip,
   ChartTooltipContent,
   ChartContainer as RechartsChartContainer,
-} from "../../../chart";
-import { Bar, BarChart as RechartsBarChart, XAxis, YAxis } from "recharts";
+} from '../../../chart'
 const chartConfig = {
   desktop: {
-    label: "Category",
-    color: "hsl(var(--chart-1))",
+    label: 'Category',
+    color: 'hsl(var(--chart-1))',
   },
-} satisfies ChartConfig;
+} satisfies ChartConfig
 
 export const CategoryChart: React.FC<{
-  data: Array<{ category: string; value: number }>;
-  title: string;
-  description: string;
+  data: Array<{ category: string; value: number }>
+  title: string
+  description: string
 }> = ({ data, title, description }) => {
   return (
     <Card className="border-none">
@@ -59,10 +59,10 @@ export const CategoryChart: React.FC<{
         </RechartsChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="leading-none text-muted-foreground">
+        <div className="text-muted-foreground leading-none">
           Showing totals for the few months
         </div>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}

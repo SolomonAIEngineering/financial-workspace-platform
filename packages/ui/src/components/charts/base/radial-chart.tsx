@@ -1,5 +1,6 @@
-"use client";
+'use client'
 
+import React, { useMemo } from 'react'
 import {
   RadarChart as BaseRadialChart,
   PolarAngleAxis,
@@ -9,27 +10,26 @@ import {
   ResponsiveContainer,
   Tooltip,
   TooltipProps,
-} from "recharts";
-import React, { useMemo } from "react";
+} from 'recharts'
 import {
   formatAmount,
   getYAxisWidth,
   roundToNearestFactor,
-} from "../../../lib/chart-utils";
+} from '../../../lib/chart-utils'
 
-import { ContentType } from "recharts/types/component/Tooltip";
-import { Payload } from "recharts/types/component/DefaultTooltipContent";
-import { RadialChartDataPoint } from "../../../types/chart";
-import { format } from "date-fns";
-import { useWrapperState } from "./chart-wrapper";
+import { format } from 'date-fns'
+import { Payload } from 'recharts/types/component/DefaultTooltipContent'
+import { ContentType } from 'recharts/types/component/Tooltip'
+import { RadialChartDataPoint } from '../../../types/chart'
+import { useWrapperState } from './chart-wrapper'
 
 /**
  * Props for the ToolTipContent component.
  */
 interface ToolTipContentProps {
-  payload?: Array<Payload<number, string>>;
-  currency: string;
-  locale?: string;
+  payload?: Array<Payload<number, string>>
+  currency: string
+  locale?: string
 }
 
 /**
@@ -40,12 +40,12 @@ const ToolTipContent: React.FC<ToolTipContentProps> = ({
   currency,
   locale,
 }) => {
-  if (!payload) return null;
+  if (!payload) return null
 
-  const { value = 0, date } = payload[0]?.payload ?? {};
+  const { value = 0, date } = payload[0]?.payload ?? {}
 
   return (
-    <div className="w-[240px] border bg-background shadow-sm">
+    <div className="bg-background w-[240px] border shadow-sm">
       <div className="px-3 py-2">
         <div className="flex items-center justify-between">
           <p className="text-[13px] font-medium">
@@ -58,24 +58,24 @@ const ToolTipContent: React.FC<ToolTipContentProps> = ({
             })}
           </p>
           <p className="text-right text-xs text-[#606060]">
-            {date && format(new Date(date), "MMM, y")}
+            {date && format(new Date(date), 'MMM, y')}
           </p>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 /**
  * Props for the RadialChart component.
  */
 export interface RadialChartProps {
-  currency: string;
-  data: Array<RadialChartDataPoint>;
-  height?: number;
-  locale?: string;
-  enableAssistantMode?: boolean;
-  disabled?: boolean;
+  currency: string
+  data: Array<RadialChartDataPoint>
+  height?: number
+  locale?: string
+  enableAssistantMode?: boolean
+  disabled?: boolean
 }
 
 /**
@@ -95,20 +95,19 @@ export const RadialChart: React.FC<RadialChartProps> = ({
   const data = useMemo(() => {
     if (disabled) {
       return [
-        { label: "Math", value: 120 },
-        { label: "Chinese", value: 98 },
-        { label: "English", value: 86 },
-        { label: "Geography", value: 99 },
-        { label: "Physics", value: 85 },
-        { label: "History", value: 65 },
-      ];
+        { label: 'Math', value: 120 },
+        { label: 'Chinese', value: 98 },
+        { label: 'English', value: 86 },
+        { label: 'Geography', value: 99 },
+        { label: 'Physics', value: 85 },
+        { label: 'History', value: 65 },
+      ]
     }
-    return propData;
-  }, [disabled, propData]);
+    return propData
+  }, [disabled, propData])
 
-  const [aiModalOpenState, setAiModalOpenState] =
-    React.useState<boolean>(false);
-  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState);
+  const [aiModalOpenState, setAiModalOpenState] = React.useState<boolean>(false)
+  const { isOpen, toggleOpen } = useWrapperState(aiModalOpenState)
 
   /**
    * Formats a number value as a currency string.
@@ -123,12 +122,12 @@ export const RadialChart: React.FC<RadialChartProps> = ({
       currency,
       amount: value,
       locale,
-    });
-  };
+    })
+  }
 
   // Calculate the maximum Y-axis value
-  const maxYAxisValue = roundToNearestFactor(data.map(({ value }) => value));
-  const yAxisLabelMaxValue: string = getLabel(maxYAxisValue);
+  const maxYAxisValue = roundToNearestFactor(data.map(({ value }) => value))
+  const yAxisLabelMaxValue: string = getLabel(maxYAxisValue)
 
   /**
    * Custom tooltip component for the RadialChart.
@@ -142,9 +141,9 @@ export const RadialChart: React.FC<RadialChartProps> = ({
       locale={locale}
       currency={currency}
     />
-  );
+  )
 
-  const disabledClassName = disabled ? "opacity-15" : "";
+  const disabledClassName = disabled ? 'opacity-15' : ''
 
   return (
     <ResponsiveContainer
@@ -185,7 +184,10 @@ export const RadialChart: React.FC<RadialChartProps> = ({
           className="stoke-[#DCDAD2] dark:stroke-[#2C2C2C]"
         />
 
-        <Tooltip content={CustomTooltip as ContentType<number, string>} cursor={false} />
+        <Tooltip
+          content={CustomTooltip as ContentType<number, string>}
+          cursor={false}
+        />
 
         <PolarAngleAxis
           dataKey="label"
@@ -194,9 +196,9 @@ export const RadialChart: React.FC<RadialChartProps> = ({
           tickLine={false}
           axisLine={false}
           tick={{
-            fill: "#606060",
+            fill: '#606060',
             fontSize: 12,
-            fontFamily: "var(--font-sans)",
+            fontFamily: 'var(--font-sans)',
           }}
         />
 
@@ -207,9 +209,9 @@ export const RadialChart: React.FC<RadialChartProps> = ({
           axisLine={false}
           width={getYAxisWidth(yAxisLabelMaxValue)}
           tick={{
-            fill: "#606060",
+            fill: '#606060',
             fontSize: 12,
-            fontFamily: "var(--font-sans)",
+            fontFamily: 'var(--font-sans)',
           }}
         />
 
@@ -223,5 +225,5 @@ export const RadialChart: React.FC<RadialChartProps> = ({
         />
       </BaseRadialChart>
     </ResponsiveContainer>
-  );
-};
+  )
+}

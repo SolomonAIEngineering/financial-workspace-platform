@@ -1,30 +1,30 @@
+import { Meta, StoryFn } from '@storybook/react'
 import {
   CashflowDashboardOverview,
   CashflowDashboardOverviewProps,
-} from "./cashflow-dashboard-overview";
-import { Meta, StoryFn } from "@storybook/react";
+} from './cashflow-dashboard-overview'
 
-import AssistantProviderWrapper from "../../../../wrapper/assistant-provider-wrapper";
-import { FinancialDataGenerator } from "../../../../lib/random/financial-data-generator";
-import { JSX } from "react";
+import { JSX } from 'react'
+import { FinancialDataGenerator } from '../../../../lib/random/financial-data-generator'
+import AssistantProviderWrapper from '../../../../wrapper/assistant-provider-wrapper'
 
 export default {
   component: CashflowDashboardOverview,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     className: {
-      control: "text",
+      control: 'text',
     },
     title: {
-      control: "text",
+      control: 'text',
     },
     disabled: {
-      control: "boolean",
+      control: 'boolean',
     },
     incomeMetrics: {
-      control: "object",
+      control: 'object',
     },
   },
   decorators: [
@@ -34,7 +34,7 @@ export default {
       </AssistantProviderWrapper>
     ),
   ],
-} as Meta;
+} as Meta
 
 const Template: StoryFn<CashflowDashboardOverviewProps> = (
   args: JSX.IntrinsicAttributes & CashflowDashboardOverviewProps,
@@ -42,21 +42,21 @@ const Template: StoryFn<CashflowDashboardOverviewProps> = (
   <div className="w-[900px]">
     <CashflowDashboardOverview {...args} />
   </div>
-);
+)
 
 const data = FinancialDataGenerator.generateIncomeMetricsAcrossManyYears(
   2022,
   2024,
-);
+)
 
 const expenseData =
-  FinancialDataGenerator.generateExpenseMetricsAcrossManyYears(2022, 2024);
+  FinancialDataGenerator.generateExpenseMetricsAcrossManyYears(2022, 2024)
 
-export const Default = Template.bind({});
+export const Default = Template.bind({})
 Default.args = {
-  className: "w-[900px]",
-  title: "Cashflow Dashboard Overview",
+  className: 'w-[900px]',
+  title: 'Cashflow Dashboard Overview',
   disabled: false,
   incomeMetrics: data,
   expenseMetrics: expenseData,
-};
+}

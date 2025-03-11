@@ -1,18 +1,18 @@
-import { Meta, StoryObj } from "@storybook/react";
+import { Meta, StoryObj } from '@storybook/react'
 
-import { ViewNotificationDropdown } from "./notification-dropdown";
+import { ViewNotificationDropdown } from './notification-dropdown'
 
 const meta: Meta<typeof ViewNotificationDropdown> = {
   component: ViewNotificationDropdown,
-} as Meta;
+} as Meta
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof ViewNotificationDropdown>;
+type Story = StoryObj<typeof ViewNotificationDropdown>
 
 export const Default: Story = {
   args: {
-    title: "Notifications",
+    title: 'Notifications',
     children: (
       <div className="py-1">
         <div className="flex items-center px-4 py-2 text-sm">
@@ -21,4 +21,4 @@ export const Default: Story = {
       </div>
     ),
   },
-};
+}

@@ -1,50 +1,50 @@
 // AllInOneWidget.tsx
-"use client";
+'use client'
 
-import React, { useEffect } from "react";
-import Script from "next/script";
+import Script from 'next/script'
+import React, { useEffect } from 'react'
 
 export interface AllInOneWidgetProps {
-  organization: string;
-  placement?: "left" | "right";
-  fullScreen?: boolean;
+  organization: string
+  placement?: 'left' | 'right'
+  fullScreen?: boolean
   initialPage?:
-    | "MainView"
-    | "RoadmapView"
-    | "CreatePost"
-    | "PostsView"
-    | "ChangelogView";
-  metadata?: Record<string, any> | null;
+    | 'MainView'
+    | 'RoadmapView'
+    | 'CreatePost'
+    | 'PostsView'
+    | 'ChangelogView'
+  metadata?: Record<string, any> | null
 }
 
 const AllInOneWidget: React.FC<AllInOneWidgetProps> = ({
   organization,
-  placement = "right",
+  placement = 'right',
   fullScreen = false,
-  initialPage = "MainView",
+  initialPage = 'MainView',
   metadata = null,
 }) => {
   useEffect(() => {
-    const win = window as any;
+    const win = window as any
 
-    if (typeof win.Featurebase !== "function") {
+    if (typeof win.Featurebase !== 'function') {
       win.Featurebase = function () {
-        (win.Featurebase.q = win.Featurebase.q || []).push(arguments);
-      };
+        ;(win.Featurebase.q = win.Featurebase.q || []).push(arguments)
+      }
     }
 
-    win.Featurebase("initialize_portal_widget", {
+    win.Featurebase('initialize_portal_widget', {
       organization,
       placement,
       fullScreen,
       initialPage,
       metadata,
-    });
-  }, [organization, placement, fullScreen, initialPage, metadata]);
+    })
+  }, [organization, placement, fullScreen, initialPage, metadata])
 
   return (
     <Script src="https://do.featurebase.app/js/sdk.js" id="featurebase-sdk" />
-  );
-};
+  )
+}
 
-export default AllInOneWidget;
+export default AllInOneWidget

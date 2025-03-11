@@ -1,10 +1,10 @@
-import { PresentationChartBarIcon } from "@heroicons/react/24/outline";
-import * as React from "react";
+import { PresentationChartBarIcon } from '@heroicons/react/24/outline'
+import * as React from 'react'
 
-import { cn } from "../../utils/cn";
-import { Button } from "../button";
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
 
-import { ButtonProps } from "./ask-solomon-button";
+import { ButtonProps } from './ask-solomon-button'
 
 /*
  * FinancialPortalButtonProps defines the props for the FinancialPortalButton component.
@@ -13,7 +13,7 @@ import { ButtonProps } from "./ask-solomon-button";
  * @extends {ButtonProps}
  * */
 interface FinancialPortalButtonProps extends ButtonProps {
-  callback: () => void;
+  callback: () => void
 }
 
 /**
@@ -30,7 +30,7 @@ const FinancialPortalButton: React.FC<FinancialPortalButtonProps> = ({
   return (
     <Button
       className={cn(
-        "border-1 ml-3 items-center justify-center font-bold text-foreground",
+        'border-1 text-foreground ml-3 items-center justify-center font-bold',
         className,
       )}
       onClick={callback}
@@ -41,7 +41,7 @@ const FinancialPortalButton: React.FC<FinancialPortalButtonProps> = ({
         Financial Portal
       </span>
     </Button>
-  );
-};
+  )
+}
 
-export { FinancialPortalButton };
+export { FinancialPortalButton }

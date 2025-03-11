@@ -1,18 +1,18 @@
-import { HandRaisedIcon } from "@heroicons/react/24/outline";
+import { HandRaisedIcon } from '@heroicons/react/24/outline'
 
-import React from "react";
-import { cn } from "../../utils/cn";
-import { Button } from "../button";
+import React from 'react'
+import { cn } from '../../utils/cn'
+import { Button } from '../button'
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 export interface AskSolomonAiButtonProps extends ButtonProps {
-  asChild?: boolean;
-  active: boolean;
-  className?: string;
-  href: string;
-  label?: string;
+  asChild?: boolean
+  active: boolean
+  className?: string
+  href: string
+  label?: string
 }
 
 /**
@@ -34,18 +34,18 @@ const AskSolomonAiButton: React.FC<AskSolomonAiButtonProps> = ({
   return (
     <a href={href}>
       <Button
-        variant={"outline"}
+        variant={'outline'}
         className={cn(
-          "border-1 ml-3 items-center justify-center rounded-2xl font-bold text-foreground",
+          'border-1 text-foreground ml-3 items-center justify-center rounded-2xl font-bold',
           className,
         )}
         {...props}
       >
         <HandRaisedIcon className="mr-2 h-5 w-5" />
-        <p>{label ?? "Ask Solomon AI"}</p>
+        <p>{label ?? 'Ask Solomon AI'}</p>
       </Button>
     </a>
-  );
-};
+  )
+}
 
-export { AskSolomonAiButton };
+export { AskSolomonAiButton }

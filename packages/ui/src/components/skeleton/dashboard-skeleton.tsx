@@ -1,8 +1,8 @@
-"use client";
+'use client'
 
-import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
-import { Button } from "../button";
-import { Card, CardContent, CardHeader } from "../card";
+import { Avatar, AvatarFallback, AvatarImage } from '../avatar'
+import { Button } from '../button'
+import { Card, CardContent, CardHeader } from '../card'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,8 +10,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../dropdown-menu";
-import { Skeleton } from "../skeleton";
+} from '../dropdown-menu'
+import { Skeleton } from '../skeleton'
 
 /**
  * v0 by Vercel.s
@@ -94,8 +94,8 @@ export const DashboardSkeleton: React.FC = () => {
         </main>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const DashboardSkeletonBody: React.FC = () => {
   return (
@@ -137,5 +137,5 @@ const DashboardSkeletonBody: React.FC = () => {
         </CardContent>
       </Card>
     </div>
-  );
-};
+  )
+}

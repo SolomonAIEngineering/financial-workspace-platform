@@ -1,15 +1,15 @@
-import React from "react";
-import { JSX } from "react/jsx-runtime";
-import { FinancialDataGenerator } from "../../../../lib/random/financial-data-generator";
-import { useAssistant } from "@ai-sdk/react";
-import { AssistantRuntimeProvider } from "@assistant-ui/react";
-import { useVercelUseAssistantRuntime } from "@assistant-ui/react-ai-sdk";
-import { Meta, StoryFn } from "@storybook/react";
+import { useAssistant } from '@ai-sdk/react'
+import { AssistantRuntimeProvider } from '@assistant-ui/react'
+import { useVercelUseAssistantRuntime } from '@assistant-ui/react-ai-sdk'
+import { Meta, StoryFn } from '@storybook/react'
+import React from 'react'
+import { JSX } from 'react/jsx-runtime'
+import { FinancialDataGenerator } from '../../../../lib/random/financial-data-generator'
 
 import {
   MerchantFinancialChart,
   MerchantFinancialChartProps,
-} from "./merchant-chart";
+} from './merchant-chart'
 
 /**
  * A wrapper component that provides the necessary context for the AssistantModalWrapper.
@@ -20,30 +20,30 @@ const AssistantProviderWrapper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const assistant = useAssistant({
-    api: "/api/assistant", // Adjust this if your API endpoint is different
-  });
+    api: '/api/assistant', // Adjust this if your API endpoint is different
+  })
 
-  const runtime = useVercelUseAssistantRuntime(assistant);
+  const runtime = useVercelUseAssistantRuntime(assistant)
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       {children}
     </AssistantRuntimeProvider>
-  );
-};
+  )
+}
 
 export default {
   component: MerchantFinancialChart,
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   argTypes: {
     currency: {
-      control: "select",
-      options: ["USD", "EUR", "GBP", "JPY"],
+      control: 'select',
+      options: ['USD', 'EUR', 'GBP', 'JPY'],
     },
     height: {
-      control: { type: "range", min: 200, max: 600, step: 10 },
+      control: { type: 'range', min: 200, max: 600, step: 10 },
     },
   },
   decorators: [
@@ -53,13 +53,13 @@ export default {
       </AssistantProviderWrapper>
     ),
   ],
-} as Meta;
+} as Meta
 
 const data =
   FinancialDataGenerator.generateRandomMerchantMetricsFinancialSubProfile(
     150,
     2023,
-  );
+  )
 
 const Template: StoryFn<MerchantFinancialChartProps> = (
   args: JSX.IntrinsicAttributes & MerchantFinancialChartProps,
@@ -67,20 +67,20 @@ const Template: StoryFn<MerchantFinancialChartProps> = (
   <div className="w-[900px]">
     <MerchantFinancialChart {...args} />
   </div>
-);
+)
 
-export const Default = Template.bind({});
+export const Default = Template.bind({})
 Default.args = {
-  currency: "USD",
+  currency: 'USD',
   data: data,
   height: 290,
-  locale: "en-US",
+  locale: 'en-US',
   enableAssistantMode: true,
-};
+}
 
-export const MerchantChart = Template.bind({});
+export const MerchantChart = Template.bind({})
 MerchantChart.args = {
   ...Default.args,
   data: data,
-  currency: "USD",
-};
+  currency: 'USD',
+}

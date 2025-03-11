@@ -1,14 +1,14 @@
-import React from "react";
-import { useCalendar } from "../../contexts/planner-context";
-import { cn } from "../../utils/cn";
+import React from 'react'
+import { useCalendar } from '../../contexts/planner-context'
+import { cn } from '../../utils/cn'
 
-import { TableHead, TableHeader, TableRow } from "../table";
+import { TableHead, TableHeader, TableRow } from '../table'
 
 export const Timeline: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   className,
   ...props
 }) => {
-  const { timeLabels } = useCalendar();
+  const { timeLabels } = useCalendar()
 
   return (
     <TableHeader>
@@ -18,7 +18,7 @@ export const Timeline: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
           <TableHead
             key={index}
             className={cn(
-              "sticky top-0 z-10 min-w-56 border-x bg-background text-center lg:min-w-72",
+              'bg-background sticky top-0 z-10 min-w-56 border-x text-center lg:min-w-72',
             )}
           >
             {label}
@@ -26,5 +26,5 @@ export const Timeline: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
         ))}
       </TableRow>
     </TableHeader>
-  );
-};
+  )
+}
