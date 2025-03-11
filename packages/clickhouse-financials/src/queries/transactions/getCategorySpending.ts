@@ -1,6 +1,6 @@
-import { z } from 'zod'
 import type { Querier } from '../../client'
 import { transactionParams } from './params'
+import { z } from 'zod'
 
 /**
  * Get category spending breakdown
@@ -9,13 +9,13 @@ import { transactionParams } from './params'
  */
 export function getCategorySpending(ch: Querier) {
   return async (args: z.input<typeof transactionParams>) => {
+    // Get the breakdown by category without calculating percentage in SQL
     const query = ch.query({
       query: `
       SELECT
         category,
         sum(transaction_count) AS transaction_count,
-        sum(total_expenses) AS total_expenses,
-        sum(total_expenses) / sum(sum(total_expenses)) OVER () * 100 AS percentage
+        total_expenses
       FROM financials.transactions_by_month_mv_v1
       WHERE user_id = {userId: String}
         ${args.teamId ? 'AND team_id = {teamId: String}' : ''}
@@ -23,7 +23,7 @@ export function getCategorySpending(ch: Querier) {
         AND month_start >= toStartOfMonth(fromUnixTimestamp64Milli({start: Int64}))
         AND month_start <= toStartOfMonth(fromUnixTimestamp64Milli({end: Int64}))
         AND total_expenses > 0
-      GROUP BY category
+      GROUP BY category, total_expenses
       ORDER BY total_expenses DESC
       LIMIT {limit: Int}
       `,
@@ -32,10 +32,27 @@ export function getCategorySpending(ch: Querier) {
         category: z.string(),
         transaction_count: z.number(),
         total_expenses: z.number(),
-        percentage: z.number(),
       }),
     })
 
-    return query(args)
+    const result = await query(args)
+
+    if (result.err) {
+      return result
+    }
+
+    // Calculate total expenses across all categories
+    const totalExpenses = result.val!.reduce((sum, item) => sum + item.total_expenses, 0)
+
+    // Calculate percentage for each category
+    const resultsWithPercentage = result.val!.map(item => ({
+      ...item,
+      percentage: totalExpenses > 0 ? (item.total_expenses / totalExpenses) * 100 : 0
+    }))
+
+    return {
+      val: resultsWithPercentage,
+      err: null
+    }
   }
 }
