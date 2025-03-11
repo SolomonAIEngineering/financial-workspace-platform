@@ -1,28 +1,26 @@
 'use client';
 
 import {
+  ArrowPathIcon,
   ChartPieIcon,
   Squares2X2Icon as GridIcon,
+  LightBulbIcon,
   ListBulletIcon,
   MagnifyingGlassIcon,
   PresentationChartBarIcon,
-  ArrowPathIcon,
-  LightBulbIcon,
 } from '@heroicons/react/24/outline';
-import React, { useState } from 'react';
 
 import { DocumentCard } from '@/components/document-sending/document-card';
 import { DocumentSendingActions } from '@/components/document-sending/action-buttons';
 import { EmptyState } from '@/components/document-sending/empty-state';
 import {
-  FeatureDevelopment,
-  type FeatureCard,
+  FeatureDevelopment
 } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
-import { cn } from '@udecode/cn';
-import { isFeatureEnabled } from '@/lib/feature-flags';
-import { motion } from 'framer-motion';
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
+import { cn } from '@udecode/cn';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 // Demo data
 const demoDocuments = [
@@ -280,7 +278,7 @@ export default function FinancialAnalyticsPage() {
                   'h-full transition-shadow duration-200 hover:shadow-md',
                   viewMode === 'list' ? 'max-w-full' : ''
                 )}
-                onClick={() => {}}
+                onClick={() => { }}
                 title={doc.title}
                 recipients={doc.recipients}
                 status={doc.status}

@@ -4,6 +4,17 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import React, { useEffect } from 'react';
 
+/**
+ * Props for the WaitlistSuccessToast component.
+ * 
+ * @interface WaitlistSuccessToastProps
+ * @property {boolean} isVisible - Controls whether the toast is displayed.
+ * @property {() => void} onClose - Callback function to close the toast.
+ * @property {string} featureName - The name of the feature for which the user joined the waitlist.
+ *   This will be displayed in the toast message.
+ * @property {number} [autoCloseDelay=5000] - Time in milliseconds after which the toast 
+ *   will automatically close. Default is 5000ms (5 seconds).
+ */
 interface WaitlistSuccessToastProps {
   isVisible: boolean;
   onClose: () => void;
@@ -11,12 +22,70 @@ interface WaitlistSuccessToastProps {
   autoCloseDelay?: number;
 }
 
+/**
+ * WaitlistSuccessToast Component
+ * 
+ * A toast notification component that displays a success message when a user
+ * successfully joins a waitlist. The toast shows in the bottom-right corner
+ * with an animation and automatically disappears after a configurable delay.
+ * 
+ * This component uses Framer Motion for smooth enter/exit animations and
+ * includes a check icon for visual confirmation.
+ * 
+ * @component
+ * @example
+ * // Basic usage
+ * const [isVisible, setIsVisible] = useState(false);
+ * 
+ * <WaitlistSuccessToast
+ *   isVisible={isVisible}
+ *   onClose={() => setIsVisible(false)}
+ *   featureName="Premium Plan"
+ * />
+ * 
+ * @example
+ * // With custom auto-close delay (10 seconds)
+ * <WaitlistSuccessToast
+ *   isVisible={showToast}
+ *   onClose={handleCloseToast}
+ *   featureName="Analytics Dashboard"
+ *   autoCloseDelay={10000}
+ * />
+ * 
+ * @example
+ * // In a component that manages waitlist state
+ * function FeatureWaitlist() {
+ *   const [isToastVisible, setIsToastVisible] = useState(false);
+ *   
+ *   const handleJoinWaitlist = async () => {
+ *     // API call to join waitlist
+ *     await joinWaitlistAPI();
+ *     setIsToastVisible(true);
+ *   };
+ *   
+ *   return (
+ *     <>
+ *       <button onClick={handleJoinWaitlist}>Join Waitlist</button>
+ *       
+ *       <WaitlistSuccessToast
+ *         isVisible={isToastVisible}
+ *         onClose={() => setIsToastVisible(false)}
+ *         featureName="Developer API"
+ *       />
+ *     </>
+ *   );
+ * }
+ */
 export function WaitlistSuccessToast({
   isVisible,
   onClose,
   featureName,
   autoCloseDelay = 5000,
 }: WaitlistSuccessToastProps) {
+  /**
+   * Effect to automatically close the toast after the specified delay.
+   * The timer is cleared if the toast becomes invisible or when the component unmounts.
+   */
   useEffect(() => {
     if (isVisible) {
       const timer = setTimeout(() => {

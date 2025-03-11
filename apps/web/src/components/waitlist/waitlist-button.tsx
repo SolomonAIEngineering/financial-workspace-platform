@@ -8,6 +8,16 @@ import { WaitlistSuccessToast } from './waitlist-success-toast';
 import { motion } from 'framer-motion';
 import { useWaitlist } from '@/hooks/use-waitlist';
 
+/**
+ * Props for the WaitlistButton component.
+ * 
+ * @interface WaitlistButtonProps
+ * @property {string} featureName - The name of the feature for which users are joining the waitlist.
+ *   This is displayed in the modal and success toast.
+ * @property {string} [className] - Optional CSS class name for custom styling of the button.
+ * @property {'default' | 'secondary' | 'outline' | 'ghost'} [variant='default'] - The button's visual style variant.
+ * @property {'default' | 'sm' | 'lg' | 'icon'} [size='default'] - The size of the button.
+ */
 interface WaitlistButtonProps {
   featureName: string;
   className?: string;
@@ -15,6 +25,40 @@ interface WaitlistButtonProps {
   size?: 'default' | 'sm' | 'lg' | 'icon';
 }
 
+/**
+ * WaitlistButton Component
+ * 
+ * A button component that opens a waitlist modal when clicked. It handles the entire
+ * waitlist signup flow including displaying a success toast when a user successfully
+ * joins a waitlist. The button includes an animated arrow icon for enhanced user experience.
+ * 
+ * This component uses the `useWaitlist` hook to manage its state and handle form submission.
+ * 
+ * @component
+ * @example
+ * // Basic usage with default styling
+ * <WaitlistButton featureName="AI Assistant" />
+ * 
+ * @example
+ * // Custom styling with different variant and size
+ * <WaitlistButton 
+ *   featureName="Premium Analytics" 
+ *   variant="outline"
+ *   size="lg"
+ *   className="mt-4 w-full md:w-auto"
+ * />
+ * 
+ * @example
+ * // In a feature showcase section
+ * <div className="feature-card">
+ *   <h3>Advanced Reporting</h3>
+ *   <p>Get deeper insights with our advanced reporting tools.</p>
+ *   <WaitlistButton 
+ *     featureName="Advanced Reporting"
+ *     variant="secondary"
+ *   />
+ * </div>
+ */
 export function WaitlistButton({
   featureName,
   className,
@@ -32,6 +76,13 @@ export function WaitlistButton({
     closeSuccessToast,
   } = useWaitlist({ featureName });
 
+  /**
+   * Handles the submission of the waitlist form.
+   * 
+   * @param {object} data - The form data
+   * @param {string} data.reason - The user's reason for joining the waitlist
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (data: { reason: string }): Promise<void> => {
     await submitToWaitlist(data);
   };

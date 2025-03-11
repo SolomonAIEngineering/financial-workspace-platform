@@ -1,16 +1,14 @@
 'use client';
 
-import React from 'react';
 import {
-  DocumentDuplicateIcon,
   BellIcon,
-  CreditCardIcon,
   ChartBarIcon,
+  CreditCardIcon,
+  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
 
 import {
-  FeatureDevelopment,
-  type FeatureCard,
+  FeatureDevelopment
 } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';

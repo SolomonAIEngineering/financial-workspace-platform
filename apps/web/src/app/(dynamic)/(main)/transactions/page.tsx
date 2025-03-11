@@ -1,17 +1,14 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
 import {
-  BanknotesIcon,
-  TagIcon,
-  MagnifyingGlassIcon,
   ArrowsRightLeftIcon,
+  BanknotesIcon,
+  MagnifyingGlassIcon,
+  TagIcon,
 } from '@heroicons/react/24/outline';
 
 import {
-  FeatureDevelopment,
-  type FeatureCard,
+  FeatureDevelopment
 } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';

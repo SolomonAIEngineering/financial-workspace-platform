@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
 import {
   ArrowTrendingUpIcon,
   ChartBarSquareIcon,
@@ -10,8 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 import {
-  FeatureDevelopment,
-  type FeatureCard,
+  FeatureDevelopment
 } from '@/components/document-sending/feature-development';
 // Document signing components
 import {
@@ -31,7 +30,6 @@ import { demoDocuments } from '@/components/document-signing/demo-data';
 // UI components
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 // Feature flags
-import { isFeatureEnabled } from '@/lib/feature-flags';
 // Waitlist functionality
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
 
