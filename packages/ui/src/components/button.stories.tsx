@@ -1,16 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/react'
 import {
-  ChevronRight,
-  Mail,
-  Download,
-  Loader2,
-  Send,
-  Heart,
   AlertCircle,
   CheckCircle,
-  Info
+  ChevronRight,
+  Download,
+  Heart,
+  Loader2,
+  Mail,
+  Send,
 } from 'lucide-react'
+import type { Meta, StoryObj } from '@storybook/react'
+
 import { Button } from './button'
+import { CubeIcon } from '@radix-ui/react-icons'
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',
@@ -98,7 +99,7 @@ export const Info: Story = {
   args: {
     children: 'Info Button',
     variant: 'info',
-    startIcon: <Info className="h-4 w-4" />,
+    startIcon: <CubeIcon className="h-4 w-4" />,
   },
 }
 

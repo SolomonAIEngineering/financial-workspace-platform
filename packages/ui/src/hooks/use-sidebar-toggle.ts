@@ -37,13 +37,6 @@ interface useSidebarToggleStore {
  *       <button onClick={setIsOpen}>
  *         {isOpen ? 'Close Sidebar' : 'Open Sidebar'}
  *       </button>
- *       
- *       <div className={isOpen ? 'sidebar-open' : 'sidebar-closed'}>
- *         {/* Sidebar content */}
- * </div>
-  * </>
-  *   );
- * };
  * ```
  */
 const useSidebarToggle = create(
