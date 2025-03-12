@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import LocationSpendingOverTime from "./location-spending-over-time.stories";
+import * as LocationSpendingOverTime from "./location-spending-over-time.stories";
 
 <Meta of={LocationSpendingOverTime} />
 
@@ -10,7 +10,7 @@ The `LocationSpendingOverTime` chart tracks spending patterns at different geogr
 
 ## Component Props
 
-<Canvas of={LocationSpendingOverTime} />
+<Canvas of={LocationSpendingOverTime.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `LocationSpendingOverTime`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={LocationSpendingOverTime.Default}>
     <LocationSpendingOverTime 
       data={[
         { 
@@ -51,6 +51,6 @@ Here's a basic usage example of the `LocationSpendingOverTime`:
       currency="USD"
       height={400}
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

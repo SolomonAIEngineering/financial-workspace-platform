@@ -1,0 +1,31 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import Footer from "./footer.stories";
+
+<Meta of={Footer} />
+
+# Footer Component
+
+The `Footer` component is designed to be placed at the bottom of a collapsible sidebar. It typically contains secondary navigation items, copyright information, or utility controls like a mode toggle. The component adapts its display based on whether the sidebar is expanded or collapsed.
+
+## Component Props
+
+<Canvas of={Footer} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `Footer`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <Footer collapsed={false}>
+      <div className="flex items-center justify-center">
+        <span className="text-sm text-gray-500">© 2023 Company Inc.</span>
+      </div>
+    </Footer>
+  </Story>
+</Canvas>
+``` 

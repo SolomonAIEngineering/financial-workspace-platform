@@ -1,0 +1,36 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import ChartContainer from "./chart-container.stories";
+
+<Meta of={ChartContainer} />
+
+# ChartContainer Component
+
+The `ChartContainer` is a wrapper component designed to provide a consistent layout and styling for chart components. It handles responsive behavior, loading states, and provides a standard frame for all chart visualizations with optional title and interactive controls.
+
+## Component Props
+
+<Canvas of={ChartContainer} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `ChartContainer`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <ChartContainer 
+      title="Monthly Revenue"
+      description="Revenue trends over the past 12 months"
+      loading={false}
+    >
+      {/* Insert your chart component here */}
+      <div className="h-40 w-full bg-gray-100 flex items-center justify-center">
+        Chart Content
+      </div>
+    </ChartContainer>
+  </Story>
+</Canvas>
+``` 

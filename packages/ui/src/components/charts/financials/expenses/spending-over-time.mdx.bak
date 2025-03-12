@@ -1,0 +1,41 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import SpendingOverTime from "./spending-over-time.stories";
+
+<Meta of={SpendingOverTime} />
+
+# SpendingOverTime Component
+
+The `SpendingOverTime` chart visualizes spending patterns over a specified time period. It shows how expenses change over time, helping users identify spending trends, seasonal variations, and potential areas for budget optimization. The chart can display total spending or break it down by selected categories.
+
+## Component Props
+
+<Canvas of={SpendingOverTime} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `SpendingOverTime`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <SpendingOverTime 
+      data={[
+        { date: new Date(2023, 0, 1), amount: 4200 },
+        { date: new Date(2023, 1, 1), amount: 4500 },
+        { date: new Date(2023, 2, 1), amount: 3800 },
+        { date: new Date(2023, 3, 1), amount: 4300 },
+        { date: new Date(2023, 4, 1), amount: 4700 },
+        { date: new Date(2023, 5, 1), amount: 5100 }
+      ]}
+      currency="USD"
+      locale="en-US"
+      height={350}
+      showAverage={true}
+      periodType="monthly"
+    />
+  </Story>
+</Canvas>
+``` 

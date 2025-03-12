@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import NotificationBannerSimple from "./simple-notification-banner.stories";
+import * as NotificationBannerSimple from "./simple-notification-banner.stories";
 
 <Meta of={NotificationBannerSimple} />
 
@@ -10,7 +10,7 @@ The `NotificationBannerSimple` is a flexible component used to display a notific
 
 ## Component Props
 
-<Canvas of={NotificationBannerSimple} />
+<Canvas of={NotificationBannerSimple.Default} />
 
 <Controls />
 
@@ -41,8 +41,8 @@ These features make the component versatile for various notification needs in a 
 
 ### Top Position Banner
 
-<Canvas of={NotificationBannerSimple} />
+<Canvas of={NotificationBannerSimple.Default} />
 
 ### Bottom Position Banner
 
-<Canvas of={NotificationBannerSimple} />
+<Canvas of={NotificationBannerSimple.Default} />

@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import CreditCard from "./CreditCard.stories";
+import * as CreditCard from "./CreditCard.stories";
 
 <Meta of={CreditCard} />
 
@@ -10,7 +10,7 @@ The `CreditCard` component provides a visual representation of a physical credit
 
 ## Component Props
 
-<Canvas of={CreditCard} />
+<Canvas of={CreditCard.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `CreditCard`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={CreditCard.Default}>
     <CreditCard
       cardNumber="**** **** **** 1234"
       cardholderName="John Smith"
@@ -29,6 +29,6 @@ Here's a basic usage example of the `CreditCard`:
       theme="dark"
       className="w-80"
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

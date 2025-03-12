@@ -1,0 +1,64 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import DataTable from "./data-table.stories";
+
+<Meta of={DataTable} />
+
+# DataTable Component
+
+The `DataTable` component provides a feature-rich, interactive table for displaying and managing transaction data. It includes functionality for sorting, filtering, pagination, and row selection. The component is designed to handle large datasets efficiently while providing a comprehensive set of tools for data exploration and manipulation.
+
+## Component Props
+
+<Canvas of={DataTable} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `DataTable`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <DataTable
+      columns={[
+        { accessorKey: "date", header: "Date" },
+        { accessorKey: "description", header: "Description" },
+        { accessorKey: "amount", header: "Amount" },
+        { accessorKey: "category", header: "Category" },
+        { accessorKey: "status", header: "Status" }
+      ]}
+      data={[
+        { 
+          id: "1", 
+          date: "2023-05-15", 
+          description: "Office Supplies", 
+          amount: "$245.50", 
+          category: "Expenses", 
+          status: "Completed" 
+        },
+        { 
+          id: "2", 
+          date: "2023-05-14", 
+          description: "Client Payment", 
+          amount: "$1,200.00", 
+          category: "Income", 
+          status: "Completed" 
+        },
+        { 
+          id: "3", 
+          date: "2023-05-13", 
+          description: "Software Subscription", 
+          amount: "$49.99", 
+          category: "Expenses", 
+          status: "Pending" 
+        }
+      ]}
+      pagination={true}
+      search={true}
+      filtering={true}
+    />
+  </Story>
+</Canvas>
+``` 

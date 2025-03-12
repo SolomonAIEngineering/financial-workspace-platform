@@ -1,0 +1,63 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import DataHoverCard from "./data-hover-card.stories";
+
+<Meta of={DataHoverCard} />
+
+# DataHoverCard Component
+
+The `DataHoverCard` component provides an informational popup that appears when hovering over elements in a data table. It shows additional details or context about the data that wouldn't fit in the main table view. This component enhances the user experience by making more information accessible without requiring navigation away from the table.
+
+## Component Props
+
+<Canvas of={DataHoverCard} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `DataHoverCard`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <div className="p-10 flex justify-center">
+      <DataHoverCard
+        trigger={
+          <button className="px-4 py-2 border rounded hover:bg-gray-100">
+            Hover for Details
+          </button>
+        }
+        title="Transaction Details"
+        content={
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-1">
+              <span className="font-medium">Date:</span>
+              <span>May 15, 2023</span>
+              
+              <span className="font-medium">Description:</span>
+              <span>Office Supplies</span>
+              
+              <span className="font-medium">Amount:</span>
+              <span className="text-red-500">$245.50</span>
+              
+              <span className="font-medium">Category:</span>
+              <span>Expenses</span>
+              
+              <span className="font-medium">Payment Method:</span>
+              <span>Credit Card</span>
+            </div>
+            <p className="text-xs text-gray-500 pt-1">Last modified: May 16, 2023</p>
+          </div>
+        }
+        footer={
+          <div className="flex justify-end space-x-2">
+            <button className="text-xs text-blue-500 hover:underline">Edit</button>
+            <button className="text-xs text-red-500 hover:underline">Delete</button>
+          </div>
+        }
+      />
+    </div>
+  </Story>
+</Canvas>
+``` 

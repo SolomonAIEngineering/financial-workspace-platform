@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import DataTableColumnHeader from "./data-table-column-header.stories";
+import * as DataTableColumnHeader from "./data-table-column-header.stories";
 
 <Meta of={DataTableColumnHeader} />
 
@@ -10,7 +10,7 @@ The `DataTableColumnHeader` component provides a customizable header for data ta
 
 ## Component Props
 
-<Canvas of={DataTableColumnHeader} />
+<Canvas of={DataTableColumnHeader.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `DataTableColumnHeader`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={DataTableColumnHeader.Default}>
     <DataTableColumnHeader
       column={{ 
         id: "amount", 
@@ -32,6 +32,6 @@ Here's a basic usage example of the `DataTableColumnHeader`:
       description="Transaction amount in USD"
       className="py-2 px-4 border-b"
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

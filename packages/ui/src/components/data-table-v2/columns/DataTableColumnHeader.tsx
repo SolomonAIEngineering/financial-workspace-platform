@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useDataTable, useDataTableCallbacks } from "../core/DataTableProvider";
 

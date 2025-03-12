@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import HeroSection from "./hero-section.stories";
+import * as HeroSection from "./hero-section.stories";
 
 <Meta of={HeroSection} />
 
@@ -10,7 +10,7 @@ The `HeroSection` component serves as the primary introduction section on landin
 
 ## Component Props
 
-<Canvas of={HeroSection} />
+<Canvas of={HeroSection.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `HeroSection`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={HeroSection.Default}>
     <HeroSection
       headline="Simplify Your Financial Management"
       subheadline="An all-in-one platform for small businesses to track expenses, manage cash flow, and make smarter financial decisions."
@@ -36,6 +36,6 @@ Here's a basic usage example of the `HeroSection`:
       imageAlt="Platform dashboard preview"
       backgroundStyle="gradient"
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

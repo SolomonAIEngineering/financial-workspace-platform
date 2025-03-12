@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import ProfileDropdown from "./profile-dropdown.stories";
+import * as ProfileDropdown from "./profile-dropdown.stories";
 
 <Meta of={ProfileDropdown} />
 
@@ -10,7 +10,7 @@ The `ProfileDropdown` is a profile dropdown component used to display a dropdown
 
 ## Component Props
 
-<Canvas of={ProfileDropdown} />
+<Canvas of={ProfileDropdown.Default} />
 
 <Controls />
 
@@ -29,4 +29,4 @@ The `ProfileDropdown` is a profile dropdown component used to display a dropdown
 
 ### Default Profile dropdown
 
-<Canvas of={ProfileDropdown} />
+<Canvas of={ProfileDropdown.Default} />

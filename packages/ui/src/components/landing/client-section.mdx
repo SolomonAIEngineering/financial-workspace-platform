@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import ClientSection from "./client-section.stories";
+import * as ClientSection from "./client-section.stories";
 
 <Meta of={ClientSection} />
 
@@ -10,7 +10,7 @@ The `ClientSection` component showcases logos or testimonials from clients and p
 
 ## Component Props
 
-<Canvas of={ClientSection} />
+<Canvas of={ClientSection.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `ClientSection`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={ClientSection.Default}>
     <ClientSection
       title="Trusted by leading companies"
       subtitle="Join thousands of businesses that rely on our platform every day"
@@ -34,6 +34,6 @@ Here's a basic usage example of the `ClientSection`:
       ]}
       displayType="grid"
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

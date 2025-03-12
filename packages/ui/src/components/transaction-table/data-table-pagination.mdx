@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import DataTablePagination from "./data-table-pagination.stories";
+import * as DataTablePagination from "./data-table-pagination.stories";
 
 <Meta of={DataTablePagination} />
 
@@ -10,7 +10,7 @@ The `DataTablePagination` component provides controls for navigating through pag
 
 ## Component Props
 
-<Canvas of={DataTablePagination} />
+<Canvas of={DataTablePagination.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `DataTablePagination`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={DataTablePagination.Default}>
     <DataTablePagination
       table={{
         getState: () => ({
@@ -45,6 +45,6 @@ Here's a basic usage example of the `DataTablePagination`:
       showRowsInfo={true}
       className="p-2 border-t"
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

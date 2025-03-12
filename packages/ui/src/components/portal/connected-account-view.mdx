@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import ConnectedAccountView from "./connected-account-view.stories";
+import * as ConnectedAccountView from "./connected-account-view.stories";
 
 <Meta of={ConnectedAccountView} />
 
@@ -10,7 +10,7 @@ The `ConnectedAccountView` component provides an overview of all financial accou
 
 ## Component Props
 
-<Canvas of={ConnectedAccountView} />
+<Canvas of={ConnectedAccountView.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `ConnectedAccountView`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={ConnectedAccountView.Default}>
     <ConnectedAccountView
       connectedAccounts={[
         {
@@ -70,6 +70,6 @@ Here's a basic usage example of the `ConnectedAccountView`:
       onDisconnectAccount={(instId) => console.info("Disconnect account:", instId)}
       loading={false}
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import CategoryHorizontalChart from "./category-horizontal-chart.stories";
+import * as CategoryHorizontalChart from "./category-horizontal-chart.stories";
 
 <Meta of={CategoryHorizontalChart} />
 
@@ -10,7 +10,7 @@ The `CategoryHorizontalChart` is a visualization that displays categories as hor
 
 ## Component Props
 
-<Canvas of={CategoryHorizontalChart} />
+<Canvas of={CategoryHorizontalChart.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `CategoryHorizontalChart`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={CategoryHorizontalChart.Default}>
     <CategoryHorizontalChart 
       data={[
         { category: "Food & Dining", amount: 1250 },
@@ -34,6 +34,6 @@ Here's a basic usage example of the `CategoryHorizontalChart`:
       height={350}
       sortByValue={true}
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

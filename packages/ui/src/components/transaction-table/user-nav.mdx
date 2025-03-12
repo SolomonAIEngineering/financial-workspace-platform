@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import UserNav from "./user-nav.stories";
+import * as UserNav from "./user-nav.stories";
 
 <Meta of={UserNav} />
 
@@ -10,7 +10,7 @@ The `UserNav` component provides a user navigation interface typically shown in 
 
 ## Component Props
 
-<Canvas of={UserNav} />
+<Canvas of={UserNav.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `UserNav`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={UserNav.Default}>
     <UserNav
       user={{
         name: "John Doe",
@@ -47,6 +47,6 @@ Here's a basic usage example of the `UserNav`:
       ]}
       className="ml-auto"
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

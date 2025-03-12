@@ -1,0 +1,43 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import RankedMerchantBySpendingChart from "./ranked-merchant-by-spending-chart.stories";
+
+<Meta of={RankedMerchantBySpendingChart} />
+
+# RankedMerchantBySpendingChart Component
+
+The `RankedMerchantBySpendingChart` provides a ranked visualization of spending across different merchants. This chart makes it easy to identify the top vendors by spend, helping businesses focus their vendor management efforts on the most significant supplier relationships and potentially negotiate better terms with high-volume vendors.
+
+## Component Props
+
+<Canvas of={RankedMerchantBySpendingChart} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `RankedMerchantBySpendingChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <RankedMerchantBySpendingChart 
+      data={[
+        { merchant: "Vendor Alpha", amount: 85000 },
+        { merchant: "Vendor Beta", amount: 62000 },
+        { merchant: "Vendor Gamma", amount: 78000 },
+        { merchant: "Vendor Delta", amount: 45000 },
+        { merchant: "Vendor Epsilon", amount: 53000 },
+        { merchant: "Vendor Zeta", amount: 49000 },
+        { merchant: "Vendor Eta", amount: 58000 },
+        { merchant: "Vendor Theta", amount: 42000 }
+      ]}
+      currency="USD"
+      locale="en-US"
+      height={500}
+      limit={8}
+      sortDirection="desc"
+    />
+  </Story>
+</Canvas>
+``` 

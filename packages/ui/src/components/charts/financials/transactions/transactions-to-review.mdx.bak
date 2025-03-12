@@ -1,0 +1,59 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import TransactionsToReview from "./transactions-to-review.stories";
+
+<Meta of={TransactionsToReview} />
+
+# TransactionsToReview Component
+
+The `TransactionsToReview` component displays a list of transactions that require review or attention. This component helps businesses identify potentially problematic transactions, such as unusual spending, uncategorized transactions, or those that might need reconciliation. It provides a streamlined interface for reviewing and taking action on these transactions.
+
+## Component Props
+
+<Canvas of={TransactionsToReview} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `TransactionsToReview`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <TransactionsToReview 
+      transactions={[
+        { 
+          id: "tx-001", 
+          date: new Date(2023, 4, 15), 
+          description: "Unknown Vendor", 
+          amount: 1250.00, 
+          category: "Uncategorized", 
+          flagReason: "Needs category" 
+        },
+        { 
+          id: "tx-002", 
+          date: new Date(2023, 4, 16), 
+          description: "Large Purchase", 
+          amount: 5000.00, 
+          category: "Equipment", 
+          flagReason: "Unusual amount" 
+        },
+        { 
+          id: "tx-003", 
+          date: new Date(2023, 4, 17), 
+          description: "New Vendor", 
+          amount: 750.00, 
+          category: "Services", 
+          flagReason: "New vendor" 
+        }
+      ]}
+      onReviewComplete={(transactionId, action) => 
+        console.info(`Transaction ${transactionId} marked as ${action}`)
+      }
+      currency="USD"
+      locale="en-US"
+    />
+  </Story>
+</Canvas>
+``` 

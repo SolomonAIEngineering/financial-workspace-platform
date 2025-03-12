@@ -1,0 +1,39 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import NetExpenseChart from "./net-expense-chart.stories";
+
+<Meta of={NetExpenseChart} />
+
+# NetExpenseChart Component
+
+The `NetExpenseChart` is a specialized visualization component that displays net expenses over time. It includes options for comparing expenses against a budget or previous period, and identifying trends and anomalies in spending patterns. The chart can help organizations track their expense management and identify areas for cost optimization.
+
+## Component Props
+
+<Canvas of={NetExpenseChart} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `NetExpenseChart`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <NetExpenseChart 
+      data={[
+        { date: new Date(2023, 0, 1), expenses: 28000, budget: 30000 },
+        { date: new Date(2023, 1, 1), expenses: 32000, budget: 30000 },
+        { date: new Date(2023, 2, 1), expenses: 29500, budget: 30000 },
+        { date: new Date(2023, 3, 1), expenses: 27800, budget: 30000 },
+        { date: new Date(2023, 4, 1), expenses: 31200, budget: 30000 }
+      ]}
+      currency="USD"
+      locale="en-US"
+      height={400}
+      showBudgetComparison={true}
+    />
+  </Story>
+</Canvas>
+``` 

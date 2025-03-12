@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import TransactionsToReview from "./transactions-to-review.stories";
+import * as TransactionsToReview from "./transactions-to-review.stories";
 
 <Meta of={TransactionsToReview} />
 
@@ -10,7 +10,7 @@ The `TransactionsToReview` component displays a list of transactions that requir
 
 ## Component Props
 
-<Canvas of={TransactionsToReview} />
+<Canvas of={TransactionsToReview.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `TransactionsToReview`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={TransactionsToReview.Default}>
     <TransactionsToReview 
       transactions={[
         { 
@@ -54,6 +54,6 @@ Here's a basic usage example of the `TransactionsToReview`:
       currency="USD"
       locale="en-US"
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

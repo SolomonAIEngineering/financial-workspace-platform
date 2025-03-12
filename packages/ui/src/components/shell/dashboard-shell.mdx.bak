@@ -1,0 +1,44 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import DashboardShell from "./dashboard-shell.stories";
+
+<Meta of={DashboardShell} />
+
+# DashboardShell Component
+
+The `DashboardShell` component provides a container layout for dashboard applications. It creates a consistent structure with designated areas for headers, navigation, main content, and optional sidebars. This component helps maintain a uniform layout across various dashboard pages and provides responsive behavior for different screen sizes.
+
+## Component Props
+
+<Canvas of={DashboardShell} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `DashboardShell`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <DashboardShell
+      header={
+        <div className="h-16 border-b flex items-center px-6">
+          Dashboard Header
+        </div>
+      }
+      sidebar={
+        <div className="w-64 border-r h-full p-4">
+          Navigation Menu
+        </div>
+      }
+      className="h-screen"
+    >
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-4">Dashboard Content</h1>
+        <p>Main dashboard content goes here</p>
+      </div>
+    </DashboardShell>
+  </Story>
+</Canvas>
+``` 

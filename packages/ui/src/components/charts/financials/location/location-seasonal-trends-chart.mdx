@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import LocationSeasonalTrendsChart from "./location-seasonal-trends-chart.stories";
+import * as LocationSeasonalTrendsChart from "./location-seasonal-trends-chart.stories";
 
 <Meta of={LocationSeasonalTrendsChart} />
 
@@ -10,7 +10,7 @@ The `LocationSeasonalTrendsChart` visualizes how spending patterns at different 
 
 ## Component Props
 
-<Canvas of={LocationSeasonalTrendsChart} />
+<Canvas of={LocationSeasonalTrendsChart.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `LocationSeasonalTrendsChart`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={LocationSeasonalTrendsChart.Default}>
     <LocationSeasonalTrendsChart 
       data={[
         { season: "Winter", newYork: 12000, losAngeles: 18000, chicago: 9000 },
@@ -37,6 +37,6 @@ Here's a basic usage example of the `LocationSeasonalTrendsChart`:
       currency="USD"
       height={400}
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

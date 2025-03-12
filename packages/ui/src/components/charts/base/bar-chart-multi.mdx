@@ -1,6 +1,6 @@
 import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
 
-import BarChartMulti from "./bar-chart-multi.stories";
+import * as BarChartMulti from "./bar-chart-multi.stories";
 
 <Meta of={BarChartMulti} />
 
@@ -10,7 +10,7 @@ The `BarChartMulti` is a specialized bar chart visualization that allows display
 
 ## Component Props
 
-<Canvas of={BarChartMulti} />
+<Canvas of={BarChartMulti.Default} />
 
 <Controls />
 
@@ -20,7 +20,7 @@ Here's a basic usage example of the `BarChartMulti`:
 
 ```tsx
 <Canvas>
-  <Story name="Default">
+  <Canvas of={BarChartMulti.Default}>
     <BarChartMulti 
       currency="USD"
       data={[
@@ -44,6 +44,6 @@ Here's a basic usage example of the `BarChartMulti`:
       locale="en-US"
       keys={["income", "expenses"]}
     />
-  </Story>
+  </Canvas>
 </Canvas>
 ``` 

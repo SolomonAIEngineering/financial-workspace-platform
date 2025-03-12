@@ -1,0 +1,48 @@
+import { Canvas, Controls, Meta, Source } from "@storybook/blocks";
+
+import Menu from "./menu.stories";
+
+<Meta of={Menu} />
+
+# Menu Component
+
+The `Menu` component is a versatile navigation menu that can be used within a collapsible sidebar. It displays a list of navigation items with icons and labels, and supports active states and collapsible submenus. The component adapts its display based on whether the sidebar is expanded or collapsed.
+
+## Component Props
+
+<Canvas of={Menu} />
+
+<Controls />
+
+## Usage Example
+
+Here's a basic usage example of the `Menu`:
+
+```tsx
+<Canvas>
+  <Story name="Default">
+    <Menu
+      collapsed={false}
+      items={[
+        { 
+          title: "Dashboard", 
+          icon: "HomeIcon", 
+          href: "/dashboard",
+          active: true
+        },
+        { 
+          title: "Analytics", 
+          icon: "BarChartIcon", 
+          href: "/analytics"
+        },
+        { 
+          title: "Settings", 
+          icon: "SettingsIcon", 
+          href: "/settings"
+        }
+      ]}
+      onMenuItemClick={(item) => console.info("Clicked:", item.title)}
+    />
+  </Story>
+</Canvas>
+``` 
