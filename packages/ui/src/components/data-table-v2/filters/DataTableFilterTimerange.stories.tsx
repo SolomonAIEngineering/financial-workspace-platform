@@ -1,4 +1,4 @@
-import { Card, CardContent } from '../../../primitives/card';
+import { Card, CardContent } from '@/components/card';
 import { ColumnDef, createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
@@ -83,11 +83,36 @@ const columns: ColumnDef<Order, any>[] = [
 
 // Date presets
 const presets = [
-    { label: 'Last 7 days', value: '7days' },
-    { label: 'Last 30 days', value: '30days' },
-    { label: 'Last 3 months', value: '3months' },
-    { label: 'Last 6 months', value: '6months' },
-    { label: 'Last year', value: '1year' },
+    {
+        label: 'Last 7 days',
+        from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        to: new Date(),
+        shortcut: '7d'
+    },
+    {
+        label: 'Last 30 days',
+        from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        to: new Date(),
+        shortcut: '30d'
+    },
+    {
+        label: 'Last 3 months',
+        from: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000),
+        to: new Date(),
+        shortcut: '3m'
+    },
+    {
+        label: 'Last 6 months',
+        from: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000),
+        to: new Date(),
+        shortcut: '6m'
+    },
+    {
+        label: 'Last year',
+        from: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+        to: new Date(),
+        shortcut: '1y'
+    },
 ];
 
 // Wrapper to provide the DataTable context
@@ -118,7 +143,7 @@ const FilterTimerangeWrapper = ({
         state: {
             columnFilters,
         },
-        onColumnFiltersChange: setColumnFilters,
+        onColumnFiltersChange: filters => setColumnFilters(filters as typeof columnFilters),
         getCoreRowModel: getCoreRowModel(),
     });
 
@@ -158,6 +183,8 @@ export const Basic: Story = {
         <FilterTimerangeWrapper>
             <DataTableFilterTimerange
                 value="date"
+                label="Order Date"
+                type="timerange"
             />
         </FilterTimerangeWrapper>
     ),
@@ -175,6 +202,8 @@ export const WithCustomFormat: Story = {
         <FilterTimerangeWrapper>
             <DataTableFilterTimerange
                 value="date"
+                label="Order Date"
+                type="timerange"
                 dateFormat="dd/MM/yyyy"
             />
         </FilterTimerangeWrapper>
@@ -193,6 +222,8 @@ export const WithPresets: Story = {
         <FilterTimerangeWrapper>
             <DataTableFilterTimerange
                 value="date"
+                label="Order Date"
+                type="timerange"
                 presets={presets}
             />
         </FilterTimerangeWrapper>
@@ -211,6 +242,8 @@ export const WithCustomClasses: Story = {
         <FilterTimerangeWrapper>
             <DataTableFilterTimerange
                 value="date"
+                label="Order Date"
+                type="timerange"
                 className="border rounded-md p-3"
             />
         </FilterTimerangeWrapper>
@@ -234,6 +267,8 @@ export const WithInitialValues: Story = {
             <FilterTimerangeWrapper initialFrom={sevenDaysAgo} initialTo={today}>
                 <DataTableFilterTimerange
                     value="date"
+                    label="Order Date"
+                    type="timerange"
                 />
             </FilterTimerangeWrapper>
         );
@@ -256,7 +291,9 @@ export const WithCallback: Story = {
                 <div className="space-y-4">
                     <DataTableFilterTimerange
                         value="date"
-                        onChange={(values) => setDateRange(values)}
+                        label="Order Date"
+                        type="timerange"
+                        onChange={(values) => setDateRange(values || { from: undefined, to: undefined })}
                     />
 
                     <div className="text-sm py-2 px-3 bg-muted rounded-md">

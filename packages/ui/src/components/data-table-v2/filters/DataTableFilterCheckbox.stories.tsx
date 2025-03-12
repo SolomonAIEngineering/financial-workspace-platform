@@ -1,9 +1,10 @@
-import { Card, CardContent } from '../../../primitives/card';
+import { Card, CardContent } from '@/components/card';
 import { ColumnDef, createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
 
-import { Badge } from '../../../primitives/badge';
+import { Badge } from '@/components/badge';
+import { ColumnFiltersState } from '@tanstack/react-table';
 import { DataTableFilterCheckbox } from './DataTableFilterCheckbox';
 import { DataTableProvider } from '../core/DataTableProvider';
 
@@ -95,7 +96,7 @@ const FilterCheckboxWrapper = ({
     columnId?: string;
     initialFilter?: string[];
 }) => {
-    const [columnFilters, setColumnFilters] = useState([
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
         { id: columnId, value: initialFilter }
     ]);
 
@@ -116,7 +117,7 @@ const FilterCheckboxWrapper = ({
                     <div className="mb-4">
                         <h3 className="text-sm font-medium mb-2">Selected filters:</h3>
                         <div className="flex flex-wrap gap-2">
-                            {columnFilters[0]?.value?.length > 0 ? (
+                            {columnFilters[0]?.value && Array.isArray(columnFilters[0].value) && (columnFilters[0].value as string[]).length > 0 ? (
                                 (columnFilters[0].value as string[]).map(value => (
                                     <Badge key={value} variant="secondary">{value}</Badge>
                                 ))
@@ -137,8 +138,7 @@ export const Basic: Story = {
         <FilterCheckboxWrapper>
             <DataTableFilterCheckbox
                 value="category"
-                options={categoryOptions}
-            />
+                options={categoryOptions} label={''} type={'checkbox'} />
         </FilterCheckboxWrapper>
     ),
     parameters: {
@@ -157,8 +157,7 @@ export const WithCustomClasses: Story = {
                 value="category"
                 options={categoryOptions}
                 className="space-y-3 border rounded-md p-3"
-                itemClassName="pl-2"
-            />
+                itemClassName="pl-2" label={''} type={'checkbox'} />
         </FilterCheckboxWrapper>
     ),
     parameters: {
@@ -175,8 +174,7 @@ export const WithInitialSelection: Story = {
         <FilterCheckboxWrapper initialFilter={['Electronics']}>
             <DataTableFilterCheckbox
                 value="category"
-                options={categoryOptions}
-            />
+                options={categoryOptions} label={''} type={'checkbox'} />
         </FilterCheckboxWrapper>
     ),
     parameters: {
@@ -193,8 +191,7 @@ export const StatusFilter: Story = {
         <FilterCheckboxWrapper columnId="status">
             <DataTableFilterCheckbox
                 value="status"
-                options={statusOptions}
-            />
+                options={statusOptions} label={''} type={'checkbox'} />
         </FilterCheckboxWrapper>
     ),
     parameters: {
@@ -209,12 +206,15 @@ export const StatusFilter: Story = {
 export const WithCustomComponent: Story = {
     render: () => {
         // Custom component for rendering status options with colored badges
-        const StatusBadge = ({ label, color }: { label: string; color: string }) => (
-            <div className="flex items-center">
-                <div className={`w-2 h-2 rounded-full mr-2 ${color}`} />
-                <span>{label}</span>
-            </div>
-        );
+        const StatusBadge = (props: { label: string; color?: string }) => {
+            const { label, color } = props;
+            return (
+                <div className="flex items-center">
+                    <div className={`w-2 h-2 rounded-full mr-2 ${color || ''}`} />
+                    <span>{label}</span>
+                </div>
+            );
+        };
 
         return (
             <FilterCheckboxWrapper columnId="status">
@@ -222,7 +222,7 @@ export const WithCustomComponent: Story = {
                     value="status"
                     options={statusOptionsWithBadges}
                     component={StatusBadge}
-                />
+                    label={''} type={'checkbox'} />
             </FilterCheckboxWrapper>
         );
     },
@@ -245,8 +245,7 @@ export const WithCallback: Story = {
                     <DataTableFilterCheckbox
                         value="category"
                         options={categoryOptions}
-                        onChange={(values) => setSelectedValues(values)}
-                    />
+                        onChange={(values) => setSelectedValues(values)} label={''} type={'checkbox'} />
 
                     <div className="text-sm py-2 px-3 bg-muted rounded-md">
                         <p>Selected via callback: </p>

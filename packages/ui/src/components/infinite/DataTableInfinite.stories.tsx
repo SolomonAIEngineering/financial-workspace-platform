@@ -1,9 +1,10 @@
 import { AlertCircle, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { BaseChartSchema } from './core/schema';
 import { ColumnDef } from '@tanstack/react-table';
+import { DataTableFilterField } from '@/components/data-table-v2/core/types';
 import { DataTableInfinite } from './DataTableInfinite';
-import React from 'react';
 
 const meta: Meta<typeof DataTableInfinite> = {
     title: 'Components/Infinite/DataTableInfinite',
@@ -48,7 +49,7 @@ const generateLogs = (count: number): LogEntry[] => {
         const date = new Date();
         date.setHours(date.getHours() - Math.floor(Math.random() * 24 * 7)); // Random time in the last week
 
-        const randomTags = [];
+        const randomTags: string[] = [];
         const tagCount = Math.floor(Math.random() * 3);
         for (let j = 0; j < tagCount; j++) {
             const tag = tags[Math.floor(Math.random() * tags.length)];
@@ -202,8 +203,8 @@ const filterFields = [
     {
         id: 'level',
         label: 'Level',
-        value: 'level',
-        type: 'checkbox',
+        value: 'level' as keyof LogEntry,
+        type: 'checkbox' as const,
         options: [
             { label: 'Info', value: 'info' },
             { label: 'Error', value: 'error' },
@@ -215,15 +216,15 @@ const filterFields = [
     {
         id: 'message',
         label: 'Message',
-        value: 'message',
-        type: 'input',
+        value: 'message' as keyof LogEntry,
+        type: 'input' as const,
         placeholder: 'Search message...',
     },
     {
         id: 'service',
         label: 'Service',
-        value: 'service',
-        type: 'checkbox',
+        value: 'service' as keyof LogEntry,
+        type: 'checkbox' as const,
         options: [
             { label: 'API', value: 'api' },
             { label: 'Auth', value: 'auth' },
@@ -236,8 +237,8 @@ const filterFields = [
     {
         id: 'date',
         label: 'Date Range',
-        value: 'date',
-        type: 'timerange',
+        value: 'date' as keyof LogEntry,
+        type: 'timerange' as const,
         presets: [
             { label: 'Last hour', value: '1h' },
             { label: 'Last day', value: '1d' },
@@ -247,25 +248,29 @@ const filterFields = [
     {
         id: 'duration',
         label: 'Duration',
-        value: 'duration',
-        type: 'slider',
+        value: 'duration' as keyof LogEntry,
+        type: 'slider' as const,
         min: 0,
         max: 500,
         step: 10,
     },
-];
+] as unknown as DataTableFilterField<LogEntry>[];
 
 // Chart data generation
 const generateChartData = () => {
     const now = new Date();
-    const data = [];
+    const data: BaseChartSchema[] = [];
     for (let i = 0; i < 24; i++) {
         const date = new Date(now);
         date.setHours(date.getHours() - i);
         data.push({
-            date,
+            timestamp: date.getTime(),
             count: Math.floor(Math.random() * 50) + 10,
-            level: i % 5 === 0 ? 'error' : i % 3 === 0 ? 'warn' : 'info',
+            error: i % 5 === 0 ? Math.floor(Math.random() * 10) : 0,
+            warn: i % 3 === 0 ? Math.floor(Math.random() * 20) : 0,
+            info: Math.floor(Math.random() * 30) + 5,
+            debug: Math.floor(Math.random() * 15),
+            trace: Math.floor(Math.random() * 8)
         });
     }
     return data;
@@ -437,7 +442,7 @@ export const WithCustomRowRendering: Story = {
                     return level === 'error' ? 'bg-red-50' :
                         level === 'warn' ? 'bg-amber-50' : '';
                 }}
-                renderLiveRow={({ row }) => (
+                renderLiveRow={(props) => props && (
                     <div className="absolute left-0 w-1 h-full bg-blue-500" />
                 )}
             />

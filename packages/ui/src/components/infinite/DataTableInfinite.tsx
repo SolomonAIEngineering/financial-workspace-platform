@@ -27,17 +27,45 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../../primitives/table";
+} from "@/components/table";
 
 import { BaseChartSchema } from "./core/schema";
-import { Button } from "../../primitives/button";
-import { DataTableFilterControls } from "../data-table-v2/filters/DataTableFilterControls";
-import { DataTableFilterField } from "../data-table-v2/core/types";
-import { DataTableProvider } from "../data-table-v2/core/DataTableProvider";
-import { DataTableResetButton } from "../data-table-v2/filters/DataTableResetButton";
+import { Button } from "@/components/button";
+import { DataTableFilterControls } from "@/components/data-table-v2/filters/DataTableFilterControls";
+import { DataTableFilterField } from "@/components/data-table-v2/core/types";
+import { DataTableProvider } from "@/components/data-table-v2/core/DataTableProvider";
+// Extend the DataTableProviderProps type to include enableColumnOrdering
+import type { DataTableProviderProps } from "@/components/data-table-v2/core/DataTableProvider";
 import { LoaderCircle } from "lucide-react";
-import { cn } from "../../lib/utils";
-import { useLocalStorage } from "../../hooks/use-local-storage";
+import { cn } from "@/lib/utils";
+import { useLocalStorage } from "@/hooks/use-local-storage";
+
+declare module "@/components/data-table-v2/core/DataTableProvider" {
+    interface DataTableProviderProps<TData, TValue = unknown> {
+        enableColumnOrdering?: boolean;
+        columns?: ColumnDef<TData, TValue>[];
+    }
+}
+
+// Extend the TableMeta type to include our custom properties
+declare module "@tanstack/react-table" {
+    interface TableMeta<TData> {
+        getRowClassName?: (row: Row<TData>) => string;
+    }
+
+    interface ColumnMeta<TData, TValue> {
+        cellClassName?: string;
+        headerClassName?: string;
+        label?: string;
+    }
+}
+
+// Define DataTableResetButton component
+const DataTableResetButton = () => (
+    <Button variant="ghost" size="sm" onClick={() => { }}>
+        Reset
+    </Button>
+);
 
 /**
  * Format a number in a compact format (e.g. 1.2k, 1.2m)

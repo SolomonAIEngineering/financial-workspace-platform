@@ -1,12 +1,12 @@
-import { Card, CardContent } from '../../../primitives/card';
+import { Card, CardContent } from '@/components/card';
 import { ColumnDef, createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
 
-import { Badge } from '../../../primitives/badge';
+import { Badge } from '@/components/badge';
 import { DataTableFilterResetButton } from './DataTableFilterResetButton';
 import { DataTableProvider } from '../core/DataTableProvider';
-import { Input } from '../../../primitives/input';
+import { Input } from '@/components/input';
 
 const meta: Meta<typeof DataTableFilterResetButton> = {
     title: 'Components/DataTable/V2/Filters/DataTableFilterResetButton',

@@ -4,7 +4,7 @@ import { DataTableFilterControls } from './DataTableFilterControls';
 import type { DataTableFilterField } from '../core/types';
 import { DataTableProvider } from '../core/DataTableProvider';
 import React from 'react';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 const meta: Meta<typeof DataTableFilterControls> = {
     title: 'Components/DataTable/V2/Filters/DataTableFilterControls',
@@ -66,12 +66,10 @@ const columns = [
     columnHelper.accessor('price', {
         header: 'Price',
         cell: info => `$${info.getValue()}`,
-        filterFn: 'inRange',
     }),
     columnHelper.accessor('stock', {
         header: 'Stock',
         cell: info => info.getValue(),
-        filterFn: 'inRange',
     }),
     columnHelper.accessor('status', {
         header: 'Status',
@@ -81,7 +79,6 @@ const columns = [
     columnHelper.accessor('createdAt', {
         header: 'Created At',
         cell: info => info.getValue().toLocaleDateString(),
-        filterFn: 'dateRange',
     }),
 ];
 
@@ -155,16 +152,23 @@ const filterFields: DataTableFilterField<Product>[] = [
 ];
 
 // Wrapper component for the stories
-const FilterControlsWithProvider = (props: React.ComponentProps<typeof DataTableFilterControls>) => {
+const FilterControlsWithProvider = (props: React.ComponentProps<typeof DataTableFilterControls<Product>>) => {
+    // Create a table instance to pass to the provider
+    const table = useReactTable({
+        data,
+        columns: columns as ColumnDef<Product>[],
+        getCoreRowModel: getCoreRowModel(),
+    });
+
     return (
-        <DataTableProvider
-            data={data}
-            columns={columns}
+        <DataTableProvider<Product>
+            table={table}
+            columns={columns as ColumnDef<Product>[]}
             filterFields={filterFields}
         >
             <div className="border rounded-md p-4 bg-card w-[300px]">
                 <h3 className="text-lg font-medium mb-4">Filters</h3>
-                <DataTableFilterControls {...props} />
+                <DataTableFilterControls<Product> {...props} />
             </div>
         </DataTableProvider>
     );
@@ -222,7 +226,7 @@ export const WithSingleAccordion: Story = {
 };
 
 export const WithLimitedFilters: Story = {
-    render: () => <FilterControlsWithProvider includeFields={['category', 'status']} />,
+    render: () => <FilterControlsWithProvider includeFields={['category', 'status'] as (keyof Product)[]} />,
     parameters: {
         docs: {
             description: {
@@ -233,7 +237,7 @@ export const WithLimitedFilters: Story = {
 };
 
 export const WithExcludedFilters: Story = {
-    render: () => <FilterControlsWithProvider excludeFields={['price', 'stock']} />,
+    render: () => <FilterControlsWithProvider excludeFields={['price', 'stock'] as (keyof Product)[]} />,
     parameters: {
         docs: {
             description: {

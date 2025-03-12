@@ -1,9 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import {
+    ColumnDef,
     createColumnHelper,
     getCoreRowModel,
     useReactTable
 } from '@tanstack/react-table';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { DataTableProvider } from './DataTableProvider';
 import React from 'react';
@@ -102,7 +103,7 @@ const DataTableConsumer: React.FC = () => {
     return (
         <DataTableProvider
             table={table}
-            columns={columns}
+            columns={columns as ColumnDef<Person, any>[]}
             filterFields={[]}
         >
             <div className="p-4 border rounded">
@@ -141,7 +142,7 @@ export const WithCallbacks: Story = {
         return (
             <DataTableProvider
                 table={table}
-                columns={columns}
+                columns={columns as ColumnDef<Person, any>[]}
                 filterFields={[]}
                 callbacks={callbacks}
             >
@@ -176,7 +177,7 @@ export const WithInitialState: Story = {
         return (
             <DataTableProvider
                 table={table}
-                columns={columns}
+                columns={columns as ColumnDef<Person, any>[]}
                 filterFields={[]}
                 initialState={{
                     pageSize: 5,

@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "../../../primitives/button";
+import { Button } from "@/components/button";
 import type { DataTableFilterField } from "../core/types";
 import React from "react";
 import { X } from "lucide-react";
-import { cn } from "../../../lib/utils";
+import { cn } from "@/lib/utils";
 import { useDataTable } from "../core/DataTableProvider";
 
 /**
@@ -36,7 +36,7 @@ export function DataTableFilterResetButton<TData = unknown>({
     const { table } = useDataTable<TData>();
 
     // Get current filters
-    const filters = table.getState().columnFilters;
+    const filters = table?.getState().columnFilters || [];
 
     // Check if this field has a filter applied
     const hasFilter = filters.some((filter) => filter.id === value);
@@ -49,7 +49,7 @@ export function DataTableFilterResetButton<TData = unknown>({
     // Handle click to reset this specific filter
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent accordion toggle
-        table.getColumn(value as string)?.setFilterValue(undefined);
+        table?.getColumn(value as string)?.setFilterValue(undefined);
         onReset?.();
     };
 

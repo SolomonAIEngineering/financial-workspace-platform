@@ -1,14 +1,14 @@
 "use client";
 
 import type { DataTableTimerangeFilterField, DatePreset } from "../core/types";
-import { Popover, PopoverContent, PopoverTrigger } from "../../../primitives/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/popover";
 import React, { useEffect, useState } from "react";
 import { useDataTable, useDataTableCallbacks } from "../core/DataTableProvider";
 
-import { Button } from "../../../primitives/button";
-import { Calendar } from "../../../primitives/calendar";
+import { Button } from "@/components/button";
+import { Calendar } from "@/components/calendar";
 import { CalendarIcon } from "lucide-react";
-import { cn } from "../../../lib/utils";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
 /**
@@ -74,7 +74,7 @@ export function DataTableFilterTimerange<TData = unknown>({
     const callbacks = useDataTableCallbacks<TData>();
 
     // Get column and current filter value
-    const column = table.getColumn(columnId as string);
+    const column = table?.getColumn(columnId as string);
     const currentFilterValue = column?.getFilterValue() as { from: Date; to: Date } | undefined;
 
     // Local state for the date range
@@ -172,7 +172,7 @@ export function DataTableFilterTimerange<TData = unknown>({
         : "Select dates";
 
     return (
-        <div className={cn("space-y-2", className)} data-testid={`filter-timerange-${columnId}`}>
+        <div className={cn("space-y-2", className)} data-testid={`filter-timerange-${String(columnId)}`}>
             <Popover open={isOpen} onOpenChange={setIsOpen}>
                 <PopoverTrigger asChild>
                     <Button

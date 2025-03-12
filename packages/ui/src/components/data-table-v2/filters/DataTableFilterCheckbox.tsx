@@ -4,9 +4,9 @@ import type { DataTableCheckboxFilterField, Option } from "../core/types";
 import React, { useMemo } from "react";
 import { useDataTable, useDataTableCallbacks } from "../core/DataTableProvider";
 
-import { Checkbox } from "../../../primitives/checkbox";
-import { Label } from "../../../primitives/label";
-import { cn } from "../../../lib/utils";
+import { Checkbox } from "@/components/checkbox";
+import { Label } from "@/components/label";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for the DataTableFilterCheckbox component
@@ -47,7 +47,7 @@ export function DataTableFilterCheckbox<TData = unknown>({
     const callbacks = useDataTableCallbacks<TData>();
 
     // Get column and current filter value
-    const column = table.getColumn(columnId as string);
+    const column = table?.getColumn(String(columnId));
     const currentFilterValue = column?.getFilterValue() as string[] || [];
 
     // Get unique values for the column if options are not provided
@@ -76,7 +76,7 @@ export function DataTableFilterCheckbox<TData = unknown>({
 
         // Call callbacks
         onChange?.(newValues);
-        callbacks?.onFilterChange?.(columnId as string, newValues);
+        callbacks?.onFilterChange?.(String(columnId), newValues);
     };
 
     // If no options are available, don't render anything
@@ -85,7 +85,7 @@ export function DataTableFilterCheckbox<TData = unknown>({
     }
 
     return (
-        <div className={cn("flex flex-col space-y-2", className)} data-testid={`filter-checkbox-${columnId}`}>
+        <div className={cn("flex flex-col space-y-2", className)} data-testid={`filter-checkbox-${String(columnId)}`}>
             {checkboxOptions.map((option) => {
                 const optionValue = String(option.value);
                 const isChecked = currentFilterValue.includes(optionValue);
@@ -93,12 +93,12 @@ export function DataTableFilterCheckbox<TData = unknown>({
                 return (
                     <div key={optionValue} className={cn("flex items-center space-x-2", itemClassName)}>
                         <Checkbox
-                            id={`${columnId}-${optionValue}`}
+                            id={`${String(columnId)}-${optionValue}`}
                             checked={isChecked}
                             onCheckedChange={(checked) => handleCheckboxChange(!!checked, optionValue)}
                         />
                         <Label
-                            htmlFor={`${columnId}-${optionValue}`}
+                            htmlFor={`${String(columnId)}-${optionValue}`}
                             className="text-sm cursor-pointer"
                         >
                             {CustomComponent ? (

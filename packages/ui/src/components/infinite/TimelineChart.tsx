@@ -1,12 +1,12 @@
 "use client";
 
-import { BaseChartSchema, TimelineChartSchema } from "./core/schema";
-import { Card, CardContent, CardHeader } from "../../primitives/card";
+import { Card, CardContent, CardHeader } from "@/components/card";
 import { LEVELS, getLevelColor } from "./core/constants";
-import React, { useMemo } from "react";
 
-import { cn } from "../../lib/utils";
+import { BaseChartSchema } from "./core/schema";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useMemo } from "react";
 
 /**
  * Props for the TimelineChart component

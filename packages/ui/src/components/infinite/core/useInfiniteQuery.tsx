@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { ColumnSchema } from "./schema";
+import { InfiniteQueryResponse } from "../utils/queryOptions";
 import type { SearchParamsType } from "../utils/searchParams";
 import { createQueryOptions } from "../utils/queryOptions";
 import { useInfiniteQuery as useInfiniteTanstackQuery } from "@tanstack/react-query";
@@ -41,7 +42,7 @@ export interface UseInfiniteQueryProps {
  * @param props Configuration props for the hook
  * @returns An object containing the query result and search state management
  */
-export function useInfiniteQuery<TData = ColumnSchema[]>({
+export function useInfiniteQuery<TData extends object = ColumnSchema[]>({
     initialSearchParams = {},
     apiEndpoint = "/api/infinite",
     defaultLiveMode = false,
@@ -79,7 +80,7 @@ export function useInfiniteQuery<TData = ColumnSchema[]>({
     const queryOptions = createQueryOptions<TData>(searchParams, apiEndpoint);
 
     // Use TanStack query
-    const query = useInfiniteTanstackQuery(queryOptions);
+    const query = useInfiniteTanstackQuery<InfiniteQueryResponse<TData>>(queryOptions);
 
     // Handle live mode refreshing
     useEffect(() => {

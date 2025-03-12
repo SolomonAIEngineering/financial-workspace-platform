@@ -7,7 +7,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import type { DataTableFilterField } from "../../data-table-v2/core/types";
 import { SearchParamsType } from "../utils/searchParams";
 import type { Table } from "@tanstack/react-table";
-import { cn } from "../../../lib/utils";
+import { cn } from "@/lib/utils";
 import { useInfiniteQuery } from "./useInfiniteQuery";
 
 /**
@@ -223,7 +223,18 @@ export function InfiniteClient({
         getFacetedMinMaxValues: getFacetedMinMaxValues(facets),
         renderLiveRow: renderLiveRow ? (props: any) => {
             if (!liveTimestamp) return null;
-            if (props?.row.original.uuid !== liveAnchorRow?.uuid) return null;
+
+            // Handle the case where liveAnchorRow could be undefined, an array, or an object
+            let anchorRowUuid: string | undefined = undefined;
+            if (liveAnchorRow) {
+                if (Array.isArray(liveAnchorRow) && liveAnchorRow.length > 0) {
+                    anchorRowUuid = liveAnchorRow[0].uuid;
+                } else if (typeof liveAnchorRow === 'object') {
+                    anchorRowUuid = (liveAnchorRow as any).uuid;
+                }
+            }
+
+            if (props?.row.original.uuid !== anchorRowUuid) return null;
             return renderLiveRow(props);
         } : undefined,
     };

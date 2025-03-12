@@ -25,7 +25,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../../primitives/table";
+} from "@/components/table";
 
 import { DataTableFilterControls } from "./filters/DataTableFilterControls";
 import { DataTableFilterControlsDrawer } from "./filters/DataTableFilterControlsDrawer";
@@ -34,7 +34,7 @@ import { DataTablePagination } from "./pagination/DataTablePagination";
 import { DataTableProvider } from "./core/DataTableProvider";
 import { DataTableSkeleton } from "./DataTableSkeleton";
 import { DataTableToolbar } from "./DataTableToolbar";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for the DataTable component

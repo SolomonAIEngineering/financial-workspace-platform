@@ -1,13 +1,12 @@
 "use client";
 
-import { LEVELS, METHODS, REGIONS, flags, formatMilliseconds, getLevelColor, getStatusColor, regions } from "./core/constants";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../../primitives/tooltip";
+import { LEVELS, formatMilliseconds, getLevelColor, getStatusColor, regions } from "./core/constants";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/tooltip";
 
 import { ColumnDef } from "@tanstack/react-table";
 import { ColumnSchema } from "./core/schema";
 import { DataTableColumnHeader } from "../data-table-v2/columns/DataTableColumnHeader";
 import { MinusIcon } from "lucide-react";
-import React from "react";
 import { cn } from "../../lib/utils";
 import { format } from "date-fns";
 
@@ -71,7 +70,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         },
         enableHiding: false,
         enableResizing: false,
-        filterFn: "arrSome",
+        filterFn: "arrIncludesSome",
         size: 27,
         minSize: 27,
         maxSize: 27,
@@ -91,7 +90,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
             const date = new Date(row.getValue("date"));
             return <HoverCardTimestamp date={date} />;
         },
-        filterFn: "inDateRange",
+        filterFn: "equals",
         enableResizing: false,
         size: 200,
         minSize: 200,
@@ -113,7 +112,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         size: 130,
         minSize: 130,
         meta: {
-            label: "Request Id",
             cellClassName:
                 "font-mono w-[--col-uuid-size] max-w-[--col-uuid-size] min-w-[--col-uuid-size]",
             headerClassName:
@@ -134,7 +132,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
             }
             return <div className="text-muted-foreground">{`${value}`}</div>;
         },
-        filterFn: "arrSome",
+        filterFn: "arrIncludesSome",
         enableResizing: false,
         size: 60,
         minSize: 60,

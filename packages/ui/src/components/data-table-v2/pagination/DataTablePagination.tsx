@@ -11,10 +11,10 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@/components/select";
 import { useDataTable, useDataTableCallbacks } from "../core/DataTableProvider";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/button";
 import type { Table } from "@tanstack/react-table";
 
 /**
@@ -84,7 +84,7 @@ export function DataTablePagination<TData>({
     const currentPageSize = state.pageSize || 10;
 
     // Calculate page count
-    const pageCount = useMemo(() => table.getPageCount(), [table]);
+    const pageCount = useMemo(() => table?.getPageCount(), [table]);
 
     // Generate page count text based on current state
     const currentPageCountText = useMemo(() => {
@@ -95,7 +95,7 @@ export function DataTablePagination<TData>({
     // Handle page size change
     const handlePageSizeChange = useCallback((value: string) => {
         const newPageSize = Number(value);
-        table.setPageSize(newPageSize);
+        table?.setPageSize(newPageSize);
 
         // Update through dispatch for controlled tables
         context.dispatch({
@@ -109,7 +109,7 @@ export function DataTablePagination<TData>({
 
     // Handle page change
     const handlePageChange = useCallback((newPageIndex: number) => {
-        table.setPageIndex(newPageIndex);
+        table?.setPageIndex(newPageIndex);
 
         // Update through dispatch for controlled tables
         context.dispatch({
@@ -133,12 +133,12 @@ export function DataTablePagination<TData>({
 
     // Go to next page
     const goToNextPage = useCallback(() => {
-        handlePageChange(Math.min(pageCount - 1, currentPageIndex + 1));
+        handlePageChange(Math.min(pageCount ?? 0 - 1, currentPageIndex + 1));
     }, [handlePageChange, currentPageIndex, pageCount]);
 
     // Go to last page
     const goToLastPage = useCallback(() => {
-        handlePageChange(Math.max(0, pageCount - 1));
+        handlePageChange(Math.max(0, (pageCount ?? 0) - 1));
     }, [handlePageChange, pageCount]);
 
     return (
@@ -172,7 +172,7 @@ export function DataTablePagination<TData>({
                         variant="outline"
                         className="hidden h-8 w-8 p-0 lg:flex"
                         onClick={goToFirstPage}
-                        disabled={!table.getCanPreviousPage()}
+                        disabled={!table?.getCanPreviousPage()}
                         aria-label="Go to first page"
                     >
                         <span className="sr-only">Go to first page</span>
@@ -184,7 +184,7 @@ export function DataTablePagination<TData>({
                     variant="outline"
                     className="h-8 w-8 p-0"
                     onClick={goToPreviousPage}
-                    disabled={!table.getCanPreviousPage()}
+                    disabled={!table?.getCanPreviousPage()}
                     aria-label="Go to previous page"
                 >
                     <span className="sr-only">Go to previous page</span>
@@ -195,7 +195,7 @@ export function DataTablePagination<TData>({
                     variant="outline"
                     className="h-8 w-8 p-0"
                     onClick={goToNextPage}
-                    disabled={!table.getCanNextPage()}
+                    disabled={!table?.getCanNextPage()}
                     aria-label="Go to next page"
                 >
                     <span className="sr-only">Go to next page</span>
@@ -207,7 +207,7 @@ export function DataTablePagination<TData>({
                         variant="outline"
                         className="hidden h-8 w-8 p-0 lg:flex"
                         onClick={goToLastPage}
-                        disabled={!table.getCanNextPage()}
+                        disabled={!table?.getCanNextPage()}
                         aria-label="Go to last page"
                     >
                         <span className="sr-only">Go to last page</span>

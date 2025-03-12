@@ -5,15 +5,15 @@ import {
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "../../primitives/tooltip";
+} from "@/components/tooltip";
 import { useDataTable, useDataTableCallbacks } from "./core/DataTableProvider";
 
-import { Button } from "../../primitives/button";
-import { Kbd } from "../../custom/kbd";
+import { Button } from "@/components/button";
+import { Kbd } from "../custom/kbd";
 import React from "react";
 import type { Table } from "@tanstack/react-table";
 import { X } from "lucide-react";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for the DataTableResetButton component
@@ -119,7 +119,7 @@ export function DataTableResetButton<TData = unknown>({
     // Set up the reset function
     const handleReset = () => {
         // Reset filters in the table
-        table.resetColumnFilters();
+        table?.resetColumnFilters();
 
         // Call the custom onClick handler if provided
         onClick?.();

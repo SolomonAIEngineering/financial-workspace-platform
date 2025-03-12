@@ -1,10 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/react';
 import {
+    ColumnDef,
     createColumnHelper,
     getCoreRowModel,
     getPaginationRowModel,
     useReactTable
 } from '@tanstack/react-table';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { DataTablePagination } from './DataTablePagination';
 import { DataTableProvider } from '../core/DataTableProvider';
@@ -110,7 +111,7 @@ const PaginationWithContext: React.FC<{
         return (
             <DataTableProvider
                 table={table}
-                columns={columns}
+                columns={columns as ColumnDef<Person, string>[]}
                 filterFields={[]}
                 initialState={{
                     pageSize: initialPageSize,

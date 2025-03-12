@@ -52,14 +52,13 @@ export function createQueryOptions<TResponseData = ColumnSchema[]>(
             // Remove uuid/live from the query key as they would otherwise retrigger a fetch
             { ...search, uuid: null, live: null },
         ],
-        queryFn: async ({ pageParam }: { pageParam: { cursor: number; direction: "next" | "prev" } }) => {
-            const cursor = new Date(pageParam.cursor);
-            const direction = pageParam.direction;
+        queryFn: async ({ pageParam }: { pageParam: unknown }) => {
+            const { cursor, direction } = pageParam as { cursor: number; direction: "next" | "prev" };
 
             // Create the query parameters
             const queryParams = {
                 ...search,
-                cursor,
+                cursor: new Date(cursor),
                 direction,
                 uuid: null,
                 live: null,

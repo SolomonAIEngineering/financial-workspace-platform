@@ -1,8 +1,8 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useDataTable, useDataTableCallbacks } from "../core/DataTableProvider";
 
-import { Button } from "@/components/ui/button";
-import type { ButtonProps } from "@/components/ui/button";
+import { Button } from "@/components/button";
+import { ButtonProps } from "../../button";
 import type { Column } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 import { useCallback } from "react";
@@ -53,6 +53,7 @@ export function DataTableColumnHeader<TData, TValue>({
     ...props
 }: DataTableColumnHeaderProps<TData, TValue>) {
     const callbacks = useDataTableCallbacks<TData>();
+    const { table } = useDataTable<TData>();
 
     // If the column can't be sorted, render a simple div
     if (!column.getCanSort()) {
@@ -71,11 +72,11 @@ export function DataTableColumnHeader<TData, TValue>({
         column.toggleSorting(undefined);
 
         // Get the updated sorting state
-        const newSortingState = column.getParentTable().getState().sorting;
+        const newSortingState = table?.getState().sorting;
 
         // Call the onSortingChange callback if provided
-        callbacks?.onSortingChange?.(newSortingState);
-    }, [column, callbacks]);
+        callbacks?.onSortingChange?.(newSortingState ?? []);
+    }, [column, callbacks, table]);
 
     // Generate the aria-label for the sort button
     const sortAriaLabel = ariaLabel || `Sort by ${title}`;

@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useDataTable, useDataTableCallbacks } from "../core/DataTableProvider";
 
 import type { DataTableSliderFilterField } from "../core/types";
-import { Slider } from "../../../primitives/slider";
-import { cn } from "../../../lib/utils";
+import { Slider } from "@/components/slider";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for the DataTableFilterSlider component
@@ -66,7 +66,7 @@ export function DataTableFilterSlider<TData = unknown>({
     const callbacks = useDataTableCallbacks<TData>();
 
     // Get column and current filter value
-    const column = table.getColumn(columnId as string);
+    const column = table?.getColumn(columnId as string);
     const currentFilterValue = column?.getFilterValue() as [number, number] || [min, max];
 
     // Local state for slider value (for debouncing)
@@ -109,7 +109,7 @@ export function DataTableFilterSlider<TData = unknown>({
     }, [sliderValue, debounceTime, column, columnId, currentFilterValue, min, max, onChange, callbacks]);
 
     return (
-        <div className={cn("space-y-2", className)} data-testid={`filter-slider-${columnId}`}>
+        <div className={cn("space-y-2", className)} data-testid={`filter-slider-${String(columnId)}`}>
             <div className={cn("flex justify-between text-xs text-muted-foreground", valueDisplayClassName)}>
                 <div>{formatValue(sliderValue[0])}</div>
                 <div>{formatValue(sliderValue[1])}</div>
@@ -121,7 +121,7 @@ export function DataTableFilterSlider<TData = unknown>({
                 value={sliderValue}
                 onValueChange={handleValueChange as (value: number[]) => void}
                 className="py-2"
-                aria-label={`Filter by ${columnId} range`}
+                aria-label={`Filter by ${String(columnId)} range`}
             />
         </div>
     );

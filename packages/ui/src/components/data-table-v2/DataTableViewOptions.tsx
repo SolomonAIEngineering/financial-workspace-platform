@@ -8,23 +8,19 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-} from "../../primitives/command";
+} from "@/components/command";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "../../primitives/popover";
+} from "@/components/popover";
 import React, { useMemo, useState } from "react";
-import {
-    Sortable,
-    SortableDragHandle,
-    SortableItem,
-} from "../../custom/sortable";
+import { Sortable, SortableDragHandle, SortableItem } from "../custom/sortable";
 import { useDataTable, useDataTableCallbacks } from "./core/DataTableProvider";
 
-import { Button } from "../../primitives/button";
+import { Button } from "@/components/button";
 import type { Table } from "@tanstack/react-table";
-import { cn } from "../../lib/utils";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for the DataTableViewOptions component
@@ -131,12 +127,12 @@ export function DataTableViewOptions<TData = unknown>({
     const [search, setSearch] = useState("");
 
     // Get the current column order
-    const columnOrder = table.getState().columnOrder;
+    const columnOrder = table?.getState().columnOrder;
 
     // Sort columns based on the column order
     const sortedColumns = useMemo(
         () =>
-            table.getAllColumns().sort((a, b) => {
+            table?.getAllColumns().sort((a, b) => {
                 return columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id);
             }),
         [table, columnOrder],
@@ -145,11 +141,11 @@ export function DataTableViewOptions<TData = unknown>({
     // Handle column visibility toggle
     const handleColumnVisibilityToggle = (columnId: string, isVisible: boolean) => {
         // Toggle visibility in the table
-        table.getColumn(columnId)?.toggleVisibility(isVisible);
+        table?.getColumn(columnId)?.toggleVisibility(isVisible);
 
         // Call the callback if provided
         if (callbacks?.onColumnVisibilityChange) {
-            const visibleColumns = table.getAllColumns()
+            const visibleColumns = table?.getAllColumns()
                 .filter(column => column.getIsVisible())
                 .map(column => column.id);
 
@@ -162,7 +158,7 @@ export function DataTableViewOptions<TData = unknown>({
         const newOrder = items.map(item => item.id);
 
         // Set column order in the table
-        table.setColumnOrder(newOrder);
+        table?.setColumnOrder(newOrder);
 
         // Call the callback if provided
         callbacks?.onColumnOrderChange?.(newOrder);
@@ -199,16 +195,16 @@ export function DataTableViewOptions<TData = unknown>({
                         <CommandEmpty>{emptySearchText}</CommandEmpty>
                         <CommandGroup>
                             <Sortable
-                                value={sortedColumns.map((c) => ({ id: c.id }))}
+                                value={sortedColumns?.map((c) => ({ id: c.id })) || []}
                                 onValueChange={handleColumnOrderChange}
                                 overlay={<div className="h-8 w-full rounded-md bg-muted/60" />}
                                 onDragStart={() => setDrag(true)}
                                 onDragEnd={() => setDrag(false)}
                                 onDragCancel={() => setDrag(false)}
-                                disabled={!enableColumnOrdering}
+                                disabled={enableColumnOrdering}
                             >
                                 {sortedColumns
-                                    .filter(
+                                    ?.filter(
                                         (column) =>
                                             // Only include columns with accessorFn that can be hidden
                                             typeof column.accessorFn !== "undefined" &&

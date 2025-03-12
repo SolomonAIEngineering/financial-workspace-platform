@@ -1,9 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from '../../primitives/card';
-import { LEVELS, METHODS } from './core/constants';
-import type { Meta, StoryObj } from '@storybook/react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../primitives/table';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/card";
+import { LEVELS, METHODS, REGIONS } from "./core/constants";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/table";
 
 import { ColumnDef } from '@tanstack/react-table';
+import { ColumnSchema } from './core/schema';
 import React from 'react';
 import { columns } from './columns';
 
@@ -11,7 +12,7 @@ import { columns } from './columns';
 const ColumnsDemo = ({ columns }: { columns: ColumnDef<any>[] }) => {
     // Generate sample data
     const generateData = (count: number) => {
-        const data = [];
+        const data: Partial<ColumnSchema>[] = [];
 
         for (let i = 0; i < count; i++) {
             const now = new Date();
@@ -25,18 +26,15 @@ const ColumnsDemo = ({ columns }: { columns: ColumnDef<any>[] }) => {
                 date: now,
                 host: ['api.example.com', 'auth.example.com', 'app.example.com'][Math.floor(Math.random() * 3)],
                 pathname: ['/api/users', '/api/auth', '/api/products', '/api/orders'][Math.floor(Math.random() * 4)],
-                region: ['us-east', 'us-west', 'eu-west', 'ap-southeast'][Math.floor(Math.random() * 4)],
-                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                ip: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+                regions: [REGIONS[Math.floor(Math.random() * REGIONS.length)]],
                 message: `This is a sample message ${i}`,
-                timing: {
-                    dns: Math.random() * 50,
-                    connection: Math.random() * 100,
-                    tls: Math.random() * 80,
-                    ttfb: Math.random() * 200,
-                    transfer: Math.random() * 300,
-                    total: Math.random() * 500,
-                },
+                latency: Math.random() * 500,
+                headers: { 'content-type': 'application/json' },
+                "timing.dns": Math.random() * 50,
+                "timing.connection": Math.random() * 100,
+                "timing.tls": Math.random() * 80,
+                "timing.ttfb": Math.random() * 200,
+                "timing.transfer": Math.random() * 300,
             });
         }
 
@@ -55,11 +53,11 @@ const ColumnsDemo = ({ columns }: { columns: ColumnDef<any>[] }) => {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                {columns.map((column) => (
-                                    <TableHead key={column.id || String(column.accessorKey)}>
-                                        {typeof column.header === 'function'
-                                            ? column.header({ column, header: { id: column.id || String(column.accessorKey) } })
-                                            : column.header || column.accessorKey}
+                                {columns.map((column, index) => (
+                                    <TableHead key={index}>
+                                        {typeof column.header === 'string'
+                                            ? column.header
+                                            : column.id || 'Column'}
                                     </TableHead>
                                 ))}
                             </TableRow>
@@ -67,19 +65,14 @@ const ColumnsDemo = ({ columns }: { columns: ColumnDef<any>[] }) => {
                         <TableBody>
                             {data.map((row, i) => (
                                 <TableRow key={i}>
-                                    {columns.map((column) => {
-                                        const key = column.accessorKey as string;
+                                    {columns.map((column, index) => {
+                                        // Use id to get the value
+                                        const key = column.id;
                                         return (
-                                            <TableCell key={key}>
-                                                {column.cell
-                                                    ? column.cell({
-                                                        row: {
-                                                            getValue: (key: string) => row[key],
-                                                            original: row
-                                                        }
-                                                    })
-                                                    : row[key]
-                                                }
+                                            <TableCell key={index}>
+                                                {key && row[key] !== undefined
+                                                    ? String(row[key])
+                                                    : '-'}
                                             </TableCell>
                                         );
                                     })}
@@ -128,8 +121,8 @@ export const CoreColumns: Story = {
         <div className="max-w-[800px]">
             <ColumnsDemo
                 columns={columns.filter(column => {
-                    const key = column.accessorKey as string;
-                    return ['level', 'date', 'status', 'method', 'pathname', 'host'].includes(key);
+                    const id = column.id;
+                    return ['level', 'date', 'status', 'method', 'pathname', 'host'].includes(id || '');
                 })}
             />
         </div>
@@ -148,8 +141,8 @@ export const TimingColumns: Story = {
         <div className="max-w-[600px]">
             <ColumnsDemo
                 columns={columns.filter(column => {
-                    const key = column.accessorKey as string;
-                    return key?.startsWith('timing.');
+                    const id = column.id || '';
+                    return id.startsWith('timing.');
                 })}
             />
         </div>
@@ -168,8 +161,8 @@ export const MetadataColumns: Story = {
         <div className="max-w-[700px]">
             <ColumnsDemo
                 columns={columns.filter(column => {
-                    const key = column.accessorKey as string;
-                    return ['uuid', 'region', 'ip', 'userAgent'].includes(key);
+                    const id = column.id;
+                    return ['uuid', 'regions'].includes(id || '');
                 })}
             />
         </div>
@@ -187,12 +180,12 @@ export const CustomColumnSet: Story = {
     render: () => {
         // Example of how to create a custom column set
         const customColumns = [
-            columns.find(col => col.accessorKey === 'level'),
-            columns.find(col => col.accessorKey === 'date'),
-            columns.find(col => col.accessorKey === 'method'),
-            columns.find(col => col.accessorKey === 'status'),
-            columns.find(col => col.accessorKey === 'message'),
-            columns.find(col => col.accessorKey === 'timing.total'),
+            columns.find(col => col.id === 'level'),
+            columns.find(col => col.id === 'date'),
+            columns.find(col => col.id === 'method'),
+            columns.find(col => col.id === 'status'),
+            columns.find(col => col.id === 'message'),
+            columns.find(col => col.id === 'timing.total'),
         ].filter(Boolean) as ColumnDef<any>[];
 
         return (

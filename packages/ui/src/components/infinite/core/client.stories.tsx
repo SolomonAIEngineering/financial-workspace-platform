@@ -1,5 +1,5 @@
 import { AlertCircle, CheckCircle2, Clock, XCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../primitives/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/card';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { ColumnSchema } from './schema';
@@ -8,7 +8,7 @@ import { InfiniteClient } from './client';
 import { LEVELS } from './constants';
 import React from 'react';
 
-const meta: Meta<typeof InfiniteClient> = {
+const meta = {
     title: 'Components/Infinite/Core/InfiniteClient',
     component: InfiniteClient,
     parameters: {
@@ -82,7 +82,6 @@ const mockColumns = [
 // Mock filter fields
 const mockFilterFields: DataTableFilterField<ColumnSchema>[] = [
     {
-        id: 'level',
         label: 'Log Level',
         value: 'level',
         type: 'checkbox',
@@ -92,21 +91,18 @@ const mockFilterFields: DataTableFilterField<ColumnSchema>[] = [
         })),
     },
     {
-        id: 'message',
         label: 'Message',
         value: 'message',
         type: 'input',
-        placeholder: 'Search messages...',
     },
     {
-        id: 'date',
         label: 'Date',
         value: 'date',
         type: 'timerange',
         presets: [
-            { label: 'Last hour', value: '1hour' },
-            { label: 'Last day', value: '1day' },
-            { label: 'Last week', value: '1week' },
+            { label: 'Last hour', from: new Date(Date.now() - 3600000), to: new Date(), shortcut: '1h' },
+            { label: 'Last day', from: new Date(Date.now() - 86400000), to: new Date(), shortcut: '1d' },
+            { label: 'Last week', from: new Date(Date.now() - 604800000), to: new Date(), shortcut: '1w' },
         ],
     },
 ];
@@ -203,7 +199,7 @@ const MockDataTableComponent = (props: any) => {
                     <h4 className="text-sm font-medium mb-2">Filter Fields:</h4>
                     <div className="text-sm space-y-1">
                         {props.filterFields.map((field: any) => (
-                            <div key={field.id} className="p-2 bg-muted rounded-md">
+                            <div key={field.value} className="p-2 bg-muted rounded-md">
                                 {field.label} ({field.type})
                             </div>
                         ))}

@@ -1,10 +1,10 @@
 import { Eye, LayoutDashboard, List } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
+import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 import { DataTableProvider } from './core/DataTableProvider';
 import { DataTableViewOptions } from './DataTableViewOptions';
-import { createColumnHelper } from '@tanstack/react-table';
 
 const meta: Meta<typeof DataTableViewOptions> = {
     title: 'Components/DataTable/V2/DataTableViewOptions',
@@ -89,16 +89,22 @@ const columns = [
 
 // Wrapper component for stories
 const ViewOptionsWithProvider = (props: React.ComponentProps<typeof DataTableViewOptions>) => {
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        state: {
+            columnVisibility: {
+                id: false, // Hide ID column by default
+            },
+        },
+    });
+
     return (
         <DataTableProvider
-            data={data}
+            table={table}
             columns={columns}
             enableColumnOrdering={props.enableColumnOrdering}
-            initialState={{
-                columnVisibility: {
-                    id: false, // Hide ID column by default
-                },
-            }}
         >
             <div className="flex items-center justify-center p-4 border rounded-md w-[300px]">
                 <DataTableViewOptions {...props} />
@@ -184,6 +190,29 @@ export const WithCallbacks: Story = {
         const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
         const [columnOrder, setColumnOrder] = useState<string[]>([]);
 
+        const table = useReactTable({
+            data,
+            columns,
+            getCoreRowModel: getCoreRowModel(),
+        });
+
+        // Adapter functions for the callbacks
+        const handleColumnVisibilityChange = (columnId: string, isVisible: boolean) => {
+            setVisibleColumns(prev => {
+                if (isVisible && !prev.includes(columnId)) {
+                    return [...prev, columnId];
+                }
+                if (!isVisible && prev.includes(columnId)) {
+                    return prev.filter(id => id !== columnId);
+                }
+                return prev;
+            });
+        };
+
+        const handleColumnOrderChange = (newOrder: string[]) => {
+            setColumnOrder(newOrder);
+        };
+
         return (
             <div className="space-y-4">
                 <div className="border rounded-md p-3 max-w-[500px]">
@@ -203,11 +232,13 @@ export const WithCallbacks: Story = {
                 </div>
 
                 <DataTableProvider
-                    data={data}
+                    table={table}
                     columns={columns}
                     enableColumnOrdering={true}
-                    onColumnVisibilityChange={setVisibleColumns}
-                    onColumnOrderChange={setColumnOrder}
+                    callbacks={{
+                        onColumnVisibilityChange: handleColumnVisibilityChange,
+                        onColumnOrderChange: handleColumnOrderChange
+                    }}
                 >
                     <div className="flex justify-center border rounded-md p-4">
                         <DataTableViewOptions enableColumnOrdering={true} />

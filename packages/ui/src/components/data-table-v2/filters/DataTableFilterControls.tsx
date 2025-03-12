@@ -5,7 +5,7 @@ import {
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from "../../../custom/accordion";
+} from "@/components/accordion";
 import React, { useMemo } from "react";
 import { useDataTable, useDataTableCallbacks } from "../core/DataTableProvider";
 
@@ -15,7 +15,7 @@ import { DataTableFilterInput } from "./DataTableFilterInput";
 import { DataTableFilterResetButton } from "./DataTableFilterResetButton";
 import { DataTableFilterSlider } from "./DataTableFilterSlider";
 import { DataTableFilterTimerange } from "./DataTableFilterTimerange";
-import { cn } from "../../../lib/utils";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for the DataTableFilterControls component
@@ -179,7 +179,11 @@ export function DataTableFilterControls<TData = unknown>({
                                             </p>
                                         ) : null}
                                     </div>
-                                    {showResetButtons && <DataTableFilterResetButton {...field} />}
+                                    {showResetButtons && (
+                                        <DataTableFilterResetButton<TData>
+                                            {...field as any}
+                                        />
+                                    )}
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent className={contentClassName}>

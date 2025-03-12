@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import React from 'react';
 import { TimelineChart } from './TimelineChart';
 
 const meta: Meta<typeof TimelineChart> = {
@@ -23,7 +22,20 @@ type Story = StoryObj<typeof TimelineChart>;
 // Helper function to create test data
 const createTimelineData = (hours: number, pattern: 'random' | 'spikes' | 'gradual' | 'alternating' = 'random') => {
     const now = new Date();
-    const data = [];
+
+    // Define the data structure type to match BaseChartSchema
+    type TimelineDataItem = {
+        timestamp: number;
+        count: number;
+        info: number;
+        error: number;
+        warn: number;
+        debug: number;
+        success: number;
+        [key: string]: number;
+    };
+
+    const data: TimelineDataItem[] = [];
 
     for (let i = 0; i < hours; i++) {
         const date = new Date(now);
@@ -84,7 +96,7 @@ const createTimelineData = (hours: number, pattern: 'random' | 'spikes' | 'gradu
         }
 
         data.push({
-            date,
+            timestamp: date.getTime(),
             count: info + error + warn + debug + success,
             info,
             error,

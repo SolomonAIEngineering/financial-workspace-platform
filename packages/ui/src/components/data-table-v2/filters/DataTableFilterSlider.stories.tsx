@@ -1,9 +1,9 @@
-import { Card, CardContent } from '../../../primitives/card';
+import { Card, CardContent } from '@/components/card';
 import { ColumnDef, createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
 
-import { Badge } from '../../../primitives/badge';
+import { Badge } from '@/components/badge';
 import { DataTableFilterSlider } from './DataTableFilterSlider';
 import { DataTableProvider } from '../core/DataTableProvider';
 
@@ -106,7 +106,7 @@ const FilterSliderWrapper = ({
         state: {
             columnFilters,
         },
-        onColumnFiltersChange: setColumnFilters,
+        onColumnFiltersChange: filters => setColumnFilters(filters as typeof columnFilters),
         getCoreRowModel: getCoreRowModel(),
     });
 
@@ -142,6 +142,8 @@ export const Basic: Story = {
         <FilterSliderWrapper>
             <DataTableFilterSlider
                 value="price"
+                label="Price"
+                type="slider"
                 min={minPrice}
                 max={maxPrice}
             />
@@ -161,6 +163,8 @@ export const WithStep: Story = {
         <FilterSliderWrapper>
             <DataTableFilterSlider
                 value="price"
+                label="Price"
+                type="slider"
                 min={minPrice}
                 max={maxPrice}
                 step={50}
@@ -181,6 +185,8 @@ export const WithCustomClasses: Story = {
         <FilterSliderWrapper>
             <DataTableFilterSlider
                 value="price"
+                label="Price"
+                type="slider"
                 min={minPrice}
                 max={maxPrice}
                 className="px-2 py-4 border rounded-md"
@@ -201,6 +207,8 @@ export const WithInitialValues: Story = {
         <FilterSliderWrapper initialFilter={{ min: 200, max: 500 }}>
             <DataTableFilterSlider
                 value="price"
+                label="Price"
+                type="slider"
                 min={minPrice}
                 max={maxPrice}
             />
@@ -220,6 +228,8 @@ export const RatingFilter: Story = {
         <FilterSliderWrapper columnId="rating">
             <DataTableFilterSlider
                 value="rating"
+                label="Rating"
+                type="slider"
                 min={minRating}
                 max={maxRating}
                 step={0.1}
@@ -241,6 +251,8 @@ export const StockFilter: Story = {
         <FilterSliderWrapper columnId="stock">
             <DataTableFilterSlider
                 value="stock"
+                label="Stock"
+                type="slider"
                 min={minStock}
                 max={maxStock}
                 step={1}
@@ -262,9 +274,10 @@ export const WithCustomLabel: Story = {
         <FilterSliderWrapper>
             <DataTableFilterSlider
                 value="price"
+                label="Price Range ($)"
+                type="slider"
                 min={minPrice}
                 max={maxPrice}
-                label="Price Range ($)"
             />
         </FilterSliderWrapper>
     ),
@@ -286,9 +299,17 @@ export const WithCallback: Story = {
                 <div className="space-y-4">
                     <DataTableFilterSlider
                         value="price"
+                        label="Price Range ($)"
+                        type="slider"
                         min={minPrice}
                         max={maxPrice}
-                        onChange={(values) => setSliderValues(values)}
+                        onChange={(values) => {
+                            if (Array.isArray(values)) {
+                                setSliderValues({ min: values[0], max: values[1] });
+                            } else {
+                                setSliderValues(values || { min: undefined, max: undefined });
+                            }
+                        }}
                     />
 
                     <div className="text-sm py-2 px-3 bg-muted rounded-md">

@@ -23,7 +23,7 @@ interface DataTableBaseContextType<TData = unknown, TValue = unknown> {
     /**
      * The TanStack Table instance
      */
-    table: Table<TData>;
+    table?: Table<TData>;
 
     /**
      * Filter field definitions

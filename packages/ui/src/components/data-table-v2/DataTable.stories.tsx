@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { DataTable } from './DataTable';
 import React from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
+import { ColumnFiltersState, SortingState } from '@tanstack/react-table';
 
 const meta: Meta<typeof DataTable> = {
     title: 'Components/DataTable/V2',
@@ -21,7 +22,7 @@ const meta: Meta<typeof DataTable> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof DataTable>;
+type Story = StoryObj<typeof DataTable<Product, any>>;
 
 // Sample data interface
 interface Product {
@@ -66,12 +67,12 @@ const columns = [
     columnHelper.accessor('price', {
         header: 'Price',
         cell: info => `$${info.getValue()}`,
-        filterFn: 'inRange',
+        filterFn: 'inNumberRange',
     }),
     columnHelper.accessor('stock', {
         header: 'Stock',
         cell: info => info.getValue(),
-        filterFn: 'inRange',
+        filterFn: 'inNumberRange',
     }),
     columnHelper.accessor('status', {
         header: 'Status',
@@ -96,16 +97,22 @@ const columns = [
     columnHelper.accessor('createdAt', {
         header: 'Created At',
         cell: info => info.getValue().toLocaleDateString(),
-        filterFn: 'dateRange',
+        filterFn: (row, columnId, filterValue) => {
+            if (!filterValue || !filterValue.from || !filterValue.to) return true;
+            const value = row.getValue(columnId) as Date;
+            const from = new Date(filterValue.from);
+            const to = new Date(filterValue.to);
+            return value >= from && value <= to;
+        },
     }),
 ];
 
 // Filter fields
 const filterFields = [
     {
-        type: 'checkbox',
+        type: 'checkbox' as const,
         label: 'Category',
-        value: 'category',
+        value: 'category' as keyof Product,
         defaultOpen: true,
         options: [
             { label: 'Electronics', value: 'Electronics' },
@@ -114,23 +121,23 @@ const filterFields = [
         ],
     },
     {
-        type: 'slider',
+        type: 'slider' as const,
         label: 'Price',
-        value: 'price',
+        value: 'price' as keyof Product,
         min: 0,
         max: 1000,
     },
     {
-        type: 'slider',
+        type: 'slider' as const,
         label: 'Stock',
-        value: 'stock',
+        value: 'stock' as keyof Product,
         min: 0,
         max: 100,
     },
     {
-        type: 'checkbox',
+        type: 'checkbox' as const,
         label: 'Status',
-        value: 'status',
+        value: 'status' as keyof Product,
         options: [
             { label: 'Available', value: 'available' },
             { label: 'Low Stock', value: 'low' },
@@ -138,14 +145,14 @@ const filterFields = [
         ],
     },
     {
-        type: 'timerange',
+        type: 'timerange' as const,
         label: 'Created At',
-        value: 'createdAt',
+        value: 'createdAt' as keyof Product,
     },
     {
-        type: 'input',
+        type: 'input' as const,
         label: 'Search Name',
-        value: 'name',
+        value: 'name' as keyof Product,
     },
 ];
 
@@ -155,6 +162,9 @@ export const Default: Story = {
         columns,
         filterFields,
     },
+    render: (args) => (
+        <DataTable<Product, any> {...args} />
+    ),
     parameters: {
         docs: {
             description: {
@@ -170,6 +180,9 @@ export const WithoutFilters: Story = {
         columns,
         showFilters: false,
     },
+    render: (args) => (
+        <DataTable<Product, any> {...args} />
+    ),
     parameters: {
         docs: {
             description: {
@@ -186,6 +199,9 @@ export const WithoutToolbar: Story = {
         filterFields,
         showToolbar: false,
     },
+    render: (args) => (
+        <DataTable<Product, any> {...args} />
+    ),
     parameters: {
         docs: {
             description: {
@@ -202,6 +218,9 @@ export const WithoutPagination: Story = {
         filterFields,
         showPagination: false,
     },
+    render: (args) => (
+        <DataTable<Product, any> {...args} />
+    ),
     parameters: {
         docs: {
             description: {
@@ -218,6 +237,9 @@ export const CustomPagination: Story = {
         filterFields,
         defaultPagination: { pageIndex: 0, pageSize: 5 },
     },
+    render: (args) => (
+        <DataTable<Product, any> {...args} />
+    ),
     parameters: {
         docs: {
             description: {
@@ -234,6 +256,9 @@ export const Loading: Story = {
         filterFields,
         isLoading: true,
     },
+    render: (args) => (
+        <DataTable<Product, any> {...args} />
+    ),
     parameters: {
         docs: {
             description: {
@@ -252,6 +277,9 @@ export const WithRowClick: Story = {
             alert(`Clicked on product: ${row.original.name}`);
         },
     },
+    render: (args) => (
+        <DataTable<Product, any> {...args} />
+    ),
     parameters: {
         docs: {
             description: {
@@ -270,6 +298,9 @@ export const WithDefaultSorting: Story = {
             { id: 'price', desc: true }
         ],
     },
+    render: (args) => (
+        <DataTable<Product, any> {...args} />
+    ),
     parameters: {
         docs: {
             description: {
@@ -288,6 +319,9 @@ export const WithDefaultFilters: Story = {
             { id: 'category', value: ['Electronics'] }
         ],
     },
+    render: (args) => (
+        <DataTable<Product, any> {...args} />
+    ),
     parameters: {
         docs: {
             description: {
@@ -300,7 +334,7 @@ export const WithDefaultFilters: Story = {
 export const DenseLayout: Story = {
     render: (args) => (
         <div className="[--data-table-row-height:2rem] [--data-table-header-height:2.5rem]">
-            <DataTable {...args} />
+            <DataTable<Product, any> {...args} />
         </div>
     ),
     args: {
@@ -320,7 +354,7 @@ export const DenseLayout: Story = {
 export const CustomStyling: Story = {
     render: (args) => (
         <div className="[--data-table-border-color:theme(colors.primary.200)] [--data-table-header-bg:theme(colors.primary.50)] [--data-table-row-hover:theme(colors.primary.50/30)]">
-            <DataTable {...args} />
+            <DataTable<Product, any> {...args} />
         </div>
     ),
     args: {
@@ -340,8 +374,8 @@ export const CustomStyling: Story = {
 export const WithCallbacks: Story = {
     render: () => {
         const [state, setState] = React.useState({
-            filters: [],
-            sorting: [],
+            filters: [] as ColumnFiltersState,
+            sorting: [] as SortingState,
             pagination: { pageIndex: 0, pageSize: 10 },
         });
 
@@ -353,7 +387,7 @@ export const WithCallbacks: Story = {
                     <div><strong>Current Pagination:</strong> {JSON.stringify(state.pagination)}</div>
                 </div>
 
-                <DataTable
+                <DataTable<Product, any>
                     data={data}
                     columns={columns}
                     filterFields={filterFields}
