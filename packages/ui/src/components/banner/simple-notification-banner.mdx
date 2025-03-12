@@ -17,14 +17,12 @@ The `NotificationBannerSimple` is a flexible component used to display a notific
 ## Usage
 
 ```tsx
-<Canvas>
-  <NotificationBannerSimple
-    position="top"
-    message="Consider upgrading your plan to continue using all features."
-    onSave={() => alert("Saved!")}
-    onReject={() => alert("Rejected!")}
-  />
-</Canvas>
+<NotificationBannerSimple
+  position="top"
+  message="Consider upgrading your plan to continue using all features."
+  onSave={() => alert("Saved!")}
+  onReject={() => alert("Rejected!")}
+/>
 ```
 
 ## Detailed Description
@@ -41,8 +39,8 @@ These features make the component versatile for various notification needs in a 
 
 ### Top Position Banner
 
-<Canvas of={NotificationBannerSimple.Default} />
+<Canvas of={NotificationBannerSimple.TopPositionBanner} />
 
 ### Bottom Position Banner
 
-<Canvas of={NotificationBannerSimple.Default} />
+<Canvas of={NotificationBannerSimple.BottomPositionBanner} />
