@@ -1,14 +1,23 @@
-import { UserRole } from '@prisma/client';
+'use server';
 
-import WelcomeEmail from '@/components/email/welcome-email';
-import { env } from '@/env';
 import {
   generateFromUsername,
   generateUsername,
 } from '@/lib/generateFromUsername';
+
+import { LoopsClient } from 'loops';
+import { UserRole } from '@prisma/client';
+import WelcomeEmail from '@/components/email/welcome-email';
+import { env } from '@/env';
 import { nid } from '@/lib/nid';
-import { sendEmailViaResend } from '@/lib/resend';
 import { prisma } from '@/server/db';
+import { sendEmailViaResend } from '@/lib/resend';
+
+// Initialize the Loops client with API key from environment variables
+const loops = new LoopsClient(process.env.LOOPS_API_KEY || '');
+const USER_BASE_MAILING_LIST = process.env.USER_BASE_MAILING_LIST;
+const FEATURE_LAUNCH_MAIN_LIST = process.env.FEATURE_LAUNCH_MAIN_LIST;
+
 
 export const findOrCreateUser = async ({
   // bio,
@@ -123,6 +132,46 @@ export const findOrCreateUser = async ({
       id: true,
     },
   });
+
+  // Create a contact in Loops
+  try {
+    const mailingList: Record<string, boolean> = {
+      [USER_BASE_MAILING_LIST as string]: true,
+      [FEATURE_LAUNCH_MAIN_LIST as string]: true,
+    };
+
+    // Create or update contact in Loops using the SDK
+    await loops.createContact(
+      email,
+      {
+        firstName: firstName || (name ? name.split(' ')[0] : ''),
+        lastName: lastName || (name && name.split(' ').length > 1 ? name.split(' ').slice(1).join(' ') : ''),
+        userId: user.id, // Store the user ID for future reference
+        source: `${providerId} OAuth`,
+        userGroup: 'creator',
+        createdAt: new Date().toISOString(),
+        subscribed: true,
+        signupIntent: 'creator',
+        organizationCreate: true,
+        organizationSlug: username || '',
+        organizationCount: 1,
+        subscribedAt: new Date().toISOString(),
+        ...(providerId === 'github' && {
+          githubLogin: true,
+        }),
+        ...(providerId === 'google' && {
+          googleLogin: true,
+        }),
+      },
+      mailingList
+    );
+
+    // TODO: add telemetry and increase success count
+    console.info(`Successfully added user to Loops: ${email}`);
+  } catch (error) {
+    console.error('Failed to create contact in Loops:', error);
+    // Don't block the user creation process if Loops integration fails
+  }
 
   // Send welcome email
   try {
