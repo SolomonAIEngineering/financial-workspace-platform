@@ -1,12 +1,13 @@
-import type { Metadata } from "next";
 import "@/styles/globals.css";
-import { ThemeProvider } from "@/components/theme/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
-import { ReactQueryProvider } from "@/providers/react-query";
+
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
-import PlausibleProvider from "next-plausible";
+import type { Metadata } from "next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import PlausibleProvider from "next-plausible";
+import { ReactQueryProvider } from "@/providers/react-query";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const TITLE = "Powerful Data-Table for React | OpenStatus";
 const DESCRIPTION =
@@ -42,7 +43,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       {process.env.NODE_ENV === "development" ||
-      process.env.NEXT_PUBLIC_REACT_SCAN === "true" ? (
+        process.env.NEXT_PUBLIC_REACT_SCAN === "true" ? (
         <head>
           <script
             src="https://unpkg.com/react-scan/dist/auto.global.js"
