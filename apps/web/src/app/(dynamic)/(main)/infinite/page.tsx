@@ -1,7 +1,9 @@
-import { getQueryClient } from "@/providers/get-query-client";
 import * as React from "react";
+
 import { Client } from "./client";
+import { HydrateClient } from "@/trpc/server";
 import { dataOptions } from "./query-options";
+import { getQueryClient } from "@/providers/get-query-client";
 import { searchParamsCache } from "./search-params";
 
 export default async function Page({
@@ -13,5 +15,11 @@ export default async function Page({
   const queryClient = getQueryClient();
   await queryClient.prefetchInfiniteQuery(dataOptions(search));
 
-  return <Client />;
+  return (
+    <HydrateClient>
+      <div className="p-[0.5%]">
+        <Client />
+      </div>
+    </HydrateClient>
+  );
 }
