@@ -10,7 +10,12 @@ import { useDataTable } from "../core/DataTableProvider";
 /**
  * Props for the DataTableFilterResetButton component
  */
-export interface DataTableFilterResetButtonProps<TData = unknown> extends DataTableFilterField<TData> {
+export interface DataTableFilterResetButtonProps<TData = unknown> {
+    /**
+     * The value of the filter to reset
+     */
+    value: string;
+
     /**
      * Optional custom class name for the button
      */

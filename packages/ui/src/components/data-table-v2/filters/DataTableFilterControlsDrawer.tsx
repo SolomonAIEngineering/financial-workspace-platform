@@ -8,13 +8,13 @@ import {
     DrawerHeader,
     DrawerTitle,
     DrawerTrigger,
-} from "../../../primitives/drawer";
+} from "@/components/drawer";
 import React, { useState } from "react";
 
-import { Button } from "../../../primitives/button";
+import { Button } from "@/components/button";
 import { DataTableFilterControls } from "./DataTableFilterControls";
 import { Filter } from "lucide-react";
-import { cn } from "../../../lib/utils";
+import { cn } from "@/lib/utils";
 import { useDataTable } from "../core/DataTableProvider";
 
 /**

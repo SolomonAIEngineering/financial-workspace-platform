@@ -1,4 +1,4 @@
-import { Card, CardContent } from '../../../primitives/card';
+import { Card, CardContent } from '@/components/card';
 import { ColumnDef, createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
@@ -72,13 +72,22 @@ const FilterInputWrapper = ({
         { id: columnId, value: initialFilter }
     ]);
 
+    // Create a wrapper function that adapts useState's setState to OnChangeFn
+    const handleColumnFiltersChange = (updaterOrValue: any) => {
+        if (typeof updaterOrValue === 'function') {
+            setColumnFilters(prev => updaterOrValue(prev));
+        } else {
+            setColumnFilters(updaterOrValue);
+        }
+    };
+
     const table = useReactTable({
         data,
         columns,
         state: {
             columnFilters,
         },
-        onColumnFiltersChange: setColumnFilters,
+        onColumnFiltersChange: handleColumnFiltersChange,
         getCoreRowModel: getCoreRowModel(),
     });
 
@@ -99,7 +108,11 @@ const FilterInputWrapper = ({
 export const Basic: Story = {
     render: () => (
         <FilterInputWrapper>
-            <DataTableFilterInput value="name" />
+            <DataTableFilterInput
+                value="name"
+                label="Name"
+                type="input"
+            />
         </FilterInputWrapper>
     ),
     parameters: {
@@ -116,6 +129,8 @@ export const WithPlaceholder: Story = {
         <FilterInputWrapper>
             <DataTableFilterInput
                 value="name"
+                label="Name"
+                type="input"
                 placeholder="Search by name..."
             />
         </FilterInputWrapper>
@@ -134,6 +149,8 @@ export const CustomDebounce: Story = {
         <FilterInputWrapper>
             <DataTableFilterInput
                 value="name"
+                label="Name"
+                type="input"
                 placeholder="Fast debounce (100ms)..."
                 debounceTime={100}
             />
@@ -153,6 +170,8 @@ export const WithInitialValue: Story = {
         <FilterInputWrapper initialFilter="lap">
             <DataTableFilterInput
                 value="name"
+                label="Name"
+                type="input"
                 placeholder="Search products..."
             />
         </FilterInputWrapper>
@@ -171,6 +190,8 @@ export const CustomStyling: Story = {
         <FilterInputWrapper>
             <DataTableFilterInput
                 value="name"
+                label="Name"
+                type="input"
                 placeholder="Search products..."
                 className="bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
             />
@@ -194,6 +215,8 @@ export const WithCallback: Story = {
                 <div className="space-y-4">
                     <DataTableFilterInput
                         value="name"
+                        label="Name"
+                        type="input"
                         placeholder="Search products..."
                         onChange={(value) => setLastValue(value)}
                     />
@@ -218,6 +241,8 @@ export const DifferentColumnFilter: Story = {
         <FilterInputWrapper columnId="category">
             <DataTableFilterInput
                 value="category"
+                label="Category"
+                type="input"
                 placeholder="Filter by category..."
             />
         </FilterInputWrapper>

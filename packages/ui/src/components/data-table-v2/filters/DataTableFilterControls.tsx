@@ -1,12 +1,6 @@
 "use client";
 
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/accordion";
-import React, { useMemo } from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/accordion";
 import { useDataTable, useDataTableCallbacks } from "../core/DataTableProvider";
 
 import { DataTableFilterCheckbox } from "./DataTableFilterCheckbox";
@@ -16,6 +10,7 @@ import { DataTableFilterResetButton } from "./DataTableFilterResetButton";
 import { DataTableFilterSlider } from "./DataTableFilterSlider";
 import { DataTableFilterTimerange } from "./DataTableFilterTimerange";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
 /**
  * Props for the DataTableFilterControls component
@@ -147,74 +142,144 @@ export function DataTableFilterControls<TData = unknown>({
 
     return (
         <div className={cn("w-full", className)} data-testid="data-table-filter-controls">
-            <Accordion
-                type={accordionType}
-                defaultValue={filteredFields
-                    .filter(({ defaultOpen }) => defaultOpen)
-                    .map(({ value }) => value as string)}
-                onValueChange={accordionType === "multiple" ? handleAccordionValueChange : undefined}
-            >
-                {filteredFields.map((field) => {
-                    const value = field.value as string;
-                    return (
-                        <AccordionItem
-                            key={value}
-                            value={value}
-                            className={cn("border-none", accordionItemClassName)}
-                        >
-                            <AccordionTrigger
-                                className={cn(
-                                    "w-full px-2 py-0 hover:no-underline",
-                                    "data-[state=closed]:text-muted-foreground data-[state=open]:text-foreground",
-                                    "focus-within:data-[state=closed]:text-foreground hover:data-[state=closed]:text-foreground",
-                                    triggerClassName
-                                )}
+            {accordionType === "multiple" ? (
+                <Accordion
+                    type="multiple"
+                    defaultValue={filteredFields
+                        .filter(({ defaultOpen }) => defaultOpen)
+                        .map(({ value }) => value as string)}
+                    onValueChange={handleAccordionValueChange}
+                >
+                    {filteredFields.map((field) => {
+                        const value = field.value as string;
+                        return (
+                            <AccordionItem
+                                key={value}
+                                value={value}
+                                className={cn("border-none", accordionItemClassName)}
                             >
-                                <div className="flex w-full items-center justify-between gap-2 truncate py-2 pr-2">
-                                    <div className="flex items-center gap-2 truncate">
-                                        <p className="text-sm font-medium">{field.label}</p>
-                                        {value !== field.label.toLowerCase() && !field.commandDisabled ? (
-                                            <p className="mt-px truncate font-mono text-[10px] text-muted-foreground">
-                                                {value}
-                                            </p>
-                                        ) : null}
-                                    </div>
-                                    {showResetButtons && (
-                                        <DataTableFilterResetButton<TData>
-                                            {...field as any}
-                                        />
+                                <AccordionTrigger
+                                    className={cn(
+                                        "w-full px-2 py-0 hover:no-underline",
+                                        "data-[state=closed]:text-muted-foreground data-[state=open]:text-foreground",
+                                        "focus-within:data-[state=closed]:text-foreground hover:data-[state=closed]:text-foreground",
+                                        triggerClassName
                                     )}
-                                </div>
-                            </AccordionTrigger>
-                            <AccordionContent className={contentClassName}>
-                                {/* Avoid focus state being cut due to overflow-hidden */}
-                                <div className="p-1">
-                                    {(() => {
-                                        switch (field.type) {
-                                            case "checkbox": {
-                                                return <DataTableFilterCheckbox {...field} />;
+                                >
+                                    <div className="flex w-full items-center justify-between gap-2 truncate py-2 pr-2">
+                                        <div className="flex items-center gap-2 truncate">
+                                            <p className="text-sm font-medium">{field.label}</p>
+                                            {value !== field.label.toLowerCase() && !field.commandDisabled ? (
+                                                <p className="mt-px truncate font-mono text-[10px] text-muted-foreground">
+                                                    {value}
+                                                </p>
+                                            ) : null}
+                                        </div>
+                                        {showResetButtons && (
+                                            <DataTableFilterResetButton<TData>
+                                                {...field as any}
+                                            />
+                                        )}
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className={contentClassName}>
+                                    {/* Avoid focus state being cut due to overflow-hidden */}
+                                    <div className="p-1">
+                                        {(() => {
+                                            switch (field.type) {
+                                                case "checkbox": {
+                                                    return <DataTableFilterCheckbox {...field} />;
+                                                }
+                                                case "slider": {
+                                                    return <DataTableFilterSlider {...field} />;
+                                                }
+                                                case "input": {
+                                                    return <DataTableFilterInput {...field} />;
+                                                }
+                                                case "timerange": {
+                                                    return <DataTableFilterTimerange {...field} />;
+                                                }
+                                                default: {
+                                                    // Type guard
+                                                    return null;
+                                                }
                                             }
-                                            case "slider": {
-                                                return <DataTableFilterSlider {...field} />;
+                                        })()}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        );
+                    })}
+                </Accordion>
+            ) : (
+                <Accordion
+                    type="single"
+                    defaultValue={filteredFields
+                        .filter(({ defaultOpen }) => defaultOpen)
+                        .map(({ value }) => value as string)[0]}
+                >
+                    {filteredFields.map((field) => {
+                        const value = field.value as string;
+                        return (
+                            <AccordionItem
+                                key={value}
+                                value={value}
+                                className={cn("border-none", accordionItemClassName)}
+                            >
+                                <AccordionTrigger
+                                    className={cn(
+                                        "w-full px-2 py-0 hover:no-underline",
+                                        "data-[state=closed]:text-muted-foreground data-[state=open]:text-foreground",
+                                        "focus-within:data-[state=closed]:text-foreground hover:data-[state=closed]:text-foreground",
+                                        triggerClassName
+                                    )}
+                                >
+                                    <div className="flex w-full items-center justify-between gap-2 truncate py-2 pr-2">
+                                        <div className="flex items-center gap-2 truncate">
+                                            <p className="text-sm font-medium">{field.label}</p>
+                                            {value !== field.label.toLowerCase() && !field.commandDisabled ? (
+                                                <p className="mt-px truncate font-mono text-[10px] text-muted-foreground">
+                                                    {value}
+                                                </p>
+                                            ) : null}
+                                        </div>
+                                        {showResetButtons && (
+                                            <DataTableFilterResetButton<TData>
+                                                {...field as any}
+                                            />
+                                        )}
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className={contentClassName}>
+                                    {/* Avoid focus state being cut due to overflow-hidden */}
+                                    <div className="p-1">
+                                        {(() => {
+                                            switch (field.type) {
+                                                case "checkbox": {
+                                                    return <DataTableFilterCheckbox {...field} />;
+                                                }
+                                                case "slider": {
+                                                    return <DataTableFilterSlider {...field} />;
+                                                }
+                                                case "input": {
+                                                    return <DataTableFilterInput {...field} />;
+                                                }
+                                                case "timerange": {
+                                                    return <DataTableFilterTimerange {...field} />;
+                                                }
+                                                default: {
+                                                    // Type guard
+                                                    return null;
+                                                }
                                             }
-                                            case "input": {
-                                                return <DataTableFilterInput {...field} />;
-                                            }
-                                            case "timerange": {
-                                                return <DataTableFilterTimerange {...field} />;
-                                            }
-                                            default: {
-                                                // Type guard
-                                                return null;
-                                            }
-                                        }
-                                    })()}
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                    );
-                })}
-            </Accordion>
+                                        })()}
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        );
+                    })}
+                </Accordion>
+            )}
         </div>
     );
 } 

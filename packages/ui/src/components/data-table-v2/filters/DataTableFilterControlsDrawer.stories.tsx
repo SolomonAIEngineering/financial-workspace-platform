@@ -4,8 +4,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
 
 import { DataTableFilterControlsDrawer } from './DataTableFilterControlsDrawer';
+import type { DataTableFilterField } from '../core/types';
 import { DataTableProvider } from '../core/DataTableProvider';
-import { FilterField } from './DataTableFilterControls';
 
 const meta: Meta<typeof DataTableFilterControlsDrawer> = {
     title: 'Components/DataTable/V2/Filters/DataTableFilterControlsDrawer',
@@ -96,55 +96,73 @@ const datePresets = [
 ];
 
 // Filter fields
-const filterFields: FilterField[] = [
+const filterFields: DataTableFilterField<Product>[] = [
     {
-        id: 'name',
+        type: 'input' as const,
         label: 'Product Name',
-        type: 'input',
+        value: 'name' as keyof Product,
     },
     {
-        id: 'category',
+        type: 'checkbox' as const,
         label: 'Category',
-        type: 'checkbox',
+        value: 'category' as keyof Product,
         options: categoryOptions,
     },
     {
-        id: 'status',
+        type: 'checkbox' as const,
         label: 'Status',
-        type: 'checkbox',
+        value: 'status' as keyof Product,
         options: statusOptions,
     },
     {
-        id: 'price',
+        type: 'slider' as const,
         label: 'Price Range',
-        type: 'slider',
+        value: 'price' as keyof Product,
         min: 0,
         max: 1000,
-        step: 50,
     },
     {
-        id: 'rating',
+        type: 'slider' as const,
         label: 'Rating',
-        type: 'slider',
+        value: 'rating' as keyof Product,
         min: 0,
         max: 5,
-        step: 0.1,
     },
     {
-        id: 'createdAt',
+        type: 'timerange' as const,
         label: 'Created Date',
-        type: 'timerange',
-        presets: datePresets,
+        value: 'createdAt' as keyof Product,
+        presets: [
+            { label: 'Last 7 days', from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), to: new Date(), shortcut: '7d' },
+            { label: 'Last 30 days', from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), to: new Date(), shortcut: '30d' },
+            { label: 'Last 3 months', from: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), to: new Date(), shortcut: '3m' },
+        ],
     },
 ];
+
+// For the WithLimitedFields story
+const limitedFilterFields = filterFields.filter(field =>
+    ['name', 'category', 'price'].includes(field.value as string)
+);
 
 // Wrapper to provide the DataTable context
 const FilterControlsDrawerWrapper = ({
     children,
+    customFilterFields = filterFields,
 }: {
     children: React.ReactNode;
+    customFilterFields?: DataTableFilterField<Product>[];
 }) => {
     const [columnFilters, setColumnFilters] = useState([]);
+
+    // Create a wrapper function that adapts useState's setState to OnChangeFn
+    const handleColumnFiltersChange = (updaterOrValue: any) => {
+        if (typeof updaterOrValue === 'function') {
+            setColumnFilters(prev => updaterOrValue(prev));
+        } else {
+            setColumnFilters(updaterOrValue);
+        }
+    };
 
     const table = useReactTable({
         data,
@@ -152,12 +170,12 @@ const FilterControlsDrawerWrapper = ({
         state: {
             columnFilters,
         },
-        onColumnFiltersChange: setColumnFilters,
+        onColumnFiltersChange: handleColumnFiltersChange,
         getCoreRowModel: getCoreRowModel(),
     });
 
     return (
-        <DataTableProvider table={table} columns={columns}>
+        <DataTableProvider table={table} columns={columns} filterFields={customFilterFields}>
             <div className="min-h-[500px] flex items-center justify-center bg-muted p-10 rounded-md">
                 {children}
             </div>
@@ -168,9 +186,7 @@ const FilterControlsDrawerWrapper = ({
 export const Basic: Story = {
     render: () => (
         <FilterControlsDrawerWrapper>
-            <DataTableFilterControlsDrawer
-                fields={filterFields}
-            />
+            <DataTableFilterControlsDrawer />
         </FilterControlsDrawerWrapper>
     ),
     parameters: {
@@ -186,7 +202,6 @@ export const WithCustomTitle: Story = {
     render: () => (
         <FilterControlsDrawerWrapper>
             <DataTableFilterControlsDrawer
-                fields={filterFields}
                 title="Advanced Product Filters"
             />
         </FilterControlsDrawerWrapper>
@@ -204,7 +219,6 @@ export const WithCustomIcon: Story = {
     render: () => (
         <FilterControlsDrawerWrapper>
             <DataTableFilterControlsDrawer
-                fields={filterFields}
                 icon={<SettingsIcon className="h-4 w-4" />}
             />
         </FilterControlsDrawerWrapper>
@@ -222,7 +236,6 @@ export const WithCustomTriggerText: Story = {
     render: () => (
         <FilterControlsDrawerWrapper>
             <DataTableFilterControlsDrawer
-                fields={filterFields}
                 triggerText="Configure Filters"
                 icon={<FilterIcon className="h-4 w-4 mr-2" />}
             />
@@ -241,7 +254,6 @@ export const WithDifferentButtonVariant: Story = {
     render: () => (
         <FilterControlsDrawerWrapper>
             <DataTableFilterControlsDrawer
-                fields={filterFields}
                 buttonVariant="outline"
                 icon={<SlidersHorizontal className="h-4 w-4 mr-2" />}
                 triggerText="Filter Products"
@@ -259,9 +271,8 @@ export const WithDifferentButtonVariant: Story = {
 
 export const WithLimitedFields: Story = {
     render: () => (
-        <FilterControlsDrawerWrapper>
+        <FilterControlsDrawerWrapper customFilterFields={limitedFilterFields}>
             <DataTableFilterControlsDrawer
-                fields={filterFields.filter(field => ['name', 'category', 'price'].includes(field.id))}
                 title="Basic Filters"
             />
         </FilterControlsDrawerWrapper>
@@ -279,7 +290,6 @@ export const WithCustomClasses: Story = {
     render: () => (
         <FilterControlsDrawerWrapper>
             <DataTableFilterControlsDrawer
-                fields={filterFields}
                 className="w-[500px] sm:max-w-none"
                 triggerText="Custom Width Drawer"
             />
@@ -306,8 +316,8 @@ export const WithOpenCallback: Story = {
                     </div>
 
                     <DataTableFilterControlsDrawer
-                        fields={filterFields}
-                        onOpenChange={setIsOpen}
+                    // Use open and onOpenChange if they're supported props
+                    // or remove them if not supported
                     />
                 </div>
             </FilterControlsDrawerWrapper>

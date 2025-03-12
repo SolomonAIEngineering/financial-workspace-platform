@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useDataTable, useDataTableCallbacks } from "../core/DataTableProvider";
 
 import type { DataTableInputFilterField } from "../core/types";
-import { Input } from "../../../primitives/input";
-import { cn } from "../../../lib/utils";
+import { Input } from "@/components/input";
+import { cn } from "@/lib/utils";
 
 /**
  * Props for the DataTableFilterInput component
@@ -52,7 +52,7 @@ export function DataTableFilterInput<TData = unknown>({
     const callbacks = useDataTableCallbacks<TData>();
 
     // Get the column and current filter value
-    const column = table.getColumn(columnId as string);
+    const column = table?.getColumn(columnId as string);
     const currentFilterValue = column?.getFilterValue() as string || "";
 
     // Local state for input value (for debouncing)
@@ -88,8 +88,8 @@ export function DataTableFilterInput<TData = unknown>({
             onChange={handleChange}
             placeholder={placeholder}
             className={cn("h-8", className)}
-            aria-label={`Filter by ${columnId}`}
-            data-testid={`filter-input-${columnId}`}
+            aria-label={`Filter by ${String(columnId)}`}
+            data-testid={`filter-input-${String(columnId)}`}
         />
     );
 } 

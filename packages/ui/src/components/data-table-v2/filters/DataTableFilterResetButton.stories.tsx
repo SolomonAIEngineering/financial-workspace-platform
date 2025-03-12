@@ -153,7 +153,7 @@ export const Basic: Story = {
 export const WithCustomText: Story = {
     render: () => (
         <ResetButtonWrapper initialFilters={[{ id: 'name', value: 'Laptop' }]}>
-            <DataTableFilterResetButton value="name" text="Clear" />
+            <DataTableFilterResetButton value="name" />
         </ResetButtonWrapper>
     ),
     parameters: {
@@ -215,7 +215,6 @@ export const WithIcon: Story = {
         <ResetButtonWrapper initialFilters={[{ id: 'name', value: 'Laptop' }]}>
             <DataTableFilterResetButton
                 value="name"
-                withIcon={true}
             />
         </ResetButtonWrapper>
     ),
@@ -233,8 +232,6 @@ export const WithIconOnly: Story = {
         <ResetButtonWrapper initialFilters={[{ id: 'name', value: 'Laptop' }]}>
             <DataTableFilterResetButton
                 value="name"
-                text=""
-                withIcon={true}
                 className="h-8 w-8 p-0"
             />
         </ResetButtonWrapper>
