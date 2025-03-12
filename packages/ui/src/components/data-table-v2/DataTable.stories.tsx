@@ -353,7 +353,7 @@ export const DenseLayout: Story = {
 
 export const CustomStyling: Story = {
     render: (args) => (
-        <div className="[--data-table-border-color:theme(colors.primary.200)] [--data-table-header-bg:theme(colors.primary.50)] [--data-table-row-hover:theme(colors.primary.50/30)]">
+        <div className="[--data-table-border-color:hsl(var(--primary))] [--data-table-header-bg:hsl(var(--accent))] [--data-table-row-hover:hsl(var(--accent)/0.3)]">
             <DataTable<Product, any> {...args} />
         </div>
     ),

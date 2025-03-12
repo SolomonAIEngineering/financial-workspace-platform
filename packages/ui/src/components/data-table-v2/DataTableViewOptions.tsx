@@ -116,18 +116,17 @@ export function DataTableViewOptions<TData = unknown>({
     // Use external table if provided, otherwise use table from context
     const table = externalTable || context.table;
 
-    // Use external enableColumnOrdering if provided, otherwise use from context
-    const enableColumnOrdering =
-        externalEnableColumnOrdering !== undefined
-            ? externalEnableColumnOrdering
-            : context.enableColumnOrdering;
+    // Use external enableColumnOrdering if provided, otherwise default to false
+    const enableColumnOrdering = externalEnableColumnOrdering !== undefined
+        ? externalEnableColumnOrdering
+        : false;
 
     const [open, setOpen] = useState(false);
     const [drag, setDrag] = useState(false);
     const [search, setSearch] = useState("");
 
     // Get the current column order
-    const columnOrder = table?.getState().columnOrder;
+    const columnOrder = table?.getState().columnOrder || [];
 
     // Sort columns based on the column order
     const sortedColumns = useMemo(
@@ -149,7 +148,7 @@ export function DataTableViewOptions<TData = unknown>({
                 .filter(column => column.getIsVisible())
                 .map(column => column.id);
 
-            callbacks.onColumnVisibilityChange(visibleColumns);
+            callbacks.onColumnVisibilityChange(columnId, isVisible);
         }
     };
 
@@ -201,7 +200,6 @@ export function DataTableViewOptions<TData = unknown>({
                                 onDragStart={() => setDrag(true)}
                                 onDragEnd={() => setDrag(false)}
                                 onDragCancel={() => setDrag(false)}
-                                disabled={enableColumnOrdering}
                             >
                                 {sortedColumns
                                     ?.filter(

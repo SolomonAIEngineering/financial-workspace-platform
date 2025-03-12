@@ -3,7 +3,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/components/ui/*": ["./src/components/ui/*"]
     },
     "lib": ["DOM", "DOM.Iterable", "ESNext", "ES2019"],
     "noImplicitAny": false

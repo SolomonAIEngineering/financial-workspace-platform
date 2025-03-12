@@ -179,24 +179,52 @@ export function DataTable<TData, TValue>({
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(defaultColumnVisibility);
 
     // Handle controlled state changes with callbacks
-    const handleColumnFiltersChange = (filters: ColumnFiltersState) => {
-        setColumnFilters(filters);
-        onColumnFiltersChange?.(filters);
+    const handleColumnFiltersChange = (updaterOrValue: ColumnFiltersState | ((old: ColumnFiltersState) => ColumnFiltersState)) => {
+        setColumnFilters(updaterOrValue);
+        if (onColumnFiltersChange) {
+            if (typeof updaterOrValue === 'function') {
+                const newValue = updaterOrValue(columnFilters);
+                onColumnFiltersChange(newValue);
+            } else {
+                onColumnFiltersChange(updaterOrValue);
+            }
+        }
     };
 
-    const handleSortingChange = (newSorting: SortingState) => {
-        setSorting(newSorting);
-        onSortingChange?.(newSorting);
+    const handleSortingChange = (updaterOrValue: SortingState | ((old: SortingState) => SortingState)) => {
+        setSorting(updaterOrValue);
+        if (onSortingChange) {
+            if (typeof updaterOrValue === 'function') {
+                const newValue = updaterOrValue(sorting);
+                onSortingChange(newValue);
+            } else {
+                onSortingChange(updaterOrValue);
+            }
+        }
     };
 
-    const handlePaginationChange = (newPagination: PaginationState) => {
-        setPagination(newPagination);
-        onPaginationChange?.(newPagination);
+    const handlePaginationChange = (updaterOrValue: PaginationState | ((old: PaginationState) => PaginationState)) => {
+        setPagination(updaterOrValue);
+        if (onPaginationChange) {
+            if (typeof updaterOrValue === 'function') {
+                const newValue = updaterOrValue(pagination);
+                onPaginationChange(newValue);
+            } else {
+                onPaginationChange(updaterOrValue);
+            }
+        }
     };
 
-    const handleColumnVisibilityChange = (newVisibility: VisibilityState) => {
-        setColumnVisibility(newVisibility);
-        onColumnVisibilityChange?.(newVisibility);
+    const handleColumnVisibilityChange = (updaterOrValue: VisibilityState | ((old: VisibilityState) => VisibilityState)) => {
+        setColumnVisibility(updaterOrValue);
+        if (onColumnVisibilityChange) {
+            if (typeof updaterOrValue === 'function') {
+                const newValue = updaterOrValue(columnVisibility);
+                onColumnVisibilityChange(newValue);
+            } else {
+                onColumnVisibilityChange(updaterOrValue);
+            }
+        }
     };
 
     // Create table instance

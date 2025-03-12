@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { createColumnHelper, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 
-import { Button } from "../../primitives/button";
+import { Button } from "@/components/button";
 import { DataTableProvider } from "./core/DataTableProvider";
 import { DataTableToolbar } from "./DataTableToolbar";
 import React from "react";
-import { createColumnHelper } from "@tanstack/react-table";
 
 const meta: Meta<typeof DataTableToolbar> = {
     title: "Components/DataTable/V2/DataTableToolbar",
@@ -64,17 +64,23 @@ const columns = [
 
 // Create a wrapper component to provide necessary context
 const ToolbarWithProvider = (args: React.ComponentProps<typeof DataTableToolbar>) => {
+    // Create a table instance first
+    const table = useReactTable({
+        data: sampleData,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        initialState: {
+            pagination: {
+                pageSize: 10,
+                pageIndex: 0,
+            }
+        }
+    });
+
     return (
         <DataTableProvider
-            data={sampleData}
+            table={table}
             columns={columns}
-            enablePagination
-            initialState={{
-                pagination: {
-                    pageSize: 10,
-                    pageIndex: 0,
-                },
-            }}
         >
             <div className="w-[800px] border border-border rounded-md p-4">
                 <DataTableToolbar {...args} />
@@ -135,23 +141,29 @@ export const WithCustomState: Story = {
 
 export const WithFilters: Story = {
     render: (args) => {
+        // Create a table instance with filters
+        const table = useReactTable({
+            data: sampleData,
+            columns,
+            getCoreRowModel: getCoreRowModel(),
+            initialState: {
+                pagination: {
+                    pageSize: 10,
+                    pageIndex: 0,
+                },
+                columnFilters: [
+                    {
+                        id: "status",
+                        value: "active",
+                    },
+                ]
+            }
+        });
+
         return (
             <DataTableProvider
-                data={sampleData}
+                table={table}
                 columns={columns}
-                enablePagination
-                initialState={{
-                    pagination: {
-                        pageSize: 10,
-                        pageIndex: 0,
-                    },
-                    columnFilters: [
-                        {
-                            id: "status",
-                            value: "active",
-                        },
-                    ],
-                }}
             >
                 <div className="w-[800px] border border-border rounded-md p-4">
                     <DataTableToolbar {...args} />

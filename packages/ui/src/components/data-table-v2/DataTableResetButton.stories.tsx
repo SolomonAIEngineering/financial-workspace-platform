@@ -1,6 +1,7 @@
 import { Filter, RefreshCw, RotateCcw } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 import { DataTableProvider } from './core/DataTableProvider';
 import { DataTableResetButton } from './DataTableResetButton';
@@ -78,18 +79,25 @@ const columns = [
 
 // Wrapper component for stories
 const ResetButtonWithProvider = (props: React.ComponentProps<typeof DataTableResetButton>) => {
+    // Create a table instance first
+    const table = useReactTable({
+        data,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        initialState: {
+            columnFilters: [
+                {
+                    id: 'category',
+                    value: 'Electronics',
+                }
+            ]
+        }
+    });
+
     return (
-        <DataTableProvider
-            data={data}
+        <DataTableProvider<Product, any>
+            table={table}
             columns={columns}
-            initialState={{
-                columnFilters: [
-                    {
-                        id: 'category',
-                        value: 'Electronics',
-                    },
-                ],
-            }}
         >
             <div className="flex items-center justify-center p-4 border rounded-md">
                 <DataTableResetButton {...props} />
@@ -183,24 +191,36 @@ export const WithCallback: Story = {
     render: () => {
         const [resetCount, setResetCount] = useState(0);
 
+        // Create a table instance first
+        const table = useReactTable({
+            data,
+            columns,
+            getCoreRowModel: getCoreRowModel(),
+            initialState: {
+                columnFilters: [
+                    {
+                        id: 'category',
+                        value: 'Electronics',
+                    }
+                ]
+            }
+        });
+
+        // Create callbacks object
+        const callbacks = {
+            onFiltersReset: () => setResetCount(count => count + 1)
+        };
+
         return (
             <div className="space-y-4">
                 <div className="text-sm text-center p-2 bg-muted rounded-md">
                     Reset button clicked: <span className="font-bold">{resetCount}</span> times
                 </div>
 
-                <DataTableProvider
-                    data={data}
+                <DataTableProvider<Product, any>
+                    table={table}
                     columns={columns}
-                    initialState={{
-                        columnFilters: [
-                            {
-                                id: 'category',
-                                value: 'Electronics',
-                            },
-                        ],
-                    }}
-                    onFiltersReset={() => setResetCount(count => count + 1)}
+                    callbacks={callbacks}
                 >
                     <div className="flex items-center justify-center p-4 border rounded-md">
                         <DataTableResetButton

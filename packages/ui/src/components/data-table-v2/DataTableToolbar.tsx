@@ -7,14 +7,14 @@ import {
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "../../primitives/tooltip";
+} from "@/components/tooltip";
 
-import { Button } from "../../primitives/button";
+import { Button } from "@/components/button";
 import { DataTableFilterControlsDrawer } from "./filters/DataTableFilterControlsDrawer";
 import { DataTableResetButton } from "./DataTableResetButton";
 import { DataTableViewOptions } from "./DataTableViewOptions";
-import { Kbd } from "../../custom/kbd";
-import { formatCompactNumber } from "../../lib/utils";
+import { Kbd } from "../custom/kbd";
+import { formatCompactNumber } from "@/lib/format";
 import { useDataTable } from "./core/DataTableProvider";
 
 /**
@@ -95,25 +95,29 @@ export function DataTableToolbar({
     const {
         table,
         isLoading,
-        columnFilters,
-        controlsOpen: internalControlsOpen,
-        setControlsOpen: internalSetControlsOpen
+        state
     } = useDataTable();
 
-    // Use props if provided, otherwise fall back to context values
+    // Use React state for controls visibility if not provided by context
+    const [internalControlsOpen, setInternalControlsOpen] = React.useState(false);
+
+    // Use props if provided, otherwise fall back to internal state
     const controlsOpen = controlsOpenProp !== undefined ? controlsOpenProp : internalControlsOpen;
-    const setControlsOpen = onControlsOpenChange || internalSetControlsOpen;
+    const setControlsOpen = onControlsOpenChange || setInternalControlsOpen;
+
+    // Get column filters from table state
+    const columnFilters = table?.getState().columnFilters || [];
 
     // Calculate row counts for display
     const rows = useMemo(
         () => ({
-            total: table.getCoreRowModel().rows.length,
-            filtered: table.getFilteredRowModel().rows.length,
+            total: table?.getCoreRowModel().rows.length || 0,
+            filtered: table?.getFilteredRowModel().rows.length || 0,
         }),
         [isLoading, columnFilters, table]
     );
 
-    const filters = table.getState().columnFilters;
+    const filters = table?.getState().columnFilters || [];
     const hasFilters = filters.length > 0;
 
     return (

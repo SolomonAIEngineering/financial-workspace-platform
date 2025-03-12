@@ -101,7 +101,7 @@ const ViewOptionsWithProvider = (props: React.ComponentProps<typeof DataTableVie
     });
 
     return (
-        <DataTableProvider
+        <DataTableProvider<Person, any>
             table={table}
             columns={columns}
             enableColumnOrdering={props.enableColumnOrdering}
@@ -231,7 +231,7 @@ export const WithCallbacks: Story = {
                     </div>
                 </div>
 
-                <DataTableProvider
+                <DataTableProvider<Person, any>
                     table={table}
                     columns={columns}
                     enableColumnOrdering={true}
