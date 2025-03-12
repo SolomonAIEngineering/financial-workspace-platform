@@ -76,9 +76,8 @@ function getItemFromLocalStorage(key: string) {
  *         />
  *         Enable Notifications
  *       </label>
- *       {/* Other preference controls */}
- * </div>
-  *   );
+ *     </div>
+ *   );
  * };
  * ```
  */

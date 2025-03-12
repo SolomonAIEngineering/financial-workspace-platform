@@ -6,7 +6,7 @@ import { CalendarPicker } from './calendar-picker'
 
 const meta: Meta<typeof CalendarPicker> = {
   component: CalendarPicker,
-  // // tags: ["autodocs"], // Removed to fix conflict with MDX docs // Removed to fix conflict with MDX docs
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     initialFrom: {
       control: 'date',

@@ -1,8 +1,9 @@
 'use client'
 
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
-import { CheckIcon } from '@radix-ui/react-icons'
 import * as React from 'react'
+
+import { CheckIcon } from '@radix-ui/react-icons'
 import { cn } from '../utils'
 
 const Checkbox = React.forwardRef<
@@ -18,7 +19,7 @@ const Checkbox = React.forwardRef<
     {...props}
   >
     <CheckboxPrimitive.Indicator
-      className={cn('flex items-center justify-center text-current')}
+      className={cn('flex items-center justify-center text-current', "rounded-2xl border-4 p-6 shadow-lg border-gray-50 dark:border-zinc-950")}
     >
       <CheckIcon className="h-4 w-4" />
     </CheckboxPrimitive.Indicator>

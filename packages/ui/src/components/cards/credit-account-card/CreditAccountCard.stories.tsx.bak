@@ -1,16 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { FinancialDataGenerator } from '../../../lib/random/financial-data-generator'
-import { BankAccountCard } from './BankAccountCard'
+import { CreditAccountCard } from './CreditAccountCard'
 
-const meta: Meta<typeof BankAccountCard> = {
-  component: BankAccountCard,
-  // // tags: ["autodocs"], // Removed to fix conflict with MDX docs // Removed to fix conflict with MDX docs
+const meta: Meta<typeof CreditAccountCard> = {
+  component: CreditAccountCard,
+  parameters: {
+    layout: 'centered',
+  },
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
-    bankAccount: {
+    creditAccount: {
       control: {
         type: 'object',
       },
-      defaultValue: FinancialDataGenerator.generateRandomBankAccount(),
+      defaultValue: FinancialDataGenerator.generateRandomCreditAccount(),
     },
     financialProfile: {
       control: {
@@ -50,41 +53,33 @@ const meta: Meta<typeof BankAccountCard> = {
     },
   },
   decorators: [(Story) => <Story />],
-} satisfies Meta<typeof BankAccountCard>
+} satisfies Meta<typeof CreditAccountCard>
 
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const RegularBankAccountCardWithDemoModeDisabled: Story = {
+export const CreditAccountCardDefault: Story = {
   args: {
-    bankAccount: FinancialDataGenerator.generateRandomBankAccount(),
+    // Adjust the default properties for each variant of your component
+    // primary: true,
+    // label: 'CreditAccountCard',
+    creditAccount: FinancialDataGenerator.generateRandomCreditAccount(),
     enableDemoMode: false,
-    // historicalAccountBalance: Array.from({ length: 20 }, () =>
-    //   AccountBalanceHistory.randomInstance(),
-    // ).sort((a, b) => a.time!.getTime() - b.time!.getTime()),
+    institutionName: 'Chase',
   },
 }
 
-export const RegularBankAccountCardWithHistoricalBankAccountBalance: Story = {
+export const CreditAccountCardAccountBalanceHistory: Story = {
   args: {
-    bankAccount: FinancialDataGenerator.generateRandomBankAccount(),
+    // Adjust the default properties for each variant of your component
+    // primary: true,
+    // label: 'CreditAccountCard',
+    creditAccount: FinancialDataGenerator.generateRandomCreditAccount(),
+    enableDemoMode: false,
+    institutionName: 'Chase',
     historicalAccountBalance:
-      FinancialDataGenerator.generateRandomAccountBalanceHistories(150).sort(
+      FinancialDataGenerator.generateRandomAccountBalanceHistories(100).sort(
         (a, b) => new Date(a.time!).getTime() - new Date(b.time!).getTime(),
       ),
-  },
-}
-
-export const RegularBankAccountCardWithDemoModeEnabled: Story = {
-  args: {
-    bankAccount: FinancialDataGenerator.generateRandomBankAccount(),
-    enableDemoMode: true,
-  },
-}
-
-export const RegularBankAccountCardWithClassName: Story = {
-  args: {
-    bankAccount: FinancialDataGenerator.generateRandomBankAccount(),
-    className: 'border rounded-md',
   },
 }

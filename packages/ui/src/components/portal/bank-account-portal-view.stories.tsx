@@ -7,7 +7,7 @@ const meta: Meta<typeof BankAccountsOverviewSummary> = {
   parameters: {
     layout: 'centered',
   },
-  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
+  // // tags: ["autodocs"], // Removed to fix conflict with MDX docs // Removed to fix conflict with MDX docs
   argTypes: {
     financialProfile: {
       control: {

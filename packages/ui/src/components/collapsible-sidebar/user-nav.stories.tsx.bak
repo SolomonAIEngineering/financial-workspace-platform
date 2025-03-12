@@ -8,7 +8,7 @@ const meta: Meta<typeof UserNav> = {
   parameters: {
     layout: 'centered',
   },
-  // // tags: ["autodocs"], // Removed to fix conflict with MDX docs // Removed to fix conflict with MDX docs
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     user: { control: 'object' },
     className: { control: 'text' },

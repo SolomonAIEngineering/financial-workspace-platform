@@ -6,7 +6,7 @@ import SearchAddress from './search-address'
 
 const meta: Meta<typeof SearchAddress> = {
   component: SearchAddress,
-  // // tags: ["autodocs"], // Removed to fix conflict with MDX docs // Removed to fix conflict with MDX docs
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     onSelectLocation: { action: 'locationSelected' },
   },

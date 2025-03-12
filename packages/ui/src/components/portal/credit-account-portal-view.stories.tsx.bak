@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { FinancialDataGenerator } from '../../lib/random/financial-data-generator'
-import { FinancialPortalOverview } from './financial-portal-view'
+import { CreditAccountsOverviewSummary } from './credit-account-portal-view'
 
-const meta: Meta<typeof FinancialPortalOverview> = {
-  component: FinancialPortalOverview,
+const meta: Meta<typeof CreditAccountsOverviewSummary> = {
+  component: CreditAccountsOverviewSummary,
   parameters: {
     layout: 'centered',
   },
-  // // tags: ["autodocs"], // Removed to fix conflict with MDX docs // Removed to fix conflict with MDX docs
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     financialProfile: {
       control: {
@@ -21,9 +21,15 @@ const meta: Meta<typeof FinancialPortalOverview> = {
       },
       defaultValue: FinancialDataGenerator.generateFinancialContext(),
     },
+    transactions: {
+      control: {
+        type: 'object',
+      },
+      defaultValue: FinancialDataGenerator.generateRandomTransactions(20),
+    },
   },
   decorators: [(Story) => <Story />],
-} satisfies Meta<typeof FinancialPortalOverview>
+} satisfies Meta<typeof CreditAccountsOverviewSummary>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -32,6 +38,7 @@ export const Default: Story = {
   args: {
     financialProfile: FinancialDataGenerator.generateFinancialProfile(),
     financialContext: FinancialDataGenerator.generateFinancialContext(),
+    transactions: FinancialDataGenerator.generateRandomTransactions(20),
   },
 }
 
@@ -44,6 +51,7 @@ export const WithMultipleLinkedAccounts: Story = {
         .map(() => FinancialDataGenerator.generateRandomLink()),
     },
     financialContext: FinancialDataGenerator.generateFinancialContext(),
+    transactions: FinancialDataGenerator.generateRandomTransactions(20),
   },
 }
 

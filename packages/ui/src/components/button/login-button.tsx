@@ -12,27 +12,75 @@ import { Button } from '../button'
  * @extends {ButtonProps}
  * */
 interface LogInButtonProps extends ButtonProps {
-  callBack: () => void
-  className?: string
+  /** Callback function to execute when the button is clicked */
+  onLogin?: () => void;
+  /** Additional CSS class names */
+  className?: string;
+  /** Text to display on the button */
+  label?: string;
+  /** Whether the button is in a loading state */
+  isLoading?: boolean;
+  /** Text to display when the button is loading */
+  loadingText?: string;
+  /** Whether to show the key icon */
+  showIcon?: boolean;
+  /** Size of the button */
+  size?: 'default' | 'sm' | 'lg' | 'xl';
+  /** Variant of the button */
+  variant?: 'default' | 'outline' | 'ghost' | 'secondary';
+  /** Whether the button is disabled */
+  disabled?: boolean;
+  /** Whether the button should take the full width of its container */
+  fullWidth?: boolean;
+  /** Callback fired when the button is focused */
+  onFocus?: (event: React.FocusEvent<HTMLButtonElement>) => void;
+  /** Callback fired when the button loses focus */
+  onBlur?: (event: React.FocusEvent<HTMLButtonElement>) => void;
 }
 
 /**
- * LogInButton is a component that renders a sign up button.
+ * LogInButton is a component that renders a login button.
  *
  * @param {LogInButtonProps} props - Props for the LogInButton component.
  * @returns {JSX.Element} - The rendered LogInButton component.
  */
-const LogInButton: React.FC<LogInButtonProps> = ({ className, callBack }) => {
+const LogInButton: React.FC<LogInButtonProps> = ({
+  className,
+  onLogin,
+  label = 'Log In',
+  isLoading = false,
+  loadingText = 'Logging in...',
+  showIcon = true,
+  size = 'default',
+  variant = 'outline',
+  disabled = false,
+  fullWidth = false,
+  onFocus,
+  onBlur,
+  ...props
+}) => {
+  const handleClick = () => {
+    if (onLogin) onLogin();
+  };
+
   return (
     <Button
-      className={cn('text-foreground rounded-2xl font-bold', className)}
-      variant="outline"
-      onClick={callBack}
+      className={cn('text-foreground font-bold', className)}
+      variant={variant}
+      size={size}
+      onClick={handleClick}
+      isLoading={isLoading}
+      loadingText={loadingText}
+      disabled={disabled}
+      fullWidth={fullWidth}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      startIcon={showIcon && !isLoading ? <KeyIcon className="h-5 w-5" /> : undefined}
+      {...props}
     >
-      <KeyIcon className="mr-2 h-5 w-5" />
-      Log In
+      {label}
     </Button>
   )
 }
 
-export { LogInButton }
+export { LogInButton, type LogInButtonProps }

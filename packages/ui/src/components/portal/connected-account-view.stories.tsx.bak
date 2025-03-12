@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { FinancialDataGenerator } from '../../lib/random/financial-data-generator'
-import { FinancialPortalOverview } from './financial-portal-view'
+import { ConnectedAccountSummary } from './connected-account-view'
 
-const meta: Meta<typeof FinancialPortalOverview> = {
-  component: FinancialPortalOverview,
+const meta: Meta<typeof ConnectedAccountSummary> = {
+  component: ConnectedAccountSummary,
   parameters: {
     layout: 'centered',
   },
-  // // tags: ["autodocs"], // Removed to fix conflict with MDX docs // Removed to fix conflict with MDX docs
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     financialProfile: {
       control: {
@@ -23,7 +23,7 @@ const meta: Meta<typeof FinancialPortalOverview> = {
     },
   },
   decorators: [(Story) => <Story />],
-} satisfies Meta<typeof FinancialPortalOverview>
+} satisfies Meta<typeof ConnectedAccountSummary>
 
 export default meta
 type Story = StoryObj<typeof meta>

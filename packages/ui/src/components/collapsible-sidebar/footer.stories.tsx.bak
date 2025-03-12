@@ -8,7 +8,7 @@ const meta: Meta<typeof Footer> = {
   parameters: {
     layout: 'centered',
   },
-  // // tags: ["autodocs"], // Removed to fix conflict with MDX docs // Removed to fix conflict with MDX docs
+  // tags: ["autodocs"], // Removed to fix conflict with MDX docs
   argTypes: {
     className: { control: 'text' },
     children: { control: 'text' },
