@@ -1,12 +1,11 @@
-import { TRPCError } from '@trpc/server';
 import Stripe from 'stripe';
-import { z } from 'zod';
-
+import { TRPCError } from '@trpc/server';
+import { createRouter } from '../trpc';
+import { deleteContactInLoopsAction } from '@/actions/loops';
 import { env } from '@/env';
 import { prisma } from '@/server/db';
-
 import { protectedProcedure } from '../middlewares/procedures';
-import { createRouter } from '../trpc';
+import { z } from 'zod';
 
 // Initialize Stripe
 const stripe = new Stripe(env.STRIPE_API_KEY, {
@@ -279,6 +278,13 @@ export const userRouter = createRouter({
   }),
 
   deleteAccount: protectedProcedure.mutation(async ({ ctx }) => {
+
+    // delete the user from loops 
+    await deleteContactInLoopsAction({
+      email: ctx.user?.email ?? '',
+      userId: ctx.userId,
+    });
+
     await prisma.user.delete({
       where: { id: ctx.userId },
     });
@@ -345,7 +351,7 @@ export const userRouter = createRouter({
     ];
     const professionalInfoCompleteness = Math.round(
       (professionalInfo.filter((f) => !!f).length / professionalInfo.length) *
-        100
+      100
     );
 
     const contactInfo = [

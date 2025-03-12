@@ -1,14 +1,12 @@
-import { TRPCError } from '@trpc/server';
 import { NodeApi } from '@udecode/plate';
-import { z } from 'zod';
-
+import { TRPCError } from '@trpc/server';
+import { createRouter } from '../trpc';
 import { isTemplateDocument } from '@/components/editor/utils/useTemplateDocument';
 import { nid } from '@/lib/nid';
 import { prisma } from '@/server/db';
-
 import { protectedProcedure } from '../middlewares/procedures';
 import { ratelimitMiddleware } from '../middlewares/ratelimitMiddleware';
-import { createRouter } from '../trpc';
+import { z } from 'zod';
 
 const MAX_TITLE_LENGTH = 256;
 const MAX_CONTENT_LENGTH = 1_000_000; // 1MB of text
@@ -57,9 +55,9 @@ export const documentMutations = {
     .mutation(async ({ ctx, input }) => {
       const content = input.contentRich
         ? NodeApi.string({
-            children: input.contentRich,
-            type: 'root',
-          })
+          children: input.contentRich,
+          type: 'root',
+        })
         : '';
 
       if (content.length > MAX_CONTENT_LENGTH) {
@@ -209,9 +207,9 @@ export const documentMutations = {
     .mutation(async ({ ctx, input }) => {
       const content = input.contentRich
         ? NodeApi.string({
-            children: input.contentRich,
-            type: 'root',
-          })
+          children: input.contentRich,
+          type: 'root',
+        })
         : undefined;
 
       if (content && content.length > MAX_CONTENT_LENGTH) {
@@ -324,9 +322,9 @@ export const documentRouter = createRouter({
           id: isTemplateDocument(input.id) ? undefined : input.id,
           userId_templateId: isTemplateDocument(input.id)
             ? {
-                templateId: input.id,
-                userId: ctx.userId,
-              }
+              templateId: input.id,
+              userId: ctx.userId,
+            }
             : undefined,
         },
       });
