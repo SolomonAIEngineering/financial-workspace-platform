@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 export function useHotKey(callback: () => void, key: string): void {
   useEffect(() => {
@@ -9,9 +9,9 @@ export function useHotKey(callback: () => void, key: string): void {
       }
     }
 
-    window.addEventListener("keydown", handler);
+    window.addEventListener('keydown', handler);
     return () => {
-      window.removeEventListener("keydown", handler);
+      window.removeEventListener('keydown', handler);
     };
   }, [key]);
 }

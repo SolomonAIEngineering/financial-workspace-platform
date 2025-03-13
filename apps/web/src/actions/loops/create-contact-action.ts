@@ -1,10 +1,7 @@
 'use server';
 
 import { actionClient, authActionClient } from '@/actions/safe-action';
-import {
-    createContactSchema,
-    type ContactProperties,
-} from './schema';
+import { createContactSchema, type ContactProperties } from './schema';
 import { loops } from '@/lib/loopsClient';
 
 /**
@@ -96,35 +93,35 @@ import { loops } from '@/lib/loopsClient';
  * @see {@link https://loops.so/docs/sdks/javascript#createcontact}
  */
 export const createContactAndAddToMailingListInLoopsAction = actionClient
-    .schema(createContactSchema)
-    .action(async (input) => {
-        try {
-            const { email, contactProperties, mailingLists } = input.parsedInput;
+  .schema(createContactSchema)
+  .action(async (input) => {
+    try {
+      const { email, contactProperties, mailingLists } = input.parsedInput;
 
-            // Create or update contact in Loops using the SDK
-            const response = await loops.createContact(
-                email,
-                contactProperties,
-                mailingLists
-            );
+      // Create or update contact in Loops using the SDK
+      const response = await loops.createContact(
+        email,
+        contactProperties,
+        mailingLists
+      );
 
-            return {
-                success: true,
-                data: response,
-                error: undefined,
-            };
-        } catch (error) {
-            console.error(
-                'Error in createContactAndAddToMailingListInLoopsAction:',
-                error
-            );
-            return {
-                success: false,
-                error:
-                    error instanceof Error ? error.message : 'Unknown error occurred',
-            };
-        }
-    });
+      return {
+        success: true,
+        data: response,
+        error: undefined,
+      };
+    } catch (error) {
+      console.error(
+        'Error in createContactAndAddToMailingListInLoopsAction:',
+        error
+      );
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  });
 
 /**
  * Authenticated version of the contact creation action for the Loops email
@@ -192,45 +189,45 @@ export const createContactAndAddToMailingListInLoopsAction = actionClient
  * @see {@link https://loops.so/docs/sdks/javascript#createcontact}
  */
 export const createContactAuthAndAddToMailingListInLoopsAction =
-    authActionClient
-        .schema(createContactSchema.omit({ email: true }).optional())
-        .action(async ({ ctx, parsedInput }) => {
-            try {
-                // Get user from context
-                const { user } = ctx;
+  authActionClient
+    .schema(createContactSchema.omit({ email: true }).optional())
+    .action(async ({ ctx, parsedInput }) => {
+      try {
+        // Get user from context
+        const { user } = ctx;
 
-                // Use full_name to derive first and last name if not provided
-                const names = user.full_name ? user.full_name.split(' ') : [];
-                const firstName = names[0] || '';
-                const lastName = names.slice(1).join(' ') || '';
+        // Use full_name to derive first and last name if not provided
+        const names = user.full_name ? user.full_name.split(' ') : [];
+        const firstName = names[0] || '';
+        const lastName = names.slice(1).join(' ') || '';
 
-                const contactProperties: ContactProperties = {
-                    firstName,
-                    lastName,
-                    ...parsedInput?.contactProperties,
-                };
+        const contactProperties: ContactProperties = {
+          firstName,
+          lastName,
+          ...parsedInput?.contactProperties,
+        };
 
-                // Create or update contact in Loops using the SDK
-                const response = await loops.createContact(
-                    user.email,
-                    contactProperties,
-                    parsedInput?.mailingLists
-                );
+        // Create or update contact in Loops using the SDK
+        const response = await loops.createContact(
+          user.email,
+          contactProperties,
+          parsedInput?.mailingLists
+        );
 
-                return {
-                    success: true,
-                    data: response,
-                    error: undefined,
-                };
-            } catch (error) {
-                console.error(
-                    'Error in createContactAuthAndAddToMailingListInLoopsAction:',
-                    error
-                );
-                return {
-                    success: false,
-                    error:
-                        error instanceof Error ? error.message : 'Unknown error occurred',
-                };
-            }
-        });
+        return {
+          success: true,
+          data: response,
+          error: undefined,
+        };
+      } catch (error) {
+        console.error(
+          'Error in createContactAuthAndAddToMailingListInLoopsAction:',
+          error
+        );
+        return {
+          success: false,
+          error:
+            error instanceof Error ? error.message : 'Unknown error occurred',
+        };
+      }
+    });

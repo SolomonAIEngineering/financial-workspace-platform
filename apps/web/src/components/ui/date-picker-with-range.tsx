@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/registry/default/potion-ui/popover";
+} from '@/registry/default/potion-ui/popover';
 import {
   Select,
   SelectContent,
@@ -15,21 +15,21 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
-import { Button } from "@/registry/default/potion-ui/button";
-import { Calendar } from "@/registry/default/potion-ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
-import type { DatePreset } from "@/components/data-table/types";
-import type { DateRange } from "react-day-picker";
-import { Input } from "@/registry/default/potion-ui/input";
-import { Label } from "./label";
-import { Separator } from "@/registry/default/potion-ui/separator";
-import { cn } from "@/lib/utils";
-import { presets as defaultPresets } from "@/constants/date-preset";
-import { format } from "date-fns";
-import { kbdVariants } from "@/components/ui/kbd";
-import { useDebounce } from "@/hooks/use-debounce";
+import { Button } from '@/registry/default/potion-ui/button';
+import { Calendar } from '@/registry/default/potion-ui/calendar';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import type { DatePreset } from '@/components/data-table/types';
+import type { DateRange } from 'react-day-picker';
+import { Input } from '@/registry/default/potion-ui/input';
+import { Label } from './label';
+import { Separator } from '@/registry/default/potion-ui/separator';
+import { cn } from '@/lib/utils';
+import { presets as defaultPresets } from '@/constants/date-preset';
+import { format } from 'date-fns';
+import { kbdVariants } from '@/components/ui/kbd';
+import { useDebounce } from '@/hooks/use-debounce';
 
 interface DatePickerWithRangeProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -52,12 +52,12 @@ export function DatePickerWithRange({
         }
       });
     };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
   }, [setDate, presets]);
 
   return (
-    <div className={cn("grid gap-2", className)}>
+    <div className={cn('grid gap-2', className)}>
       <Popover modal={true}>
         <PopoverTrigger asChild>
           <Button
@@ -65,19 +65,19 @@ export function DatePickerWithRange({
             variant="outline"
             size="sm"
             className={cn(
-              "max-w-full justify-start truncate text-left font-normal hover:bg-muted/50",
-              !date && "text-muted-foreground",
+              'max-w-full justify-start truncate text-left font-normal hover:bg-muted/50',
+              !date && 'text-muted-foreground'
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
               date.to ? (
                 <span className="truncate">
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
+                  {format(date.from, 'LLL dd, y')} -{' '}
+                  {format(date.to, 'LLL dd, y')}
                 </span>
               ) : (
-                format(date.from, "LLL dd, y")
+                format(date.from, 'LLL dd, y')
               )
             ) : (
               <span>Pick a date</span>
@@ -129,23 +129,23 @@ function DatePresets({
 }) {
   return (
     <div className="flex flex-col gap-2 p-3">
-      <p className="mx-3 text-xs uppercase text-muted-foreground">Date Range</p>
+      <p className="mx-3 text-xs text-muted-foreground uppercase">Date Range</p>
       <div className="grid gap-1">
         {presets.map(({ label, shortcut, from, to }) => {
           const isActive = selected?.from === from && selected?.to === to;
           return (
             <Button
               key={label}
-              variant={isActive ? "outline" : "ghost"}
+              variant={isActive ? 'outline' : 'ghost'}
               size="sm"
               onClick={() => onSelect({ from, to })}
               className={cn(
-                "flex items-center justify-between gap-6",
-                !isActive && "border border-transparent",
+                'flex items-center justify-between gap-6',
+                !isActive && 'border border-transparent'
               )}
             >
               <span className="mr-auto">{label}</span>
-              <span className={cn(kbdVariants(), "uppercase")}>{shortcut}</span>
+              <span className={cn(kbdVariants(), 'uppercase')}>{shortcut}</span>
             </Button>
           );
         })}
@@ -167,7 +167,7 @@ function DatePresetsSelect({
     return presets.find((p) => p.from === from && p.to === to)?.shortcut;
   }
   const [value, setValue] = React.useState<string | undefined>(
-    findPreset(selected?.from, selected?.to),
+    findPreset(selected?.from, selected?.to)
   );
 
   React.useEffect(() => {
@@ -203,7 +203,7 @@ function DatePresetsSelect({
                 <span
                   className={cn(
                     kbdVariants(),
-                    "ml-2 h-5 uppercase leading-snug",
+                    'ml-2 h-5 leading-snug uppercase'
                   )}
                 >
                   {shortcut}
@@ -226,14 +226,14 @@ function CustomDateRange({
   onSelect: (date: DateRange | undefined) => void;
 }) {
   const [dateFrom, setDateFrom] = React.useState<Date | undefined>(
-    selected?.from,
+    selected?.from
   );
   const [dateTo, setDateTo] = React.useState<Date | undefined>(selected?.to);
   const debounceDateFrom = useDebounce(dateFrom, 1000);
   const debounceDateTo = useDebounce(dateTo, 1000);
 
   const formatDateForInput = (date: Date | undefined): string => {
-    if (!date) return "";
+    if (!date) return '';
     const utcDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
     return utcDate.toISOString().slice(0, 16);
   };
@@ -245,7 +245,7 @@ function CustomDateRange({
 
   return (
     <div className="flex flex-col gap-2 p-3">
-      <p className="text-xs uppercase text-muted-foreground">Custom Range</p>
+      <p className="text-xs text-muted-foreground uppercase">Custom Range</p>
       <div className="grid gap-2 sm:grid-cols-2">
         <div className="grid w-full gap-1.5">
           <Label htmlFor="from">Start</Label>

@@ -5,13 +5,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/registry/default/potion-ui/table";
+} from '@/registry/default/potion-ui/table';
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface DataTableSkeletonProps {
   /**
    * Number of rows to render
+   *
    * @default 10
    */
   rows?: number;

@@ -1,11 +1,11 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { Check, Copy } from "lucide-react";
+import { Check, Copy } from 'lucide-react';
 
-import { Button } from "@/registry/default/potion-ui/button";
-import { cn } from "@/lib/utils";
-import { composeRefs } from "@/lib/compose-refs";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { Button } from '@/registry/default/potion-ui/button';
+import { cn } from '@/lib/utils';
+import { composeRefs } from '@/lib/compose-refs';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 
 const CopyToClipboardContainer = React.forwardRef<
   HTMLDivElement,
@@ -23,7 +23,7 @@ const CopyToClipboardContainer = React.forwardRef<
     <div className="group relative text-left">
       <div
         ref={composeRefs(ref, innerRef)}
-        className={cn("peer", className)}
+        className={cn('peer', className)}
         {...props}
       >
         {children}
@@ -31,7 +31,7 @@ const CopyToClipboardContainer = React.forwardRef<
       <Button
         variant="outline"
         size="icon"
-        className="absolute right-2 top-2 h-6 w-6 opacity-0 focus:opacity-100 group-hover:opacity-100 peer-focus:opacity-100"
+        className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 peer-focus:opacity-100 focus:opacity-100"
         onClick={onClick}
       >
         {!isCopied ? (
@@ -44,6 +44,6 @@ const CopyToClipboardContainer = React.forwardRef<
   );
 });
 
-CopyToClipboardContainer.displayName = "CopyToClipboardContainer";
+CopyToClipboardContainer.displayName = 'CopyToClipboardContainer';
 
 export default CopyToClipboardContainer;

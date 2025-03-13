@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
-import { Button } from "@/registry/default/potion-ui/button";
-import { useDataTable } from "@/components/data-table/data-table-provider";
-import { useMemo } from "react";
+import { Button } from '@/registry/default/potion-ui/button';
+import { useDataTable } from '@/components/data-table/data-table-provider';
+import { useMemo } from 'react';
 
 export function DataTablePagination() {
   const { table, pagination, columnFilters } = useDataTable();

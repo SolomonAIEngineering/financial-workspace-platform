@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
 function getItemFromLocalStorage(key: string) {
   const item = window?.localStorage.getItem(key);
@@ -11,13 +11,13 @@ function getItemFromLocalStorage(key: string) {
 
 export function useLocalStorage<T>(
   key: string,
-  initialValue: T,
+  initialValue: T
 ): [T, React.Dispatch<React.SetStateAction<T>>] {
   const [storedValue, setStoredValue] = useState(initialValue);
 
   useEffect(() => {
     // initialize
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       const stored = getItemFromLocalStorage(key);
       if (stored !== null) setStoredValue(stored);
     }
@@ -39,7 +39,7 @@ export function useLocalStorage<T>(
       }
       return setStoredValue;
     },
-    [key, setStoredValue],
+    [key, setStoredValue]
   );
 
   return [storedValue, setValue];

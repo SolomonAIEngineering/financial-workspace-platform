@@ -1,6 +1,6 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext } from 'react';
 
-import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 interface ControlsContextType {
   open: boolean;
@@ -10,7 +10,7 @@ interface ControlsContextType {
 export const ControlsContext = createContext<ControlsContextType | null>(null);
 
 export function ControlsProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useLocalStorage("data-table-controls", true);
+  const [open, setOpen] = useLocalStorage('data-table-controls', true);
 
   return (
     <ControlsContext.Provider value={{ open, setOpen }}>
@@ -30,7 +30,7 @@ export function useControls() {
   const context = useContext(ControlsContext);
 
   if (!context) {
-    throw new Error("useControls must be used within a ControlsProvider");
+    throw new Error('useControls must be used within a ControlsProvider');
   }
 
   return context as ControlsContextType;

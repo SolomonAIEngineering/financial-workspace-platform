@@ -1,9 +1,6 @@
 'use server';
 
-import {
-    sendEventSchema,
-    sendTransactionalEmailSchema,
-} from './schema';
+import { sendEventSchema, sendTransactionalEmailSchema } from './schema';
 
 import { actionClient } from '@/actions/safe-action';
 import { loops } from '@/lib/loopsClient';
@@ -100,35 +97,35 @@ import { loops } from '@/lib/loopsClient';
  * @see {@link https://loops.so/docs/sdks/javascript#sendevent}
  */
 export const sendEventToLoopsAction = actionClient
-    .schema(sendEventSchema)
-    .action(async (input) => {
-        try {
-            const { email, userId, eventName, contactProperties, eventProperties } =
-                input.parsedInput;
+  .schema(sendEventSchema)
+  .action(async (input) => {
+    try {
+      const { email, userId, eventName, contactProperties, eventProperties } =
+        input.parsedInput;
 
-            // Send event to Loops using the SDK
-            const response = await loops.sendEvent({
-                email,
-                userId,
-                eventName,
-                contactProperties,
-                eventProperties,
-            });
+      // Send event to Loops using the SDK
+      const response = await loops.sendEvent({
+        email,
+        userId,
+        eventName,
+        contactProperties,
+        eventProperties,
+      });
 
-            return {
-                success: true,
-                data: response,
-                error: undefined,
-            };
-        } catch (error) {
-            console.error('Error in sendEventToLoopsAction:', error);
-            return {
-                success: false,
-                error:
-                    error instanceof Error ? error.message : 'Unknown error occurred',
-            };
-        }
-    });
+      return {
+        success: true,
+        data: response,
+        error: undefined,
+      };
+    } catch (error) {
+      console.error('Error in sendEventToLoopsAction:', error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  });
 
 /**
  * Server action to send a transactional email via the Loops email marketing
@@ -214,29 +211,29 @@ export const sendEventToLoopsAction = actionClient
  * @see {@link https://loops.so/docs/sdks/javascript#sendtransactionalemail}
  */
 export const sendTransactionalEmailViaLoopsAction = actionClient
-    .schema(sendTransactionalEmailSchema)
-    .action(async (input) => {
-        try {
-            const { email, transactionalId, dataVariables } = input.parsedInput;
+  .schema(sendTransactionalEmailSchema)
+  .action(async (input) => {
+    try {
+      const { email, transactionalId, dataVariables } = input.parsedInput;
 
-            // Send transactional email via Loops using the SDK
-            const response = await loops.sendTransactionalEmail({
-                email,
-                transactionalId,
-                dataVariables,
-            });
+      // Send transactional email via Loops using the SDK
+      const response = await loops.sendTransactionalEmail({
+        email,
+        transactionalId,
+        dataVariables,
+      });
 
-            return {
-                success: true,
-                data: response,
-                error: undefined,
-            };
-        } catch (error) {
-            console.error('Error in sendTransactionalEmailViaLoopsAction:', error);
-            return {
-                success: false,
-                error:
-                    error instanceof Error ? error.message : 'Unknown error occurred',
-            };
-        }
-    });
+      return {
+        success: true,
+        data: response,
+        error: undefined,
+      };
+    } catch (error) {
+      console.error('Error in sendTransactionalEmailViaLoopsAction:', error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  });

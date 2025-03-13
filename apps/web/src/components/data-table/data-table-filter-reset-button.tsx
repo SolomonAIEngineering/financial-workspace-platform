@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Button } from "@/registry/default/potion-ui/button";
-import type { DataTableFilterField } from "./types";
-import { X } from "lucide-react";
-import { useDataTable } from "@/components/data-table/data-table-provider";
+import { Button } from '@/registry/default/potion-ui/button';
+import type { DataTableFilterField } from './types';
+import { X } from 'lucide-react';
+import { useDataTable } from '@/components/data-table/data-table-provider';
 
 export function DataTableFilterResetButton<TData>({
   value: _value,
@@ -32,7 +32,7 @@ export function DataTableFilterResetButton<TData>({
       }}
       onKeyDown={(e) => {
         e.stopPropagation();
-        if (e.code === "Enter") {
+        if (e.code === 'Enter') {
           column?.setFilterValue(undefined);
         }
       }}

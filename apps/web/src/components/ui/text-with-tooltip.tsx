@@ -1,13 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/registry/default/potion-ui/tooltip";
+} from '@/registry/default/potion-ui/tooltip';
 
-import { TooltipPortal } from "@radix-ui/react-tooltip";
-import { cn } from "@/lib/utils";
+import { TooltipPortal } from '@radix-ui/react-tooltip';
+import { cn } from '@/lib/utils';
 
 interface TextWithTooltipProps {
   text: string | number;
@@ -48,9 +48,9 @@ export function TextWithTooltip({ text, className }: TextWithTooltipProps) {
           <div
             ref={textRef}
             className={cn(
-              "truncate",
-              !isTruncated && "pointer-events-none",
-              className,
+              'truncate',
+              !isTruncated && 'pointer-events-none',
+              className
             )}
           >
             {text}

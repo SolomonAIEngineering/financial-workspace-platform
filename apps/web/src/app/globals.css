@@ -9,32 +9,32 @@
   /* Base colors */
   --background: hsl(0 0% 100%);
   --foreground: hsl(222 47% 11%);
-  
+
   /* Component colors */
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(222 47% 11%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(222 47% 11%);
-  
+
   /* Primary and secondary */
   --primary: hsl(222 47% 11%);
   --primary-foreground: hsl(210 40% 98%);
   --secondary: hsl(210 40% 96.1%);
   --secondary-foreground: hsl(222 47% 11%);
-  
+
   /* Supporting colors */
   --muted: hsl(210 40% 96.1%);
   --muted-foreground: hsl(215 16% 47%);
   --accent: hsl(210 40% 96.1%);
   --accent-foreground: hsl(222 47% 11%);
   --subtle-foreground: hsl(215 16% 47%);
-  
+
   /* Form elements */
   --border: hsl(214 32% 91%);
   --input: hsl(214 32% 91%);
   --ring: hsl(222 47% 11%);
   --radius: 0.95rem;
-  
+
   /* Sidebar specific */
   --sidebar-background: hsl(210 40% 98%);
   --sidebar-foreground: hsl(215 16% 47%);
@@ -44,7 +44,7 @@
   --sidebar-accent-foreground: hsl(222 47% 11%);
   --sidebar-border: hsl(214 32% 91%);
   --sidebar-ring: hsl(224 76% 58%);
-  
+
   /* Brand colors */
   --brand: hsl(224 76% 58%);
   --brand-foreground: hsl(0 0% 100%);
@@ -52,7 +52,7 @@
   --brand-active: hsl(224 76% 48%);
   --highlight: hsl(45 100% 62%);
   --highlight-foreground: hsl(224 76% 48%);
-  
+
   /* State colors */
   --success: hsl(142 72% 29%);
   --success-foreground: hsl(142 72% 96%);
@@ -61,16 +61,16 @@
   --destructive: hsl(0 84% 60%);
   --destructive-foreground: hsl(0 0% 98%);
   --info: hsl(206 100% 50%);
-  
+
   /* Chart colors */
---chart-1: hsl(340 82% 56%);    /* Vibrant pink/red */
-    --chart-2: hsl(224 76% 58%);    /* Bold blue */
-    --chart-3: hsl(164 76% 40%);    /* Emerald green */
-    --chart-4: hsl(38 92% 50%);     /* Amber orange */
-    --chart-5: hsl(262 83% 58%);    /* Rich purple */
-    --chart-6: hsl(187 85% 43%);    /* Teal */
-    --chart-7: hsl(12 76% 61%);     /* Coral red */
-    --chart-8: hsl(95 69% 46%);     /* Lime green */
+  --chart-1: hsl(340 82% 56%); /* Vibrant pink/red */
+  --chart-2: hsl(224 76% 58%); /* Bold blue */
+  --chart-3: hsl(164 76% 40%); /* Emerald green */
+  --chart-4: hsl(38 92% 50%); /* Amber orange */
+  --chart-5: hsl(262 83% 58%); /* Rich purple */
+  --chart-6: hsl(187 85% 43%); /* Teal */
+  --chart-7: hsl(12 76% 61%); /* Coral red */
+  --chart-8: hsl(95 69% 46%); /* Lime green */
 
   :focus-visible {
     @apply outline-none;
@@ -346,37 +346,37 @@
 
   /* Apply the requested styling to UI components */
   .card,
-  div[class*="Card"],
+  div[class*='Card'],
   input,
   select,
   textarea,
-  [role="combobox"],
+  [role='combobox'],
   .select-trigger,
   [data-radix-select-trigger],
   .badge,
-  div[class*="Badge"],
+  div[class*='Badge'],
   .tabs,
-  div[class*="Tabs"],
+  div[class*='Tabs'],
   .tab,
   .switch,
-  [data-state="checked"],
-  [data-state="unchecked"],
+  [data-state='checked'],
+  [data-state='unchecked'],
   .form,
-  div[class*="Form"],
+  div[class*='Form'],
   .combobox,
-  div[class*="Combobox"],
+  div[class*='Combobox'],
   .checkbox,
-  [role="checkbox"],
-  [type="checkbox"],
+  [role='checkbox'],
+  [type='checkbox'],
   .sheet,
-  div[class*="Sheet"],
-  [role="dialog"],
+  div[class*='Sheet'],
+  [role='dialog'],
   .dialog,
-  div[class*="Dialog"],
+  div[class*='Dialog'],
   .popover,
-  div[class*="Popover"],
+  div[class*='Popover'],
   [data-radix-popper-content-wrapper] {
-    @apply bg-background text-foreground rounded-2xl border-4 border-gray-50 shadow-md dark:border-zinc-950;
+    @apply rounded-2xl border-4 border-gray-50 bg-background text-foreground shadow-md dark:border-zinc-950;
   }
 
   kbd {

@@ -1,6 +1,5 @@
 "use client";
 
-import CopyToClipboardContainer from "@/components/ui/copy-to-clipboard-container";
 import type {
   DataTableFilterField,
   Option,
@@ -19,6 +18,7 @@ import { SheetTimingPhases } from "./_components/sheet-timing-phases";
 import { TabsObjectView } from "./_components/tabs-object-view";
 import type { LogsMeta } from "./query-options";
 import { type ColumnSchema } from "./schema";
+import CopyToClipboardContainer from "@/components/ui/copy-to-clipboard-container";
 
 // instead of filterFields, maybe just 'fields' with a filterDisabled prop?
 // that way, we could have 'message' or 'headers' field with label and value as well as type!

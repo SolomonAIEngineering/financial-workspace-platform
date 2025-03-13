@@ -6,12 +6,12 @@ import { columns } from "../columns";
 export function LiveRow() {
   return (
     <TableRow>
-      <TableCell className="w-[--header-level-size] min-w-[--header-level-size] max-w-[--header-level-size] border-b border-l border-r border-t border-info border-r-info/50">
+      <TableCell className="w-[--header-level-size] min-w-[--header-level-size] max-w-[--header-level-size] border-b border-l border-r border-t border-gray-300 border-r-gray-300/50">
         <LevelIndicator level="info" />
       </TableCell>
       <TableCell
         colSpan={columns.length - 1}
-        className="border-b border-r border-t border-info font-medium text-info"
+        className="border-b border-r border-t border-gray-300 font-medium text-info"
       >
         Live Mode
       </TableCell>

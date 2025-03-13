@@ -1,1 +1,1 @@
-export const TAGS = ["web", "api", "enterprise", "app"] as const;
+export const TAGS = ['web', 'api', 'enterprise', 'app'] as const;

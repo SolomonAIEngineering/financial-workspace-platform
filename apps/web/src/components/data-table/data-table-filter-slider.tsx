@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import type { DataTableSliderFilterField } from "./types";
-import { InputWithAddons } from "@/components/ui/input-with-addons";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/registry/default/potion-ui/slider";
-import { isArrayOfNumbers } from "@/lib/is-array";
-import { useDataTable } from "@/components/data-table/data-table-provider";
-import { useDebounce } from "@/hooks/use-debounce";
+import type { DataTableSliderFilterField } from './types';
+import { InputWithAddons } from '@/components/ui/input-with-addons';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/registry/default/potion-ui/slider';
+import { isArrayOfNumbers } from '@/lib/is-array';
+import { useDataTable } from '@/components/data-table/data-table-provider';
+import { useDebounce } from '@/hooks/use-debounce';
 
 function getFilter(filterValue: unknown) {
-  return typeof filterValue === "number"
+  return typeof filterValue === 'number'
     ? [filterValue, filterValue]
     : Array.isArray(filterValue) && isArrayOfNumbers(filterValue)
       ? filterValue.length === 1

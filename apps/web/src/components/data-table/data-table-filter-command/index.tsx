@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Command,
@@ -8,27 +8,27 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/registry/default/potion-ui/command";
-import { LoaderCircle, Search, X } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { deserialize, serializeColumFilters } from "../utils";
+} from '@/registry/default/potion-ui/command';
+import { LoaderCircle, Search, X } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { deserialize, serializeColumFilters } from '../utils';
 import {
   getFieldOptions,
   getFilterValue,
   getWordByCaretPosition,
   replaceInputByFieldType,
-} from "./utils";
+} from './utils';
 
-import type { DataTableFilterField } from "../types";
-import { Kbd } from "@/components/ui/kbd";
-import { Separator } from "@/registry/default/potion-ui/separator";
-import { cn } from "@/lib/utils";
-import { formatCompactNumber } from "@/lib/format";
-import { formatDistanceToNow } from "date-fns";
-import { useDataTable } from "@/components/data-table/data-table-provider";
-import { useHotKey } from "@/hooks/use-hot-key";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import type { z } from "zod";
+import type { DataTableFilterField } from '../types';
+import { Kbd } from '@/components/ui/kbd';
+import { Separator } from '@/registry/default/potion-ui/separator';
+import { cn } from '@/lib/utils';
+import { formatCompactNumber } from '@/lib/format';
+import { formatDistanceToNow } from 'date-fns';
+import { useDataTable } from '@/components/data-table/data-table-provider';
+import { useHotKey } from '@/hooks/use-hot-key';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import type { z } from 'zod';
 
 // FIXME: there is an issue on cmdk if I wanna only set a single slider value...
 
@@ -48,28 +48,28 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
   const columnFilters = table.getState().columnFilters;
   const inputRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState<boolean>(false);
-  const [currentWord, setCurrentWord] = useState<string>("");
+  const [currentWord, setCurrentWord] = useState<string>('');
   const filterFields = useMemo(
     () => _filterFields?.filter((i) => !i.commandDisabled),
-    [_filterFields],
+    [_filterFields]
   );
   const [inputValue, setInputValue] = useState<string>(
-    serializeColumFilters(columnFilters, filterFields),
+    serializeColumFilters(columnFilters, filterFields)
   );
   const [lastSearches, setLastSearches] = useLocalStorage<
     {
       search: string;
       timestamp: number;
     }[]
-  >("data-table-command", []);
+  >('data-table-command', []);
 
   useEffect(() => {
     // TODO: we could check for ARRAY_DELIMITER or SLIDER_DELIMITER to auto-set filter when typing
-    if (currentWord !== "" && open) return;
+    if (currentWord !== '' && open) return;
     // reset
-    if (currentWord !== "" && !open) setCurrentWord("");
+    if (currentWord !== '' && !open) setCurrentWord('');
     // avoid recursion
-    if (inputValue.trim() === "" && !open) return;
+    if (inputValue.trim() === '' && !open) return;
 
     // FIXME: that stuff is BAD!
     const searchParams = deserialize(schema)(inputValue);
@@ -88,7 +88,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
         prev[curr.id] = curr.value;
         return prev;
       },
-      {} as Record<string, unknown>,
+      {} as Record<string, unknown>
     );
 
     if (searchParams.success) {
@@ -113,7 +113,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
     }
   }, [columnFilters, filterFields, open]);
 
-  useHotKey(() => setOpen((open) => !open), "k");
+  useHotKey(() => setOpen((open) => !open), 'k');
 
   useEffect(() => {
     if (open) {
@@ -126,8 +126,8 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
       <button
         type="button"
         className={cn(
-          "group flex w-full items-center rounded-lg border border-input bg-background px-3 text-muted-foreground ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 hover:bg-accent/50 hover:text-accent-foreground",
-          open ? "hidden" : "visible",
+          'group flex w-full items-center rounded-lg border border-input bg-background px-3 text-muted-foreground ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:outline-none hover:bg-accent/50 hover:text-accent-foreground',
+          open ? 'hidden' : 'visible'
         )}
         onClick={() => setOpen(true)}
       >
@@ -150,20 +150,20 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
       </button>
       <Command
         className={cn(
-          "overflow-visible rounded-lg border border-border shadow-md dark:bg-muted/50 [&>div]:border-none",
-          open ? "visible" : "hidden",
+          'overflow-visible rounded-lg border border-border shadow-md dark:bg-muted/50 [&>div]:border-none',
+          open ? 'visible' : 'hidden'
         )}
         filter={(value, search, keywords) =>
           getFilterValue({ value, search, keywords, currentWord })
         }
-      // loop
+        // loop
       >
         <CommandInput
           ref={inputRef}
           value={inputValue}
           onValueChange={setInputValue}
           onKeyDown={(e) => {
-            if (e.key === "Escape") inputRef?.current?.blur();
+            if (e.key === 'Escape') inputRef?.current?.blur();
           }}
           onBlur={() => {
             setOpen(false);
@@ -174,7 +174,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
             if (!search) return;
             const timestamp = Date.now();
             const searchIndex = lastSearches.findIndex(
-              (item) => item.search === search,
+              (item) => item.search === search
             );
             if (searchIndex !== -1) {
               lastSearches[searchIndex].timestamp = timestamp;
@@ -186,7 +186,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
           }}
           onInput={(e) => {
             const caretPosition = e.currentTarget?.selectionStart || -1;
-            const value = e.currentTarget?.value || "";
+            const value = e.currentTarget?.value || '';
             const word = getWordByCaretPosition({ value, caretPosition });
             setCurrentWord(word);
           }}
@@ -194,12 +194,12 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
           className="text-foreground"
         />
         <div className="relative">
-          <div className="absolute top-2 z-10 w-full overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none animate-in">
+          <div className="absolute top-2 z-10 w-full animate-in overflow-hidden rounded-lg border border-border bg-popover text-popover-foreground shadow-md outline-none">
             {/* default height is 300px but in case of more, we'd like to tease the user */}
             <CommandList className="max-h-[310px]">
               <CommandGroup heading="Filter">
                 {filterFields.map((field) => {
-                  if (typeof field.value !== "string") return null;
+                  if (typeof field.value !== 'string') return null;
                   if (inputValue.includes(`${field.value}:`)) return null;
                   // TBD: should we handle this in the component?
                   return (
@@ -212,16 +212,16 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
                       }}
                       onSelect={(value) => {
                         setInputValue((prev) => {
-                          if (currentWord.trim() === "") {
+                          if (currentWord.trim() === '') {
                             const input = `${prev}${value}`;
                             return `${input}:`;
                           }
                           // lots of cheat
                           const isStarting = currentWord === prev;
-                          const prefix = isStarting ? "" : " ";
+                          const prefix = isStarting ? '' : ' ';
                           const input = prev.replace(
                             `${prefix}${currentWord}`,
-                            `${prefix}${value}`,
+                            `${prefix}${value}`
                           );
                           return `${input}:`;
                         });
@@ -238,7 +238,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
               <CommandSeparator />
               <CommandGroup heading="Query">
                 {filterFields?.map((field) => {
-                  if (typeof field.value !== "string") return null;
+                  if (typeof field.value !== 'string') return null;
                   if (!currentWord.includes(`${field.value}:`)) return null;
 
                   const column = table.getColumn(field.value);
@@ -265,16 +265,16 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
                               optionValue,
                               value,
                               field,
-                            }),
+                            })
                           );
-                          setCurrentWord("");
+                          setCurrentWord('');
                         }}
                       >
                         {`${optionValue}`}
                         {facetedValue?.has(optionValue) ? (
                           <span className="ml-auto font-mono text-muted-foreground">
                             {formatCompactNumber(
-                              facetedValue.get(optionValue) || 0,
+                              facetedValue.get(optionValue) || 0
                             )}
                           </span>
                         ) : null}
@@ -298,9 +298,9 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
                           e.stopPropagation();
                         }}
                         onSelect={(value) => {
-                          const search = value.replace("suggestion:", "");
+                          const search = value.replace('suggestion:', '');
                           setInputValue(`${search} `);
-                          setCurrentWord("");
+                          setCurrentWord('');
                         }}
                         className="group"
                       >
@@ -322,11 +322,11 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
                             // TODO: extract into function
                             setLastSearches(
                               lastSearches.filter(
-                                (i) => i.search !== item.search,
-                              ),
+                                (i) => i.search !== item.search
+                              )
                             );
                           }}
-                          className="ml-1 hidden rounded-md p-0.5 hover:bg-background group-aria-[selected=true]:block"
+                          className="ml-1 hidden rounded-md p-0.5 group-aria-[selected=true]:block hover:bg-background"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -342,7 +342,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
             >
               <div className="flex flex-wrap gap-3">
                 <span>
-                  Use <Kbd variant="outline">↑</Kbd>{" "}
+                  Use <Kbd variant="outline">↑</Kbd>{' '}
                   <Kbd variant="outline">↓</Kbd> to navigate
                 </span>
                 <span>
@@ -388,21 +388,21 @@ function CommandItemSuggestions<TData>({
   field: DataTableFilterField<TData>;
 }) {
   switch (field.type) {
-    case "checkbox": {
+    case 'checkbox': {
       return (
         <span className="ml-1 hidden truncate text-muted-foreground/80 group-aria-[selected=true]:block">
-          {field.options?.map(({ value }) => `[${value}]`).join(" ")}
+          {field.options?.map(({ value }) => `[${value}]`).join(' ')}
         </span>
       );
     }
-    case "slider": {
+    case 'slider': {
       return (
         <span className="ml-1 hidden truncate text-muted-foreground/80 group-aria-[selected=true]:block">
           [{field.min} - {field.max}]
         </span>
       );
     }
-    case "input": {
+    case 'input': {
       return (
         <span className="ml-1 hidden truncate text-muted-foreground/80 group-aria-[selected=true]:block">
           [{`${String(field.value)}`} input]

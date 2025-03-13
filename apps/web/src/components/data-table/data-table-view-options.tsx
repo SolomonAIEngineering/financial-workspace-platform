@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Check, GripVertical, Settings2 } from "lucide-react";
+import { Check, GripVertical, Settings2 } from 'lucide-react';
 import {
   Command,
   CommandEmpty,
@@ -8,28 +8,28 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/registry/default/potion-ui/command";
+} from '@/registry/default/potion-ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/registry/default/potion-ui/popover";
+} from '@/registry/default/potion-ui/popover';
 import {
   Sortable,
   SortableDragHandle,
   SortableItem,
-} from "@/components/ui/sortable";
-import { useMemo, useState } from "react";
+} from '@/components/ui/sortable';
+import { useMemo, useState } from 'react';
 
-import { Button } from "@/registry/default/potion-ui/button";
-import { cn } from "@/lib/utils";
-import { useDataTable } from "@/components/data-table/data-table-provider";
+import { Button } from '@/registry/default/potion-ui/button';
+import { cn } from '@/lib/utils';
+import { useDataTable } from '@/components/data-table/data-table-provider';
 
 export function DataTableViewOptions() {
   const { table, enableColumnOrdering } = useDataTable();
   const [open, setOpen] = useState(false);
   const [drag, setDrag] = useState(false);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   const columnOrder = table.getState().columnOrder;
 
@@ -38,7 +38,7 @@ export function DataTableViewOptions() {
       table.getAllColumns().sort((a, b) => {
         return columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id);
       }),
-    [columnOrder],
+    [columnOrder]
   );
 
   return (
@@ -78,8 +78,8 @@ export function DataTableViewOptions() {
                 {sortedColumns
                   .filter(
                     (column) =>
-                      typeof column.accessorFn !== "undefined" &&
-                      column.getCanHide(),
+                      typeof column.accessorFn !== 'undefined' &&
+                      column.getCanHide()
                   )
                   .map((column) => (
                     <SortableItem key={column.id} value={column.id} asChild>
@@ -88,18 +88,18 @@ export function DataTableViewOptions() {
                         onSelect={() =>
                           column.toggleVisibility(!column.getIsVisible())
                         }
-                        className={"capitalize"}
+                        className={'capitalize'}
                         disabled={drag}
                       >
                         <div
                           className={cn(
-                            "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                            'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
                             column.getIsVisible()
-                              ? "bg-primary text-primary-foreground"
-                              : "opacity-50 [&_svg]:invisible",
+                              ? 'bg-primary text-primary-foreground'
+                              : 'opacity-50 [&_svg]:invisible'
                           )}
                         >
-                          <Check className={cn("h-4 w-4")} />
+                          <Check className={cn('h-4 w-4')} />
                         </div>
                         <span>{column.columnDef.meta?.label || column.id}</span>
                         {enableColumnOrdering && !search ? (

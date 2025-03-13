@@ -7,30 +7,30 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/registry/default/potion-ui/drawer";
+} from '@/registry/default/potion-ui/drawer';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/registry/default/potion-ui/tooltip";
+} from '@/registry/default/potion-ui/tooltip';
 
-import { Button } from "@/registry/default/potion-ui/button";
-import { DataTableFilterControls } from "./data-table-filter-controls";
-import { FilterIcon } from "lucide-react";
-import { Kbd } from "@/components/ui/kbd";
-import React from "react";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { useHotKey } from "@/hooks/use-hot-key";
-import { useMediaQuery } from "@/hooks/use-media-query";
+import { Button } from '@/registry/default/potion-ui/button';
+import { DataTableFilterControls } from './data-table-filter-controls';
+import { FilterIcon } from 'lucide-react';
+import { Kbd } from '@/components/ui/kbd';
+import React from 'react';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { useHotKey } from '@/hooks/use-hot-key';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 export function DataTableFilterControlsDrawer() {
   const triggerButtonRef = React.useRef<HTMLButtonElement>(null);
-  const isMobile = useMediaQuery("(max-width: 640px)");
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   useHotKey(() => {
     triggerButtonRef.current?.click();
-  }, "b");
+  }, 'b');
 
   return (
     <Drawer>
@@ -50,7 +50,7 @@ export function DataTableFilterControlsDrawer() {
           </TooltipTrigger>
           <TooltipContent side="right">
             <p>
-              Toggle controls with{" "}
+              Toggle controls with{' '}
               <Kbd className="ml-1 text-muted-foreground group-hover:text-accent-foreground">
                 <span className="mr-1">⌘</span>
                 <span>B</span>

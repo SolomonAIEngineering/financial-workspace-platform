@@ -58,6 +58,7 @@ import { RefreshButton } from "./_components/refresh-button";
 import { BaseChartSchema, columnFilterSchema, ColumnSchema } from "./schema";
 import { searchParamsParser } from "./search-params";
 import { TimelineChart } from "./timeline-chart";
+import { MiniSidebar } from "@/components/sidebar/mini-sidebar";
 
 // TODO: add a possible chartGroupBy
 export interface DataTableInfiniteProps<TData, TValue, TMeta> {
@@ -307,7 +308,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
             "hidden sm:flex",
           )}
         >
-          <div className="border-b border-border bg-background p-2 md:sticky md:top-0">
+          <div className="border-b border-gray-300 bg-background p-2 md:sticky md:top-0">
             <div className="flex h-[46px] items-center justify-between gap-3">
               <p className="px-2 font-medium text-foreground">Filters</p>
               <div>
@@ -323,7 +324,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
         </div>
         <div
           className={cn(
-            "flex max-w-full flex-1 flex-col border-border sm:border-l",
+            "flex max-w-full flex-1 flex-col border-gray-300 sm:border-l",
             // Chrome issue
             "group-data-[expanded=true]/controls:sm:max-w-[calc(100vw_-_208px)] group-data-[expanded=true]/controls:md:max-w-[calc(100vw_-_288px)]",
           )}
@@ -350,7 +351,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
               ref={tableRef}
               onScroll={onScroll}
               // REMINDER: https://stackoverflow.com/questions/50361698/border-style-do-not-work-with-sticky-position-element
-              className="border-separate border-spacing-0"
+              className="border-separate border-spacing-0 [&_*]:border-gray-300 ![&_tr]:border-gray-300 ![&_td]:border-gray-300 ![&_th]:border-gray-300"
               containerClassName="max-h-[calc(100vh_-_var(--top-bar-height))]"
             >
               <TableHeader className={cn("sticky top-0 z-20 bg-background")}>
@@ -359,7 +360,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
                     key={headerGroup.id}
                     className={cn(
                       "bg-muted/50 hover:bg-muted/50",
-                      "[&>*]:border-t [&>:not(:last-child)]:border-r",
+                      "[&>*]:border-t [&>*]:border-gray-300 [&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300",
                     )}
                   >
                     {headerGroup.headers.map((header) => {
@@ -367,7 +368,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
                         <TableHead
                           key={header.id}
                           className={cn(
-                            "relative select-none truncate border-b border-border [&>.cursor-col-resize]:last:opacity-0",
+                            "relative select-none truncate border-b border-gray-300 [&>.cursor-col-resize]:last:opacity-0",
                             header.column.columnDef.meta?.headerClassName,
                           )}
                           aria-sort={
@@ -391,7 +392,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
                               onTouchStart={header.getResizeHandler()}
                               className={cn(
                                 "user-select-none absolute -right-2 top-0 z-10 flex h-full w-4 cursor-col-resize touch-none justify-center",
-                                "before:absolute before:inset-y-0 before:w-px before:translate-x-px before:bg-border",
+                                "before:absolute before:inset-y-0 before:w-px before:translate-x-px before:bg-gray-300",
                               )}
                             />
                           )}
@@ -404,7 +405,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
               <TableBody
                 id="content"
                 tabIndex={-1}
-                className="outline-1 -outline-offset-1 outline-primary transition-colors focus-visible:outline"
+                className="outline-1 -outline-offset-1 outline-gray-300 transition-colors focus-visible:outline"
                 // REMINDER: avoids scroll (skipping the table header) when using skip to content
                 style={{
                   scrollMarginTop: "calc(var(--top-bar-height) + 40px)",
@@ -527,8 +528,10 @@ function Row<TData>({
         }
       }}
       className={cn(
-        "[&>:not(:last-child)]:border-r",
-        "outline-1 -outline-offset-1 outline-primary transition-colors focus-visible:bg-muted/50 focus-visible:outline data-[state=selected]:outline",
+        "border-b border-gray-300",
+        "[&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300",
+        "outline-1 -outline-offset-1 outline-gray-300 transition-colors",
+        "focus-visible:bg-muted/50 focus-visible:outline data-[state=selected]:outline",
         table.options.meta?.getRowClassName?.(row),
       )}
     >
@@ -536,7 +539,7 @@ function Row<TData>({
         <TableCell
           key={cell.id}
           className={cn(
-            "truncate border-b border-border",
+            "truncate border-b border-gray-300",
             cell.column.columnDef.meta?.cellClassName,
           )}
         >

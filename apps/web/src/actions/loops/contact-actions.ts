@@ -1,9 +1,9 @@
 'use server';
 
 import {
-    deleteContactSchema,
-    findContactSchema,
-    updateContactSchema,
+  deleteContactSchema,
+  findContactSchema,
+  updateContactSchema,
 } from './schema';
 
 import { actionClient } from '@/actions/safe-action';
@@ -55,31 +55,31 @@ import { loops } from '@/lib/loopsClient';
  * @see {@link https://loops.so/docs/sdks/javascript#findcontact}
  */
 export const findContactInLoopsAction = actionClient
-    .schema(findContactSchema)
-    .action(async (input) => {
-        try {
-            const { email, userId } = input.parsedInput;
+  .schema(findContactSchema)
+  .action(async (input) => {
+    try {
+      const { email, userId } = input.parsedInput;
 
-            // Find contact in Loops using the SDK
-            const response = await loops.findContact({
-                email,
-                userId,
-            });
+      // Find contact in Loops using the SDK
+      const response = await loops.findContact({
+        email,
+        userId,
+      });
 
-            return {
-                success: true,
-                data: response,
-                error: undefined,
-            };
-        } catch (error) {
-            console.error('Error in findContactInLoopsAction:', error);
-            return {
-                success: false,
-                error:
-                    error instanceof Error ? error.message : 'Unknown error occurred',
-            };
-        }
-    });
+      return {
+        success: true,
+        data: response,
+        error: undefined,
+      };
+    } catch (error) {
+      console.error('Error in findContactInLoopsAction:', error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  });
 
 /**
  * Server action to update a contact in the Loops email marketing platform.
@@ -147,32 +147,32 @@ export const findContactInLoopsAction = actionClient
  * @see {@link https://loops.so/docs/sdks/javascript#updatecontact}
  */
 export const updateContactInLoopsAction = actionClient
-    .schema(updateContactSchema)
-    .action(async (input) => {
-        try {
-            const { email, contactProperties, mailingLists } = input.parsedInput;
+  .schema(updateContactSchema)
+  .action(async (input) => {
+    try {
+      const { email, contactProperties, mailingLists } = input.parsedInput;
 
-            // Update contact in Loops using the SDK
-            const response = await loops.updateContact(
-                email,
-                contactProperties || {},
-                mailingLists
-            );
+      // Update contact in Loops using the SDK
+      const response = await loops.updateContact(
+        email,
+        contactProperties || {},
+        mailingLists
+      );
 
-            return {
-                success: true,
-                data: response,
-                error: undefined,
-            };
-        } catch (error) {
-            console.error('Error in updateContactInLoopsAction:', error);
-            return {
-                success: false,
-                error:
-                    error instanceof Error ? error.message : 'Unknown error occurred',
-            };
-        }
-    });
+      return {
+        success: true,
+        data: response,
+        error: undefined,
+      };
+    } catch (error) {
+      console.error('Error in updateContactInLoopsAction:', error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  });
 
 /**
  * Server action to delete a contact from the Loops email marketing platform.
@@ -216,28 +216,28 @@ export const updateContactInLoopsAction = actionClient
  * @see {@link https://loops.so/docs/sdks/javascript#deletecontact}
  */
 export const deleteContactInLoopsAction = actionClient
-    .schema(deleteContactSchema)
-    .action(async (input) => {
-        try {
-            const { email, userId } = input.parsedInput;
+  .schema(deleteContactSchema)
+  .action(async (input) => {
+    try {
+      const { email, userId } = input.parsedInput;
 
-            // Delete contact in Loops using the SDK
-            const response = await loops.deleteContact({
-                email,
-                userId,
-            });
+      // Delete contact in Loops using the SDK
+      const response = await loops.deleteContact({
+        email,
+        userId,
+      });
 
-            return {
-                success: true,
-                data: response,
-                error: undefined,
-            };
-        } catch (error) {
-            console.error('Error in deleteContactInLoopsAction:', error);
-            return {
-                success: false,
-                error:
-                    error instanceof Error ? error.message : 'Unknown error occurred',
-            };
-        }
-    });
+      return {
+        success: true,
+        data: response,
+        error: undefined,
+      };
+    } catch (error) {
+      console.error('Error in deleteContactInLoopsAction:', error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  });

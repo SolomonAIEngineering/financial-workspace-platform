@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import {
   Sheet,
   SheetClose,
@@ -10,20 +10,20 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@/registry/default/potion-ui/sheet";
+} from '@/registry/default/potion-ui/sheet';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/registry/default/potion-ui/tooltip";
+} from '@/registry/default/potion-ui/tooltip';
 
-import { Button } from "@/registry/default/potion-ui/button";
-import { Kbd } from "@/components/ui/kbd";
-import { Separator } from "@/registry/default/potion-ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import { useDataTable } from "@/components/data-table/data-table-provider";
+import { Button } from '@/registry/default/potion-ui/button';
+import { Kbd } from '@/components/ui/kbd';
+import { Separator } from '@/registry/default/potion-ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
+import { useDataTable } from '@/components/data-table/data-table-provider';
 
 export interface DataTableSheetDetailsProps {
   title?: string;
@@ -53,12 +53,12 @@ export function DataTableSheetDetails({
 
   const nextId = React.useMemo(
     () => table.getCoreRowModel().flatRows[index + 1]?.id,
-    [index, isLoading],
+    [index, isLoading]
   );
 
   const prevId = React.useMemo(
     () => table.getCoreRowModel().flatRows[index - 1]?.id,
-    [index, isLoading],
+    [index, isLoading]
   );
 
   const onPrev = React.useCallback(() => {
@@ -79,18 +79,18 @@ export function DataTableSheetDetails({
 
       if (isMenuActive) return;
 
-      if (e.key === "ArrowUp") {
+      if (e.key === 'ArrowUp') {
         e.preventDefault();
         onPrev();
       }
-      if (e.key === "ArrowDown") {
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
         onNext();
       }
     };
 
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
   }, [selectedRowKey, onNext, onPrev]);
 
   return (
@@ -116,7 +116,7 @@ export function DataTableSheetDetails({
       >
         <SheetHeader className="sticky top-0 z-10 border-b bg-background p-4">
           <div className="flex items-center justify-between gap-2">
-            <SheetTitle className={cn(titleClassName, "truncate text-left")}>
+            <SheetTitle className={cn(titleClassName, 'truncate text-left')}>
               {isLoading && !selectedRowKey ? (
                 <Skeleton className="h-7 w-36" />
               ) : (

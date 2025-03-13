@@ -1,6 +1,6 @@
-import { FilterFn } from "@tanstack/react-table";
-import { isAfter, isBefore, isSameDay } from "date-fns";
-import { isArrayOfDates } from "../is-array";
+import { FilterFn } from '@tanstack/react-table';
+import { isAfter, isBefore, isSameDay } from 'date-fns';
+import { isArrayOfDates } from '../is-array';
 
 export const inDateRange: FilterFn<any> = (row, columnId, value) => {
   const date = new Date(row.getValue(columnId));
@@ -25,5 +25,5 @@ export const arrSome: FilterFn<any> = (row, columnId, filterValue) => {
 arrSome.autoRemove = (val: any) => !Array.isArray(val) || !val?.length;
 
 function testFalsey(val: any) {
-  return val === undefined || val === null || val === "";
+  return val === undefined || val === null || val === '';
 }

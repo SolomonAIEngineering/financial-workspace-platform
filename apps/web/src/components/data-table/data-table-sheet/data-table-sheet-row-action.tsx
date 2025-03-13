@@ -7,7 +7,7 @@ import {
   Copy,
   Equal,
   Search,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,19 +15,19 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/registry/default/potion-ui/dropdown-menu";
-import { endOfDay, endOfHour, startOfDay, startOfHour } from "date-fns";
+} from '@/registry/default/potion-ui/dropdown-menu';
+import { endOfDay, endOfHour, startOfDay, startOfHour } from 'date-fns';
 
-import { DataTableFilterField } from "../types";
-import { Table } from "@tanstack/react-table";
-import { cn } from "@/lib/utils";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { DataTableFilterField } from '../types';
+import { Table } from '@tanstack/react-table';
+import { cn } from '@/lib/utils';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 
 interface DataTableSheetRowActionProps<
   TData,
   TFields extends DataTableFilterField<TData>,
 > extends React.ComponentPropsWithRef<typeof DropdownMenuTrigger> {
-  fieldValue: TFields["value"];
+  fieldValue: TFields['value'];
   filterFields: TFields[];
   value: string | number;
   table: Table<TData>;
@@ -55,7 +55,7 @@ export function DataTableSheetRowAction<
   function renderOptions() {
     if (!field) return null;
     switch (field.type) {
-      case "checkbox":
+      case 'checkbox':
         return (
           <DropdownMenuItem
             onClick={() => {
@@ -74,14 +74,14 @@ export function DataTableSheetRowAction<
             Include
           </DropdownMenuItem>
         );
-      case "input":
+      case 'input':
         return (
           <DropdownMenuItem onClick={() => column?.setFilterValue(value)}>
             <Search />
             Include
           </DropdownMenuItem>
         );
-      case "slider":
+      case 'slider':
         return (
           <DropdownMenuGroup>
             <DropdownMenuItem
@@ -104,7 +104,7 @@ export function DataTableSheetRowAction<
             </DropdownMenuItem>
           </DropdownMenuGroup>
         );
-      case "timerange":
+      case 'timerange':
         const date = new Date(value);
         return (
           <DropdownMenuGroup>
@@ -143,12 +143,12 @@ export function DataTableSheetRowAction<
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          "rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          "relative",
-          className,
+          'rounded-md ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
+          'relative',
+          className
         )}
         onKeyDown={(e) => {
-          if (e.key === "ArrowDown") {
+          if (e.key === 'ArrowDown') {
             // REMINDER: default behavior is to open the dropdown menu
             // But because we use it to navigate between rows, we need to prevent it
             // and only use "Enter" to select the option
