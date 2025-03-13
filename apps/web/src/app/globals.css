@@ -6,56 +6,72 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  /* Base colors */
   --background: hsl(0 0% 100%);
-  --foreground: hsl(0 0% 3.9%);
+  --foreground: hsl(222 47% 11%);
+  
+  /* Component colors */
   --card: hsl(0 0% 100%);
-  --card-foreground: hsl(0 0% 3.9%);
+  --card-foreground: hsl(222 47% 11%);
   --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(0 0% 3.9%);
-  --primary: hsl(0 0% 3.9%);
-  --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(0 0% 96.1%);
-  --secondary-foreground: hsl(0 0% 9%);
-  --muted: hsl(0 0% 96.1%);
-  --muted-foreground: hsl(0 0% 45.1%);
-  --accent: hsl(0 0% 96.1%);
-  --accent-foreground: hsl(0 0% 9%);
-  --destructive: hsl(0 79% 63%);
-  --destructive-foreground: hsl(0 0% 98%);
-  --border: hsl(0 0% 89.8%);
-  --input: hsl(0 0% 89.8%);
-  --ring: hsl(240 5.9% 10%);
+  --popover-foreground: hsl(222 47% 11%);
+  
+  /* Primary and secondary */
+  --primary: hsl(222 47% 11%);
+  --primary-foreground: hsl(210 40% 98%);
+  --secondary: hsl(210 40% 96.1%);
+  --secondary-foreground: hsl(222 47% 11%);
+  
+  /* Supporting colors */
+  --muted: hsl(210 40% 96.1%);
+  --muted-foreground: hsl(215 16% 47%);
+  --accent: hsl(210 40% 96.1%);
+  --accent-foreground: hsl(222 47% 11%);
+  --subtle-foreground: hsl(215 16% 47%);
+  
+  /* Form elements */
+  --border: hsl(214 32% 91%);
+  --input: hsl(214 32% 91%);
+  --ring: hsl(222 47% 11%);
   --radius: 0.95rem;
-  --sidebar-background: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
-
-  --brand: hsl(211 77% 51%);
+  
+  /* Sidebar specific */
+  --sidebar-background: hsl(210 40% 98%);
+  --sidebar-foreground: hsl(215 16% 47%);
+  --sidebar-primary: hsl(222 47% 11%);
+  --sidebar-primary-foreground: hsl(210 40% 98%);
+  --sidebar-accent: hsl(210 40% 96.1%);
+  --sidebar-accent-foreground: hsl(222 47% 11%);
+  --sidebar-border: hsl(214 32% 91%);
+  --sidebar-ring: hsl(224 76% 58%);
+  
+  /* Brand colors */
+  --brand: hsl(224 76% 58%);
   --brand-foreground: hsl(0 0% 100%);
-  --brand-hover: hsl(211 77% 46%);
-  --brand-active: hsl(211 77% 41%);
-  --highlight: hsl(48 100% 50%);
-  --highlight-foreground: hsl(211 105% 43%);
-  --success: hsl(144 38% 39%);
-  --success-foreground: hsl(144 39% 30%);
-  --warning: hsl(43 100% 38%);
-  --warning-foreground: hsl(45 100% 30%);
-  --subtle-foreground: hsl(240 5% 34%);
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
+  --brand-hover: hsl(224 76% 53%);
+  --brand-active: hsl(224 76% 48%);
+  --highlight: hsl(45 100% 62%);
+  --highlight-foreground: hsl(224 76% 48%);
+  
+  /* State colors */
+  --success: hsl(142 72% 29%);
+  --success-foreground: hsl(142 72% 96%);
+  --warning: hsl(38 92% 50%);
+  --warning-foreground: hsl(38 92% 10%);
+  --destructive: hsl(0 84% 60%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --info: hsl(206 100% 50%);
+  
+  /* Chart colors */
+--chart-1: hsl(340 82% 56%);    /* Vibrant pink/red */
+    --chart-2: hsl(224 76% 58%);    /* Bold blue */
+    --chart-3: hsl(164 76% 40%);    /* Emerald green */
+    --chart-4: hsl(38 92% 50%);     /* Amber orange */
+    --chart-5: hsl(262 83% 58%);    /* Rich purple */
+    --chart-6: hsl(187 85% 43%);    /* Teal */
+    --chart-7: hsl(12 76% 61%);     /* Coral red */
+    --chart-8: hsl(95 69% 46%);     /* Lime green */
 
-  --success: var(--muted);
-  --warning: 24.6 95% 53.1%;
-  --error: 0 84.2% 60.2%;
-  --info: 198.63 88.66% 48.43%
   :focus-visible {
     @apply outline-none;
   }
@@ -326,6 +342,41 @@
     /* Enhance glass effect on content */
     position: relative;
     min-height: 100vh;
+  }
+
+  /* Apply the requested styling to UI components */
+  .card,
+  div[class*="Card"],
+  input,
+  select,
+  textarea,
+  [role="combobox"],
+  .select-trigger,
+  [data-radix-select-trigger],
+  .badge,
+  div[class*="Badge"],
+  .tabs,
+  div[class*="Tabs"],
+  .tab,
+  .switch,
+  [data-state="checked"],
+  [data-state="unchecked"],
+  .form,
+  div[class*="Form"],
+  .combobox,
+  div[class*="Combobox"],
+  .checkbox,
+  [role="checkbox"],
+  [type="checkbox"],
+  .sheet,
+  div[class*="Sheet"],
+  [role="dialog"],
+  .dialog,
+  div[class*="Dialog"],
+  .popover,
+  div[class*="Popover"],
+  [data-radix-popper-content-wrapper] {
+    @apply bg-background text-foreground rounded-2xl border-4 border-gray-50 shadow-md dark:border-zinc-950;
   }
 
   kbd {
@@ -633,4 +684,23 @@
 }
 @utility slide-out-to-right-* {
   --tw-exit-translate-x: --value([percentage], [length]);
+}
+
+/* Table border removal for infinite data filter */
+.border-removal table {
+  border-collapse: collapse;
+}
+
+.border-removal thead tr,
+.border-removal tbody tr {
+  border: none !important;
+}
+
+.border-removal th,
+.border-removal td {
+  border: none !important;
+}
+
+.border-removal thead {
+  border-bottom: none !important;
 }
