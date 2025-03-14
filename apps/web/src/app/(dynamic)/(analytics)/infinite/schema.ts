@@ -122,7 +122,7 @@ export const facetMetadataSchema = z.object({
 
 export type FacetMetadataSchema = z.infer<typeof facetMetadataSchema>;
 
-export type BaseChartSchema = { timestamp: number;[key: string]: number };
+export type BaseChartSchema = { timestamp: number; [key: string]: number };
 
 export const timelineChartSchema = z.object({
   timestamp: z.number(), // UNIX

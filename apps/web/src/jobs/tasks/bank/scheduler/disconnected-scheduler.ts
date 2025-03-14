@@ -44,6 +44,11 @@ export const disconnectedSchedulerJob = schedules.task({
   run: async () => {
     await logger.info('Starting disconnected connections scheduler');
 
+    if (process.env.TRIGGER_ENVIRONMENT !== "production") {
+      await logger.info("Disconnected connections scheduler skipped in non-production environment");
+      return;
+    }
+
     // Find disconnected connections that need attention
     const disconnectedConnections = await prisma.bankConnection.findMany({
       include: {

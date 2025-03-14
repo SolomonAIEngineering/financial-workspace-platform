@@ -136,7 +136,7 @@ export function TimelineChart<TChart extends BaseChartSchema>({
             }
             return format(date, 'LLL dd, y');
           }}
-        // interval="preserveStartEnd"
+          // interval="preserveStartEnd"
         />
         <ChartTooltip
           // defaultIndex={10}

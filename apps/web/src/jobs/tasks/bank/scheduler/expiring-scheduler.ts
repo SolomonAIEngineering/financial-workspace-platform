@@ -49,6 +49,10 @@ export const expiringSchedulerJob = schedules.task({
   cron: '0 10 * * *', // Run daily at 10 AM
   run: async () => {
     await logger.info('Starting expiring connections scheduler');
+    if (process.env.TRIGGER_ENVIRONMENT !== "production") {
+      await logger.info("Expiring connections scheduler skipped in non-production environment");
+      return;
+    }
 
     // Plaid tokens typically expire after 30 days of inactivity
     const expiringThreshold = subDays(new Date(), 20);

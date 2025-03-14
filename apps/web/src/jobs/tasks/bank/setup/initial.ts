@@ -1,16 +1,9 @@
-import {
-  type BankAccount,
-  AccountStatus,
-  AccountType,
-  BankConnectionStatus,
-} from '@prisma/client';
+import { logger, schedules, schemaTask } from '@trigger.dev/sdk/v3';
 
-import { prisma } from '@/server/db';
-import { getAccounts, getInstitutionById } from '@/server/services/plaid';
-
-import { client } from '../../../client';
 import { BANK_JOBS } from '../../constants';
-import { logger, schemaTask } from '@trigger.dev/sdk/v3';
+import { bankSyncScheduler } from '../scheduler/bank-scheduler';
+import { generateCronTag } from '@/lib/generate-cron-tag';
+import { syncConnectionJob as syncConnection } from "../sync/connection";
 import { z } from 'zod';
 
 /**
@@ -57,24 +50,15 @@ export const initialSetupJob = schemaTask({
   id: BANK_JOBS.INITIAL_SETUP,
   description: 'Initial Bank Connection Setup',
   schema: z.object({
-    accessToken: z.string(),
-    institutionId: z.string(),
-    itemId: z.string(),
-    publicToken: z.string(),
-    userId: z.string(),
-    provider: z.string(),
+    teamId: z.string(),
+    connectionId: z.string(),
   }),
   /**
    * Main job execution function that sets up a new bank connection
    *
    * @param payload - The job payload containing connection details
-   * @param payload.accessToken - The access token received from Plaid or other
-   *   provider
-   * @param payload.institutionId - The ID of the financial institution
-   * @param payload.itemId - The item ID from Plaid
-   * @param payload.publicToken - The public token from Plaid (may be used for
-   *   token exchange)
-   * @param payload.userId - The ID of the user who owns this connection
+   * @param payload.teamId - The ID of the team
+   * @param payload.connectionId - The ID of the bank connection  
    * @param io - The I/O context provided by Trigger.dev for logging, running
    *   tasks, etc.
    * @returns A result object containing the connection ID, account count, and
@@ -82,174 +66,39 @@ export const initialSetupJob = schemaTask({
    * @throws Error if any part of the setup process fails
    */
   run: async (payload, io) => {
-    const {
-      accessToken,
-      institutionId,
-      itemId,
-      publicToken,
-      userId,
-      provider,
-    } = payload;
-
-    await logger.info(
-      `Starting initial setup for institution ${institutionId}`
+    const { teamId, connectionId } = payload;
+    logger.info(
+      `Starting initial setup for institution ${connectionId}`
     );
 
-    try {
-      // Get institution details
-      const institution = await getInstitutionById(institutionId);
+    // S  chedule the bank sync task to run daily at a random time to distribute load
+    // Use a deduplication key to prevent duplicate schedules for the same team
+    // Add teamId as externalId to use it in the bankSyncScheduler task
+    await schedules.create({
+      task: bankSyncScheduler.id,
+      cron: generateCronTag(teamId),
+      timezone: "UTC",
+      externalId: teamId,
+      deduplicationKey: `${teamId}-${bankSyncScheduler.id}`,
+    });
 
-      // Create the bank connection record
-      const bankConnection = await prisma.bankConnection.create({
-        data: {
-          accessToken,
-          createdAt: new Date(),
-          institutionId,
-          institutionName: institution.name,
-          itemId, // Required field
-          lastSyncedAt: new Date(),
-          logo: institution.logo,
-          primaryColor: institution.primaryColor,
-          status: BankConnectionStatus.ACTIVE,
-          updatedAt: new Date(),
-          userId,
-          provider,
-        },
-      });
+    // Run initial sync for transactions and balance for the connection
+    await syncConnection.triggerAndWait({
+      connectionId,
+      manualSync: true,
+    });
 
-      // Get accounts from Plaid
-      const plaidAccounts = await getAccounts(accessToken);
-
-      await logger.info(`Found ${plaidAccounts.length} accounts`);
-
-      // Create bank accounts
-      let bankAccounts: BankAccount[] = [];
-
-      // Properly type the accounts array
-      const accounts: BankAccount[] = [];
-
-      for (const plaidAccount of plaidAccounts) {
-        const account = await prisma.bankAccount.create({
-          data: {
-            availableBalance: plaidAccount.availableBalance,
-            bankConnectionId: bankConnection.id,
-            createdAt: new Date(),
-            currentBalance: plaidAccount.currentBalance,
-            enabled: true,
-            isoCurrencyCode: plaidAccount.isoCurrencyCode,
-            limit: plaidAccount.limit,
-            mask: plaidAccount.mask,
-            name: plaidAccount.name,
-            officialName: plaidAccount.officialName,
-            plaidAccountId: plaidAccount.plaidAccountId,
-            status: AccountStatus.ACTIVE,
-            subtype: plaidAccount.subtype,
-            type: mapPlaidAccountType(plaidAccount.type, plaidAccount.subtype),
-            updatedAt: new Date(),
-            userId,
-          },
-        });
-        accounts.push(account);
-      }
-
-      bankAccounts = accounts;
-
-      await logger.info(`Created ${bankAccounts.length} bank accounts`);
-
-      // Trigger initial account and transaction syncs
-      // We stagger these to avoid hitting rate limits
-      let delayCounter = 0;
-
-      for (const account of bankAccounts) {
-        // Trigger a complete sync for each account (delays increasing by 5 seconds)
-        await client.sendEvent({
-          // Add a context with delay information instead of using delay property
-          context: {
-            delaySeconds: delayCounter * 5,
-          },
-          name: 'sync-account-trigger',
-          payload: {
-            accessToken,
-            bankAccountId: account.id,
-            manualSync: true, // Force sync even for accounts that might have issues
-            userId,
-          },
-        });
-        delayCounter++;
-      }
-
-      // Record this activity
-      await prisma.userActivity.create({
-        data: {
-          detail: `Connected ${institution.name} with ${bankAccounts.length} accounts`,
-          metadata: {
-            accountCount: bankAccounts.length,
-            bankConnectionId: bankConnection.id,
-          },
-          type: 'ACCOUNT_CONNECTED',
-          userId,
-        },
-      });
-
-      await logger.info(`Initial setup completed for ${institution.name}`);
-
-      return {
-        accountCount: bankAccounts.length,
-        bankConnectionId: bankConnection.id,
-        status: 'success',
-      };
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      await logger.error(`Initial setup failed: ${errorMessage}`);
-
-      // If we have created a bank connection, update its status
-      if (institutionId) {
-        const existingConnection = await prisma.bankConnection.findFirst({
-          orderBy: {
-            createdAt: 'desc',
-          },
-          where: {
-            institutionId,
-            userId,
-          },
-        });
-
-        if (existingConnection) {
-          await prisma.bankConnection.update({
-            data: {
-              errorMessage: errorMessage,
-              status: BankConnectionStatus.ERROR,
-            },
-            where: { id: existingConnection.id },
-          });
-        }
-      }
-
-      throw error;
-    }
+    // And run once more to ensure all transactions are fetched on the providers side
+    // GoCardLess, Teller and Plaid can take up to 3 minutes to fetch all transactions
+    // For Teller and Plaid we also listen on the webhook to fetch any new transactions
+    await syncConnection.trigger(
+      {
+        connectionId,
+        manualSync: true,
+      },
+      {
+        delay: "5m",
+      },
+    );
   },
 });
-
-/**
- * Maps Plaid account types to internal AccountType enum values
- *
- * @param type - The account type string from Plaid (e.g., 'depository',
- *   'credit')
- * @param subtype - Optional account subtype from Plaid (e.g., 'checking',
- *   'savings')
- * @returns The appropriate AccountType enum value for our database
- */
-function mapPlaidAccountType(type: string, subtype?: string): AccountType {
-  if (type === 'depository') {
-    if (subtype === 'checking') return AccountType.DEPOSITORY;
-    if (subtype === 'savings') return AccountType.DEPOSITORY;
-
-    return AccountType.DEPOSITORY;
-  }
-  if (type === 'credit') return AccountType.CREDIT;
-  if (type === 'loan') return AccountType.LOAN;
-  if (type === 'investment') return AccountType.INVESTMENT;
-
-  return AccountType.OTHER;
-}

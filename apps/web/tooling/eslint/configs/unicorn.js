@@ -39,7 +39,7 @@ export default defineConfig(eslintPluginUnicorn.configs['flat/recommended'], {
     'unicorn/prefer-includes': 'off',
     'unicorn/no-zero-fractions': 'off',
     'unicorn/new-for-builtins': 'off',
-    'unicorn/prefer-at': "off",
+    'unicorn/prefer-at': 'off',
     'unicorn/prefer-string-replace-all': 'off',
     'unicorn/prefer-optional-catch-binding': 'off',
     'unicorn/prefer-at': 'off',
@@ -51,5 +51,6 @@ export default defineConfig(eslintPluginUnicorn.configs['flat/recommended'], {
     'unicorn/no-array-reduce-type-parameter': 'off',
     'unicorn/explicit-length-check': 'off',
     'prefer-const': 'off',
+    'unicorn/prefer-code-point': 'off',
   },
 });

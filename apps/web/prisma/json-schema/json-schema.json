@@ -1042,6 +1042,12 @@
         },
         "provider": {
           "type": "string"
+        },
+        "Team": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Team"
+          }
         }
       },
       "required": [
@@ -1370,6 +1376,24 @@
             "null"
           ],
           "format": "date-time"
+        },
+        "errorDetails": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errorRetries": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "balance": {
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "Team": {
           "type": "array",
@@ -2868,6 +2892,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/TrackerReport"
+          }
+        },
+        "bankConnections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankConnection"
           }
         },
         "UserInvite": {

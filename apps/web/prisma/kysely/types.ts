@@ -257,6 +257,9 @@ export type BankAccount = {
   recurringMonthlyInflow: Generated<number | null>
   recurringMonthlyOutflow: Generated<number | null>
   nextScheduledTransaction: Timestamp | null
+  errorDetails: string | null
+  errorRetries: number | null
+  balance: number | null
 }
 export type BankAccountToTeam = {
   A: string
@@ -298,6 +301,10 @@ export type BankConnection = {
   expiryNotificationCount: Generated<number>
   expiresAt: Timestamp | null
   provider: string
+}
+export type BankConnectionToTeam = {
+  A: string
+  B: string
 }
 export type Comment = {
   id: string
@@ -909,6 +916,7 @@ export type UsersOnTeam = {
 }
 export type DB = {
   _BankAccountToTeam: BankAccountToTeam
+  _BankConnectionToTeam: BankConnectionToTeam
   apps: App
   Attachment: Attachment
   BankAccount: BankAccount

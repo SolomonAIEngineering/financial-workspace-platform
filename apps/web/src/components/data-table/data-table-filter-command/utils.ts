@@ -82,13 +82,13 @@ export function getFieldOptions<TData>({
     case 'slider': {
       return field.options?.length
         ? field.options
-          .map(({ value }) => value)
-          .sort((a, b) => Number(a) - Number(b))
-          .filter(notEmpty)
+            .map(({ value }) => value)
+            .sort((a, b) => Number(a) - Number(b))
+            .filter(notEmpty)
         : Array.from(
-          { length: field.max - field.min + 1 },
-          (_, i) => field.min + i
-        ) || [];
+            { length: field.max - field.min + 1 },
+            (_, i) => field.min + i
+          ) || [];
     }
     default: {
       return field.options?.map(({ value }) => value).filter(notEmpty) || [];

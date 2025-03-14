@@ -438,14 +438,14 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       // Convert enum values to more readable format
       const formattedFrequency = frequency
         ? {
-          WEEKLY: 'Weekly',
-          BIWEEKLY: 'Every 2 Weeks',
-          MONTHLY: 'Monthly',
-          SEMI_MONTHLY: 'Twice Monthly',
-          ANNUALLY: 'Yearly',
-          IRREGULAR: 'Irregular',
-          UNKNOWN: 'Unknown',
-        }[frequency] || frequency
+            WEEKLY: 'Weekly',
+            BIWEEKLY: 'Every 2 Weeks',
+            MONTHLY: 'Monthly',
+            SEMI_MONTHLY: 'Twice Monthly',
+            ANNUALLY: 'Yearly',
+            IRREGULAR: 'Irregular',
+            UNKNOWN: 'Unknown',
+          }[frequency] || frequency
         : null;
 
       return formattedFrequency ? (

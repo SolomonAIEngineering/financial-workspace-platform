@@ -11,8 +11,6 @@ export * from './tasks/bank/sync/connection';
 export * from './tasks/bank/setup/initial';
 export * from './tasks/bank/scheduler/disconnected-scheduler';
 export * from './tasks/bank/scheduler/expiring-scheduler';
-export * from './tasks/bank/notifications/transactions';
-export * from './tasks/bank/notifications/expiring';
 export * from './tasks/bank/connections/refresh-connection-job';
 export * from './tasks/bank/connections/connection-expiration-job';
 
@@ -23,15 +21,12 @@ import {
 
 import { connectionExpirationJob } from './tasks/bank/connections/connection-expiration-job';
 import { connectionRecoveryJob } from './tasks/bank/connections/connection-recovery-job';
-import { expiringNotificationsJob } from './tasks/bank/notifications/expiring';
 import { expiringSchedulerJob } from './tasks/bank/scheduler/expiring-scheduler';
 import { initialSetupJob } from './tasks/bank/setup/initial';
 import { monitorBankConnectionsJob } from './tasks/bank/scheduler/monitor-connections';
 import { refreshConnectionJob } from './tasks/bank/connections/refresh-connection-job';
 import { sendReconnectAlertsJob } from './tasks/reconnect/send-reconnect-alerts';
-import { syncAccountJob } from './tasks/bank/sync/account';
 import { syncConnectionJob } from './tasks/bank/sync/connection';
-import { transactionNotificationsJob } from './tasks/bank/notifications/transactions';
 import { updateBalancesJob } from './tasks/bank/scheduler/update-balances';
 import { upsertTransactionsJob } from './tasks/bank/transactions/upsert';
 
@@ -45,18 +40,14 @@ const jobs = [
   monitorBankConnectionsJob,
   updateBalancesJob,
 
-
   // Alert/notification jobs
   sendReconnectAlertsJob,
 
   // New jobs
   upsertTransactionsJob,
-  syncAccountJob,
   syncConnectionJob,
   initialSetupJob,
   expiringSchedulerJob,
-  transactionNotificationsJob,
-  expiringNotificationsJob,
 
   // Connection management jobs
   refreshConnectionJob,
@@ -81,12 +72,9 @@ export {
   updateBalancesJob,
   sendReconnectAlertsJob,
   upsertTransactionsJob,
-  syncAccountJob,
   syncConnectionJob,
   initialSetupJob,
   expiringSchedulerJob,
-  transactionNotificationsJob,
-  expiringNotificationsJob,
   refreshConnectionJob,
   connectionRecoveryJob,
   connectionExpirationJob,

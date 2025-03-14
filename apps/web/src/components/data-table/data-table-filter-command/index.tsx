@@ -156,7 +156,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
         filter={(value, search, keywords) =>
           getFilterValue({ value, search, keywords, currentWord })
         }
-      // loop
+        // loop
       >
         <CommandInput
           ref={inputRef}
@@ -258,14 +258,15 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
                           e.stopPropagation();
                         }}
                         onSelect={(value) => {
-                          setInputValue((prev) =>
-                            replaceInputByFieldType({
-                              prev,
-                              currentWord,
-                              optionValue,
-                              value,
-                              field,
-                            }) ?? prev
+                          setInputValue(
+                            (prev) =>
+                              replaceInputByFieldType({
+                                prev,
+                                currentWord,
+                                optionValue,
+                                value,
+                                field,
+                              }) ?? prev
                           );
                           setCurrentWord('');
                         }}

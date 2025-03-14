@@ -88,12 +88,8 @@ export interface DataTableInfiniteProps<TData, TValue, TMeta> {
   chartData?: BaseChartSchema[];
   isFetching?: boolean;
   isLoading?: boolean;
-  fetchNextPage: (
-    options?: FetchNextPageOptions
-  ) => Promise<unknown>;
-  fetchPreviousPage?: (
-    options?: FetchPreviousPageOptions
-  ) => Promise<unknown>;
+  fetchNextPage: (options?: FetchNextPageOptions) => Promise<unknown>;
+  fetchPreviousPage?: (options?: FetchPreviousPageOptions) => Promise<unknown>;
   refetch: (options?: RefetchOptions) => void;
   renderLiveRow: (props?: { row: Row<TData> }) => React.ReactNode;
 }
@@ -387,9 +383,9 @@ export function DataTableInfinite<TData, TValue, TMeta>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}
@@ -444,7 +440,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
                 <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
                   <TableCell colSpan={columns.length} className="text-center">
                     {totalRowsFetched < filterRows ||
-                      !table.getCoreRowModel().rows?.length ? (
+                    !table.getCoreRowModel().rows?.length ? (
                       <Button
                         disabled={isFetching || isLoading}
                         onClick={() => fetchNextPage()}

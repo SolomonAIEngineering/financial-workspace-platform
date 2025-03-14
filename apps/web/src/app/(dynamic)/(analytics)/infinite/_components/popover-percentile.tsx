@@ -29,9 +29,9 @@ export function PopoverPercentile({
 }: PopoverPercentileProps) {
   const percentileArray = percentiles
     ? Object.entries(percentiles).map(([percentile, latency]) => [
-      Number.parseInt(percentile),
-      latency,
-    ])
+        Number.parseInt(percentile),
+        latency,
+      ])
     : [];
 
   data?.percentile

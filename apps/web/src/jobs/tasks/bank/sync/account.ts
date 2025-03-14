@@ -1,238 +1,147 @@
-import {
-  AccountStatus,
-  AccountType,
-  BankConnectionStatus,
-} from '@prisma/client';
-import { logger, schemaTask } from '@trigger.dev/sdk/v3';
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 
-import { BANK_JOBS } from '../../constants';
-import { client } from '../../../client';
-import { getAccounts } from '@/server/services/plaid';
-import { prisma } from '@/server/db';
-import { z } from 'zod';
+import { AccountType } from "@/server/types/index";
+import { engine as client } from "@/lib/engine";
+import { getClassification } from "@/jobs/utils/transform";
+import { parseAPIError } from "@/jobs/utils/parse-error";
+import { prisma } from "@/server/db";
+import { upsertTransactionsJob as upsertTransactions } from "../transactions/upsert";
+import { z } from "zod";
 
-/**
- * This job synchronizes data for a specific bank account with the latest
- * information from Plaid or another financial data provider. It updates
- * critical account information such as:
- *
- * - Current and available balances
- * - Account name and mask
- * - Account status and type
- * - Currency and limit information
- *
- * The job can be triggered automatically as part of a scheduled sync, manually
- * by the user, or as part of a connection-wide synchronization process.
- *
- * When run with the `manualSync` flag, it will also trigger a transaction sync
- * to ensure complete data freshness.
- *
- * @file Bank Account Data Synchronization Job
- * @example
- *   // Trigger an account sync
- *   await client.sendEvent({
- *     name: 'sync-account',
- *     payload: {
- *       bankAccountId: 'acct_123abc',
- *       accessToken: 'access-token-from-provider',
- *       userId: 'user_456def',
- *       manualSync: false, // Optional, defaults to false
- *     },
- *   });
- *
- * @example
- *   // The job returns different results based on the outcome:
- *
- *   // Successful sync:
- *   {
- *   status: "success",
- *   accountId: "acct_123abc",
- *   balance: {
- *   available: 1250.75,
- *   current: 1350.25
- *   }
- *   }
- *
- *   // Account skipped:
- *   {
- *   status: "skipped",
- *   reason: "Account not active"
- *   }
- */
-export const syncAccountJob = schemaTask({
-  id: BANK_JOBS.SYNC_ACCOUNT,
-  description: 'Sync Bank Account',
+const BATCH_SIZE = 500;
+
+export const syncAccount = schemaTask({
+  id: "sync-account",
+  maxDuration: 300,
+  retry: {
+    maxAttempts: 2,
+  },
   schema: z.object({
-    accessToken: z.string(),
-    bankAccountId: z.string(),
+    id: z.string().uuid(),
+    teamId: z.string(),
+    accountId: z.string(),
+    accessToken: z.enum(Object.values(AccountType) as [string, ...string[]]).optional(),
+    errorRetries: z.number().optional(),
+    provider: z.enum(["gocardless", "plaid", "teller", "enablebanking", "stripe"]),
     manualSync: z.boolean().optional(),
-    userId: z.string(),
+    accountType: z.enum(Object.values(AccountType) as [string, ...string[]]),
   }),
-  /**
-   * Main job execution function that syncs a bank account's data
-   *
-   * @param payload - The job payload containing account details
-   * @param payload.accessToken - The access token for the financial data
-   *   provider
-   * @param payload.bankAccountId - The ID of the bank account to sync
-   * @param payload.manualSync - Whether this is a manual sync initiated by the
-   *   user
-   * @param payload.userId - The ID of the user who owns the account
-   * @param io - The I/O context provided by Trigger.dev for logging, running
-   *   tasks, etc.
-   * @returns A result object containing the account ID, balance information,
-   *   and status
-   * @throws Error if the account sync fails or if the account cannot be found
-   */
-  run: async (payload, io) => {
-    const { accessToken, bankAccountId, manualSync = false, userId } = payload;
+  run: async ({
+    id,
+    teamId,
+    accountId,
+    accountType,
+    accessToken,
+    errorRetries,
+    provider,
+    manualSync,
+  }) => {
+    const classification = getClassification(accountType as AccountType);
 
-    await logger.info(`Starting account sync for account ${bankAccountId}`);
-
-    // Get the bank account from the database
-    const bankAccount = await prisma.bankAccount.findUnique({
-      select: {
-        id: true,
-        name: true,
-        plaidAccountId: true,
-        status: true,
-        updatedAt: true,
-      },
-      where: { id: bankAccountId },
-    });
-
-    if (!bankAccount) {
-      await logger.error(`Bank account ${bankAccountId} not found`);
-
-      throw new Error(`Bank account ${bankAccountId} not found`);
-    }
-    if (bankAccount.status !== 'ACTIVE' && !manualSync) {
-      await logger.info(
-        `Bank account ${bankAccountId} is not active and not manually synced, skipping`
-      );
-
-      return {
-        reason: 'Account not active',
-        status: 'skipped',
-      };
-    }
-
+    // Get the balance
     try {
-      // Fetch account data from Plaid
-      const plaidAccounts = await getAccounts(accessToken);
+      const balanceResponse = await client.apiFinancialAccounts.listBalances({
+        provider: provider as "gocardless" | "plaid" | "teller" | "stripe",
+        id: accountId,
+        accessToken,
+      });
 
-      // Find the matching account
-      const plaidAccount = plaidAccounts.find(
-        (acc) => acc.plaidAccountId === bankAccount.plaidAccountId
-      );
-
-      if (!plaidAccount) {
-        await logger.error(
-          `Plaid account not found for bank account ${bankAccountId}`
-        );
-
-        throw new Error(
-          `Plaid account not found for bank account ${bankAccountId}`
-        );
+      if (!balanceResponse) {
+        throw new Error("Failed to get balance");
       }
 
-      // Update the bank account with the latest information
-      await prisma.bankAccount.update({
-        data: {
-          availableBalance: plaidAccount.availableBalance,
-          balanceLastUpdated: new Date(),
-          currentBalance: plaidAccount.currentBalance,
-          isoCurrencyCode: plaidAccount.isoCurrencyCode,
-          limit: plaidAccount.limit,
-          mask: plaidAccount.mask,
-          name: plaidAccount.name || bankAccount.name,
-          officialName: plaidAccount.officialName,
-          status: AccountStatus.ACTIVE,
-          subtype: plaidAccount.subtype,
-          type: mapPlaidAccountType(plaidAccount.type, plaidAccount.subtype),
-          updatedAt: new Date(),
-        },
-        where: { id: bankAccountId },
-      });
+      const { data: balanceData } = balanceResponse;
 
-      // If manually synced, also trigger a transaction sync
-      if (manualSync) {
-        await client.sendEvent({
-          name: 'upsert-transactions-trigger',
-          payload: {
-            accessToken,
-            bankAccountId,
-            userId,
-          },
-        });
-      }
+      // Only update the balance if it's greater than 0
+      const balance = balanceData?.amount ?? 0;
 
-      await logger.info(`Account sync completed for ${bankAccountId}`);
-
-      return {
-        accountId: bankAccountId,
-        balance: {
-          available: plaidAccount.availableBalance,
-          current: plaidAccount.currentBalance,
-        },
-        status: 'success',
-      };
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      await logger.error(`Account sync failed: ${errorMessage}`);
-
-      // Update bank account with error information
-      await prisma.bankAccount.update({
-        data: {
-          status: AccountStatus.INACTIVE,
-          updatedAt: new Date(),
-        },
-        where: { id: bankAccountId },
-      });
-
-      // Get the bank connection ID for this account
-      const bankConnectionInfo = await prisma.bankAccount.findUnique({
-        select: { bankConnectionId: true },
-        where: { id: bankAccountId },
-      });
-
-      if (bankConnectionInfo) {
-        // Update the connection status
-        await prisma.bankConnection.update({
+      if (balance > 0) {
+        // Reset error details and retries if we successfully got the balance
+        await prisma.bankAccount.update({
+          where: { id },
           data: {
-            errorMessage: errorMessage,
-            status: BankConnectionStatus.REQUIRES_ATTENTION,
-            updatedAt: new Date(),
+            balance: balance as number,
+            errorDetails: null,
+            errorRetries: null,
           },
-          where: { id: bankConnectionInfo.bankConnectionId },
+        });
+      } else {
+        // Reset error details and retries if we successfully got the balance
+        await prisma.bankAccount.update({
+          where: { id },
+          data: {
+            errorDetails: null,
+            errorRetries: null,
+          },
         });
       }
+    } catch (error) {
+      const parsedError = parseAPIError(error);
+
+      logger.error("Failed to sync account balance", { error: parsedError });
+
+      if (parsedError.code === "disconnected") {
+        const retries = errorRetries ? errorRetries + 1 : 1;
+
+        // Update the account with the error details and retries
+        await prisma.bankAccount.update({
+          where: { id },
+          data: {
+            errorDetails: parsedError.message,
+            errorRetries: retries,
+          },
+        });
+
+        throw error;
+      }
+    }
+
+    // Get the transactions
+    try {
+      const transactionsResponse = await client.apiTransactions.list({
+        provider: provider as "gocardless" | "plaid" | "teller" | "stripe",
+        accountId,
+        accountType: classification as "credit" | "depository" | "loan" | "other_asset" | "other_liability",
+        accessToken,
+        // If the transactions are being synced manually, we want to get all transactions
+        latest: manualSync ? "false" : "true",
+      });
+
+      if (!transactionsResponse) {
+        throw new Error("Failed to get transactions");
+      }
+
+      // Reset error details and retries if we successfully got the transactions
+      await prisma.bankAccount.update({
+        where: { id },
+        data: {
+          errorDetails: null,
+          errorRetries: null,
+        },
+      });
+
+      const { data: transactionsData } = transactionsResponse;
+
+      if (!transactionsData) {
+        logger.info(`No transactions to upsert for account ${accountId}`);
+        return;
+      }
+
+      // Upsert transactions in batches of 500
+      // This is to avoid memory issues with the DB
+      for (let i = 0; i < transactionsData.length; i += BATCH_SIZE) {
+        const transactionBatch = transactionsData.slice(i, i + BATCH_SIZE);
+        await upsertTransactions.triggerAndWait({
+          transactions: transactionBatch,
+          teamId,
+          bankAccountId: id,
+          manualSync,
+        });
+      }
+    } catch (error) {
+      logger.error("Failed to sync transactions", { error });
 
       throw error;
     }
   },
 });
-
-/**
- * Maps Plaid account types to internal AccountType enum values
- *
- * @param type - The account type string from Plaid (e.g., 'depository',
- *   'credit')
- * @param subtype - Optional account subtype from Plaid (e.g., 'checking',
- *   'savings')
- * @returns The appropriate AccountType enum value for our database
- */
-function mapPlaidAccountType(type: string, subtype?: string): AccountType {
-  if (type === 'depository') {
-    if (subtype === 'checking') return AccountType.DEPOSITORY;
-    if (subtype === 'savings') return AccountType.DEPOSITORY;
-
-    return AccountType.DEPOSITORY;
-  }
-  if (type === 'credit') return AccountType.CREDIT;
-  if (type === 'loan') return AccountType.LOAN;
-  if (type === 'investment') return AccountType.INVESTMENT;
-
-  return AccountType.OTHER;
-}

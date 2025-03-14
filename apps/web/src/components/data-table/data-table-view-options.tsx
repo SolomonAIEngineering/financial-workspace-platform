@@ -76,11 +76,7 @@ export function DataTableViewOptions() {
                 onDragCancel={() => setDrag(false)}
               >
                 {sortedColumns
-                  .filter(
-                    (column) =>
-                      column.accessorFn &&
-                      column.getCanHide()
-                  )
+                  .filter((column) => column.accessorFn && column.getCanHide())
                   .map((column) => (
                     <SortableItem key={column.id} value={column.id} asChild>
                       <CommandItem

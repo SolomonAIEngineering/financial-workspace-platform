@@ -15,9 +15,7 @@ import { useQueryStates } from 'nuqs';
 const REFRESH_INTERVAL = 4_000;
 
 interface LiveButtonProps {
-  fetchPreviousPage?: (
-    options?: FetchPreviousPageOptions
-  ) => Promise<unknown>;
+  fetchPreviousPage?: (options?: FetchPreviousPageOptions) => Promise<unknown>;
 }
 
 export function LiveButton({ fetchPreviousPage }: LiveButtonProps) {

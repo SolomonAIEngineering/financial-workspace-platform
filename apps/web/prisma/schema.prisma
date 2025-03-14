@@ -319,6 +319,7 @@ model BankConnection {
   @@index([itemId])
   @@index([status])
   @@index([institutionId])
+  Team Team[]
 }
 
 // Enhanced BankAccount model
@@ -402,6 +403,10 @@ model BankAccount {
   recurringMonthlyOutflow Float? @default(0) // Sum of recurring monthly outflows
   nextScheduledTransaction DateTime? // Date of next scheduled transaction
 
+  errorDetails String?
+  errorRetries Int?
+
+  balance Float?
   @@unique([userId, plaidAccountId])
   @@index([userId])
   @@index([bankConnectionId])
@@ -944,8 +949,8 @@ model Team {
   reports               Report[]
   trackerProjects       TrackerProject[]
   trackerReports        TrackerReport[]
-  
-  
+  bankConnections       BankConnection[]
+
   @@map("teams")
   UserInvite UserInvite[]
   CustomerTag CustomerTag[]

@@ -218,6 +218,9 @@ export interface BankAccount {
   recurringMonthlyInflow: number| null;
   recurringMonthlyOutflow: number| null;
   nextScheduledTransaction: Date| null;
+  errorDetails: string| null;
+  errorRetries: number| null;
+  balance: number| null;
 }
 
 export interface Transaction {
