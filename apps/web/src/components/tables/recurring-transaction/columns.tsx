@@ -11,7 +11,24 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import type { RecurringTransactionSchema } from "./schema";
 import { cn } from "@/lib/utils";
 
-// Define transaction type colors
+/**
+ * @file columns.tsx
+ * @description Defines the data table columns for recurring transactions.
+ * This file contains column definitions, cell renderers, and helper functions
+ * for displaying recurring transaction data in a tabular format.
+ */
+
+/**
+ * Visual styling for different transaction types.
+ * Defines the badge colors, dot colors, and icons for each transaction type.
+ * These styles provide consistent visual cues across the UI.
+ * 
+ * @property subscription - Styling for subscription transactions
+ * @property bill - Styling for bill payments
+ * @property income - Styling for income transactions
+ * @property transfer - Styling for transfers
+ * @property other - Styling for other transaction types
+ */
 export const transactionTypeColors = {
     subscription: {
         badge: "text-purple-700 bg-purple-50 border-purple-200 hover:bg-purple-100",
@@ -40,7 +57,15 @@ export const transactionTypeColors = {
     },
 };
 
-// Define importance level colors
+/**
+ * Visual styling for different importance levels.
+ * Defines badge and dot colors based on the transaction's importance.
+ * 
+ * @property critical - Styling for critical-importance transactions
+ * @property high - Styling for high-importance transactions
+ * @property medium - Styling for medium-importance transactions
+ * @property low - Styling for low-importance transactions
+ */
 export const importanceLevelColors = {
     critical: {
         badge: "text-red-700 bg-red-50 border-red-200 hover:bg-red-100",
@@ -60,7 +85,21 @@ export const importanceLevelColors = {
     },
 };
 
-// Helper function to format frequency in a human-readable way
+/**
+ * Formats a frequency code into human-readable text.
+ * Converts the raw frequency and interval values into a user-friendly description.
+ * 
+ * @param frequency - The frequency code (e.g., "MONTHLY")
+ * @param interval - The interval value (default: 1)
+ * @returns A formatted string describing the frequency
+ * 
+ * @example
+ * ```tsx
+ * formatFrequency("MONTHLY", 1) // "Monthly"
+ * formatFrequency("WEEKLY", 2) // "Every 2 weeks"
+ * formatFrequency("ANNUALLY", 1) // "Annually"
+ * ```
+ */
 export function formatFrequency(frequency: string, interval: number = 1): string {
     if (interval === 1) {
         switch (frequency) {
@@ -82,7 +121,26 @@ export function formatFrequency(frequency: string, interval: number = 1): string
     }
 }
 
-// Define columns for the data table
+/**
+ * Column definitions for the recurring transactions data table.
+ * Defines the structure, sorting, and rendering of each column in the table.
+ * 
+ * Columns include:
+ * - Title (with merchant name)
+ * - Amount (with currency formatting)
+ * - Frequency
+ * - Next scheduled date
+ * - Transaction type
+ * - Execution count and total
+ * - Status
+ * 
+ * Each column definition includes:
+ * - accessorKey: The property key in the data object
+ * - header: The column header component
+ * - cell: The cell renderer function
+ * 
+ * @type {ColumnDef<RecurringTransactionSchema>[]}
+ */
 export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     {
         accessorKey: "title",

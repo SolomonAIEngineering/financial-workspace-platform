@@ -17,6 +17,22 @@ import {
 } from "./schema";
 import { v4 as uuidv4 } from 'uuid';
 
+/**
+ * @file constants.tsx
+ * @description Contains constant values, sample data, and filter configurations for transactions.
+ * This file is the central repository for all tag colors, default values, sample transactions,
+ * and filter field definitions used throughout the transaction UI components.
+ */
+
+/**
+ * Tag color definitions for different tag categories.
+ * Provides consistent styling for badges and indicators across the UI.
+ * 
+ * @property api - Styling for API-related tags
+ * @property web - Styling for web-related tags
+ * @property enterprise - Styling for enterprise-related tags
+ * @property app - Styling for app-related tags
+ */
 export const tagsColor = {
   api: {
     badge:
@@ -40,7 +56,21 @@ export const tagsColor = {
   },
 } as Record<string, Record<"badge" | "dot", string>>;
 
-// Sample transaction data
+/**
+ * Sample transaction data for testing and development.
+ * Each record represents a financial transaction with properties matching the ColumnSchema.
+ * The data includes various types of transactions like income, expenses, transfers, and
+ * recurring payments with diverse metadata to demonstrate different use cases.
+ * 
+ * @example
+ * ```tsx
+ * // Use the sample data in a component
+ * const { data } = useQuery({
+ *   queryFn: async () => data,
+ *   queryKey: ['transactions']
+ * });
+ * ```
+ */
 export const data = [
   {
     id: uuidv4(),
@@ -583,7 +613,29 @@ export const data = [
   },
 ] satisfies ColumnSchema[];
 
-// Define filter fields for the data table
+/**
+ * Filter field definitions for the transactions data table.
+ * Each filter object defines a UI control that users can interact with to filter transaction data.
+ * 
+ * The filters include:
+ * - Date range filter for time-based filtering
+ * - Slider control for amount filtering
+ * - Text inputs for searching transaction name and merchant
+ * - Checkbox filters for status, category, payment method, etc.
+ * - Specialized filters for tags and various transaction attributes
+ * 
+ * @type {DataTableFilterField<ColumnSchema>[]}
+ * 
+ * @example
+ * ```tsx
+ * // Use these filters in a DataTable component
+ * <DataTable
+ *   columns={columns}
+ *   data={data}
+ *   filterFields={filterFields}
+ * />
+ * ```
+ */
 export const filterFields = [
   {
     label: "Time Range",

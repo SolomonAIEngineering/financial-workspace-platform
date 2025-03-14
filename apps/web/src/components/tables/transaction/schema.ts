@@ -8,7 +8,24 @@ import { REGIONS } from "@/constants/region";
 import { TAGS } from "@/constants/tag";
 import { z } from "zod";
 
-// https://github.com/colinhacks/zod/issues/2985#issue-2008642190
+/**
+ * @file schema.ts
+ * @description Defines the data schema for financial transactions using Zod.
+ * This file contains schema definitions, validation rules, enum values, and types
+ * used throughout the transaction components.
+ */
+
+/**
+ * Helper function to convert string values to booleans.
+ * Used for handling boolean values from URL search parameters and form submissions.
+ * 
+ * @example
+ * // Convert "true" to true
+ * stringToBoolean.parse("true") // returns true
+ * 
+ * // Convert "false" to false
+ * stringToBoolean.parse("false") // returns false
+ */
 const stringToBoolean = z
   .string()
   .toLowerCase()
@@ -22,7 +39,27 @@ const stringToBoolean = z
   })
   .pipe(z.boolean().optional());
 
-// Transaction categories based on the Prisma schema
+/**
+ * Transaction categories based on the Prisma schema.
+ * These categories represent high-level groupings of financial transactions.
+ * 
+ * @property INCOME - Money received (salary, interest, etc.)
+ * @property TRANSFER - Movement of money between accounts
+ * @property LOAN_PAYMENTS - Payments toward loans
+ * @property BANK_FEES - Bank service charges and fees
+ * @property ENTERTAINMENT - Recreational spending
+ * @property FOOD_AND_DRINK - Restaurants, groceries, etc.
+ * @property GENERAL_MERCHANDISE - Retail purchases
+ * @property HOME_IMPROVEMENT - House repairs, maintenance
+ * @property MEDICAL - Healthcare expenses
+ * @property PERSONAL_CARE - Self-care services
+ * @property GENERAL_SERVICES - Service-based purchases
+ * @property GOVERNMENT_AND_NON_PROFIT - Government and charity payments
+ * @property TRANSPORTATION - Travel and commuting expenses
+ * @property TRAVEL - Vacation and business trips
+ * @property UTILITIES - Household utilities
+ * @property OTHER - Miscellaneous expenses
+ */
 export const TRANSACTION_CATEGORIES = [
   "INCOME",
   "TRANSFER",
@@ -42,7 +79,18 @@ export const TRANSACTION_CATEGORIES = [
   "OTHER",
 ] as const;
 
-// Transaction frequencies based on the Prisma schema
+/**
+ * Transaction frequencies for recurring transactions.
+ * Defines how often a transaction repeats.
+ * 
+ * @property WEEKLY - Once every week
+ * @property BIWEEKLY - Once every two weeks
+ * @property MONTHLY - Once every month
+ * @property SEMI_MONTHLY - Twice a month (typically on the 1st and 15th)
+ * @property ANNUALLY - Once a year
+ * @property IRREGULAR - No fixed schedule
+ * @property UNKNOWN - Frequency hasn't been determined
+ */
 export const TRANSACTION_FREQUENCIES = [
   "WEEKLY",
   "BIWEEKLY",
@@ -53,7 +101,19 @@ export const TRANSACTION_FREQUENCIES = [
   "UNKNOWN",
 ] as const;
 
-// Payment methods
+/**
+ * Payment methods for transactions.
+ * Defines the mechanism used to make a payment.
+ * 
+ * @property CREDIT_CARD - Credit card payment
+ * @property DEBIT_CARD - Debit card payment
+ * @property ACH - Automated Clearing House electronic transfer
+ * @property WIRE - Wire transfer
+ * @property CHECK - Paper check
+ * @property CASH - Physical cash
+ * @property DIGITAL_WALLET - Digital payment services (PayPal, Venmo, etc.)
+ * @property OTHER - Other payment methods
+ */
 export const PAYMENT_METHODS = [
   "CREDIT_CARD",
   "DEBIT_CARD",
@@ -65,7 +125,16 @@ export const PAYMENT_METHODS = [
   "OTHER",
 ] as const;
 
-// Transaction status options
+/**
+ * Transaction status options.
+ * Indicates the current state of a transaction.
+ * 
+ * @property PENDING - Transaction is initiated but not settled
+ * @property COMPLETED - Transaction is fully processed
+ * @property CANCELLED - Transaction was cancelled
+ * @property FAILED - Transaction attempt failed
+ * @property REFUNDED - Transaction was refunded
+ */
 export const TRANSACTION_STATUSES = [
   "PENDING",
   "COMPLETED",
@@ -74,7 +143,21 @@ export const TRANSACTION_STATUSES = [
   "REFUNDED",
 ] as const;
 
-// Transaction types
+/**
+ * Transaction types.
+ * Describes the nature or purpose of the transaction.
+ * 
+ * @property PURCHASE - Regular buying of goods or services
+ * @property REFUND - Money returned from a previous purchase
+ * @property PAYMENT - Regular bill payment
+ * @property DEPOSIT - Money added to account
+ * @property WITHDRAWAL - Money removed from account
+ * @property TRANSFER - Movement of money between accounts
+ * @property FEE - Service or penalty charges
+ * @property INTEREST - Interest earned or paid
+ * @property ADJUSTMENT - Account balance correction
+ * @property OTHER - Transactions that don't fit other categories
+ */
 export const TRANSACTION_TYPES = [
   "PURCHASE",
   "REFUND",
@@ -88,7 +171,17 @@ export const TRANSACTION_TYPES = [
   "OTHER",
 ] as const;
 
-// Payment channels
+/**
+ * Payment channels.
+ * Describes the medium through which a transaction was conducted.
+ * 
+ * @property IN_PERSON - Physical point-of-sale transaction
+ * @property ONLINE - Web-based transaction
+ * @property MOBILE - Transaction via mobile device
+ * @property ATM - Automated Teller Machine transaction
+ * @property PHONE - Transaction by phone
+ * @property MAIL - Transaction by postal mail
+ */
 export const PAYMENT_CHANNELS = [
   "IN_PERSON",
   "ONLINE",
@@ -98,7 +191,18 @@ export const PAYMENT_CHANNELS = [
   "MAIL",
 ] as const;
 
-// Transaction channels
+/**
+ * Transaction channels.
+ * Describes the specific interface used for the transaction.
+ * 
+ * @property IN_STORE - Physical retail location
+ * @property ONLINE - Website or web application
+ * @property MOBILE_APP - Smartphone application
+ * @property PHONE - Phone call or SMS
+ * @property ATM - Automated Teller Machine
+ * @property BANK_TELLER - In-person bank service
+ * @property MAIL - Postal mail
+ */
 export const TRANSACTION_CHANNELS = [
   "IN_STORE",
   "ONLINE",
@@ -109,7 +213,15 @@ export const TRANSACTION_CHANNELS = [
   "MAIL",
 ] as const;
 
-// Cash flow categories
+/**
+ * Cash flow categories.
+ * High-level categorization for cash flow analysis.
+ * 
+ * @property INCOME - Money coming in
+ * @property EXPENSE - Money going out
+ * @property TRANSFER - Money moving between accounts
+ * @property EXCLUDED - Transactions excluded from cash flow analysis
+ */
 export const CASH_FLOW_CATEGORIES = [
   "INCOME",
   "EXPENSE",
@@ -117,20 +229,56 @@ export const CASH_FLOW_CATEGORIES = [
   "EXCLUDED",
 ] as const;
 
-// Cash flow types
+/**
+ * Cash flow types.
+ * Categorizes expenses by predictability.
+ * 
+ * @property FIXED - Consistent amount on regular schedule
+ * @property VARIABLE - Fluctuating amount or irregular schedule
+ */
 export const CASH_FLOW_TYPES = [
   "FIXED",
   "VARIABLE",
 ] as const;
 
-// Review statuses
+/**
+ * Review statuses.
+ * Indicates whether a transaction has been reviewed by the user.
+ * 
+ * @property NOT_REVIEWED - Transaction hasn't been reviewed
+ * @property REVIEWED - Transaction has been reviewed
+ * @property NEEDS_REVIEW - Transaction requires attention
+ */
 export const REVIEW_STATUSES = [
   "NOT_REVIEWED",
   "REVIEWED",
   "NEEDS_REVIEW",
 ] as const;
 
-// Define the column schema for transactions
+/**
+ * Comprehensive transaction schema defining the structure and validation rules for
+ * financial transaction data. This schema is organized into logical sections:
+ * 
+ * - Basic identifiers (id, userId)
+ * - Account information (bankAccountId, bankAccountName)
+ * - Transaction details (amount, name, description)
+ * - Categorization (category, subCategory)
+ * - Merchant information (merchantName, merchantId)
+ * - Location data (latitude, longitude)
+ * - Payment metadata (paymentMethod, transactionReference)
+ * - Financial reporting (fiscalYear, vatAmount)
+ * - Transaction attributes (status, transactionType)
+ * - Budgeting information (budgetCategory, plannedExpense)
+ * - Business categorization (costCenter, projectCode)
+ * - Personal finance management (excludeFromBudget, isRecurring)
+ * - Enrichment & insights (cashFlowCategory, anomalyScore)
+ * - User interaction (isVerified, isFlagged)
+ * - Organization (tags, notes)
+ * - Split transaction support (isSplit, splitTotal)
+ * - Search & filtering (searchableText, dateMonth)
+ * - Audit trail (createdAt, importedAt)
+ * - Notification state (internal, notified)
+ */
 export const columnSchema = z.object({
   // Basic transaction identifiers
   id: z.string(),
@@ -295,8 +443,35 @@ export const columnSchema = z.object({
   notified: z.boolean().nullable().optional(),
 });
 
+/**
+ * TypeScript type for transactions, derived from the Zod schema.
+ * Use this type when working with transaction objects throughout the application.
+ * 
+ * @example
+ * ```tsx
+ * function TransactionCard({ transaction }: { transaction: ColumnSchema }) {
+ *   return (
+ *     <Card>
+ *       <CardHeader>{transaction.name}</CardHeader>
+ *       <CardContent>{formatCurrency(transaction.amount)}</CardContent>
+ *     </Card>
+ *   );
+ * }
+ * ```
+ */
 export type ColumnSchema = z.infer<typeof columnSchema>;
 
+/**
+ * Zod schema for filtering transactions.
+ * Defines the structure of filter parameters used in the data table and API requests.
+ * This schema allows for filtering by multiple criteria simultaneously.
+ * 
+ * Each field uses appropriate parsing logic for its data type:
+ * - Range values (like amount) use SLIDER_DELIMITER to separate min/max values
+ * - Date ranges use RANGE_DELIMITER to separate start/end timestamps
+ * - Multi-select fields use ARRAY_DELIMITER to separate selected values
+ * - Boolean filters convert string representations to true/false values
+ */
 export const columnFilterSchema = z.object({
   amount: z
     .string()
@@ -390,7 +565,41 @@ export const columnFilterSchema = z.object({
     .optional(),
 });
 
+/**
+ * TypeScript type for filter parameters, derived from the filter schema.
+ * Use this type when implementing filter functionality for transactions.
+ * 
+ * @example
+ * ```tsx
+ * function applyFilters(
+ *   transactions: ColumnSchema[],
+ *   filters: Partial<ColumnFilterSchema>
+ * ) {
+ *   return transactions.filter(tx => {
+ *     if (filters.category && !filters.category.includes(tx.category)) return false;
+ *     if (filters.isRecurring && !filters.isRecurring.includes(tx.isRecurring)) return false;
+ *     // Additional filter logic...
+ *     return true;
+ *   });
+ * }
+ * ```
+ */
 export type ColumnFilterSchema = z.infer<typeof columnFilterSchema>;
 
-// Define BaseChartSchema type similar to what's in the infinite schema
+/**
+ * Base schema for chart data related to transactions.
+ * Used for visualizing transaction data in time-series charts.
+ * 
+ * @property timestamp - Unix timestamp for the data point
+ * @property [key: string] - Dynamic properties storing numeric values for the chart
+ * 
+ * @example
+ * ```tsx
+ * const chartData: BaseChartSchema[] = [
+ *   { timestamp: 1625097600000, income: 2500, expenses: 1800 },
+ *   { timestamp: 1627776000000, income: 2500, expenses: 2100 },
+ *   { timestamp: 1630454400000, income: 3000, expenses: 1950 }
+ * ];
+ * ```
+ */
 export type BaseChartSchema = { timestamp: number;[key: string]: number };

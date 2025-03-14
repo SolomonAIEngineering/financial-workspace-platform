@@ -50,6 +50,37 @@ import { useHotKey } from "@/hooks/use-hot-key";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useQueryStates } from "nuqs";
 
+/**
+ * @file data-table.tsx
+ * @description Implements a specialized data table for financial transactions.
+ * This component extends the generic DataTable pattern with transaction-specific
+ * features, including custom filtering, sorting, and detail views.
+ */
+
+/**
+ * Props interface for the DataTable component.
+ * 
+ * @template TData - The type of data being displayed in the table
+ * @template TValue - The type of values in the table cells
+ * @template TMeta - The type of metadata associated with the table
+ * 
+ * @property columns - Column definitions for the table
+ * @property data - The data to display in the table
+ * @property defaultColumnFilters - Initial column filter state
+ * @property defaultColumnSorting - Initial sorting state
+ * @property defaultRowSelection - Initial row selection state
+ * @property defaultColumnVisibility - Initial column visibility state
+ * @property filterFields - Filter field definitions for the filter sidebar
+ * @property sheetFields - Field definitions for the detail sheet
+ * @property chartData - Data for charts in the table or details view
+ * @property isFetching - Whether data is currently being fetched
+ * @property isLoading - Whether the table is in a loading state
+ * @property refetch - Function to refetch the data
+ * @property getRowClassName - Function to determine row CSS classes
+ * @property getFacetedUniqueValues - Function to get faceted unique values
+ * @property getFacetedMinMaxValues - Function to get faceted min/max values
+ * @property meta - Additional metadata for the table
+ */
 export interface DataTableProps<TData, TValue, TMeta = Record<string, unknown>> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -76,6 +107,40 @@ export interface DataTableProps<TData, TValue, TMeta = Record<string, unknown>> 
   meta?: TMeta;
 }
 
+/**
+ * DataTable component for financial transactions.
+ * 
+ * Provides a full-featured data table with:
+ * - Sorting and filtering
+ * - Pagination
+ * - Row selection
+ * - URL-based state persistence
+ * - Detail view panel
+ * - Keyboard shortcuts
+ * - Toolbar with actions
+ * 
+ * The table uses the TransactionSheetDetails component to display
+ * detailed information about a selected transaction.
+ * 
+ * @template TData - The type of data being displayed in the table
+ * @template TValue - The type of values in the table cells
+ * @template TMeta - The type of metadata associated with the table
+ * 
+ * @param props - The component props
+ * @returns A React component that displays a data table for financial transactions
+ * 
+ * @example
+ * ```tsx
+ * <DataTable
+ *   columns={columns}
+ *   data={transactions}
+ *   filterFields={filterFields}
+ *   chartData={transactionChartData}
+ *   isFetching={isFetching}
+ *   refetch={refetch}
+ * />
+ * ```
+ */
 export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   columns,
   data,

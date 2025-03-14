@@ -24,7 +24,35 @@ import { TRANSACTION_CATEGORIES } from "./schema";
 import { TextWithTooltip } from "@/components/ui/text-with-tooltip";
 import { cn } from "@/lib/utils";
 
-// Define category colors with more modern styling
+/**
+ * @file columns.tsx
+ * @description Defines the data table columns for financial transactions.
+ * This file contains column definitions, formatting functions, category colors,
+ * and cell renderers for displaying transaction data in a tabular format.
+ */
+
+/**
+ * Visual styling for different transaction categories.
+ * Defines badge colors, dot colors, and icons for each transaction category.
+ * These styles provide consistent visual cues throughout the UI.
+ * 
+ * @property INCOME - Styling for income transactions (green)
+ * @property TRANSFER - Styling for transfers (indigo)
+ * @property LOAN_PAYMENTS - Styling for loan payments (purple)
+ * @property BANK_FEES - Styling for bank fees (red)
+ * @property ENTERTAINMENT - Styling for entertainment expenses (amber)
+ * @property FOOD_AND_DRINK - Styling for food and dining (orange)
+ * @property GENERAL_MERCHANDISE - Styling for retail purchases (blue)
+ * @property HOME_IMPROVEMENT - Styling for home expenses (emerald)
+ * @property MEDICAL - Styling for healthcare expenses (rose)
+ * @property PERSONAL_CARE - Styling for personal expenses (pink)
+ * @property GENERAL_SERVICES - Styling for service purchases (sky)
+ * @property GOVERNMENT_AND_NON_PROFIT - Styling for government payments (slate)
+ * @property TRANSPORTATION - Styling for transportation expenses (teal)
+ * @property TRAVEL - Styling for travel expenses (violet)
+ * @property UTILITIES - Styling for utility payments (yellow)
+ * @property OTHER - Styling for uncategorized transactions (gray)
+ */
 export const categoryColors = {
   INCOME: {
     badge: "text-[#10b981] bg-[#10b981]/10 border-[#10b981]/20 hover:bg-[#10b981]/10",
@@ -49,7 +77,7 @@ export const categoryColors = {
   ENTERTAINMENT: {
     badge: "text-[#f59e0b] bg-[#f59e0b]/10 border-[#f59e0b]/20 hover:bg-[#f59e0b]/10",
     dot: "bg-[#f59e0b]",
-    icon: <Upload className="h-4 w-4 text-[#f59e0b]" />,
+    icon: <Minus className="h-4 w-4 text-[#f59e0b]" />,
   },
   FOOD_AND_DRINK: {
     badge: "text-[#10b981] bg-[#10b981]/10 border-[#10b981]/20 hover:bg-[#10b981]/10",
@@ -108,6 +136,27 @@ export const categoryColors = {
   },
 } as Record<string, Record<"badge" | "dot" | "icon", any>>;
 
+/**
+ * Column definitions for the transactions data table.
+ * Defines the structure, sorting, filtering, and rendering of each column in the table.
+ * 
+ * Columns include:
+ * - Transaction name (with hover details)
+ * - Merchant name
+ * - Amount (with currency formatting)
+ * - Date (with formatted display)
+ * - Category (with color coding)
+ * - Payment method
+ * - Status
+ * 
+ * Each column definition includes:
+ * - accessorKey: The property key in the data object
+ * - header: The column header component
+ * - cell: The cell renderer function
+ * - filterFn: Custom filtering logic where needed
+ * 
+ * @type {ColumnDef<ColumnSchema>[]}
+ */
 export const columns: ColumnDef<ColumnSchema>[] = [
   {
     accessorKey: "name",
@@ -159,19 +208,12 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     },
     filterFn: (row, id, value) => {
       const rowValue = row.getValue(id) as number;
-      if (typeof value === "number") return value === Number(rowValue);
-      if (Array.isArray(value) && isArrayOfNumbers(value)) {
-        if (value.length === 1) {
-          return value[0] === rowValue;
-        } else {
-          const sorted = value.sort((a, b) => a - b);
-          return sorted[0] <= rowValue && rowValue <= sorted[1];
-        }
-      }
-      return false;
+      if (!isArrayOfNumbers(value)) return true;
+      const [min, max] = value;
+      return rowValue >= min && rowValue <= max;
     },
-    size: 110,
-    minSize: 110,
+    size: 125,
+    minSize: 100,
   },
   {
     accessorKey: "category",
@@ -562,7 +604,20 @@ export const columns: ColumnDef<ColumnSchema>[] = [
   },
 ];
 
-// Helper function to get category descriptions
+/**
+ * Helper function to get a descriptive explanation of each transaction category.
+ * Used for tooltips and accessibility purposes.
+ * 
+ * @param category - The transaction category code (e.g., "FOOD_AND_DRINK")
+ * @returns A human-readable description of the category
+ * 
+ * @example
+ * ```tsx
+ * <Tooltip content={getCategoryDescription(transaction.category)}>
+ *   <span>{transaction.category}</span>
+ * </Tooltip>
+ * ```
+ */
 function getCategoryDescription(category: string): string {
   const descriptions: Record<string, string> = {
     INCOME: "Money received from salary, investments, or other sources",

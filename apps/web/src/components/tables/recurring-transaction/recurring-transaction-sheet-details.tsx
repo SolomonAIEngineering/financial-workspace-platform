@@ -27,6 +27,22 @@ import { Separator } from "@/registry/default/potion-ui/separator";
 import { cn } from "@/lib/utils";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 
+/**
+ * @file recurring-transaction-sheet-details.tsx
+ * @description Detail view component for recurring transactions.
+ * This file implements a rich detail panel that appears when a user selects
+ * a recurring transaction in the data table. It includes comprehensive information
+ * display, a timeline visualization, and collapsible sections for better organization.
+ */
+
+/**
+ * Props for the CollapsibleSection component.
+ * 
+ * @property title - The section title
+ * @property icon - Optional icon element to display next to the title
+ * @property defaultOpen - Whether the section should be open by default (default: false)
+ * @property children - The content to display inside the section when open
+ */
 interface CollapsibleSectionProps {
     title: string;
     icon?: React.ReactNode;
@@ -34,6 +50,13 @@ interface CollapsibleSectionProps {
     children: React.ReactNode;
 }
 
+/**
+ * Collapsible section component for organizing content in the detail view.
+ * Provides a toggle-able section with a header and expandable content.
+ * 
+ * @param props - The component props
+ * @returns A collapsible section component
+ */
 function CollapsibleSection({
     title,
     icon,
@@ -68,6 +91,10 @@ function CollapsibleSection({
     );
 }
 
+/**
+ * Sample transaction data for testing and demonstration.
+ * In a production environment, this would be replaced with real transaction data.
+ */
 // Sample transaction data related to a recurring transaction
 const sampleRelatedTransactions = [
     {
@@ -96,6 +123,10 @@ const sampleRelatedTransactions = [
     },
 ];
 
+/**
+ * Sample transaction history data for the timeline visualization.
+ * Provides historical data for the transaction timeline view.
+ */
 // Sample transaction history data for the timeline
 const sampleTransactionHistory = [
     {
@@ -154,7 +185,15 @@ const sampleTransactionHistory = [
     },
 ];
 
-// Helper function to get the next execution dates
+/**
+ * Helper function to calculate future execution dates based on frequency.
+ * 
+ * @param frequency - The transaction frequency (WEEKLY, MONTHLY, etc.)
+ * @param interval - The interval between executions
+ * @param baseDate - The starting date for calculations
+ * @param count - Number of future dates to calculate (default: 5)
+ * @returns An array of future execution dates
+ */
 function getNextExecutionDates(
     frequency: string,
     interval: number,
@@ -192,7 +231,14 @@ function getNextExecutionDates(
     return dates;
 }
 
-// Transaction Timeline Component
+/**
+ * Transaction Timeline Component.
+ * Renders a visual timeline of transaction history and forecasted future transactions.
+ * Includes a summary section with statistics and visualizations.
+ * 
+ * @param props - The component props
+ * @returns A timeline visualization component
+ */
 function TransactionTimeline({
     transactions,
     formatDate,
@@ -499,6 +545,28 @@ function TransactionTimeline({
     );
 }
 
+/**
+ * Recurring Transaction Sheet Details component.
+ * The main component for displaying detailed information about a selected recurring transaction.
+ * 
+ * Features:
+ * - Comprehensive transaction information display
+ * - Transaction history timeline with visualizations
+ * - Collapsible sections for organization
+ * - Visual indicators for status and categories
+ * - Future transaction forecast
+ * 
+ * @returns A detailed view component for a selected recurring transaction
+ * 
+ * @example
+ * ```tsx
+ * <DataTable
+ *   columns={columns}
+ *   data={recurringTransactions}
+ *   detailPanel={<RecurringTransactionSheetDetails />}
+ * />
+ * ```
+ */
 export function RecurringTransactionSheetDetails() {
     const { rowSelection, table } = useDataTable();
     const [loading, setLoading] = React.useState(false);
@@ -870,7 +938,13 @@ export function RecurringTransactionSheetDetails() {
     );
 }
 
-// Helper component for key-value pairs of information
+/**
+ * Helper component for displaying key-value pairs of information.
+ * Used throughout the detail view to consistently format information.
+ * 
+ * @param props - The component props
+ * @returns A formatted key-value display component
+ */
 function InfoRow({
     label,
     value,
@@ -897,7 +971,13 @@ function InfoRow({
     );
 }
 
-// Helper component for processing step visualization
+/**
+ * Helper component for visualizing processing steps with percentage bars.
+ * Used in the Processing Time section to show relative time spent in each step.
+ * 
+ * @param props - The component props
+ * @returns A processing step visualization component
+ */
 function ProcessingStep({
     label,
     percentage,

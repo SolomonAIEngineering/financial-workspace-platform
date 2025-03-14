@@ -4,7 +4,26 @@ import type { DataTableFilterField } from "@/components/data-table/types";
 import type { RecurringTransactionSchema } from "./schema";
 import { addBusinessDays } from "date-fns";
 
-// Sample recurring transaction data
+/**
+ * @file constants.tsx
+ * @description Contains constant values, sample data, and filter configurations for recurring transactions.
+ * This file is the central repository for all filter definitions, default values, and sample data
+ * used throughout the recurring transaction UI components.
+ */
+
+/**
+ * Sample recurring transaction data for testing and development.
+ * Each record represents a recurring financial transaction with properties matching the RecurringTransactionSchema.
+ * 
+ * @example
+ * ```tsx
+ * // Use the sample data in a component
+ * const { data } = useQuery({
+ *   queryFn: async () => sampleRecurringTransactions,
+ *   queryKey: ['recurringTransactions']
+ * });
+ * ```
+ */
 export const sampleRecurringTransactions: RecurringTransactionSchema[] = [
     {
         id: "rt_1",
@@ -258,7 +277,28 @@ export const sampleRecurringTransactions: RecurringTransactionSchema[] = [
     },
 ];
 
-// Define filter fields for the data table
+/**
+ * Filter field definitions for the recurring transactions data table.
+ * Each filter object defines a UI control that users can interact with to filter transaction data.
+ * 
+ * The filters include:
+ * - Checkbox filters for status, type, frequency, importance, etc.
+ * - Input fields for text search on merchant name and title
+ * - Slider controls for numeric values like amount and interval
+ * - Date range filters for time-based filtering
+ * 
+ * @type {DataTableFilterField<RecurringTransactionSchema>[]}
+ * 
+ * @example
+ * ```tsx
+ * // Use these filters in a DataTable component
+ * <DataTable
+ *   columns={columns}
+ *   data={data}
+ *   filterFields={filterFields}
+ * />
+ * ```
+ */
 export const filterFields: DataTableFilterField<RecurringTransactionSchema>[] = [
     {
         type: "checkbox",
@@ -460,7 +500,40 @@ export const filterFields: DataTableFilterField<RecurringTransactionSchema>[] = 
     },
 ];
 
-// Group filters by category
+/**
+ * Groups filter fields into logical categories for the filter sidebar.
+ * This function organizes filters into meaningful sections to improve usability.
+ * 
+ * Categories include:
+ * - Status - Transaction status filters
+ * - Types & Categories - Classification-related filters
+ * - Configuration - Settings-related filters
+ * - Schedule - Time-based recurrence filters
+ * - Text Search - Free-form search filters
+ * - Numeric Ranges - Value-based sliders
+ * - Date Ranges - Time period filters
+ * 
+ * @param {DataTableFilterField<RecurringTransactionSchema>[]} fields - The filter fields to organize
+ * @returns {Array<{title: string, fields: DataTableFilterField<RecurringTransactionSchema>[]}>} Grouped filter fields
+ * 
+ * @example
+ * ```tsx
+ * // Use the grouping in a filter sidebar component
+ * const groupedFilters = groupFilters(filterFields);
+ * 
+ * return (
+ *   <FilterSidebar>
+ *     {groupedFilters.map(group => (
+ *       <FilterGroup key={group.title} title={group.title}>
+ *         {group.fields.map(field => (
+ *           <FilterControl key={field.value} field={field} />
+ *         ))}
+ *       </FilterGroup>
+ *     ))}
+ *   </FilterSidebar>
+ * );
+ * ```
+ */
 export const groupFilters = (fields: DataTableFilterField<RecurringTransactionSchema>[]) => {
     // Group filters by their type
     const statusFilters = fields.filter(field => field.value === "status");

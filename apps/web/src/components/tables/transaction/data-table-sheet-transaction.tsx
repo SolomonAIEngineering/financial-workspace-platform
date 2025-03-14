@@ -42,6 +42,22 @@ import { categoryColors } from "./columns";
 import { cn } from "@/lib/utils";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 
+/**
+ * @file data-table-sheet-transaction.tsx
+ * @description Detail view component for financial transactions.
+ * This file implements a rich detail panel that appears when a user selects
+ * a transaction in the data table. It includes comprehensive information display,
+ * visual indicators, and interactive elements for transaction management.
+ */
+
+/**
+ * Interface for timing phase data used in the processing time visualization.
+ * 
+ * @property name - The name of the processing phase
+ * @property percentage - The percentage of total processing time
+ * @property value - The actual time value in milliseconds
+ * @property color - The color to use for the phase visualization
+ */
 interface TimingPhase {
     name: string;
     percentage: number;
@@ -49,47 +65,55 @@ interface TimingPhase {
     color: string;
 }
 
-// Create a simple collapsible section component
+/**
+ * Props for the CollapsibleSection component.
+ * 
+ * @property title - The section title
+ * @property icon - Optional icon element to display next to the title
+ * @property defaultOpen - Whether the section should be open by default (default: false)
+ * @property children - The content to display inside the section when open
+ */
 interface CollapsibleSectionProps {
     title: string;
     icon?: React.ReactNode;
     defaultOpen?: boolean;
     children: React.ReactNode;
-    className?: string;
 }
 
+/**
+ * Collapsible section component for organizing content in the detail view.
+ * Provides a toggle-able section with a header and expandable content.
+ * 
+ * @param props - The component props
+ * @returns A collapsible section component
+ */
 function CollapsibleSection({
     title,
     icon,
     defaultOpen = false,
-    children,
-    className
+    children
 }: CollapsibleSectionProps) {
     const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
     return (
-        <div className={cn("border rounded-md p-2 bg-gray-50/50", className)}>
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+        <div className="border-t">
+            <div
+                className="flex items-center py-3 cursor-pointer hover:bg-accent/10 transition-colors"
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <div className="flex items-center gap-2 text-sm font-medium">
                     {icon}
-                    <h3 className="text-sm font-medium">{title}</h3>
+                    <span>{title}</span>
                 </div>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-1 h-7 w-7"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    <ChevronDown
-                        className={cn(
-                            "h-4 w-4 transition-transform",
-                            isOpen && "rotate-180"
-                        )}
-                    />
-                </Button>
+                <ChevronDown
+                    className={cn(
+                        "h-4 w-4 ml-auto text-muted-foreground transition-transform",
+                        isOpen && "rotate-180"
+                    )}
+                />
             </div>
             {isOpen && (
-                <div className="pt-2">
+                <div className="pb-4">
                     {children}
                 </div>
             )}
@@ -97,6 +121,31 @@ function CollapsibleSection({
     );
 }
 
+/**
+ * Transaction Sheet Details component.
+ * The main component for displaying detailed information about a selected transaction.
+ * 
+ * Features:
+ * - Comprehensive transaction information display
+ * - Visual indicators for status and categories
+ * - Collapsible sections for organization
+ * - Merchant information
+ * - Payment details
+ * - Location data
+ * - Related transactions
+ * - Processing timeline
+ * 
+ * @returns A detailed view component for a selected transaction
+ * 
+ * @example
+ * ```tsx
+ * <DataTable
+ *   columns={columns}
+ *   data={transactions}
+ *   detailPanel={<TransactionSheetDetails />}
+ * />
+ * ```
+ */
 export function TransactionSheetDetails() {
     const { rowSelection, table } = useDataTable();
     const [loading, setLoading] = React.useState(false);
@@ -649,6 +698,78 @@ function PropertyItem({
                 }
             </div>
             <span className="text-xs">{label}</span>
+        </div>
+    );
+}
+
+/**
+ * Helper component for displaying key-value pairs of information.
+ * Used throughout the detail view to consistently format information.
+ * 
+ * @param props - The component props
+ * @param props.label - The label for the information
+ * @param props.value - The value to display
+ * @param props.monospace - Whether to use monospace font for the value
+ * @param props.size - The text size to use (sm or base)
+ * @returns A formatted key-value display component
+ */
+function InfoRow({
+    label,
+    value,
+    monospace = false,
+    size = "base"
+}: {
+    label: string;
+    value: React.ReactNode;
+    monospace?: boolean;
+    size?: "sm" | "base";
+}) {
+    return (
+        <div className="flex justify-between py-1">
+            <span className="text-muted-foreground text-sm">{label}</span>
+            <span className={cn(
+                "text-right",
+                size === "sm" ? "text-sm" : "text-base",
+                monospace && "font-mono"
+            )}>{value}</span>
+        </div>
+    );
+}
+
+/**
+ * Helper component for visualizing processing steps with percentage bars.
+ * Used in the Processing Time section to show relative time spent in each step.
+ * 
+ * @param props - The component props
+ * @param props.name - The name of the processing step
+ * @param props.percentage - The percentage of total processing time
+ * @param props.time - The formatted time string
+ * @param props.color - The CSS color class for the progress bar
+ * @returns A processing step visualization component
+ */
+function ProcessingStep({
+    name,
+    percentage,
+    time,
+    color
+}: {
+    name: string;
+    percentage: number;
+    time: string;
+    color: string;
+}) {
+    return (
+        <div className="mb-2">
+            <div className="flex justify-between mb-1">
+                <span className="text-sm">{name}</span>
+                <span className="text-sm text-muted-foreground">{time}</span>
+            </div>
+            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                <div
+                    className={`h-full ${color}`}
+                    style={{ width: `${percentage}%` }}
+                />
+            </div>
         </div>
     );
 } 
