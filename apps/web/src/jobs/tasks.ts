@@ -14,13 +14,13 @@ import { connectionRecoveryJob } from './tasks/bank/connections/connection-recov
 import { expiringNotificationsJob } from './tasks/bank/notifications/expiring';
 import { expiringSchedulerJob } from './tasks/bank/scheduler/expiring-scheduler';
 import { initialSetupJob } from './tasks/bank/setup/initial';
-import { monitorBankConnectionsJob } from './tasks/bank/monitor-connections';
+import { monitorBankConnectionsJob } from './tasks/bank/scheduler/monitor-connections';
 import { refreshConnectionJob } from './tasks/bank/connections/refresh-connection-job';
 import { sendReconnectAlertsJob } from './tasks/reconnect/send-reconnect-alerts';
 import { syncAccountJob } from './tasks/bank/sync/account';
 import { syncConnectionJob } from './tasks/bank/sync/connection';
 import { transactionNotificationsJob } from './tasks/bank/notifications/transactions';
-import { updateBalancesJob } from './tasks/bank/update-balances';
+import { updateBalancesJob } from './tasks/bank/scheduler/update-balances';
 import { upsertTransactionsJob } from './tasks/bank/transactions/upsert';
 
 // Define all jobs

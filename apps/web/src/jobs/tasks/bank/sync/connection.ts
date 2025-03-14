@@ -1,9 +1,12 @@
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
+
 import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@prisma/client';
 import { client } from '../../../client';
 import { eventTrigger } from '@trigger.dev/sdk';
 import { getItemDetails } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
+import { z } from "zod";
 
 /**
  * This job manages the synchronization of an entire bank connection and all its
@@ -46,13 +49,13 @@ import { prisma } from '@/server/db';
  *   error: "ITEM_LOGIN_REQUIRED"
  *   }
  */
-export const syncConnectionJob = client.defineJob({
+export const syncConnectionJob = schemaTask({
   id: BANK_JOBS.SYNC_CONNECTION,
-  name: 'Sync Bank Connection',
-  trigger: eventTrigger({
-    name: 'sync-connection',
+  description: 'Sync Bank Connection',
+  schema: z.object({
+    connectionId: z.string(),
+    manualSync: z.boolean().optional(),
   }),
-  version: '1.0.0',
   /**
    * Main job execution function that syncs a bank connection and all its
    * accounts
@@ -71,41 +74,34 @@ export const syncConnectionJob = client.defineJob({
   run: async (payload, io) => {
     const { connectionId, manualSync = false } = payload;
 
-    await io.logger.info(`Starting connection sync for ${connectionId}`);
+    await logger.info(`Starting connection sync for ${connectionId}`);
 
     try {
       // Fetch the connection details
-      const connection = await io.runTask('get-connection', async () => {
-        return await prisma.bankConnection.findUnique({
-          select: {
-            id: true,
-            accessToken: true,
-            institutionId: true,
-            institutionName: true,
-            status: true,
-            userId: true,
-          },
-          where: { id: connectionId },
-        });
+      const connection = await prisma.bankConnection.findUnique({
+        select: {
+          id: true,
+          accessToken: true,
+          institutionId: true,
+          institutionName: true,
+          status: true,
+          userId: true,
+        },
+        where: { id: connectionId },
       });
 
       if (!connection) {
-        await io.logger.error(`Connection ${connectionId} not found`);
+        await logger.error(`Connection ${connectionId} not found`);
 
         throw new Error(`Connection ${connectionId} not found`);
       }
 
       // Check connection status with Plaid
-      const connectionDetails = await io.runTask(
-        'check-connection-status',
-        async () => {
-          return await getItemDetails(connection.accessToken);
-        }
-      );
+      const connectionDetails = await getItemDetails(connection.accessToken);
 
       // Update connection status based on response
       if (connectionDetails.status?.error) {
-        await io.logger.warn(
+        await logger.warn(
           `Connection error: ${connectionDetails.status.error}`
         );
 
@@ -150,26 +146,24 @@ export const syncConnectionJob = client.defineJob({
       });
 
       // Fetch all enabled accounts for this connection
-      const accounts = await io.runTask('get-accounts', async () => {
-        return await prisma.bankAccount.findMany({
-          select: {
-            id: true,
-            name: true,
-            plaidAccountId: true,
-            status: true,
-            type: true,
-          },
-          where: {
-            bankConnectionId: connectionId,
-            enabled: true,
-            // For automated syncs, we only include active accounts
-            ...(manualSync ? {} : { status: 'ACTIVE' }),
-          },
-        });
+      const accounts = await prisma.bankAccount.findMany({
+        select: {
+          id: true,
+          name: true,
+          plaidAccountId: true,
+          status: true,
+          type: true,
+        },
+        where: {
+          bankConnectionId: connectionId,
+          enabled: true,
+          // For automated syncs, we only include active accounts
+          ...(manualSync ? {} : { status: 'ACTIVE' }),
+        },
       });
 
       if (accounts.length === 0) {
-        await io.logger.info(
+        await logger.info(
           `No active accounts found for connection ${connectionId}`
         );
 
@@ -179,7 +173,7 @@ export const syncConnectionJob = client.defineJob({
         };
       }
 
-      await io.logger.info(`Found ${accounts.length} accounts to sync`);
+      await logger.info(`Found ${accounts.length} accounts to sync`);
 
       // Trigger account syncs with appropriate delays
       let accountsSynced = 0;
@@ -215,7 +209,7 @@ export const syncConnectionJob = client.defineJob({
         });
       }
 
-      await io.logger.info(
+      await logger.info(
         `Connection sync completed, triggered ${accountsSynced} account syncs`
       );
 
@@ -227,7 +221,7 @@ export const syncConnectionJob = client.defineJob({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      await io.logger.error(`Connection sync failed: ${errorMessage}`);
+      await logger.error(`Connection sync failed: ${errorMessage}`);
 
       // Update connection status to error
       await prisma.bankConnection.update({

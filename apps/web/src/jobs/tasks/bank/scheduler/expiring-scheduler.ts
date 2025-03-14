@@ -2,9 +2,10 @@ import { differenceInDays, subDays } from 'date-fns';
 
 import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@prisma/client';
-import { client } from '../../../client';
-import { cronTrigger } from '@trigger.dev/sdk';
+import { client } from '@/jobs';
+import { logger } from '@trigger.dev/sdk/v3';
 import { prisma } from '@/server/db';
+import { schedules } from '@trigger.dev/sdk/v3';
 
 /**
  * This job proactively identifies bank connections that may be approaching
@@ -30,7 +31,7 @@ import { prisma } from '@/server/db';
  *   await client.sendEvent({
  *     name: 'run-job',
  *     payload: {
- *       jobId: 'expiring-scheduler-job',
+ *       jobId: 'expiring-schedsuler-job',
  *     },
  *   });
  *
@@ -42,68 +43,49 @@ import { prisma } from '@/server/db';
  *   markedForAttention: 7       // Number of connections marked as requiring attention
  *   }
  */
-export const expiringSchedulerJob = client.defineJob({
+export const expiringSchedulerJob = schedules.task({
   id: BANK_JOBS.EXPIRING_SCHEDULER,
-  name: 'Expiring Connections Scheduler',
-  trigger: cronTrigger({
-    cron: '0 10 * * *', // Run daily at 10 AM
-  }),
-  version: '1.0.0',
-  /**
-   * Main job execution function that processes connections approaching
-   * expiration
-   *
-   * @param payload - The job payload (empty for cron jobs)
-   * @param io - The I/O context provided by Trigger.dev for logging, running
-   *   tasks, etc.
-   * @returns A result object containing counts of connections processed,
-   *   notifications sent, and connections marked as requiring attention
-   */
-  run: async (payload, io) => {
-    await io.logger.info('Starting expiring connections scheduler');
+  description: 'Expiring Connections Scheduler',
+  cron: '0 10 * * *', // Run daily at 10 AM
+  run: async () => {
+    await logger.info('Starting expiring connections scheduler');
 
     // Plaid tokens typically expire after 30 days of inactivity
-    // We'll proactively notify users of connections that haven't been used in 20+ days
     const expiringThreshold = subDays(new Date(), 20);
 
     // Find potentially expiring connections
-    const expiringConnections = await io.runTask(
-      'find-expiring-connections',
-      async () => {
-        return await prisma.bankConnection.findMany({
-          include: {
-            accounts: {
-              select: {
-                id: true,
-                name: true,
-              },
-              where: {
-                enabled: true,
-              },
-            },
-            user: {
-              select: {
-                id: true,
-                email: true,
-                name: true,
-              },
-            },
+    const expiringConnections = await prisma.bankConnection.findMany({
+      include: {
+        accounts: {
+          select: {
+            id: true,
+            name: true,
           },
           where: {
-            lastAccessedAt: {
-              lt: expiringThreshold,
-            },
-            // Only get connections that haven't been notified about expiring in the last 7 days
-            lastExpiryNotifiedAt: {
-              lt: subDays(new Date(), 7),
-            },
-            status: BankConnectionStatus.ACTIVE,
+            enabled: true,
           },
-        });
-      }
-    );
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+      where: {
+        lastAccessedAt: {
+          lt: expiringThreshold,
+        },
+        // Only get connections that haven't been notified about expiring in the last 7 days
+        lastExpiryNotifiedAt: {
+          lt: subDays(new Date(), 7),
+        },
+        status: BankConnectionStatus.ACTIVE,
+      },
+    });
 
-    await io.logger.info(
+    await logger.info(
       `Found ${expiringConnections.length} potentially expiring connections`
     );
 
@@ -111,94 +93,85 @@ export const expiringSchedulerJob = client.defineJob({
     let notificationsSent = 0;
 
     for (const connection of expiringConnections) {
-      await io.runTask(`process-expiring-${connection.id}`, async () => {
-        // Skip if no email or no active accounts
-        if (!connection.user.email || connection.accounts.length === 0) {
-          return;
-        }
+      // Skip if no email or no active accounts
+      if (!connection.user.email || connection.accounts.length === 0) {
+        return;
+      }
 
-        const daysInactive = differenceInDays(
-          new Date(),
-          new Date(connection.lastAccessedAt || new Date())
-        );
-        const daysUntilExpiry = 30 - daysInactive;
+      const daysInactive = differenceInDays(
+        new Date(),
+        new Date(connection.lastAccessedAt || new Date())
+      );
+      const daysUntilExpiry = 30 - daysInactive;
 
-        // Send notification to user
-        await client.sendEvent({
-          name: 'expiring-notification-trigger',
-          payload: {
-            accountCount: connection.accounts.length,
+      // Send notification to user
+      await client.sendEvent({
+        name: 'expiring-notification-trigger',
+        payload: {
+          accountCount: connection.accounts.length,
+          connectionId: connection.id,
+          daysInactive,
+          daysUntilExpiry,
+          email: connection.user.email,
+          institutionName: connection.institutionName,
+          name: connection.user.name,
+          userId: connection.user.id,
+        },
+      });
+
+      // Update last notified timestamp
+      await prisma.bankConnection.update({
+        data: {
+          expiryNotificationCount: { increment: 1 },
+          lastExpiryNotifiedAt: new Date(),
+        },
+        where: { id: connection.id },
+      });
+
+      // Record this activity
+      await prisma.userActivity.create({
+        data: {
+          detail: `Expiring connection notification for ${connection.institutionName}`,
+          metadata: {
             connectionId: connection.id,
             daysInactive,
             daysUntilExpiry,
-            email: connection.user.email,
-            institutionName: connection.institutionName,
-            name: connection.user.name,
-            userId: connection.user.id,
           },
-        });
-
-        // Update last notified timestamp
-        await prisma.bankConnection.update({
-          data: {
-            expiryNotificationCount: { increment: 1 },
-            lastExpiryNotifiedAt: new Date(),
-          },
-          where: { id: connection.id },
-        });
-
-        // Record this activity
-        await prisma.userActivity.create({
-          data: {
-            detail: `Expiring connection notification for ${connection.institutionName}`,
-            metadata: {
-              connectionId: connection.id,
-              daysInactive,
-              daysUntilExpiry,
-            },
-            type: 'NOTIFICATION_SENT',
-            userId: connection.user.id,
-          },
-        });
-
-        notificationsSent++;
+          type: 'NOTIFICATION_SENT',
+          userId: connection.user.id,
+        },
       });
+
+      notificationsSent++;
     }
 
     // For connections that have likely already expired (no activity in 30+ days),
     // mark them as requiring attention
-    const expiredConnections = await io.runTask(
-      'find-expired-connections',
-      async () => {
-        return await prisma.bankConnection.findMany({
-          where: {
-            lastAccessedAt: {
-              lt: subDays(new Date(), 30),
-            },
-            status: BankConnectionStatus.ACTIVE,
-          },
-        });
-      }
-    );
+    const expiredConnections = await prisma.bankConnection.findMany({
+      where: {
+        lastAccessedAt: {
+          lt: subDays(new Date(), 30),
+        },
+        status: BankConnectionStatus.ACTIVE,
+      },
+    });
 
     let markedForAttention = 0;
 
     for (const connection of expiredConnections) {
-      await io.runTask(`mark-expired-${connection.id}`, async () => {
-        // Mark as requiring attention
-        await prisma.bankConnection.update({
-          data: {
-            errorMessage: 'Connection may have expired due to inactivity',
-            status: BankConnectionStatus.REQUIRES_ATTENTION,
-          },
-          where: { id: connection.id },
-        });
-
-        markedForAttention++;
+      // Mark as requiring attention
+      await prisma.bankConnection.update({
+        data: {
+          errorMessage: 'Connection may have expired due to inactivity',
+          status: BankConnectionStatus.REQUIRES_ATTENTION,
+        },
+        where: { id: connection.id },
       });
+
+      markedForAttention++;
     }
 
-    await io.logger.info(
+    await logger.info(
       `Completed scheduler run. Sent ${notificationsSent} notifications and marked ${markedForAttention} connections as requiring attention`
     );
 

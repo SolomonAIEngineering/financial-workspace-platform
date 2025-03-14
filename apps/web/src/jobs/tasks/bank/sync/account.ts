@@ -3,12 +3,13 @@ import {
   AccountType,
   BankConnectionStatus,
 } from '@prisma/client';
+import { logger, schemaTask } from "@trigger.dev/sdk/v3";
 
 import { BANK_JOBS } from '../../constants';
 import { client } from '../../../client';
-import { eventTrigger } from '@trigger.dev/sdk';
 import { getAccounts } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
+import { z } from 'zod';
 
 /**
  * This job synchronizes data for a specific bank account with the latest
@@ -58,13 +59,15 @@ import { prisma } from '@/server/db';
  *   reason: "Account not active"
  *   }
  */
-export const syncAccountJob = client.defineJob({
+export const syncAccountJob = schemaTask({
   id: BANK_JOBS.SYNC_ACCOUNT,
-  name: 'Sync Bank Account',
-  trigger: eventTrigger({
-    name: 'sync-account',
+  description: 'Sync Bank Account',
+  schema: z.object({
+    accessToken: z.string(),
+    bankAccountId: z.string(),
+    manualSync: z.boolean().optional(),
+    userId: z.string(),
   }),
-  version: '1.0.0',
   /**
    * Main job execution function that syncs a bank account's data
    *
@@ -84,29 +87,27 @@ export const syncAccountJob = client.defineJob({
   run: async (payload, io) => {
     const { accessToken, bankAccountId, manualSync = false, userId } = payload;
 
-    await io.logger.info(`Starting account sync for account ${bankAccountId}`);
+    await logger.info(`Starting account sync for account ${bankAccountId}`);
 
     // Get the bank account from the database
-    const bankAccount = await io.runTask('get-bank-account', async () => {
-      return await prisma.bankAccount.findUnique({
-        select: {
-          id: true,
-          name: true,
-          plaidAccountId: true,
-          status: true,
-          updatedAt: true,
-        },
-        where: { id: bankAccountId },
-      });
+    const bankAccount = await prisma.bankAccount.findUnique({
+      select: {
+        id: true,
+        name: true,
+        plaidAccountId: true,
+        status: true,
+        updatedAt: true,
+      },
+      where: { id: bankAccountId },
     });
 
     if (!bankAccount) {
-      await io.logger.error(`Bank account ${bankAccountId} not found`);
+      await logger.error(`Bank account ${bankAccountId} not found`);
 
       throw new Error(`Bank account ${bankAccountId} not found`);
     }
     if (bankAccount.status !== 'ACTIVE' && !manualSync) {
-      await io.logger.info(
+      await logger.info(
         `Bank account ${bankAccountId} is not active and not manually synced, skipping`
       );
 
@@ -118,12 +119,7 @@ export const syncAccountJob = client.defineJob({
 
     try {
       // Fetch account data from Plaid
-      const plaidAccounts = await io.runTask(
-        'fetch-plaid-accounts',
-        async () => {
-          return await getAccounts(accessToken);
-        }
-      );
+      const plaidAccounts = await getAccounts(accessToken);
 
       // Find the matching account
       const plaidAccount = plaidAccounts.find(
@@ -131,7 +127,7 @@ export const syncAccountJob = client.defineJob({
       );
 
       if (!plaidAccount) {
-        await io.logger.error(
+        await logger.error(
           `Plaid account not found for bank account ${bankAccountId}`
         );
 
@@ -141,24 +137,22 @@ export const syncAccountJob = client.defineJob({
       }
 
       // Update the bank account with the latest information
-      await io.runTask('update-bank-account', async () => {
-        await prisma.bankAccount.update({
-          data: {
-            availableBalance: plaidAccount.availableBalance,
-            balanceLastUpdated: new Date(),
-            currentBalance: plaidAccount.currentBalance,
-            isoCurrencyCode: plaidAccount.isoCurrencyCode,
-            limit: plaidAccount.limit,
-            mask: plaidAccount.mask,
-            name: plaidAccount.name || bankAccount.name,
-            officialName: plaidAccount.officialName,
-            status: AccountStatus.ACTIVE,
-            subtype: plaidAccount.subtype,
-            type: mapPlaidAccountType(plaidAccount.type, plaidAccount.subtype),
-            updatedAt: new Date(),
-          },
-          where: { id: bankAccountId },
-        });
+      await prisma.bankAccount.update({
+        data: {
+          availableBalance: plaidAccount.availableBalance,
+          balanceLastUpdated: new Date(),
+          currentBalance: plaidAccount.currentBalance,
+          isoCurrencyCode: plaidAccount.isoCurrencyCode,
+          limit: plaidAccount.limit,
+          mask: plaidAccount.mask,
+          name: plaidAccount.name || bankAccount.name,
+          officialName: plaidAccount.officialName,
+          status: AccountStatus.ACTIVE,
+          subtype: plaidAccount.subtype,
+          type: mapPlaidAccountType(plaidAccount.type, plaidAccount.subtype),
+          updatedAt: new Date(),
+        },
+        where: { id: bankAccountId },
       });
 
       // If manually synced, also trigger a transaction sync
@@ -173,7 +167,7 @@ export const syncAccountJob = client.defineJob({
         });
       }
 
-      await io.logger.info(`Account sync completed for ${bankAccountId}`);
+      await logger.info(`Account sync completed for ${bankAccountId}`);
 
       return {
         accountId: bankAccountId,
@@ -186,7 +180,7 @@ export const syncAccountJob = client.defineJob({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      await io.logger.error(`Account sync failed: ${errorMessage}`);
+      await logger.error(`Account sync failed: ${errorMessage}`);
 
       // Update bank account with error information
       await prisma.bankAccount.update({

@@ -5,7 +5,10 @@ import { BANK_JOBS } from '../../constants';
 import { client } from '../../../client';
 import { eventTrigger } from '@trigger.dev/sdk';
 import { getTransactions } from '@/server/services/plaid';
+import { logger } from "@trigger.dev/sdk/v3";
 import { prisma } from '@/server/db';
+import { schemaTask } from '@trigger.dev/sdk/v3';
+import { z } from 'zod';
 
 /**
  * This job handles syncing financial transactions from external providers
@@ -58,13 +61,16 @@ import { prisma } from '@/server/db';
  *   updatedTransactions: 5      // Existing transactions updated
  *   }
  */
-export const upsertTransactionsJob = client.defineJob({
+export const upsertTransactionsJob = schemaTask({
   id: BANK_JOBS.UPSERT_TRANSACTIONS,
-  name: 'Upsert Transactions',
-  trigger: eventTrigger({
-    name: 'upsert-transactions',
+  description: 'Upsert Transactions',
+  schema: z.object({
+    accessToken: z.string(),
+    bankAccountId: z.string(),
+    endDate: z.string().optional(),
+    startDate: z.string().optional(),
+    userId: z.string(),
   }),
-  version: '1.0.0',
   /**
    * Main job execution function that syncs transactions for a bank account
    *
@@ -88,27 +94,25 @@ export const upsertTransactionsJob = client.defineJob({
   run: async (payload, io) => {
     const { accessToken, bankAccountId, endDate, startDate, userId } = payload;
 
-    await io.logger.info(
+    await logger.info(
       `Starting transaction upsert for account ${bankAccountId}`
     );
 
     // Get the bank account from the database
-    const bankAccount = await io.runTask('get-bank-account', async () => {
-      return await prisma.bankAccount.findUnique({
-        select: {
-          id: true,
-          bankConnectionId: true,
-          name: true,
-          plaidAccountId: true,
-          status: true,
-          updatedAt: true,
-        },
-        where: { id: bankAccountId },
-      });
+    const bankAccount = await prisma.bankAccount.findUnique({
+      select: {
+        id: true,
+        bankConnectionId: true,
+        name: true,
+        plaidAccountId: true,
+        status: true,
+        updatedAt: true,
+      },
+      where: { id: bankAccountId },
     });
 
     if (!bankAccount) {
-      await io.logger.error(`Bank account ${bankAccountId} not found`);
+      await logger.error(`Bank account ${bankAccountId} not found`);
 
       throw new Error(`Bank account ${bankAccountId} not found`);
     }
@@ -121,7 +125,7 @@ export const upsertTransactionsJob = client.defineJob({
     });
 
     if (bankAccount.status !== 'ACTIVE') {
-      await io.logger.info(
+      await logger.info(
         `Bank account ${bankAccountId} is not active, skipping sync`
       );
 
@@ -160,101 +164,89 @@ export const upsertTransactionsJob = client.defineJob({
         where: { bankConnectionId: bankAccount.bankConnectionId },
       });
 
-      // Fetch transactions from Plaid
-      const plaidTransactions = await io.runTask(
-        'fetch-plaid-transactions',
-        async () => {
-          if (!bankConnection) {
-            throw new Error(
-              `Bank connection not found for account ${bankAccountId}`
-            );
-          }
+      if (!bankConnection) {
+        throw new Error(
+          `Bank connection not found for account ${bankAccountId}`
+        );
+      }
 
-          return await getTransactions(
-            accessToken,
-            bankConnection,
-            bankAccounts,
-            startDateStr,
-            endDateStr
-          );
-        }
+      // Fetch transactions from Plaid
+      const plaidTransactions = await getTransactions(
+        accessToken,
+        bankConnection,
+        bankAccounts,
+        startDateStr,
+        endDateStr
       );
 
-      await io.logger.info(
+      await logger.info(
         `Fetched ${plaidTransactions.length} transactions from Plaid`
       );
 
+      let updatedCount = 0;
+      let newCount = 0;
+
       // Process the transactions in batches
-      const transactionCount = await io.runTask(
-        'process-transactions',
-        async () => {
-          let newCount = 0;
-          let updatedCount = 0;
+      for (const plaidTransaction of plaidTransactions) {
+        // Check if the transaction already exists
+        const existingTransaction = await prisma.transaction.findFirst({
+          where: {
+            bankAccountId: bankAccountId,
+            plaidTransactionId: plaidTransaction.plaidTransactionId,
+          },
+        });
 
-          for (const plaidTransaction of plaidTransactions) {
-            // Check if the transaction already exists
-            const existingTransaction = await prisma.transaction.findFirst({
-              where: {
-                bankAccountId: bankAccountId,
-                plaidTransactionId: plaidTransaction.plaidTransactionId,
-              },
-            });
+        // Determine category
+        let category: TransactionCategory | null = null;
 
-            // Determine category
-            let category: TransactionCategory | null = null;
-
-            if (
-              plaidTransaction.originalCategory &&
-              plaidTransaction.originalCategory.length > 0
-            ) {
-              // Map the Plaid category to our category enum
-              try {
-                category = mapPlaidCategoryToTransactionCategory(
-                  plaidTransaction.originalCategory.split(',')[0].trim()
-                );
-              } catch (error) {
-                await io.logger.warn(
-                  `Could not map category for transaction ${plaidTransaction.plaidTransactionId}: ${error}`
-                );
-              }
-            }
-            if (existingTransaction) {
-              // Update the existing transaction
-              await prisma.transaction.update({
-                data: {
-                  amount: plaidTransaction.amount,
-                  category: category,
-                  date: new Date(plaidTransaction.date),
-                  merchantName: plaidTransaction.merchantName || null,
-                  name: plaidTransaction.name,
-                  pending: plaidTransaction.pending,
-                  updatedAt: new Date(),
-                },
-                where: { id: existingTransaction.id },
-              });
-              updatedCount++;
-            } else {
-              // Create a new transaction
-              await prisma.transaction.create({
-                data: {
-                  amount: plaidTransaction.amount,
-                  bankAccount: { connect: { id: bankAccountId } },
-                  userId: userId,
-                  category: category,
-                  date: new Date(plaidTransaction.date),
-                  merchantName: plaidTransaction.merchantName || null,
-                  name: plaidTransaction.name,
-                  pending: plaidTransaction.pending,
-                  plaidTransactionId: plaidTransaction.plaidTransactionId,
-                },
-              });
-              newCount++;
-            }
+        if (
+          plaidTransaction.originalCategory &&
+          plaidTransaction.originalCategory.length > 0
+        ) {
+          // Map the Plaid category to our category enum
+          try {
+            category = mapPlaidCategoryToTransactionCategory(
+              plaidTransaction.originalCategory.split(',')[0].trim()
+            );
+          } catch (error) {
+            await logger.warn(
+              `Could not map category for transaction ${plaidTransaction.plaidTransactionId}: ${error}`
+            );
           }
-
-          return { newCount, updatedCount };
         }
-      );
+        if (existingTransaction) {
+          // Update the existing transaction
+          await prisma.transaction.update({
+            data: {
+              amount: plaidTransaction.amount,
+              category: category,
+              date: new Date(plaidTransaction.date),
+              merchantName: plaidTransaction.merchantName || null,
+              name: plaidTransaction.name,
+              pending: plaidTransaction.pending,
+              updatedAt: new Date(),
+            },
+            where: { id: existingTransaction.id },
+          });
+          updatedCount++;
+        } else {
+          // Create a new transaction
+          await prisma.transaction.create({
+            data: {
+              amount: plaidTransaction.amount,
+              bankAccount: { connect: { id: bankAccountId } },
+              userId: userId,
+              category: category,
+              date: new Date(plaidTransaction.date),
+              merchantName: plaidTransaction.merchantName || null,
+              name: plaidTransaction.name,
+              pending: plaidTransaction.pending,
+              plaidTransactionId: plaidTransaction.plaidTransactionId,
+            },
+          });
+          newCount++;
+        }
+      }
 
       // Update bank account with last synced time
       await prisma.bankAccount.update({
@@ -265,20 +257,20 @@ export const upsertTransactionsJob = client.defineJob({
         where: { id: bankAccountId },
       });
 
-      await io.logger.info(
-        `Transaction sync completed. Added ${transactionCount.newCount}, updated ${transactionCount.updatedCount} transactions`
+      await logger.info(
+        `Transaction sync completed. Added ${newCount}, updated ${updatedCount} transactions`
       );
 
       return {
-        newTransactions: transactionCount.newCount,
+        newTransactions: newCount,
         status: 'success',
         totalTransactions: plaidTransactions.length,
-        updatedTransactions: transactionCount.updatedCount,
+        updatedTransactions: updatedCount,
       };
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      await io.logger.error(`Transaction sync failed: ${errorMessage}`);
+      await logger.error(`Transaction sync failed: ${errorMessage}`);
 
       // Update bank account with error information
       await prisma.bankAccount.update({

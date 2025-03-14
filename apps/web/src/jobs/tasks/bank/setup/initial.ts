@@ -11,6 +11,9 @@ import { getAccounts, getInstitutionById } from '@/server/services/plaid';
 
 import { client } from '../../../client';
 import { BANK_JOBS } from '../../constants';
+import { logger } from "@trigger.dev/sdk/v3";
+import { schemaTask } from '@trigger.dev/sdk/v3';
+import { z } from 'zod';
 
 /**
  * This job handles the complete initial setup process when a user connects a
@@ -52,13 +55,17 @@ import { BANK_JOBS } from '../../constants';
  *   accountCount: 5
  *   }
  */
-export const initialSetupJob = client.defineJob({
+export const initialSetupJob = schemaTask({
   id: BANK_JOBS.INITIAL_SETUP,
-  name: 'Initial Bank Connection Setup',
-  trigger: eventTrigger({
-    name: 'initial-setup',
+  description: 'Initial Bank Connection Setup',
+  schema: z.object({
+    accessToken: z.string(),
+    institutionId: z.string(),
+    itemId: z.string(),
+    publicToken: z.string(),
+    userId: z.string(),
+    provider: z.string(),
   }),
-  version: '1.0.0',
   /**
    * Main job execution function that sets up a new bank connection
    *
@@ -77,86 +84,76 @@ export const initialSetupJob = client.defineJob({
    * @throws Error if any part of the setup process fails
    */
   run: async (payload, io) => {
-    const { accessToken, institutionId, itemId, publicToken, userId } = payload;
+    const { accessToken, institutionId, itemId, publicToken, userId, provider } = payload;
 
-    await io.logger.info(
+    await logger.info(
       `Starting initial setup for institution ${institutionId}`
     );
 
     try {
       // Get institution details
-      const institution = await io.runTask('get-institution', async () => {
-        return await getInstitutionById(institutionId);
-      });
+      const institution = await getInstitutionById(institutionId);
 
       // Create the bank connection record
-      const bankConnection = await io.runTask(
-        'create-bank-connection',
-        async () => {
-          return await prisma.bankConnection.create({
-            data: {
-              accessToken,
-              createdAt: new Date(),
-              institutionId,
-              institutionName: institution.name,
-              itemId, // Required field
-              lastSyncedAt: new Date(),
-              logo: institution.logo,
-              primaryColor: institution.primaryColor,
-              status: BankConnectionStatus.ACTIVE,
-              updatedAt: new Date(),
-              userId,
-            },
-          });
-        }
-      );
-
-      // Get accounts from Plaid
-      const plaidAccounts = await io.runTask('get-plaid-accounts', async () => {
-        return await getAccounts(accessToken);
+      const bankConnection = await prisma.bankConnection.create({
+        data: {
+          accessToken,
+          createdAt: new Date(),
+          institutionId,
+          institutionName: institution.name,
+          itemId, // Required field
+          lastSyncedAt: new Date(),
+          logo: institution.logo,
+          primaryColor: institution.primaryColor,
+          status: BankConnectionStatus.ACTIVE,
+          updatedAt: new Date(),
+          userId,
+          provider,
+        },
       });
 
-      await io.logger.info(`Found ${plaidAccounts.length} accounts`);
+      // Get accounts from Plaid
+      const plaidAccounts = await getAccounts(accessToken);
+
+      await logger.info(`Found ${plaidAccounts.length} accounts`);
 
       // Create bank accounts
       let bankAccounts: BankAccount[] = [];
 
-      await io.runTask('create-bank-accounts', async (task, io) => {
-        // Properly type the accounts array
-        const accounts: BankAccount[] = [];
+      // Properly type the accounts array
+      const accounts: BankAccount[] = [];
 
-        for (const plaidAccount of plaidAccounts) {
-          const account = await prisma.bankAccount.create({
-            data: {
-              availableBalance: plaidAccount.availableBalance,
-              bankConnectionId: bankConnection.id,
-              createdAt: new Date(),
-              currentBalance: plaidAccount.currentBalance,
-              enabled: true,
-              isoCurrencyCode: plaidAccount.isoCurrencyCode,
-              limit: plaidAccount.limit,
-              mask: plaidAccount.mask,
-              name: plaidAccount.name,
-              officialName: plaidAccount.officialName,
-              plaidAccountId: plaidAccount.plaidAccountId,
-              status: AccountStatus.ACTIVE,
-              subtype: plaidAccount.subtype,
-              type: mapPlaidAccountType(
-                plaidAccount.type,
-                plaidAccount.subtype
-              ),
-              updatedAt: new Date(),
-              userId,
-            },
-          });
-          accounts.push(account);
-        }
+      for (const plaidAccount of plaidAccounts) {
+        const account = await prisma.bankAccount.create({
+          data: {
+            availableBalance: plaidAccount.availableBalance,
+            bankConnectionId: bankConnection.id,
+            createdAt: new Date(),
+            currentBalance: plaidAccount.currentBalance,
+            enabled: true,
+            isoCurrencyCode: plaidAccount.isoCurrencyCode,
+            limit: plaidAccount.limit,
+            mask: plaidAccount.mask,
+            name: plaidAccount.name,
+            officialName: plaidAccount.officialName,
+            plaidAccountId: plaidAccount.plaidAccountId,
+            status: AccountStatus.ACTIVE,
+            subtype: plaidAccount.subtype,
+            type: mapPlaidAccountType(
+              plaidAccount.type,
+              plaidAccount.subtype
+            ),
+            updatedAt: new Date(),
+            userId,
+          },
+        });
+        accounts.push(account);
+      }
 
-        bankAccounts = accounts;
-        return { success: true };
-      });
+      bankAccounts = accounts;
 
-      await io.logger.info(`Created ${bankAccounts.length} bank accounts`);
+
+      await logger.info(`Created ${bankAccounts.length} bank accounts`);
 
       // Trigger initial account and transaction syncs
       // We stagger these to avoid hitting rate limits
@@ -193,7 +190,7 @@ export const initialSetupJob = client.defineJob({
         },
       });
 
-      await io.logger.info(`Initial setup completed for ${institution.name}`);
+      await logger.info(`Initial setup completed for ${institution.name}`);
 
       return {
         accountCount: bankAccounts.length,
@@ -203,7 +200,7 @@ export const initialSetupJob = client.defineJob({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      await io.logger.error(`Initial setup failed: ${errorMessage}`);
+      await logger.error(`Initial setup failed: ${errorMessage}`);
 
       // If we have created a bank connection, update its status
       if (institutionId) {

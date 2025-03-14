@@ -1,8 +1,10 @@
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
+
 import { BANK_JOBS } from '../../constants';
 import { client } from '../../../client';
-import { eventTrigger } from '@trigger.dev/sdk';
 import { prisma } from '@/server/db';
 import { subDays } from 'date-fns';
+import { z } from 'zod';
 
 /**
  * This job sends comprehensive transaction summary notifications to users,
@@ -54,13 +56,12 @@ import { subDays } from 'date-fns';
  *   reason: "No new transactions"
  *   }
  */
-export const transactionNotificationsJob = client.defineJob({
+export const transactionNotificationsJob = schemaTask({
   id: BANK_JOBS.TRANSACTION_NOTIFICATIONS,
-  name: 'Send Transaction Notifications',
-  trigger: eventTrigger({
-    name: 'sync-transaction-notifications',
+  description: 'Send Transaction Notifications',
+  schema: z.object({
+    userId: z.string(),
   }),
-  version: '1.0.0',
   /**
    * Main job execution function that processes and sends transaction
    * notifications
@@ -77,33 +78,31 @@ export const transactionNotificationsJob = client.defineJob({
   run: async (payload, io) => {
     const { userId } = payload;
 
-    await io.logger.info(
+    await logger.info(
       `Starting transaction notifications for user ${userId}`
     );
 
     try {
       // Find user details
-      const user = await io.runTask('get-user', async (task, io) => {
-        return await prisma.user.findUnique({
-          select: {
-            id: true,
-            email: true,
-            lastTransactionNotificationAt: true,
-            name: true,
-            notificationsEnabled: true,
-          },
-          where: { id: userId },
-        });
+      const user = await prisma.user.findUnique({
+        select: {
+          id: true,
+          email: true,
+          lastTransactionNotificationAt: true,
+          name: true,
+          notificationsEnabled: true,
+        },
+        where: { id: userId },
       });
 
       if (!user) {
-        await io.logger.error(`User ${userId} not found`);
+        await logger.error(`User ${userId} not found`);
 
         throw new Error(`User ${userId} not found`);
       }
       // Skip if notifications are disabled
       if (user.notificationsEnabled === false) {
-        await io.logger.info(
+        await logger.info(
           `Notifications disabled for user ${userId}, skipping`
         );
 
@@ -129,34 +128,31 @@ export const transactionNotificationsJob = client.defineJob({
         [key: string]: any;
       }[] = [];
 
-      await io.runTask('get-new-transactions', async (task, io) => {
-        const result = await prisma.transaction.findMany({
-          include: {
-            bankAccount: {
-              select: {
-                mask: true,
-                name: true,
-              },
+      const result = await prisma.transaction.findMany({
+        include: {
+          bankAccount: {
+            select: {
+              mask: true,
+              name: true,
             },
           },
-          orderBy: {
-            createdAt: 'desc',
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        where: {
+          amount: { gt: 0 }, // Only include expenses
+          createdAt: {
+            gt: lastNotification,
           },
-          where: {
-            amount: { gt: 0 }, // Only include expenses
-            createdAt: {
-              gt: lastNotification,
-            },
-            pending: false, // Skip pending transactions
-            userId,
-          },
-        });
-        transactions = result;
-        return { success: true };
+          pending: false, // Skip pending transactions
+          userId,
+        },
       });
+      transactions = result;
 
       if (transactions.length === 0) {
-        await io.logger.info(
+        await logger.info(
           `No new transactions found for user ${userId}, skipping`
         );
 
@@ -166,7 +162,7 @@ export const transactionNotificationsJob = client.defineJob({
         };
       }
 
-      await io.logger.info(
+      await logger.info(
         `Found ${transactions.length} new transactions for user ${userId}`
       );
 
@@ -223,23 +219,21 @@ export const transactionNotificationsJob = client.defineJob({
 
       // Send the notification
       if (user.email) {
-        await io.runTask('send-notification', async (task, io) => {
-          await client.sendEvent({
-            name: 'send-email',
-            payload: {
-              subject: 'Transaction Summary: New Activity in Your Accounts',
-              template: 'transaction-summary',
-              templateData: {
-                accountSummaries,
-                largeTransactions,
-                name: user.name || 'there',
-                totalSpent,
-                transactionCount: transactions.length,
-                viewAllUrl: `https://yourdomain.com/app/transactions`,
-              },
-              to: user.email,
+        await client.sendEvent({
+          name: 'send-email',
+          payload: {
+            subject: 'Transaction Summary: New Activity in Your Accounts',
+            template: 'transaction-summary',
+            templateData: {
+              accountSummaries,
+              largeTransactions,
+              name: user.name || 'there',
+              totalSpent,
+              transactionCount: transactions.length,
+              viewAllUrl: `https://yourdomain.com/app/transactions`,
             },
-          });
+            to: user.email,
+          },
         });
       }
 
@@ -264,7 +258,7 @@ export const transactionNotificationsJob = client.defineJob({
         },
       });
 
-      await io.logger.info(`Transaction notifications sent for user ${userId}`);
+      await logger.info(`Transaction notifications sent for user ${userId}`);
 
       return {
         accountCount: Object.keys(accountTransactions).length,
@@ -274,7 +268,7 @@ export const transactionNotificationsJob = client.defineJob({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      await io.logger.error(
+      await logger.error(
         `Failed to send transaction notifications: ${errorMessage}`
       );
 

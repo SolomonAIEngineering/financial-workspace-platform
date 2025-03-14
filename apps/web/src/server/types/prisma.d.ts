@@ -169,6 +169,7 @@ export interface BankConnection {
   lastExpiryNotifiedAt: Date| null;
   expiryNotificationCount: number;
   expiresAt: Date| null;
+  provider: string;
 }
 
 export interface BankAccount {

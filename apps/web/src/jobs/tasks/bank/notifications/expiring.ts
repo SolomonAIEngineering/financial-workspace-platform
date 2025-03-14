@@ -1,7 +1,9 @@
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
+
 import { BANK_JOBS } from '../../constants';
-import { client } from '../../../client';
-import { eventTrigger } from '@trigger.dev/sdk';
+import { client } from '@/jobs/client';
 import { prisma } from '@/server/db';
+import { z } from 'zod';
 
 /**
  * This job sends detailed notifications to users about bank connections that
@@ -42,13 +44,19 @@ import { prisma } from '@/server/db';
  *   status: "success"
  *   }
  */
-export const expiringNotificationsJob = client.defineJob({
+export const expiringNotificationsJob = schemaTask({
   id: BANK_JOBS.EXPIRING_NOTIFICATIONS,
-  name: 'Send Expiring Connection Notifications',
-  trigger: eventTrigger({
-    name: 'expiring-notification',
+  description: 'Send Expiring Connection Notifications',
+  schema: z.object({
+    userId: z.string(),
+    connectionId: z.string(),
+    email: z.string(),
+    name: z.string(),
+    institutionName: z.string(),
+    daysUntilExpiry: z.number(),
+    daysInactive: z.number(),
+    accountCount: z.number(),
   }),
-  version: '1.0.0',
   /**
    * Main job execution function that handles sending notifications for expiring
    * connections
@@ -81,29 +89,27 @@ export const expiringNotificationsJob = client.defineJob({
       userId,
     } = payload;
 
-    await io.logger.info(
+    await logger.info(
       `Sending expiring connection notification for ${connectionId}`
     );
 
     try {
       // Send email notification
-      await io.runTask('send-expiring-email', async () => {
-        await client.sendEvent({
-          name: 'send-email',
-          payload: {
-            subject: `Action Required: Your ${institutionName} Connection Will Expire Soon`,
-            template: 'connection-expiring',
-            templateData: {
-              accountCount,
-              daysInactive,
-              daysUntilExpiry,
-              institutionName,
-              name: name || 'there',
-              reconnectUrl: `https://yourdomain.com/app/accounts/reconnect/${connectionId}`,
-            },
-            to: email,
+      await client.sendEvent({
+        name: 'send-email',
+        payload: {
+          subject: `Action Required: Your ${institutionName} Connection Will Expire Soon`,
+          template: 'connection-expiring',
+          templateData: {
+            accountCount,
+            daysInactive,
+            daysUntilExpiry,
+            institutionName,
+            name: name || 'there',
+            reconnectUrl: `https://yourdomain.com/app/accounts/reconnect/${connectionId}`,
           },
-        });
+          to: email,
+        },
       });
 
       // Record this notification
@@ -139,7 +145,7 @@ export const expiringNotificationsJob = client.defineJob({
         reconnectUrl: `https://yourdomain.com/app/accounts/reconnect/${connectionId}`,
       });
 
-      await io.logger.info(
+      await logger.info(
         `Expiring notification sent for ${institutionName} connection`
       );
 
@@ -152,7 +158,7 @@ export const expiringNotificationsJob = client.defineJob({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      await io.logger.error(
+      await logger.error(
         `Failed to send expiring notification: ${errorMessage}`
       );
 

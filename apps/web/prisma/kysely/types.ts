@@ -297,6 +297,7 @@ export type BankConnection = {
   lastExpiryNotifiedAt: Timestamp | null
   expiryNotificationCount: Generated<number>
   expiresAt: Timestamp | null
+  provider: string
 }
 export type Comment = {
   id: string
