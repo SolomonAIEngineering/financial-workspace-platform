@@ -1,15 +1,5 @@
 'use client';
 
-import { cn } from '@udecode/cn';
-import { format } from 'date-fns';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-
-import { useCurrentUser } from '@/components/auth/useCurrentUser';
-import { routes } from '@/lib/navigation/routes';
-import { useMounted } from '@/registry/default/hooks/use-mounted';
-import { Button } from '@/registry/default/potion-ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,15 +8,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/registry/default/potion-ui/dropdown-menu';
-import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
-import { useArchiveDocumentMutation } from '@/trpc/hooks/document-hooks';
 import { api, useTRPC } from '@/trpc/react';
 
+import { Button } from '@/registry/default/potion-ui/button';
 import type { IconProps } from '../ui/icon';
-
-import { useAuthGuard } from '../auth/useAuthGuard';
 import { Icons } from '../ui/icons';
+import Link from 'next/link';
 import { Skeleton } from '../ui/skeleton';
+import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
+import { cn } from '@udecode/cn';
+import { format } from 'date-fns';
+import { routes } from '@/lib/navigation/routes';
+import { toast } from 'sonner';
+import { useArchiveDocumentMutation } from '@/trpc/hooks/document-hooks';
+import { useAuthGuard } from '../auth/useAuthGuard';
+import { useCurrentUser } from '@/components/auth/useCurrentUser';
+import { useMounted } from '@/registry/default/hooks/use-mounted';
+import { useRouter } from 'next/navigation';
 
 interface ItemProps {
   id?: string;
