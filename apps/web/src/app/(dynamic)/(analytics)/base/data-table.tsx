@@ -261,8 +261,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
             "hidden sm:flex",
           )}
         >
-          <div className="bg-background md:sticky md:top-0 border-gray-200 dark:border-gray-800 rounded-t-lg">
+          <div className="bg-background md:sticky md:top-0 border-b border-gray-200 dark:border-gray-800 rounded-t-lg">
             <div className="flex h-[46px] items-center justify-between gap-3 px-4">
+              <p className="font-medium text-foreground">Filters</p>
               <div>
                 {table.getState().columnFilters.length ? (
                   <DataTableResetButton />

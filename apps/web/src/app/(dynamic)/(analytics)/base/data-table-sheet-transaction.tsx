@@ -2,11 +2,34 @@
 
 import * as React from "react";
 
-import { AlertCircle, ArrowUpDown, Bookmark, Calendar, Check, ChevronRight, Clock, CreditCard, DollarSign, Download, Edit, FileSpreadsheet, FileText, Home, Layers, RefreshCw, Tag, X } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+    AlertCircle,
+    ArrowUpDown,
+    Bookmark,
+    Calendar,
+    Check,
+    ChevronDown,
+    ChevronRight,
+    Clock,
+    CreditCard,
+    DollarSign,
+    Download,
+    Edit,
+    FileSpreadsheet,
+    FileText,
+    Home,
+    Layers,
+    RefreshCw,
+    Tag,
+    X
+} from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/registry/default/potion-ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/registry/default/potion-ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/registry/default/potion-ui/tooltip";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
+} from "@/registry/default/potion-ui/tooltip";
 import { format, isValid, parseISO } from "date-fns";
 
 import { Badge } from "@/components/ui/badge";
@@ -19,13 +42,63 @@ import { categoryColors } from "./columns";
 import { cn } from "@/lib/utils";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 
-/**
- * Enhanced transaction sheet details component with improved UI and additional features
- */
+interface TimingPhase {
+    name: string;
+    percentage: number;
+    value: number;
+    color: string;
+}
+
+// Create a simple collapsible section component
+interface CollapsibleSectionProps {
+    title: string;
+    icon?: React.ReactNode;
+    defaultOpen?: boolean;
+    children: React.ReactNode;
+    className?: string;
+}
+
+function CollapsibleSection({
+    title,
+    icon,
+    defaultOpen = false,
+    children,
+    className
+}: CollapsibleSectionProps) {
+    const [isOpen, setIsOpen] = React.useState(defaultOpen);
+
+    return (
+        <div className={cn("border rounded-md p-2 bg-gray-50/50", className)}>
+            <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    {icon}
+                    <h3 className="text-sm font-medium">{title}</h3>
+                </div>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-7 w-7"
+                    onClick={() => setIsOpen(!isOpen)}
+                >
+                    <ChevronDown
+                        className={cn(
+                            "h-4 w-4 transition-transform",
+                            isOpen && "rotate-180"
+                        )}
+                    />
+                </Button>
+            </div>
+            {isOpen && (
+                <div className="pt-2">
+                    {children}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export function TransactionSheetDetails() {
     const { rowSelection, table } = useDataTable();
-    const [activeTab, setActiveTab] = React.useState("details");
-    const [isEditing, setIsEditing] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [relatedTransactions, setRelatedTransactions] = React.useState<ColumnSchema[]>([]);
 
@@ -51,7 +124,7 @@ export function TransactionSheetDetails() {
                                 row.id !== selectedRowKey)
                         );
                     })
-                    .slice(0, 5)
+                    .slice(0, 3)
                     .map(row => row.original)) as ColumnSchema[];
 
                 setRelatedTransactions(related);
@@ -73,517 +146,509 @@ export function TransactionSheetDetails() {
         );
     }
 
-    const handleEditToggle = () => {
-        setIsEditing(!isEditing);
-    };
-
-    const handleExportPDF = () => {
-        // Implementation would connect to PDF generation service
-        console.log("Exporting transaction details to PDF");
-    };
-
-    const formatDate = (dateString?: string) => {
+    const formatDate = (dateString?: string | Date) => {
         if (!dateString) return "-";
         try {
-            const date = typeof dateString === 'string' ? parseISO(dateString) : new Date(dateString);
-            return isValid(date) ? format(date, "PPP p") : "-";
+            const date = typeof dateString === 'string' ? parseISO(dateString) : dateString;
+            return isValid(date) ? format(date, "MMM dd, yyyy HH:mm:ss") : "-";
         } catch (e) {
             return "-";
         }
     };
 
+    // Format currency amount
+    const formatCurrency = (amount?: number, currency: string = "USD") => {
+        if (amount === undefined) return "-";
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency,
+        }).format(amount);
+    };
+
+    // Mock timing phases similar to the image
+    const timingPhases: TimingPhase[] = [
+        {
+            name: "PROCESSING",
+            percentage: 12.2,
+            value: 122,
+            color: "bg-emerald-500"
+        },
+        {
+            name: "VERIFICATION",
+            percentage: 29.3,
+            value: 293,
+            color: "bg-cyan-500"
+        },
+        {
+            name: "AUTHORIZATION",
+            percentage: 9.7,
+            value: 97,
+            color: "bg-blue-500"
+        },
+        {
+            name: "SETTLEMENT",
+            percentage: 48.4,
+            value: 484,
+            color: "bg-amber-500"
+        },
+        {
+            name: "FINALIZATION",
+            percentage: 0.4,
+            value: 4,
+            color: "bg-purple-500"
+        }
+    ];
+
+    // Latency is the sum of all timing phase values
+    const totalLatency = timingPhases.reduce((sum, phase) => sum + phase.value, 0);
+
+    // Get status color based on status code or transaction status
+    const getStatusColor = () => {
+        if (transaction.pending) return "text-amber-500";
+        return "text-emerald-500";
+    };
+
+    // Get transaction type
+    const getTransactionType = () => {
+        const type = transaction.transactionType as string | undefined;
+        if (type) return type.replace(/_/g, " ");
+        if (transaction.isManual) return "MANUAL";
+        if (transaction.isRecurring) return "RECURRING";
+        return "STANDARD";
+    };
+
+    // Export transaction details
+    const handleExportDetails = () => {
+        console.log("Exporting transaction details");
+    };
+
+    // Safe access to category colors
+    const getCategoryDot = () => {
+        if (!transaction.category) return null;
+        const category = categoryColors[transaction.category];
+        if (!category || !category.dot) return null;
+        return <div className="h-3 w-3 rounded-full" style={{ background: String(category.dot) }} />;
+    };
+
     return (
-        <ScrollArea className="h-[80vh]">
-            <div className="flex flex-col gap-6 p-1">
-                {/* Header with actions */}
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h2 className="text-2xl font-semibold">{transaction.name || "Transaction"}</h2>
-                        <p className="text-muted-foreground">
-                            {formatDate(transaction.date.toISOString())} · ID: {transaction.id?.substring(0, 8) || "N/A"}
-                        </p>
-                    </div>
+        <ScrollArea className="h-full pr-4">
+            <div className="flex flex-col space-y-4 py-2">
+                {/* Primary Fields */}
+                <div className="flex items-start justify-between">
+                    <p className="text-sm text-muted-foreground w-28">Transaction ID</p>
+                    <p className="text-sm font-mono flex-1 text-right">{transaction.id || "-"}</p>
+                </div>
 
-                    <div className="flex gap-2">
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button type="button" variant="outline" size="icon" onClick={handleEditToggle}>
-                                        <Edit className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    {isEditing ? "Cancel Editing" : "Edit Transaction"}
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                <div className="flex items-start justify-between">
+                    <p className="text-sm text-muted-foreground w-28">Date</p>
+                    <p className="text-sm flex-1 text-right">{formatDate(transaction.date)}</p>
+                </div>
 
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button type="button" variant="outline" size="icon" onClick={handleExportPDF}>
-                                        <Download className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    Export Details
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+                <div className="flex items-start justify-between">
+                    <p className="text-sm text-muted-foreground w-28">Status</p>
+                    <p className={cn("text-sm flex-1 text-right font-medium", getStatusColor())}>
+                        {transaction.pending ? "PENDING" : "COMPLETED"}
+                    </p>
+                </div>
+
+                <div className="flex items-start justify-between">
+                    <p className="text-sm text-muted-foreground w-28">Type</p>
+                    <p className="text-sm flex-1 text-right font-mono">{getTransactionType()}</p>
+                </div>
+
+                <div className="flex items-start justify-between">
+                    <p className="text-sm text-muted-foreground w-28">Merchant</p>
+                    <p className="text-sm flex-1 text-right">{transaction.merchantName || "-"}</p>
+                </div>
+
+                <div className="flex items-start justify-between">
+                    <p className="text-sm text-muted-foreground w-28">Name</p>
+                    <p className="text-sm flex-1 text-right font-medium">{transaction.name || "-"}</p>
+                </div>
+
+                <div className="flex items-start justify-between">
+                    <p className="text-sm text-muted-foreground w-28">Category</p>
+                    <div className="flex items-center justify-end flex-1 gap-1">
+                        {transaction.category && (
+                            <div className="flex items-center gap-1">
+                                {getCategoryDot()}
+                                <Badge variant="outline" className="text-xs font-normal">
+                                    {transaction.category.replace(/_/g, " ")}
+                                </Badge>
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Primary information card */}
-                <Card>
-                    <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <DollarSign className="h-5 w-5 text-primary" />
-                                <CardTitle>Transaction Summary</CardTitle>
+                <div className="flex items-start justify-between">
+                    <p className="text-sm text-muted-foreground w-28">Amount</p>
+                    <p className={cn(
+                        "text-sm flex-1 text-right font-medium",
+                        transaction.amount && transaction.amount < 0 ? "text-red-500" : "text-emerald-500"
+                    )}>
+                        {formatCurrency(transaction.amount, transaction.currency)}
+                    </p>
+                </div>
+
+                <div className="flex items-start justify-between">
+                    <p className="text-sm text-muted-foreground w-28">Account</p>
+                    <p className="text-sm flex-1 text-right font-mono">
+                        {transaction.bankAccountName || transaction.bankAccountId || "-"}
+                    </p>
+                </div>
+
+                {/* Description Section */}
+                <CollapsibleSection
+                    title="Description & Notes"
+                    icon={<FileText className="h-4 w-4 text-muted-foreground" />}
+                >
+                    <div className="p-2 rounded-md bg-background text-sm">
+                        {(transaction as any).description || "No description available for this transaction."}
+                    </div>
+
+                    {(transaction as any).location && (
+                        <div className="mt-2">
+                            <p className="text-xs text-muted-foreground mb-1">Location</p>
+                            <div className="p-2 rounded-md bg-background text-sm">
+                                {(transaction as any).location}
                             </div>
-                            <Badge
-                                variant={transaction.pending ? "outline" : "secondary"}
-                                className={cn(
-                                    transaction.pending
-                                        ? "text-yellow-600 border-yellow-300 bg-yellow-50"
-                                        : "text-green-600 border-green-300 bg-green-50"
-                                )}
-                            >
-                                {transaction.pending ? "Pending" : "Completed"}
-                            </Badge>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="flex flex-col md:flex-row gap-6 justify-between">
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">Amount</p>
-                                <p className={cn(
-                                    "text-2xl font-bold",
-                                    transaction.category === "INCOME"
-                                        ? "text-green-600"
-                                        : "text-red-500"
+                    )}
+
+                    {transaction.insightTags && transaction.insightTags.length > 0 && (
+                        <div className="mt-2">
+                            <p className="text-xs text-muted-foreground mb-1">Tags</p>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                                {transaction.insightTags.map((tag) => (
+                                    <Badge key={tag} variant="secondary" className="text-xs">
+                                        {tag}
+                                    </Badge>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </CollapsibleSection>
+
+                {/* Categories Section */}
+                <CollapsibleSection
+                    title="Categorization Details"
+                    icon={<Tag className="h-4 w-4 text-muted-foreground" />}
+                >
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <p className="text-xs text-muted-foreground">Cash Flow</p>
+                            {(transaction as any).cashFlowCategory ? (
+                                <Badge variant="outline" className={cn(
+                                    "mt-1 px-2 py-0.5 text-xs rounded-md",
+                                    (transaction as any).cashFlowCategory === "INCOME"
+                                        ? "text-green-600 border-green-300 bg-green-50"
+                                        : (transaction as any).cashFlowCategory === "EXPENSE"
+                                            ? "text-red-600 border-red-300 bg-red-50"
+                                            : "text-blue-600 border-blue-300 bg-blue-50"
                                 )}>
-                                    {formatCurrency(transaction.amount, transaction.currency)}
-                                </p>
-                            </div>
-
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">Category</p>
-                                <div className="flex items-center gap-2">
-                                    {transaction.category && categoryColors[transaction.category] ? (
-                                        <div className="flex items-center gap-1.5">
-                                            <div className="flex items-center justify-center p-1.5 rounded-full bg-muted">
-                                                {categoryColors[transaction.category].icon}
-                                            </div>
-                                            <span className="text-base font-medium">{transaction.category.replace(/_/g, " ")}</span>
-                                        </div>
-                                    ) : transaction.customCategory ? (
-                                        <span className="text-base font-medium">{transaction.customCategory}</span>
-                                    ) : (
-                                        <span className="text-base font-medium text-muted-foreground">Uncategorized</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">Merchant</p>
-                                <p className="text-base font-medium">
-                                    {transaction.merchantName || "Unknown Merchant"}
-                                </p>
-                            </div>
+                                    {(transaction as any).cashFlowCategory}
+                                </Badge>
+                            ) : <span className="text-muted-foreground">-</span>}
                         </div>
-                    </CardContent>
-                </Card>
 
-                {/* Tab navigation for detailed information */}
-                <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid grid-cols-4 w-full">
-                        <TabsTrigger value="details" className="flex items-center gap-1.5">
-                            <FileText className="h-4 w-4" />
-                            <span className="hidden sm:inline">Details</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="categorization" className="flex items-center gap-1.5">
-                            <Tag className="h-4 w-4" />
-                            <span className="hidden sm:inline">Categories</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="properties" className="flex items-center gap-1.5">
-                            <Layers className="h-4 w-4" />
-                            <span className="hidden sm:inline">Properties</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="related" className="flex items-center gap-1.5">
-                            <RefreshCw className="h-4 w-4" />
-                            <span className="hidden sm:inline">Related</span>
-                        </TabsTrigger>
-                    </TabsList>
+                        <div>
+                            <p className="text-xs text-muted-foreground">Budget Category</p>
+                            {(transaction as any).budgetCategory ? (
+                                <Badge variant="secondary" className="mt-1 px-2 py-0.5 text-xs">
+                                    {(transaction as any).budgetCategory}
+                                </Badge>
+                            ) : <span className="text-muted-foreground">-</span>}
+                        </div>
 
-                    {/* Details Tab */}
-                    <TabsContent value="details" className="mt-4">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <div className="flex items-center gap-2">
-                                    <FileText className="h-5 w-5 text-primary" />
-                                    <CardTitle>Transaction Information</CardTitle>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-4">
-                                    <Field
-                                        icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
-                                        label="Transaction Date"
-                                        value={formatDate(transaction.date.toISOString())}
-                                    />
-                                    <Field
-                                        icon={<CreditCard className="h-4 w-4 text-muted-foreground" />}
-                                        label="Payment Method"
-                                        value={transaction.paymentMethod?.replace(/_/g, " ") || "-"}
-                                    />
-                                    <Field
-                                        icon={<Home className="h-4 w-4 text-muted-foreground" />}
-                                        label="Account"
-                                        value={transaction.bankAccountName || transaction.bankAccountId || "-"}
-                                    />
-                                </div>
+                        <div>
+                            <p className="text-xs text-muted-foreground">Needs/Wants</p>
+                            {(transaction as any).needsWantsCategory ? (
+                                <Badge variant="outline" className={cn(
+                                    "mt-1 px-2 py-0.5 text-xs rounded-md",
+                                    (transaction as any).needsWantsCategory === "NEEDS"
+                                        ? "text-blue-600 border-blue-300 bg-blue-50"
+                                        : (transaction as any).needsWantsCategory === "WANTS"
+                                            ? "text-purple-600 border-purple-300 bg-purple-50"
+                                            : "text-green-600 border-green-300 bg-green-50"
+                                )}>
+                                    {(transaction as any).needsWantsCategory}
+                                </Badge>
+                            ) : <span className="text-muted-foreground">-</span>}
+                        </div>
 
-                                <div className="space-y-4">
-                                    <Field
-                                        icon={<FileSpreadsheet className="h-4 w-4 text-muted-foreground" />}
-                                        label="Type"
-                                        value={transaction.transactionType?.replace(/_/g, " ") || "-"}
-                                    />
-                                    <Field
-                                        icon={<Bookmark className="h-4 w-4 text-muted-foreground" />}
-                                        label="Reference ID"
-                                        value={transaction.id || "-"}
-                                    />
-                                </div>
+                        <div>
+                            <p className="text-xs text-muted-foreground">Custom Category</p>
+                            <p className="mt-1 text-xs">
+                                {(transaction as any).customCategory || "-"}
+                            </p>
+                        </div>
 
-                                <div className="col-span-1 md:col-span-2">
-                                    <Field
-                                        label="Description"
-                                        value={
-                                            <div className="p-3 bg-muted/30 rounded-md text-sm">
-                                                {transaction.description || "No description available"}
-                                            </div>
-                                        }
-                                    />
-                                </div>
+                        {(transaction as any).spendingGoalId && (
+                            <div className="col-span-2">
+                                <p className="text-xs text-muted-foreground">Financial Goal</p>
+                                <p className="mt-1 text-xs font-mono">
+                                    {(transaction as any).spendingGoalId}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </CollapsibleSection>
 
-                                {transaction.location && (
-                                    <div className="col-span-1 md:col-span-2">
-                                        <Field
-                                            label="Location"
-                                            value={
-                                                <div className="p-3 bg-muted/30 rounded-md text-sm">
-                                                    {transaction.location || "No location data"}
-                                                </div>
-                                            }
-                                        />
+                {/* Processing Time Section */}
+                <div className="border rounded-md p-3 bg-gray-50/50">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            <h3 className="text-sm font-medium">Processing Time</h3>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <Badge variant="outline" className="text-xs font-normal bg-amber-50 border-amber-200">
+                                P50
+                            </Badge>
+                            <p className="text-sm">{totalLatency}ms</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        {timingPhases.map((phase) => (
+                            <div key={phase.name} className="space-y-1">
+                                <div className="flex items-center justify-between text-xs">
+                                    <div className="flex items-center">
+                                        <span className="font-mono">{phase.name}</span>
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-
-                    {/* Categorization Tab */}
-                    <TabsContent value="categorization" className="mt-4">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <div className="flex items-center gap-2">
-                                    <Tag className="h-5 w-5 text-primary" />
-                                    <CardTitle>Categorization</CardTitle>
-                                </div>
-                                <CardDescription>
-                                    How this transaction is categorized for budgeting and analytics
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <Field
-                                    label="Cash Flow"
-                                    value={
-                                        transaction.cashFlowCategory ? (
-                                            <Badge variant="outline" className={cn(
-                                                "px-2 py-1 text-sm font-medium rounded-md",
-                                                transaction.cashFlowCategory === "INCOME"
-                                                    ? "text-green-600 border-green-300 bg-green-50"
-                                                    : transaction.cashFlowCategory === "EXPENSE"
-                                                        ? "text-red-600 border-red-300 bg-red-50"
-                                                        : "text-blue-600 border-blue-300 bg-blue-50"
-                                            )}>
-                                                {transaction.cashFlowCategory}
-                                            </Badge>
-                                        ) : "-"
-                                    }
-                                />
-                                <Field
-                                    label="Budget Category"
-                                    value={
-                                        transaction.budgetCategory ? (
-                                            <Badge variant="secondary" className="px-2 py-1 text-sm">
-                                                {transaction.budgetCategory}
-                                            </Badge>
-                                        ) : "-"
-                                    }
-                                />
-                                <Field
-                                    label="Needs/Wants"
-                                    value={
-                                        transaction.needsWantsCategory ? (
-                                            <Badge variant="outline" className={cn(
-                                                "px-2 py-1 text-sm font-medium rounded-md",
-                                                transaction.needsWantsCategory === "NEEDS"
-                                                    ? "text-blue-600 border-blue-300 bg-blue-50"
-                                                    : transaction.needsWantsCategory === "WANTS"
-                                                        ? "text-purple-600 border-purple-300 bg-purple-50"
-                                                        : "text-green-600 border-green-300 bg-green-50"
-                                            )}>
-                                                {transaction.needsWantsCategory}
-                                            </Badge>
-                                        ) : "-"
-                                    }
-                                />
-                                <Field
-                                    label="Financial Goal"
-                                    value={transaction.spendingGoalId || "-"}
-                                />
-                                <div className="col-span-1 md:col-span-2">
-                                    <Field
-                                        label="Tags"
-                                        value={
-                                            transaction.tags && transaction.tags.length > 0 ? (
-                                                <div className="flex flex-wrap gap-2 mt-1">
-                                                    {transaction.tags.map((tag) => (
-                                                        <Badge key={tag} variant="secondary" className="text-sm px-2.5 py-0.5 rounded-md">
-                                                            {tag}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                            ) : <span className="text-muted-foreground">No tags</span>
-                                        }
-                                    />
-                                </div>
-                            </CardContent>
-                            <CardFooter>
-                                <Button variant="ghost" size="sm" disabled={!isEditing} className="text-sm">
-                                    <Tag className="h-4 w-4 mr-1" /> Add Tags
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    </TabsContent>
-
-                    {/* Properties Tab */}
-                    <TabsContent value="properties" className="mt-4">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <div className="flex items-center gap-2">
-                                    <Layers className="h-5 w-5 text-primary" />
-                                    <CardTitle>Properties</CardTitle>
-                                </div>
-                                <CardDescription>
-                                    Additional attributes and flags for this transaction
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <PropertyField
-                                        label="Recurring Transaction"
-                                        description="This transaction occurs regularly on a schedule"
-                                        value={transaction.isRecurring}
-                                    />
-                                    <PropertyField
-                                        label="Verified"
-                                        description="Transaction has been verified against statements"
-                                        value={transaction.isVerified}
-                                    />
-                                    <PropertyField
-                                        label="Tax Deductible"
-                                        description="Eligible for tax deduction"
-                                        value={transaction.taxDeductible || false}
-                                    />
-                                    <PropertyField
-                                        label="Exclude from Budget"
-                                        description="This won't count toward budget limits"
-                                        value={transaction.excludeFromBudget}
-                                    />
-                                    <PropertyField
-                                        label="Reimbursable"
-                                        description="Can be submitted for reimbursement"
-                                        value={transaction.reimbursable || false}
-                                    />
-                                    <PropertyField
-                                        label="Split Transaction"
-                                        description="Transaction is split across categories"
-                                        value={transaction.isSplit}
-                                    />
-                                </div>
-                            </CardContent>
-                            {isEditing && (
-                                <CardFooter>
-                                    <Button variant="outline" size="sm" className="text-sm">
-                                        Update Properties
-                                    </Button>
-                                </CardFooter>
-                            )}
-                        </Card>
-                    </TabsContent>
-
-                    {/* Related Tab */}
-                    <TabsContent value="related" className="mt-4">
-                        <Card>
-                            <CardHeader className="pb-2">
-                                <div className="flex items-center gap-2">
-                                    <RefreshCw className="h-5 w-5 text-primary" />
-                                    <CardTitle>Related Transactions</CardTitle>
-                                </div>
-                                <CardDescription>
-                                    Other transactions from the same merchant or recurring series
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                {loading ? (
-                                    <div className="space-y-2">
-                                        {Array(3).fill(0).map((_, i) => (
-                                            <div key={i} className="flex items-center gap-2 p-2">
-                                                <Skeleton className="h-10 w-10 rounded-full" />
-                                                <div className="space-y-2">
-                                                    <Skeleton className="h-4 w-40" />
-                                                    <Skeleton className="h-3 w-24" />
-                                                </div>
-                                                <Skeleton className="h-4 w-20 ml-auto" />
-                                            </div>
-                                        ))}
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-muted-foreground">{phase.percentage.toFixed(1)}%</span>
+                                        <span className="font-mono">{phase.value}ms</span>
                                     </div>
-                                ) : relatedTransactions.length > 0 ? (
+                                </div>
+                                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                                    <div
+                                        className={cn(phase.color, "h-full rounded-full")}
+                                        style={{ width: `${phase.percentage}%` }}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Properties Section */}
+                <CollapsibleSection
+                    title="Transaction Properties"
+                    icon={<Layers className="h-4 w-4 text-muted-foreground" />}
+                >
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                        <PropertyItem
+                            label="Recurring"
+                            value={transaction.isRecurring}
+                        />
+                        <PropertyItem
+                            label="Manual Entry"
+                            value={transaction.isManual}
+                        />
+                        <PropertyItem
+                            label="Verified"
+                            value={transaction.isVerified || false}
+                        />
+                        <PropertyItem
+                            label="Tax Deductible"
+                            value={(transaction as any).taxDeductible || false}
+                        />
+                        <PropertyItem
+                            label="Exclude from Budget"
+                            value={transaction.excludeFromBudget}
+                        />
+                        <PropertyItem
+                            label="Reimbursable"
+                            value={(transaction as any).reimbursable || false}
+                        />
+                        <PropertyItem
+                            label="Split Transaction"
+                            value={(transaction as any).isSplit || false}
+                        />
+                        <PropertyItem
+                            label="Modified"
+                            value={transaction.isModified}
+                        />
+                    </div>
+                </CollapsibleSection>
+
+                {/* Related Transactions */}
+                <CollapsibleSection
+                    title="Related Transactions"
+                    icon={<RefreshCw className="h-4 w-4 text-muted-foreground" />}
+                >
+                    {loading ? (
+                        <div className="space-y-2">
+                            {Array(2).fill(0).map((_, i) => (
+                                <div key={i} className="flex items-center gap-2 p-2 bg-background rounded-md">
+                                    <Skeleton className="h-6 w-6 rounded-full" />
                                     <div className="space-y-1">
-                                        {relatedTransactions.map((related, idx) => (
-                                            <React.Fragment key={idx}>
-                                                {idx > 0 && <Separator className="my-2" />}
-                                                <div className="flex items-center p-2 rounded-md hover:bg-accent transition-colors">
-                                                    <div className="flex flex-1 items-center gap-3">
-                                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
-                                                            {related.category && categoryColors[related.category]?.icon || <DollarSign className="h-4 w-4" />}
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm font-medium">{related.name || "Transaction"}</p>
-                                                            <p className="text-xs text-muted-foreground">{formatDate(related.date.toISOString())}</p>
-                                                        </div>
-                                                    </div>
-                                                    <p className={cn(
-                                                        "text-sm font-medium",
-                                                        related.category === "INCOME" ? "text-green-600" : "text-red-500"
-                                                    )}>
-                                                        {formatCurrency(related.amount, related.currency)}
-                                                    </p>
-                                                    <ChevronRight className="h-4 w-4 ml-2 text-muted-foreground" />
-                                                </div>
-                                            </React.Fragment>
-                                        ))}
+                                        <Skeleton className="h-3 w-28" />
+                                        <Skeleton className="h-2 w-20" />
                                     </div>
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center py-6 text-center">
-                                        <div className="rounded-full bg-muted p-3">
-                                            <ArrowUpDown className="h-6 w-6 text-muted-foreground" />
+                                    <Skeleton className="h-3 w-16 ml-auto" />
+                                </div>
+                            ))}
+                        </div>
+                    ) : relatedTransactions.length > 0 ? (
+                        <div className="space-y-1">
+                            {relatedTransactions.map((related, idx) => (
+                                <div
+                                    key={idx}
+                                    className="flex items-center p-2 rounded-md bg-background hover:bg-accent/10 transition-colors"
+                                >
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
+                                            {related.category && categoryColors[related.category]?.icon ||
+                                                <DollarSign className="h-3 w-3" />
+                                            }
                                         </div>
-                                        <h3 className="mt-3 text-sm font-medium">No related transactions</h3>
-                                        <p className="mt-1 text-xs text-muted-foreground max-w-sm">
-                                            We couldn't find any related transactions from the same merchant or matching this recurring pattern.
-                                        </p>
-                                    </div>
-                                )}
-                            </CardContent>
-                            <CardFooter>
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Button variant="outline" size="sm" className="text-xs">
-                                            View Full Transaction History
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[600px]">
-                                        <DialogHeader>
-                                            <DialogTitle>Transaction History</DialogTitle>
-                                            <DialogDescription>
-                                                Comprehensive view of all transactions from this merchant.
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="py-4">
-                                            {/* Transaction history would be implemented here */}
-                                            <p className="text-center text-muted-foreground py-8">
-                                                Full transaction history view would be implemented here
+                                        <div className="min-w-0">
+                                            <p className="text-xs font-medium truncate">{related.name || "Transaction"}</p>
+                                            <p className="text-[10px] text-muted-foreground">
+                                                {formatDate(related.date)}
                                             </p>
                                         </div>
-                                    </DialogContent>
-                                </Dialog>
-                            </CardFooter>
-                        </Card>
-                    </TabsContent>
-                </Tabs>
+                                    </div>
+                                    <p className={cn(
+                                        "text-xs font-medium ml-2",
+                                        related.amount < 0 ? "text-red-500" : "text-emerald-500"
+                                    )}>
+                                        {formatCurrency(related.amount, related.currency)}
+                                    </p>
+                                </div>
+                            ))}
+
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="w-full text-xs mt-1">
+                                        View more related transactions
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[500px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Related Transactions</DialogTitle>
+                                        <DialogDescription>
+                                            Transactions related to {transaction.merchantName || transaction.name}
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="py-4">
+                                        <p className="text-center text-muted-foreground py-8">
+                                            Extended transaction history would appear here
+                                        </p>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-4 text-center">
+                            <div className="rounded-full bg-muted p-2">
+                                <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                            <h3 className="mt-2 text-xs font-medium">No related transactions</h3>
+                            <p className="mt-1 text-[10px] text-muted-foreground max-w-sm">
+                                No other transactions found from this merchant or with similar patterns.
+                            </p>
+                        </div>
+                    )}
+                </CollapsibleSection>
+
+                {/* More Metadata */}
+                <div className="grid grid-cols-2 gap-3 mt-2 border-t border-dashed border-gray-200 pt-4">
+                    <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Age</p>
+                        <p className="text-xs font-mono">
+                            {(transaction as any).age !== undefined ? (transaction as any).age : "0"}
+                        </p>
+                    </div>
+
+                    <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Frequency</p>
+                        <p className="text-xs font-mono">
+                            {transaction.isRecurring ? "Recurring" : "One-time"}
+                        </p>
+                    </div>
+
+                    <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Entry Method</p>
+                        <p className="text-xs font-mono">
+                            {transaction.isManual ? "Manual entry" : "Auto-import"}
+                        </p>
+                    </div>
+
+                    <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground">Creation Date</p>
+                        <p className="text-xs font-mono">
+                            {(transaction as any).creationDate ? formatDate((transaction as any).creationDate) : "-"}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-2 mt-4">
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex items-center gap-1"
+                                >
+                                    <Edit className="h-3.5 w-3.5" />
+                                    <span>Edit</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p className="text-xs">Edit transaction details</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="flex items-center gap-1"
+                                    onClick={handleExportDetails}
+                                >
+                                    <Download className="h-3.5 w-3.5" />
+                                    <span>Export</span>
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p className="text-xs">Export transaction details</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                </div>
             </div>
         </ScrollArea>
     );
 }
 
-/**
- * Field component for displaying a labeled value
- */
-function Field({
+// Small component to show properties with checkmarks
+function PropertyItem({
     label,
-    value,
-    icon,
-    className
-}: {
-    label: string;
-    value: React.ReactNode;
-    icon?: React.ReactNode;
-    className?: string;
-}) {
-    return (
-        <div className={cn("flex flex-col gap-1.5", className)}>
-            <div className="flex items-center gap-1.5">
-                {icon}
-                <span className="text-sm text-muted-foreground">{label}</span>
-            </div>
-            <div className="text-sm font-medium">{value}</div>
-        </div>
-    );
-}
-
-/**
- * PropertyField component for displaying boolean properties with descriptions
- */
-function PropertyField({
-    label,
-    description,
     value
 }: {
     label: string;
-    description: string;
     value?: boolean;
 }) {
     return (
-        <div className="flex items-start gap-3 p-3 rounded-md border bg-card">
+        <div className="flex items-center gap-2 p-1.5 rounded-md bg-background">
             <div className={cn(
-                "flex h-6 w-6 shrink-0 items-center justify-center rounded-full",
+                "flex h-4 w-4 items-center justify-center rounded-full",
                 value ? "bg-green-100" : "bg-muted"
             )}>
                 {value ?
-                    <Check className="h-4 w-4 text-green-600" /> :
-                    <X className="h-4 w-4 text-muted-foreground" />
+                    <Check className="h-2.5 w-2.5 text-green-600" /> :
+                    <X className="h-2.5 w-2.5 text-muted-foreground" />
                 }
             </div>
-            <div>
-                <p className="text-sm font-medium">{label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
-            </div>
+            <span className="text-xs">{label}</span>
         </div>
     );
-}
-
-/**
- * Format currency values with proper localization
- */
-function formatCurrency(amount: number, currency = "USD") {
-    return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: currency,
-        maximumFractionDigits: 2,
-    }).format(amount);
 } 
