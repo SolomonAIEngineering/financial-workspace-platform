@@ -4,31 +4,17 @@ import * as React from "react";
 
 import {
     AlertCircle,
-    ArrowUpDown,
-    Calendar,
-    CalendarClock,
-    CalendarDays,
-    Check,
+    ArrowDown,
+    ArrowUp,
     ChevronDown,
     Clock,
     CreditCard,
-    DollarSign,
     Download,
     Edit,
+    FileText,
     Info,
-    Layers,
-    Pause,
-    Play,
-    RefreshCw,
-    Settings,
-    X
+    Tag
 } from "lucide-react";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger
-} from "@/registry/default/potion-ui/tooltip";
 import { addDays, addMonths, addWeeks, format, isValid, parseISO } from "date-fns";
 
 import { Badge } from "@/components/ui/badge";
@@ -37,51 +23,43 @@ import { Button } from "@/registry/default/potion-ui/button";
 import type { RecurringTransactionSchema } from "./schema";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/registry/default/potion-ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useDataTable } from "@/components/data-table/data-table-provider";
 
-// Create a simple collapsible section component
 interface CollapsibleSectionProps {
     title: string;
     icon?: React.ReactNode;
     defaultOpen?: boolean;
     children: React.ReactNode;
-    className?: string;
 }
 
 function CollapsibleSection({
     title,
     icon,
     defaultOpen = false,
-    children,
-    className
+    children
 }: CollapsibleSectionProps) {
     const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
     return (
-        <div className={cn("border rounded-md p-2 bg-gray-50/50", className)}>
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+        <div className="border-t">
+            <div
+                className="flex items-center py-3 cursor-pointer hover:bg-accent/10 transition-colors"
+                onClick={() => setIsOpen(!isOpen)}
+            >
+                <div className="flex items-center gap-2 text-sm font-medium">
                     {icon}
-                    <h3 className="text-sm font-medium">{title}</h3>
+                    <span>{title}</span>
                 </div>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-1 h-7 w-7"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    <ChevronDown
-                        className={cn(
-                            "h-4 w-4 transition-transform",
-                            isOpen && "rotate-180"
-                        )}
-                    />
-                </Button>
+                <ChevronDown
+                    className={cn(
+                        "h-4 w-4 ml-auto text-muted-foreground transition-transform",
+                        isOpen && "rotate-180"
+                    )}
+                />
             </div>
             {isOpen && (
-                <div className="pt-2">
+                <div className="pb-4">
                     {children}
                 </div>
             )}
@@ -110,14 +88,6 @@ const sampleRelatedTransactions = [
     {
         id: "tx_3",
         date: new Date("2023-08-15"),
-        name: "Netflix Subscription",
-        amount: -15.99,
-        currency: "USD",
-        status: "completed",
-    },
-    {
-        id: "tx_4",
-        date: new Date("2023-07-15"),
         name: "Netflix Subscription",
         amount: -15.99,
         currency: "USD",
@@ -176,7 +146,7 @@ export function RecurringTransactionSheetDetails() {
     if (!selectedRow || !recurringTransaction.id) {
         return (
             <div className="flex flex-col items-center justify-center p-8 text-center h-full">
-                <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
+                <AlertCircle className="h-10 w-10 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-medium">No Recurring Transaction Selected</h3>
                 <p className="text-sm text-muted-foreground mt-2">
                     Select a recurring transaction from the table to view its details.
@@ -201,7 +171,7 @@ export function RecurringTransactionSheetDetails() {
         if (!dateString) return "-";
         try {
             const date = typeof dateString === "string" ? parseISO(dateString) : dateString;
-            return isValid(date) ? format(date, "MMM dd, yyyy, HH:mm") : "-";
+            return isValid(date) ? format(date, "MMM dd, yyyy HH:mm:ss") : "-";
         } catch (e) {
             return "-";
         }
@@ -233,20 +203,10 @@ export function RecurringTransactionSheetDetails() {
         return frequencyMap[frequency] || frequency.toLowerCase();
     };
 
-    // Get execution status styling
-    const getStatusStyle = (status: string) => {
-        switch (status?.toLowerCase()) {
-            case "active":
-                return "bg-green-50 border-green-200 text-green-700";
-            case "paused":
-                return "bg-amber-50 border-amber-200 text-amber-700";
-            case "completed":
-                return "bg-blue-50 border-blue-200 text-blue-700";
-            case "cancelled":
-                return "bg-red-50 border-red-200 text-red-700";
-            default:
-                return "bg-gray-50 border-gray-200 text-gray-700";
-        }
+    // Format status text
+    const formatStatus = (status?: string) => {
+        if (!status) return "UNKNOWN";
+        return status.toUpperCase();
     };
 
     // Calculate next execution dates
@@ -254,379 +214,322 @@ export function RecurringTransactionSheetDetails() {
         recurringTransaction.frequency,
         recurringTransaction.interval,
         new Date(recurringTransaction.nextScheduledDate),
-        5
+        3
     );
 
     return (
-        <ScrollArea className="h-full pr-4">
-            <div className="flex flex-col space-y-4 py-2">
-                {/* Header with Title, Status and Actions */}
-                <div className="flex items-center justify-between mb-2">
-                    <div className="flex flex-col">
-                        <h2 className="text-xl font-semibold">{recurringTransaction.title}</h2>
-                        <p className="text-sm text-muted-foreground">{recurringTransaction.description}</p>
+        <ScrollArea className="h-full">
+            <div className="flex flex-col py-2 px-1">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-lg font-medium">Recurring Transaction Details</h2>
+                    <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <ChevronDown className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <ArrowDown className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <ArrowUp className="h-4 w-4" />
+                        </Button>
                     </div>
-
-                    <Badge
-                        variant="outline"
-                        className={cn(
-                            "px-2 py-1 capitalize",
-                            getStatusStyle(recurringTransaction.status)
-                        )}
-                    >
-                        {recurringTransaction.status}
-                    </Badge>
                 </div>
 
-                <Separator />
-
-                {/* Primary Data */}
-                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                    <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">Amount</p>
-                        <p className={cn(
-                            "text-lg font-semibold",
-                            Number(recurringTransaction.amount) < 0 ? "text-red-500" : "text-green-500"
-                        )}>
-                            {formatCurrency(recurringTransaction.amount, recurringTransaction.currency)}
-                        </p>
-                    </div>
-
-                    <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">Type</p>
-                        <div className="flex items-center gap-2">
-                            {recurringTransaction.transactionType === "subscription" ? (
-                                <RefreshCw className="h-4 w-4 text-purple-500" />
-                            ) : recurringTransaction.transactionType === "bill" ? (
-                                <CreditCard className="h-4 w-4 text-amber-500" />
-                            ) : recurringTransaction.transactionType === "income" ? (
-                                <DollarSign className="h-4 w-4 text-green-500" />
-                            ) : (
-                                <Calendar className="h-4 w-4 text-blue-500" />
-                            )}
-                            <span className="font-medium capitalize">{recurringTransaction.transactionType || "Other"}</span>
-                        </div>
-                    </div>
-
-                    <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">Frequency</p>
-                        <div className="flex items-center gap-2">
-                            <CalendarClock className="h-4 w-4 text-blue-500" />
-                            <span>
-                                {formatFrequency(recurringTransaction.frequency, recurringTransaction.interval)}
-                                {recurringTransaction.dayOfMonth && " (day " + recurringTransaction.dayOfMonth + ")"}
+                {/* Main information section */}
+                <div className="space-y-4">
+                    {/* Basic info */}
+                    <InfoRow label="Transaction ID" value={recurringTransaction.id} monospace />
+                    <InfoRow label="Date" value={formatDate(recurringTransaction.startDate)} />
+                    <InfoRow
+                        label="Status"
+                        value={
+                            <Badge
+                                className={cn(
+                                    "uppercase font-normal text-xs px-1.5 py-0",
+                                    recurringTransaction.status?.toLowerCase() === "active" ? "bg-green-100 text-green-800" :
+                                        recurringTransaction.status?.toLowerCase() === "paused" ? "bg-amber-100 text-amber-800" :
+                                            "bg-blue-100 text-blue-800"
+                                )}
+                            >
+                                {formatStatus(recurringTransaction.status)}
+                            </Badge>
+                        }
+                    />
+                    <InfoRow
+                        label="Type"
+                        value={recurringTransaction.transactionType ? recurringTransaction.transactionType.toUpperCase() : "UNKNOWN"}
+                    />
+                    <InfoRow label="Merchant" value={recurringTransaction.merchantName} />
+                    <InfoRow label="Name" value={recurringTransaction.title} />
+                    <InfoRow
+                        label="Category"
+                        value={
+                            <Badge className="uppercase font-normal text-xs px-1.5 py-0 bg-gray-100 text-gray-800">
+                                {recurringTransaction.transactionType || "INCOME"}
+                            </Badge>
+                        }
+                    />
+                    <InfoRow
+                        label="Amount"
+                        value={
+                            <span className={cn(
+                                "font-medium",
+                                Number(recurringTransaction.amount) < 0 ? "text-red-600" : "text-green-600"
+                            )}>
+                                {formatCurrency(recurringTransaction.amount, recurringTransaction.currency)}
                             </span>
-                        </div>
-                    </div>
-
-                    <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">Next Execution</p>
-                        <p className="font-medium">{formatDate(recurringTransaction.nextScheduledDate)}</p>
-                    </div>
-
-                    <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">Merchant</p>
-                        <p>{recurringTransaction.merchantName || "-"}</p>
-                    </div>
-
-                    <div className="space-y-1">
-                        <p className="text-sm text-muted-foreground">Importance</p>
-                        <Badge variant="outline" className={cn(
-                            "capitalize",
-                            recurringTransaction.importanceLevel === "critical" ? "bg-red-50 border-red-200 text-red-700" :
-                                recurringTransaction.importanceLevel === "high" ? "bg-amber-50 border-amber-200 text-amber-700" :
-                                    recurringTransaction.importanceLevel === "medium" ? "bg-blue-50 border-blue-200 text-blue-700" :
-                                        "bg-green-50 border-green-200 text-green-700"
-                        )}>
-                            {recurringTransaction.importanceLevel || "Low"}
-                        </Badge>
-                    </div>
+                        }
+                    />
+                    <InfoRow label="Account" value={recurringTransaction.bankAccountId || "Primary Checking"} />
                 </div>
 
-                <Separator />
+                <Separator className="my-4" />
 
-                {/* Schedule Details Section */}
+                {/* Collapsible Sections */}
                 <CollapsibleSection
-                    title="Schedule Details"
-                    icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
-                    defaultOpen={true}
+                    title="Description & Notes"
+                    icon={<FileText className="h-4 w-4 text-muted-foreground" />}
                 >
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">Start Date</p>
-                                <p className="text-sm">{formatDate(recurringTransaction.startDate)}</p>
-                            </div>
-
-                            <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">End Date</p>
-                                <p className="text-sm">{formatDate(recurringTransaction.endDate) || "No end date"}</p>
-                            </div>
-
-                            {recurringTransaction.frequency === "MONTHLY" && recurringTransaction.dayOfMonth && (
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">Day of Month</p>
-                                    <p className="text-sm">{recurringTransaction.dayOfMonth}</p>
-                                </div>
-                            )}
-
-                            {recurringTransaction.frequency === "WEEKLY" && recurringTransaction.dayOfWeek !== undefined && recurringTransaction.dayOfWeek !== null && (
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">Day of Week</p>
-                                    <p className="text-sm">
-                                        {["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][recurringTransaction.dayOfWeek]}
-                                    </p>
-                                </div>
-                            )}
-
-                            {recurringTransaction.isVariable && (
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">Variable Amount</p>
-                                    <Badge variant="outline" className="bg-blue-50 border-blue-200 text-blue-700">
-                                        Variable
-                                    </Badge>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="pt-2">
-                            <p className="text-xs font-medium mb-2">Upcoming Executions</p>
-                            <div className="space-y-2">
-                                {nextDates.map((date, index) => (
-                                    <div key={index} className="flex items-center justify-between bg-background rounded-md p-2 text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <CalendarDays className="h-4 w-4 text-muted-foreground" />
-                                            <span>{formatDate(date)}</span>
-                                        </div>
-                                        <span className="text-xs text-muted-foreground">
-                                            {formatCurrency(recurringTransaction.amount, recurringTransaction.currency)}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                    <div className="text-sm text-muted-foreground pl-6">
+                        {recurringTransaction.description || "No description available."}
                     </div>
                 </CollapsibleSection>
 
-                {/* Execution History Section */}
                 <CollapsibleSection
-                    title="Execution History"
+                    title="Categorization Details"
+                    icon={<Tag className="h-4 w-4 text-muted-foreground" />}
+                >
+                    <div className="pl-6 space-y-4">
+                        <InfoRow
+                            label="Category"
+                            value={recurringTransaction.transactionType || "Income"}
+                            size="sm"
+                        />
+                        <InfoRow
+                            label="Importance"
+                            value={recurringTransaction.importanceLevel || "Low"}
+                            size="sm"
+                        />
+                        <InfoRow
+                            label="Type"
+                            value={recurringTransaction.transactionType || "Income"}
+                            size="sm"
+                        />
+                    </div>
+                </CollapsibleSection>
+
+                <CollapsibleSection
+                    title="Processing Time"
                     icon={<Clock className="h-4 w-4 text-muted-foreground" />}
                     defaultOpen={true}
                 >
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">Last Execution</p>
-                                <p className="text-sm">{formatDateTime(recurringTransaction.lastExecutedAt)}</p>
-                            </div>
-
-                            <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">Execution Count</p>
-                                <p className="text-sm">{recurringTransaction.executionCount || 0}</p>
-                            </div>
-
-                            <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">Total Executed</p>
-                                <p className="text-sm">{formatCurrency(recurringTransaction.totalExecuted, recurringTransaction.currency)}</p>
-                            </div>
-
-                            <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">Last Status</p>
-                                <Badge variant="outline" className="capitalize bg-green-50 border-green-200 text-green-700">
-                                    {recurringTransaction.lastExecutionStatus || "Success"}
-                                </Badge>
-                            </div>
+                    <div className="pl-6 space-y-3">
+                        <div className="flex justify-between items-center text-xs mb-1">
+                            <span>P50</span>
+                            <span>1000ms</span>
                         </div>
 
-                        <div className="pt-2">
-                            <p className="text-xs font-medium mb-2">Related Transactions</p>
-                            {sampleRelatedTransactions.length > 0 ? (
-                                <div className="space-y-2">
-                                    {sampleRelatedTransactions.map((tx) => (
-                                        <div key={tx.id} className="flex items-center justify-between bg-background rounded-md p-2 text-sm">
-                                            <div className="flex flex-col">
-                                                <span>{tx.name}</span>
-                                                <span className="text-xs text-muted-foreground">{formatDate(tx.date)}</span>
-                                            </div>
-                                            <div className={cn(
-                                                "tabular-nums text-right",
-                                                Number(tx.amount) < 0 ? "text-red-500" : "text-green-500"
-                                            )}>
-                                                {formatCurrency(tx.amount, tx.currency)}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="flex flex-col items-center justify-center py-4 text-center">
-                                    <div className="rounded-full bg-muted p-2">
-                                        <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
-                                    </div>
-                                    <h3 className="mt-2 text-xs font-medium">No transaction history</h3>
-                                    <p className="mt-1 text-[10px] text-muted-foreground max-w-sm">
-                                        No past transactions found for this recurring transaction.
-                                    </p>
-                                </div>
-                            )}
-                        </div>
+                        <ProcessingStep
+                            label="PROCESSING"
+                            percentage={12.2}
+                            time="122ms"
+                            color="bg-green-500"
+                        />
+
+                        <ProcessingStep
+                            label="VERIFICATION"
+                            percentage={29.3}
+                            time="293ms"
+                            color="bg-blue-500"
+                        />
+
+                        <ProcessingStep
+                            label="AUTHORIZATION"
+                            percentage={9.7}
+                            time="97ms"
+                            color="bg-blue-500"
+                        />
+
+                        <ProcessingStep
+                            label="SETTLEMENT"
+                            percentage={48.4}
+                            time="484ms"
+                            color="bg-orange-500"
+                        />
+
+                        <ProcessingStep
+                            label="FINALIZATION"
+                            percentage={0.4}
+                            time="4ms"
+                            color="bg-purple-500"
+                        />
                     </div>
                 </CollapsibleSection>
 
-                {/* Additional Details Section */}
                 <CollapsibleSection
-                    title="Additional Details"
-                    icon={<Layers className="h-4 w-4 text-muted-foreground" />}
+                    title="Transaction Properties"
+                    icon={<Info className="h-4 w-4 text-muted-foreground" />}
                 >
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                            <p className="text-xs text-muted-foreground">Bank Account</p>
-                            <p className="text-sm font-mono">{recurringTransaction.bankAccountId}</p>
-                        </div>
-
-                        {recurringTransaction.minBalanceRequired !== undefined && (
-                            <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">Minimum Balance Required</p>
-                                <p className="text-sm">{formatCurrency(recurringTransaction.minBalanceRequired, recurringTransaction.currency)}</p>
-                            </div>
-                        )}
-
-                        <div className="space-y-1">
-                            <p className="text-xs text-muted-foreground">Automated</p>
-                            <PropertyItem
-                                label="Auto-create transactions"
-                                value={recurringTransaction.isAutomated}
+                    <div className="pl-6 space-y-4">
+                        <InfoRow
+                            label="Frequency"
+                            value={formatFrequency(recurringTransaction.frequency, recurringTransaction.interval)}
+                            size="sm"
+                        />
+                        {recurringTransaction.frequency === "MONTHLY" && recurringTransaction.dayOfMonth && (
+                            <InfoRow
+                                label="Day of Month"
+                                value={String(recurringTransaction.dayOfMonth)}
+                                size="sm"
                             />
-                        </div>
-
-                        <div className="space-y-1">
-                            <p className="text-xs text-muted-foreground">Affect Balance</p>
-                            <PropertyItem
-                                label="Included in balance calculations"
-                                value={recurringTransaction.affectAvailableBalance}
-                            />
-                        </div>
-
-                        {recurringTransaction.requiresApproval !== undefined && (
-                            <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">Approval Required</p>
-                                <PropertyItem
-                                    label="Requires manual approval"
-                                    value={recurringTransaction.requiresApproval}
-                                />
-                            </div>
                         )}
+                        <InfoRow
+                            label="Next Execution"
+                            value={formatDate(recurringTransaction.nextScheduledDate)}
+                            size="sm"
+                        />
+                        <InfoRow
+                            label="Last Execution"
+                            value={formatDateTime(recurringTransaction.lastExecutedAt)}
+                            size="sm"
+                        />
+                        <InfoRow
+                            label="Is Automated"
+                            value={recurringTransaction.isAutomated ? "Yes" : "No"}
+                            size="sm"
+                        />
+                        <InfoRow
+                            label="Affects Balance"
+                            value={recurringTransaction.affectAvailableBalance ? "Yes" : "No"}
+                            size="sm"
+                        />
+                        <InfoRow
+                            label="Variable Amount"
+                            value={recurringTransaction.isVariable ? "Yes" : "No"}
+                            size="sm"
+                        />
+                    </div>
+                </CollapsibleSection>
 
-                        {recurringTransaction.allowedVariance !== undefined && (
-                            <div className="space-y-1">
-                                <p className="text-xs text-muted-foreground">Allowed Variance</p>
-                                <p className="text-sm">{recurringTransaction.allowedVariance}%</p>
+                <CollapsibleSection
+                    title="Related Transactions"
+                    icon={<CreditCard className="h-4 w-4 text-muted-foreground" />}
+                >
+                    <div className="pl-6">
+                        {sampleRelatedTransactions.length > 0 ? (
+                            <div className="space-y-3">
+                                {sampleRelatedTransactions.map((tx) => (
+                                    <div key={tx.id} className="flex justify-between border-b pb-2">
+                                        <div>
+                                            <div className="text-sm">{tx.name}</div>
+                                            <div className="text-xs text-muted-foreground">{formatDate(tx.date)}</div>
+                                        </div>
+                                        <div className={cn(
+                                            "text-sm font-medium",
+                                            Number(tx.amount) < 0 ? "text-red-600" : "text-green-600"
+                                        )}>
+                                            {formatCurrency(tx.amount, tx.currency)}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-sm text-muted-foreground">
+                                No related transactions found.
                             </div>
                         )}
                     </div>
                 </CollapsibleSection>
 
-                {/* Action Buttons */}
-                <div className="flex justify-end gap-2 mt-2">
-                    {recurringTransaction.status === "active" ? (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-1"
-                        >
-                            <Pause className="h-3.5 w-3.5" />
-                            <span>Pause</span>
+                {/* Footer info section */}
+                <div className="flex items-center justify-between mt-8 text-xs text-muted-foreground">
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-2 w-full">
+                        <div>
+                            <p className="font-medium">Age</p>
+                            <p>{recurringTransaction.executionCount || 0}</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Frequency</p>
+                            <p>Recurring</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Entry Method</p>
+                            <p>Auto-import</p>
+                        </div>
+                        <div>
+                            <p className="font-medium">Creation Date</p>
+                            <p>{formatDate(recurringTransaction.createdAt) || "-"}</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="h-8">
+                            <Edit className="h-4 w-4 mr-1" />
+                            Edit
                         </Button>
-                    ) : recurringTransaction.status === "paused" ? (
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-1"
-                        >
-                            <Play className="h-3.5 w-3.5" />
-                            <span>Resume</span>
+                        <Button variant="outline" size="sm" className="h-8">
+                            <Download className="h-4 w-4 mr-1" />
+                            Export
                         </Button>
-                    ) : null}
-
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="flex items-center gap-1"
-                                >
-                                    <Settings className="h-3.5 w-3.5" />
-                                    <span>Manage</span>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p className="text-xs">Edit recurring transaction settings</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="flex items-center gap-1"
-                                >
-                                    <Edit className="h-3.5 w-3.5" />
-                                    <span>Edit</span>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p className="text-xs">Edit recurring transaction details</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="flex items-center gap-1"
-                                >
-                                    <Info className="h-3.5 w-3.5" />
-                                    <span>Forecast</span>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p className="text-xs">View future financial impact</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    </div>
                 </div>
             </div>
         </ScrollArea>
     );
 }
 
-// Small component to show properties with checkmarks
-function PropertyItem({
+// Helper component for key-value pairs of information
+function InfoRow({
     label,
-    value
+    value,
+    monospace = false,
+    size = "base"
 }: {
     label: string;
-    value?: boolean;
+    value: React.ReactNode;
+    monospace?: boolean;
+    size?: "sm" | "base";
 }) {
     return (
-        <div className="flex items-center gap-2 p-1.5 rounded-md bg-background">
-            <div className={cn(
-                "flex h-4 w-4 items-center justify-center rounded-full",
-                value ? "bg-green-100" : "bg-muted"
+        <div className="flex justify-between items-center">
+            <span className={cn("text-muted-foreground", size === "sm" ? "text-xs" : "text-sm")}>
+                {label}
+            </span>
+            <span className={cn(
+                size === "sm" ? "text-xs" : "text-sm",
+                monospace && "font-mono text-xs"
             )}>
-                {value ?
-                    <Check className="h-2.5 w-2.5 text-green-600" /> :
-                    <X className="h-2.5 w-2.5 text-muted-foreground" />
-                }
+                {value || "-"}
+            </span>
+        </div>
+    );
+}
+
+// Helper component for processing step visualization
+function ProcessingStep({
+    label,
+    percentage,
+    time,
+    color
+}: {
+    label: string;
+    percentage: number;
+    time: string;
+    color: string;
+}) {
+    return (
+        <div className="space-y-1">
+            <div className="flex justify-between items-center text-xs">
+                <span>{label}</span>
+                <span className="text-right">{percentage.toFixed(1)}%</span>
+                <span className="text-right w-10">{time}</span>
             </div>
-            <span className="text-xs">{label}</span>
+            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                    className={cn("h-full", color)}
+                    style={{ width: `${percentage}%` }}
+                ></div>
+            </div>
         </div>
     );
 } 

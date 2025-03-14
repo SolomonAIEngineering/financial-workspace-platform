@@ -111,7 +111,7 @@ export function DataTableSheetDetails({
     >
       <SheetContent
         // onCloseAutoFocus={(e) => e.preventDefault()}
-        className="overflow-y-auto p-0 sm:max-w-md"
+        className="overflow-y-auto p-0 sm:max-w-md md:min-w-[40%]"
         hideClose
       >
         <SheetHeader className="sticky top-0 z-10 border-b bg-background p-4">
