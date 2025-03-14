@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import { BarChart2Icon, DiamondPercentIcon } from 'lucide-react';
 // Import Hero Icons
 import {
   CalendarIcon,
@@ -22,9 +23,9 @@ import {
 } from '@heroicons/react/24/outline';
 import React, { useState } from 'react';
 
-import { BarChart2Icon } from 'lucide-react';
 import { Icons } from '../ui/icons';
 import Link from 'next/link';
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
 import { cn } from '@udecode/cn';
 import { usePathname } from 'next/navigation';
@@ -64,12 +65,12 @@ const MiniSidebarItem = ({
           animate={
             active
               ? {
-                  boxShadow: [
-                    '0 0 0 rgba(var(--primary) / 0.2)',
-                    '0 0 12px rgba(var(--primary) / 0.3)',
-                    '0 0 0 rgba(var(--primary) / 0.2)',
-                  ],
-                }
+                boxShadow: [
+                  '0 0 0 rgba(var(--primary) / 0.2)',
+                  '0 0 12px rgba(var(--primary) / 0.3)',
+                  '0 0 0 rgba(var(--primary) / 0.2)',
+                ],
+              }
               : {}
           }
           transition={{
@@ -196,53 +197,67 @@ export function MiniSidebar() {
 
   const sidebarItems = useDemoItems
     ? demoItems.map((item) => ({
-        ...item,
-        isActive: pathname.includes(item.href),
-      }))
+      ...item,
+      isActive: pathname.includes(item.href),
+    }))
     : [
-        {
-          category: 'main',
-          href: '/dashboard',
-          icon: HomeIcon,
-          isActive: pathname.includes('/dashboard'),
-          tooltip: 'Workspace',
-        },
-        {
-          category: 'documents',
-          href: '/financial-overview',
-          icon: ChartBarSquareIcon,
-          isActive: pathname.includes('/financial-overview'),
-          tooltip: 'Financial Overview',
-        },
-        {
-          category: 'documents',
-          href: '/financial-analytics',
-          icon: CubeIcon,
-          isActive: pathname.includes('/financial-analytics'),
-          tooltip: 'Financial Analytics',
-        },
-        {
-          category: 'documents',
-          href: '/transactions',
-          icon: TableCellsIcon,
-          isActive: pathname.includes('/transactions'),
-          tooltip: 'Transactions',
-        },
-        {
-          category: 'documents',
-          href: '/invoices',
-          icon: CurrencyDollarIcon,
-          isActive: pathname.includes('/invoices'),
-          tooltip: 'invoices',
-        },
-        {
-          category: 'documents',
-          href: '/customers',
-          icon: UserGroupIcon,
-          isActive: pathname.includes('/customers'),
-          tooltip: 'customers',
-        },
-      ];
+      {
+        category: 'main',
+        href: '/dashboard',
+        icon: HomeIcon,
+        isActive: pathname.includes('/dashboard'),
+        tooltip: 'Workspace',
+      },
+      {
+        category: 'documents',
+        href: '/financial-overview',
+        icon: ChartBarSquareIcon,
+        isActive: pathname.includes('/financial-overview'),
+        tooltip: 'Financial Overview',
+      },
+      {
+        category: 'documents',
+        href: '/financial-analytics',
+        icon: CubeIcon,
+        isActive: pathname.includes('/financial-analytics'),
+        tooltip: 'Financial Analytics',
+      },
+      {
+        category: 'documents',
+        href: '/transactions',
+        icon: TableCellsIcon,
+        isActive: pathname.includes('/transactions'),
+        tooltip: 'Transactions',
+      },
+      {
+        category: 'documents',
+        href: '/regular-transactions',
+        icon: DiamondPercentIcon,
+        isActive: pathname.includes('/regular-transactions'),
+        tooltip: 'Regular Transactions',
+      },
+      {
+        category: 'documents',
+        href: '/recurring-transactions',
+        icon: ReloadIcon,
+        isActive: pathname.includes('/recurring-transactions'),
+        tooltip: 'Recurring Transactions',
+      },
+      {
+        category: 'documents',
+        href: '/invoices',
+        icon: CurrencyDollarIcon,
+        isActive: pathname.includes('/invoices'),
+        tooltip: 'invoices',
+      },
+      {
+        category: 'documents',
+        href: '/customers',
+        icon: UserGroupIcon,
+        isActive: pathname.includes('/customers'),
+        tooltip: 'customers',
+      },
+    ];
 
   const container = {
     hidden: { opacity: 0 },
@@ -270,24 +285,23 @@ export function MiniSidebar() {
   };
 
   // Group sidebar items by category
-  const groupedItems = sidebarItems.reduce(
-    (acc, item) => {
-      const category = item.category || 'other';
+  const groupedItems: Record<string, Array<typeof sidebarItems[number]>> = {};
 
-      if (!acc[category]) {
-        acc[category] = [];
-      }
+  // Populate the grouped items
+  for (const item of sidebarItems) {
+    const category = item.category || 'other';
 
-      acc[category].push(item);
+    if (!groupedItems[category]) {
+      groupedItems[category] = [];
+    }
 
-      return acc;
-    },
-    {} as Record<string, typeof sidebarItems>
-  );
+    groupedItems[category].push(item);
+  }
 
   // Categories in desired order
   const orderedCategories = [
     'main',
+    'transactions',
     'documents',
     'communication',
     'tools',
@@ -364,7 +378,7 @@ export function MiniSidebar() {
                   <motion.div key={sidebarItem.href} variants={itemVariants}>
                     <MiniSidebarItem
                       active={sidebarItem.isActive}
-                      badge={sidebarItem.badge}
+                      badge={(sidebarItem as any).badge}
                       href={sidebarItem.href}
                       icon={sidebarItem.icon}
                       tooltip={sidebarItem.tooltip}

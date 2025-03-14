@@ -156,7 +156,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
         filter={(value, search, keywords) =>
           getFilterValue({ value, search, keywords, currentWord })
         }
-      // loop
+        // loop
       >
         <CommandInput
           ref={inputRef}

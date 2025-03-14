@@ -98,12 +98,17 @@ export function DataTableFilterCheckbox<TData>({
                     );
                   }}
                 />
-                <div className="w-full cursor-pointer" onClick={() => {
-                  const element = document.getElementById(`${value}-${option.value}`);
-                  if (element instanceof HTMLInputElement) {
-                    element.click();
-                  }
-                }}>
+                <div
+                  className="w-full cursor-pointer"
+                  onClick={() => {
+                    const element = document.getElementById(
+                      `${value}-${option.value}`
+                    );
+                    if (element instanceof HTMLInputElement) {
+                      element.click();
+                    }
+                  }}
+                >
                   <Label
                     htmlFor={`${value}-${option.value}`}
                     className="flex w-full items-center justify-center gap-1 truncate text-foreground/70 group-hover:text-accent-foreground"
@@ -111,7 +116,9 @@ export function DataTableFilterCheckbox<TData>({
                     {Component ? (
                       <Component {...option} />
                     ) : (
-                      <span className="truncate font-normal">{option.label}</span>
+                      <span className="truncate font-normal">
+                        {option.label}
+                      </span>
                     )}
                     <span className="ml-auto flex items-center justify-center font-mono text-xs">
                       {isLoading ? (

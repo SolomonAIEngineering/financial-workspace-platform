@@ -1,12 +1,12 @@
-import { LEVELS } from "@/constants/levels";
-import { METHODS } from "@/constants/method";
-import { REGIONS } from "@/constants/region";
+import { LEVELS } from '@/constants/levels';
+import { METHODS } from '@/constants/method';
+import { REGIONS } from '@/constants/region';
 import {
   ARRAY_DELIMITER,
   RANGE_DELIMITER,
   SLIDER_DELIMITER,
-} from "@/lib/delimiters";
-import { z } from "zod";
+} from '@/lib/delimiters';
+import { z } from 'zod';
 
 // https://github.com/colinhacks/zod/issues/2985#issue-2008642190
 const stringToBoolean = z
@@ -23,11 +23,11 @@ const stringToBoolean = z
   .pipe(z.boolean().optional());
 
 export const timingSchema = z.object({
-  "timing.dns": z.number(),
-  "timing.connection": z.number(),
-  "timing.tls": z.number(),
-  "timing.ttfb": z.number(),
-  "timing.transfer": z.number(),
+  'timing.dns': z.number(),
+  'timing.connection': z.number(),
+  'timing.tls': z.number(),
+  'timing.ttfb': z.number(),
+  'timing.transfer': z.number(),
 });
 
 export const columnSchema = z
@@ -69,27 +69,27 @@ export const columnFilterSchema = z.object({
     .transform((val) => val.split(SLIDER_DELIMITER))
     .pipe(z.coerce.number().array().max(2))
     .optional(),
-  "timing.dns": z
+  'timing.dns': z
     .string()
     .transform((val) => val.split(SLIDER_DELIMITER))
     .pipe(z.coerce.number().array().max(2))
     .optional(),
-  "timing.connection": z
+  'timing.connection': z
     .string()
     .transform((val) => val.split(SLIDER_DELIMITER))
     .pipe(z.coerce.number().array().max(2))
     .optional(),
-  "timing.tls": z
+  'timing.tls': z
     .string()
     .transform((val) => val.split(SLIDER_DELIMITER))
     .pipe(z.coerce.number().array().max(2))
     .optional(),
-  "timing.ttfb": z
+  'timing.ttfb': z
     .string()
     .transform((val) => val.split(SLIDER_DELIMITER))
     .pipe(z.coerce.number().array().max(2))
     .optional(),
-  "timing.transfer": z
+  'timing.transfer': z
     .string()
     .transform((val) => val.split(SLIDER_DELIMITER))
     .pipe(z.coerce.number().array().max(2))
@@ -122,7 +122,7 @@ export const facetMetadataSchema = z.object({
 
 export type FacetMetadataSchema = z.infer<typeof facetMetadataSchema>;
 
-export type BaseChartSchema = { timestamp: number;[key: string]: number };
+export type BaseChartSchema = { timestamp: number; [key: string]: number };
 
 export const timelineChartSchema = z.object({
   timestamp: z.number(), // UNIX
@@ -131,7 +131,7 @@ export const timelineChartSchema = z.object({
       ...acc,
       [level]: z.number().default(0),
     }),
-    {} as Record<(typeof LEVELS)[number], z.ZodNumber>,
+    {} as Record<(typeof LEVELS)[number], z.ZodNumber>
   ),
   // REMINDER: make sure to have the `timestamp` field in the object
 }) satisfies z.ZodType<BaseChartSchema>;

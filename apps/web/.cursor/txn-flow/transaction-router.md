@@ -17,16 +17,16 @@ The transaction router handles all operations related to individual and batch tr
 
 #### Core Transaction Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/transactions` | GET | Retrieve transactions with filtering, sorting, and pagination |
-| `/api/transactions/:id` | GET | Get a specific transaction by ID |
-| `/api/transactions` | POST | Create a new transaction |
-| `/api/transactions/:id` | PUT | Update an existing transaction |
-| `/api/transactions/:id` | DELETE | Delete a transaction |
-| `/api/transactions/batch` | POST | Create multiple transactions in a single request |
-| `/api/transactions/batch` | PUT | Update multiple transactions in a single request |
-| `/api/transactions/batch` | DELETE | Delete multiple transactions in a single request |
+| Endpoint                  | Method | Description                                                   |
+| ------------------------- | ------ | ------------------------------------------------------------- |
+| `/api/transactions`       | GET    | Retrieve transactions with filtering, sorting, and pagination |
+| `/api/transactions/:id`   | GET    | Get a specific transaction by ID                              |
+| `/api/transactions`       | POST   | Create a new transaction                                      |
+| `/api/transactions/:id`   | PUT    | Update an existing transaction                                |
+| `/api/transactions/:id`   | DELETE | Delete a transaction                                          |
+| `/api/transactions/batch` | POST   | Create multiple transactions in a single request              |
+| `/api/transactions/batch` | PUT    | Update multiple transactions in a single request              |
+| `/api/transactions/batch` | DELETE | Delete multiple transactions in a single request              |
 
 #### Transaction Filtering and Searching
 
@@ -48,20 +48,20 @@ GET /api/transactions?
 
 #### Transaction Enhancement Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/transactions/:id/tags` | POST | Associate tags with a transaction |
-| `/api/transactions/:id/tags/:tagId` | DELETE | Remove a tag from a transaction |
-| `/api/transactions/:id/category` | PUT | Update the category of a transaction |
-| `/api/transactions/:id/merchant` | PUT | Update the merchant details of a transaction |
-| `/api/transactions/:id/status` | PUT | Update the status of a transaction |
-| `/api/transactions/:id/payment-method` | PUT | Update the payment method of a transaction |
-| `/api/transactions/:id/assign` | PUT | Assign a transaction to a specific user |
-| `/api/transactions/:id/notes` | PUT | Add or update notes for a transaction |
-| `/api/transactions/:id/attachments` | POST | Add attachments to a transaction |
-| `/api/transactions/:id/complete` | PUT | Mark a transaction as completed |
-| `/api/transactions/categorize-by-merchant` | POST | Bulk categorize transactions by merchant name |
-| `/api/transactions/manual-categorization` | POST | Manually categorize multiple transactions in one request |
+| Endpoint                                   | Method | Description                                              |
+| ------------------------------------------ | ------ | -------------------------------------------------------- |
+| `/api/transactions/:id/tags`               | POST   | Associate tags with a transaction                        |
+| `/api/transactions/:id/tags/:tagId`        | DELETE | Remove a tag from a transaction                          |
+| `/api/transactions/:id/category`           | PUT    | Update the category of a transaction                     |
+| `/api/transactions/:id/merchant`           | PUT    | Update the merchant details of a transaction             |
+| `/api/transactions/:id/status`             | PUT    | Update the status of a transaction                       |
+| `/api/transactions/:id/payment-method`     | PUT    | Update the payment method of a transaction               |
+| `/api/transactions/:id/assign`             | PUT    | Assign a transaction to a specific user                  |
+| `/api/transactions/:id/notes`              | PUT    | Add or update notes for a transaction                    |
+| `/api/transactions/:id/attachments`        | POST   | Add attachments to a transaction                         |
+| `/api/transactions/:id/complete`           | PUT    | Mark a transaction as completed                          |
+| `/api/transactions/categorize-by-merchant` | POST   | Bulk categorize transactions by merchant name            |
+| `/api/transactions/manual-categorization`  | POST   | Manually categorize multiple transactions in one request |
 
 ### 2. Recurring Transaction Router (`/api/recurring-transactions`)
 
@@ -69,25 +69,25 @@ The recurring transaction router manages scheduled and repeating transactions.
 
 #### Core Recurring Transaction Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/recurring-transactions` | GET | List all recurring transactions with filtering options |
-| `/api/recurring-transactions/:id` | GET | Get a specific recurring transaction |
-| `/api/recurring-transactions` | POST | Create a new recurring transaction |
-| `/api/recurring-transactions/:id` | PUT | Update a recurring transaction |
-| `/api/recurring-transactions/:id` | DELETE | Delete a recurring transaction |
-| `/api/recurring-transactions/:id/transactions` | GET | Get all transactions associated with a recurring transaction |
+| Endpoint                                       | Method | Description                                                  |
+| ---------------------------------------------- | ------ | ------------------------------------------------------------ |
+| `/api/recurring-transactions`                  | GET    | List all recurring transactions with filtering options       |
+| `/api/recurring-transactions/:id`              | GET    | Get a specific recurring transaction                         |
+| `/api/recurring-transactions`                  | POST   | Create a new recurring transaction                           |
+| `/api/recurring-transactions/:id`              | PUT    | Update a recurring transaction                               |
+| `/api/recurring-transactions/:id`              | DELETE | Delete a recurring transaction                               |
+| `/api/recurring-transactions/:id/transactions` | GET    | Get all transactions associated with a recurring transaction |
 
 #### Recurring Transaction Management Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/recurring-transactions/:id/tags` | POST | Associate tags with a recurring transaction |
-| `/api/recurring-transactions/:id/notes` | PUT | Add or update notes for a recurring transaction |
-| `/api/recurring-transactions/:id/category` | PUT | Update the category of a recurring transaction |
-| `/api/recurring-transactions/:id/merchant` | PUT | Update the merchant details of a recurring transaction |
-| `/api/recurring-transactions/:id/assign` | PUT | Assign a recurring transaction to a specific user |
-| `/api/recurring-transactions/detect` | POST | Auto-detect recurring transactions from existing transactions |
+| Endpoint                                   | Method | Description                                                   |
+| ------------------------------------------ | ------ | ------------------------------------------------------------- |
+| `/api/recurring-transactions/:id/tags`     | POST   | Associate tags with a recurring transaction                   |
+| `/api/recurring-transactions/:id/notes`    | PUT    | Add or update notes for a recurring transaction               |
+| `/api/recurring-transactions/:id/category` | PUT    | Update the category of a recurring transaction                |
+| `/api/recurring-transactions/:id/merchant` | PUT    | Update the merchant details of a recurring transaction        |
+| `/api/recurring-transactions/:id/assign`   | PUT    | Assign a recurring transaction to a specific user             |
+| `/api/recurring-transactions/detect`       | POST   | Auto-detect recurring transactions from existing transactions |
 
 ## Request/Response Examples
 

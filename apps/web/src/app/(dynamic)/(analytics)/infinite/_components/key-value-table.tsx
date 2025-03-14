@@ -1,12 +1,12 @@
-import { Check, Copy } from "lucide-react";
+import { Check, Copy } from 'lucide-react';
 import {
   Table,
   TableBody,
   TableCell,
   TableRow,
-} from "@/registry/default/potion-ui/table";
+} from '@/registry/default/potion-ui/table';
 
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 
 interface KeyValueTableProps {
   data: Record<string, string>;
@@ -43,7 +43,7 @@ function RowAction({ label, value }: { label: string; value: string }) {
       </TableCell>
       <TableCell className="relative py-1 font-mono">
         {value}
-        <div className="invisible absolute right-1.5 top-1.5 rounded-sm border border-border bg-background p-0.5 backdrop-blur-sm group-hover:visible">
+        <div className="invisible absolute top-1.5 right-1.5 rounded-sm border border-border bg-background p-0.5 backdrop-blur-sm group-hover:visible">
           {!isCopied ? (
             <Copy className="h-3 w-3" />
           ) : (

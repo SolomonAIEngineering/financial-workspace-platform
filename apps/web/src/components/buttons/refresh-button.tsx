@@ -1,7 +1,7 @@
-import { LoaderCircle, RefreshCcw } from "lucide-react";
+import { LoaderCircle, RefreshCcw } from 'lucide-react';
 
-import { Button } from "@/registry/default/potion-ui/button";
-import { useDataTable } from "@/components/data-table/data-table-provider";
+import { Button } from '@/registry/default/potion-ui/button';
+import { useDataTable } from '@/components/data-table/data-table-provider';
 
 interface RefreshButtonProps {
   onClick: () => void;

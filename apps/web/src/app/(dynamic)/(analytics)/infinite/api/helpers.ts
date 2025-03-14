@@ -1,45 +1,45 @@
-import { LEVELS } from "@/constants/levels";
-import { REGIONS } from "@/constants/region";
-import { isArrayOfDates, isArrayOfNumbers } from "@/lib/is-array";
+import { LEVELS } from '@/constants/levels';
+import { REGIONS } from '@/constants/region';
+import { isArrayOfDates, isArrayOfNumbers } from '@/lib/is-array';
 import {
   calculatePercentile,
   calculateSpecificPercentile,
-} from "@/lib/request/percentile";
+} from '@/lib/request/percentile';
 import {
   addDays,
   addMilliseconds,
   differenceInMinutes,
   isSameDay,
-} from "date-fns";
+} from 'date-fns';
 import type {
   ColumnSchema,
   FacetMetadataSchema,
   TimelineChartSchema,
-} from "../schema";
-import type { SearchParamsType } from "../search-params";
+} from '../schema';
+import type { SearchParamsType } from '../search-params';
 
 export const sliderFilterValues = [
-  "latency",
-  "timing.dns",
-  "timing.connection",
-  "timing.tls",
-  "timing.ttfb",
-  "timing.transfer",
+  'latency',
+  'timing.dns',
+  'timing.connection',
+  'timing.tls',
+  'timing.ttfb',
+  'timing.transfer',
 ] as const satisfies (keyof ColumnSchema)[];
 
 export const filterValues = [
-  "level",
+  'level',
   ...sliderFilterValues,
-  "status",
-  "regions",
-  "method",
-  "host",
-  "pathname",
+  'status',
+  'regions',
+  'method',
+  'host',
+  'pathname',
 ] as const satisfies (keyof ColumnSchema)[];
 
 export function filterData(
   data: ColumnSchema[],
-  search: Partial<SearchParamsType>,
+  search: Partial<SearchParamsType>
 ): ColumnSchema[] {
   const { start, size, sort, ...filters } = search;
   return data.filter((row) => {
@@ -47,12 +47,12 @@ export function filterData(
       const filter = filters[key as keyof typeof filters];
       if (filter === undefined || filter === null) continue;
       if (
-        (key === "latency" ||
-          key === "timing.dns" ||
-          key === "timing.connection" ||
-          key === "timing.tls" ||
-          key === "timing.ttfb" ||
-          key === "timing.transfer") &&
+        (key === 'latency' ||
+          key === 'timing.dns' ||
+          key === 'timing.connection' ||
+          key === 'timing.tls' ||
+          key === 'timing.ttfb' ||
+          key === 'timing.transfer') &&
         isArrayOfNumbers(filter)
       ) {
         if (filter.length === 1 && row[key] !== filter[0]) {
@@ -65,18 +65,18 @@ export function filterData(
         }
         return true;
       }
-      if (key === "status" && isArrayOfNumbers(filter)) {
+      if (key === 'status' && isArrayOfNumbers(filter)) {
         if (!filter.includes(row[key])) {
           return false;
         }
       }
-      if (key === "regions" && Array.isArray(filter)) {
+      if (key === 'regions' && Array.isArray(filter)) {
         const typedFilter = filter as unknown as typeof REGIONS;
         if (!typedFilter.includes(row[key]?.[0])) {
           return false;
         }
       }
-      if (key === "date" && isArrayOfDates(filter)) {
+      if (key === 'date' && isArrayOfDates(filter)) {
         if (filter.length === 1 && !isSameDay(row[key], filter[0])) {
           return false;
         } else if (
@@ -87,7 +87,7 @@ export function filterData(
           return false;
         }
       }
-      if (key === "level" && Array.isArray(filter)) {
+      if (key === 'level' && Array.isArray(filter)) {
         const typedFilter = filter as unknown as (typeof LEVELS)[number][];
         if (!typedFilter.includes(row[key])) {
           return false;
@@ -98,7 +98,7 @@ export function filterData(
   });
 }
 
-export function sortData(data: ColumnSchema[], sort: SearchParamsType["sort"]) {
+export function sortData(data: ColumnSchema[], sort: SearchParamsType['sort']) {
   if (!sort) return data;
   return data.sort((a, b) => {
     if (sort.desc) {
@@ -125,7 +125,7 @@ export function splitData(data: ColumnSchema[], search: SearchParamsType) {
 
   // TODO: write a helper function for this
   data.forEach((item) => {
-    if (search.direction === "next") {
+    if (search.direction === 'next') {
       if (
         item.date.getTime() < search.cursor.getTime() &&
         newData.length < search.size
@@ -137,7 +137,7 @@ export function splitData(data: ColumnSchema[], search: SearchParamsType) {
       ) {
         newData.push(item);
       }
-    } else if (search.direction === "prev") {
+    } else if (search.direction === 'prev') {
       if (
         item.date.getTime() > search.cursor.getTime() &&
         // REMINDER: we need to make sure that we don't get items that are in the future which we do with mockLive data
@@ -174,7 +174,7 @@ export function getFacetsFromData(data: ColumnSchema[]) {
       let min: number | undefined;
       let max: number | undefined;
       const rows = Array.from(valueMap.entries()).map(([value, total]) => {
-        if (typeof value === "number") {
+        if (typeof value === 'number') {
           if (!min) min = value;
           else min = value < min ? value : min;
           if (!max) max = value;
@@ -187,7 +187,7 @@ export function getFacetsFromData(data: ColumnSchema[]) {
       });
       const total = Array.from(valueMap.values()).reduce((a, b) => a + b, 0);
       return [key, { rows, total, min, max }];
-    }),
+    })
   );
 
   return facets satisfies Record<string, FacetMetadataSchema>;
@@ -207,7 +207,7 @@ export function getPercentileFromData(data: ColumnSchema[]) {
 
 export function groupChartData(
   data: ColumnSchema[],
-  dates: Date[] | null,
+  dates: Date[] | null
 ): TimelineChartSchema[] {
   if (data?.length === 0 && !dates) return [];
 
@@ -221,7 +221,7 @@ export function groupChartData(
   const interval = evaluateInterval(between);
 
   const duration = Math.abs(
-    between[0].getTime() - between[between.length - 1].getTime(),
+    between[0].getTime() - between[between.length - 1].getTime()
   );
   const steps = Math.floor(duration / interval);
 
@@ -243,9 +243,9 @@ export function groupChartData(
 
     return {
       timestamp: timestamp.date.getTime(), // TODO: use date-fns and interval to determine the format
-      success: filteredData.filter((row) => row.level === "success").length,
-      warning: filteredData.filter((row) => row.level === "warning").length,
-      error: filteredData.filter((row) => row.level === "error").length,
+      success: filteredData.filter((row) => row.level === 'success').length,
+      warning: filteredData.filter((row) => row.level === 'warning').length,
+      error: filteredData.filter((row) => row.level === 'error').length,
     };
   });
 }

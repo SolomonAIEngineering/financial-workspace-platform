@@ -1,21 +1,7 @@
-// Export the trigger.dev client
-export { client } from './client';
-
-// Export all jobs
-export * from './tasks/bank/monitor-connections';
-export * from './tasks/bank/update-balances';
-export * from './tasks/transactions/analyze-spending';
-export * from './tasks/reconnect/send-reconnect-alerts';
-export * from './tasks/bank/transactions/upsert';
-export * from './tasks/bank/sync/account';
-export * from './tasks/bank/sync/connection';
-export * from './tasks/bank/setup/initial';
-export * from './tasks/bank/scheduler/disconnected-scheduler';
-export * from './tasks/bank/scheduler/expiring-scheduler';
-export * from './tasks/bank/notifications/transactions';
-export * from './tasks/bank/notifications/expiring';
-export * from './tasks/bank/connections/refresh-connection-job';
-export * from './tasks/bank/connections/connection-expiration-job';
+/**
+ * This file serves as a central export point for all Trigger.dev tasks It
+ * exports all jobs as a default export, which is required by Trigger.dev v3
+ */
 
 import {
   syncAllTransactionsJob,
@@ -37,7 +23,7 @@ import { transactionNotificationsJob } from './tasks/bank/notifications/transact
 import { updateBalancesJob } from './tasks/bank/update-balances';
 import { upsertTransactionsJob } from './tasks/bank/transactions/upsert';
 
-// Define the jobs to be registered
+// Define all jobs
 const jobs = [
   // Core transaction jobs
   syncAllTransactionsJob,
@@ -53,7 +39,7 @@ const jobs = [
   // Alert/notification jobs
   sendReconnectAlertsJob,
 
-  // New jobs
+  // Transaction jobs
   upsertTransactionsJob,
   syncAccountJob,
   syncConnectionJob,
@@ -68,16 +54,7 @@ const jobs = [
   connectionExpirationJob,
 ];
 
-// This is required for Trigger.dev v3
-export default jobs;
-
-/** Register all jobs with trigger.dev */
-export function registerJobs() {
-  // Instead of just returning jobs, we need to expose them for the trigger.dev client
-  return { jobs };
-}
-
-// Export all jobs as named exports to make them accessible to trigger.dev
+// Export all jobs individually
 export {
   syncAllTransactionsJob,
   syncUserTransactionsJob,
@@ -96,3 +73,6 @@ export {
   connectionRecoveryJob,
   connectionExpirationJob,
 };
+
+// Default export for all jobs (required by Trigger.dev v3)
+export default jobs;

@@ -77,7 +77,9 @@ export function DatePickerWithRange({
                   {format(date.to, 'LLL dd, y')}
                 </span>
               ) : (
-                <span className="truncate">{format(date.from, 'LLL dd, y')}</span>
+                <span className="truncate">
+                  {format(date.from, 'LLL dd, y')}
+                </span>
               )
             ) : (
               <span>Pick a date</span>

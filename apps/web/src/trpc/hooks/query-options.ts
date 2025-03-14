@@ -4,47 +4,27 @@ import { useDocumentId } from '@/lib/navigation/routes';
 import { useSession } from '@/components/auth/useSession';
 import { useTRPC } from '@/trpc/react';
 
-/**
- * Default options for TRPC queries
- */
+/** Default options for TRPC queries */
 export interface QueryOptions {
-  /**
-   * Whether to refetch when window regains focus
-   */
+  /** Whether to refetch when window regains focus */
   refetchOnWindowFocus?: boolean;
-  /**
-   * Whether to refetch when the component is remounted
-   */
+  /** Whether to refetch when the component is remounted */
   refetchOnMount?: boolean;
-  /**
-   * Whether to refetch on reconnect
-   */
+  /** Whether to refetch on reconnect */
   refetchOnReconnect?: boolean;
-  /**
-   * Retry options
-   */
+  /** Retry options */
   retry?: false | number;
-  /**
-   * Retry delay in milliseconds
-   */
+  /** Retry delay in milliseconds */
   retryDelay?: number;
-  /**
-   * Whether the query should be enabled
-   */
+  /** Whether the query should be enabled */
   enabled?: boolean;
-  /**
-   * Stale time in milliseconds
-   */
+  /** Stale time in milliseconds */
   staleTime?: number;
-  /**
-   * Cache time in milliseconds
-   */
+  /** Cache time in milliseconds */
   cacheTime?: number;
 }
 
-/**
- * Default query options for all queries
- */
+/** Default query options for all queries */
 export const DEFAULT_QUERY_OPTIONS: QueryOptions = {
   refetchOnWindowFocus: false,
   refetchOnMount: true,

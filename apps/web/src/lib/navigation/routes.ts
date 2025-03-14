@@ -44,8 +44,12 @@ export type RouteSchemas = {
 export const routes = {
   account: defineRoute('/dashboard/account'),
   document: defineRoute<RouteSchemas['document']>('/dashboard/[documentId]'),
-  transaction: defineRoute<RouteSchemas['transaction']>('/dashboard/[transactionId]'),
-  recurringTransaction: defineRoute<RouteSchemas['recurringTransaction']>('/dashboard/[recurringTransactionId]'),
+  transaction: defineRoute<RouteSchemas['transaction']>(
+    '/dashboard/[transactionId]'
+  ),
+  recurringTransaction: defineRoute<RouteSchemas['recurringTransaction']>(
+    '/dashboard/[recurringTransactionId]'
+  ),
   faq: defineRoute('/faq'),
   home: defineRoute<RouteSchemas['home']>('/dashboard'),
   login: defineRoute('/login'),

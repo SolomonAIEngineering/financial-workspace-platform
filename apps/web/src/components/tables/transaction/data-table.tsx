@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
-import { BaseChartSchema, columnFilterSchema } from "./schema";
+import { BaseChartSchema, columnFilterSchema } from './schema';
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -12,8 +12,11 @@ import type {
   SortingState,
   Table as TTable,
   VisibilityState,
-} from "@tanstack/react-table";
-import type { DataTableFilterField, SheetField } from "@/components/data-table/types";
+} from '@tanstack/react-table';
+import type {
+  DataTableFilterField,
+  SheetField,
+} from '@/components/data-table/types';
 import {
   Table,
   TableBody,
@@ -21,8 +24,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/registry/default/potion-ui/table";
-import { arrSome, inDateRange } from "@/lib/table/filterfns";
+} from '@/registry/default/potion-ui/table';
+import { arrSome, inDateRange } from '@/lib/table/filterfns';
 import {
   flexRender,
   getCoreRowModel,
@@ -33,37 +36,37 @@ import {
   getFacetedMinMaxValues as getTTableFacetedMinMaxValues,
   getFacetedUniqueValues as getTTableFacetedUniqueValues,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
-import { DataTableFilterCommand } from "@/components/data-table/data-table-filter-command";
-import { DataTableFilterControls } from "@/components/data-table/data-table-filter-controls";
-import { DataTablePagination } from "@/components/data-table/data-table-pagination";
-import { DataTableProvider } from "@/components/data-table/data-table-provider";
-import { DataTableResetButton } from "@/components/data-table/data-table-reset-button";
-import { DataTableSheetDetails } from "@/components/data-table/data-table-sheet/data-table-sheet-details";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { RefreshButton } from "@/components/buttons/refresh-button";
-import { TransactionSheetDetails } from "./data-table-sheet-transaction";
-import { cn } from "@/lib/utils";
-import { searchParamsParser } from "./search-params";
-import { useHotKey } from "@/hooks/use-hot-key";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import { useQueryStates } from "nuqs";
+import { DataTableFilterCommand } from '@/components/data-table/data-table-filter-command';
+import { DataTableFilterControls } from '@/components/data-table/data-table-filter-controls';
+import { DataTablePagination } from '@/components/data-table/data-table-pagination';
+import { DataTableProvider } from '@/components/data-table/data-table-provider';
+import { DataTableResetButton } from '@/components/data-table/data-table-reset-button';
+import { DataTableSheetDetails } from '@/components/data-table/data-table-sheet/data-table-sheet-details';
+import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
+import { RefreshButton } from '@/components/buttons/refresh-button';
+import { TransactionSheetDetails } from './data-table-sheet-transaction';
+import { cn } from '@/lib/utils';
+import { searchParamsParser } from './search-params';
+import { useHotKey } from '@/hooks/use-hot-key';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useQueryStates } from 'nuqs';
 
 /**
- * @file data-table.tsx
- * @description Implements a specialized data table for financial transactions.
- * This component extends the generic DataTable pattern with transaction-specific
+ * Implements a specialized data table for financial transactions. This
+ * component extends the generic DataTable pattern with transaction-specific
  * features, including custom filtering, sorting, and detail views.
+ *
+ * @file Data-table.tsx
  */
 
 /**
  * Props interface for the DataTable component.
- * 
+ *
  * @template TData - The type of data being displayed in the table
  * @template TValue - The type of values in the table cells
  * @template TMeta - The type of metadata associated with the table
- * 
  * @property columns - Column definitions for the table
  * @property data - The data to display in the table
  * @property defaultColumnFilters - Initial column filter state
@@ -81,7 +84,11 @@ import { useQueryStates } from "nuqs";
  * @property getFacetedMinMaxValues - Function to get faceted min/max values
  * @property meta - Additional metadata for the table
  */
-export interface DataTableProps<TData, TValue, TMeta = Record<string, unknown>> {
+export interface DataTableProps<
+  TData,
+  TValue,
+  TMeta = Record<string, unknown>,
+> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   defaultColumnFilters?: ColumnFiltersState;
@@ -98,19 +105,20 @@ export interface DataTableProps<TData, TValue, TMeta = Record<string, unknown>> 
   getRowClassName?: (row: Row<TData>) => string;
   getFacetedUniqueValues?: (
     table: TTable<TData>,
-    columnId: string,
+    columnId: string
   ) => Map<string, number>;
   getFacetedMinMaxValues?: (
     table: TTable<TData>,
-    columnId: string,
+    columnId: string
   ) => undefined | [number, number];
   meta?: TMeta;
 }
 
 /**
  * DataTable component for financial transactions.
- * 
+ *
  * Provides a full-featured data table with:
+ *
  * - Sorting and filtering
  * - Pagination
  * - Row selection
@@ -118,28 +126,28 @@ export interface DataTableProps<TData, TValue, TMeta = Record<string, unknown>> 
  * - Detail view panel
  * - Keyboard shortcuts
  * - Toolbar with actions
- * 
- * The table uses the TransactionSheetDetails component to display
- * detailed information about a selected transaction.
- * 
+ *
+ * The table uses the TransactionSheetDetails component to display detailed
+ * information about a selected transaction.
+ *
+ * @example
+ *   ```tsx
+ *   <DataTable
+ *     columns={columns}
+ *     data={transactions}
+ *     filterFields={filterFields}
+ *     chartData={transactionChartData}
+ *     isFetching={isFetching}
+ *     refetch={refetch}
+ *   />
+ *   ```;
+ *
  * @template TData - The type of data being displayed in the table
  * @template TValue - The type of values in the table cells
  * @template TMeta - The type of metadata associated with the table
- * 
  * @param props - The component props
- * @returns A React component that displays a data table for financial transactions
- * 
- * @example
- * ```tsx
- * <DataTable
- *   columns={columns}
- *   data={transactions}
- *   filterFields={filterFields}
- *   chartData={transactionChartData}
- *   isFetching={isFetching}
- *   refetch={refetch}
- * />
- * ```
+ * @returns A React component that displays a data table for financial
+ *   transactions
  */
 export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   columns,
@@ -161,20 +169,22 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
 }: DataTableProps<TData, TValue, TMeta>) {
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
-  const [sorting, setSorting] = React.useState<SortingState>(defaultColumnSorting);
+  const [sorting, setSorting] =
+    React.useState<SortingState>(defaultColumnSorting);
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
-  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(defaultRowSelection);
+  const [rowSelection, setRowSelection] =
+    React.useState<RowSelectionState>(defaultRowSelection);
   const [columnOrder, setColumnOrder] = useLocalStorage<string[]>(
-    "data-table-column-order",
-    [],
+    'data-table-column-order',
+    []
   );
   const [columnVisibility, setColumnVisibility] =
     useLocalStorage<VisibilityState>(
-      "data-table-visibility",
-      defaultColumnVisibility,
+      'data-table-visibility',
+      defaultColumnVisibility
     );
   const [_, setSearch] = useQueryStates(searchParamsParser);
   const topBarRef = React.useRef<HTMLDivElement>(null);
@@ -207,7 +217,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
       columnOrder,
     },
     enableRowSelection: true,
-    columnResizeMode: "onChange",
+    columnResizeMode: 'onChange',
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
@@ -228,7 +238,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   React.useEffect(() => {
     const columnFiltersWithNullable = filterFields.map((field) => {
       const filterValue = columnFilters.find(
-        (filter) => filter.id === field.value,
+        (filter) => filter.id === field.value
       );
       if (!filterValue) return { id: field.value, value: null };
       return { id: field.value, value: filterValue.value };
@@ -239,7 +249,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
         prev[curr.id as string] = curr.value;
         return prev;
       },
-      {} as Record<string, unknown>,
+      {} as Record<string, unknown>
     );
 
     setSearch(search);
@@ -276,9 +286,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
     for (let i = 0; i < headers.length; i++) {
       const header = headers[i]!;
       // REMINDER: replace "." with "-" to avoid invalid CSS variable name (e.g. "timing.dns" -> "timing-dns")
-      colSizes[`--header-${header.id.replace(".", "-")}-size`] =
+      colSizes[`--header-${header.id.replace('.', '-')}-size`] =
         `${header.getSize()}px`;
-      colSizes[`--col-${header.column.id.replace(".", "-")}-size`] =
+      colSizes[`--col-${header.column.id.replace('.', '-')}-size`] =
         `${header.column.getSize()}px`;
     }
     return colSizes;
@@ -291,7 +301,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   useHotKey(() => {
     setColumnOrder([]);
     setColumnVisibility(defaultColumnVisibility);
-  }, "u");
+  }, 'u');
 
   return (
     <DataTableProvider
@@ -313,19 +323,19 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
         className="flex h-full min-h-screen w-full flex-col sm:flex-row"
         style={
           {
-            "--top-bar-height": `${topBarHeight}px`,
+            '--top-bar-height': `${topBarHeight}px`,
             ...columnSizeVars,
           } as React.CSSProperties
         }
       >
         <div
           className={cn(
-            "p-[1%] h-full w-full flex-col sm:sticky sm:top-0 sm:max-h-screen sm:min-h-screen sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-90 md:max-w-100",
-            "group-data-[expanded=false]/controls:hidden",
-            "hidden sm:flex",
+            'h-full w-full flex-col p-[1%] sm:sticky sm:top-0 sm:max-h-screen sm:min-h-screen sm:max-w-52 sm:min-w-52 sm:self-start md:max-w-100 md:min-w-90',
+            'group-data-[expanded=false]/controls:hidden',
+            'hidden sm:flex'
           )}
         >
-          <div className="bg-background md:sticky md:top-0 border-b border-gray-200 dark:border-gray-800 rounded-t-lg">
+          <div className="rounded-t-lg border-b border-gray-200 bg-background md:sticky md:top-0 dark:border-gray-800">
             <div className="flex h-[46px] items-center justify-between gap-3 px-4">
               <p className="font-medium text-foreground">Filters</p>
               <div>
@@ -336,7 +346,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
             </div>
           </div>
           <div
-            className="flex-1 p-3 overflow-y-auto no-scrollbar"
+            className="no-scrollbar flex-1 overflow-y-auto p-3"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
@@ -352,15 +362,15 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
         </div>
         <div
           className={cn(
-            "flex max-w-full flex-1 flex-col border-gray-300 md:p-[2%]",
-            "group-data-[expanded=true]/controls:sm:max-w-[calc(100vw_-_208px)] group-data-[expanded=true]/controls:md:max-w-[calc(100vw_-_288px)]",
+            'flex max-w-full flex-1 flex-col border-gray-300 md:p-[2%]',
+            'group-data-[expanded=true]/controls:sm:max-w-[calc(100vw_-_208px)] group-data-[expanded=true]/controls:md:max-w-[calc(100vw_-_288px)]'
           )}
         >
           <div
             ref={topBarRef}
             className={cn(
-              "flex flex-col gap-4 bg-background p-2",
-              "sticky top-0 z-10 pb-4",
+              'flex flex-col gap-4 bg-background p-2',
+              'sticky top-0 z-10 pb-4'
             )}
           >
             <DataTableFilterCommand schema={columnFilterSchema} />
@@ -372,16 +382,16 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
           </div>
           <div className="z-0">
             <Table
-              className="border-separate border-spacing-0 [&_*]:border-gray-300 ![&_tr]:border-gray-300 ![&_td]:border-gray-300 ![&_th]:border-gray-300"
+              className="![&_tr]:border-gray-300 ![&_td]:border-gray-300 ![&_th]:border-gray-300 border-separate border-spacing-0 [&_*]:border-gray-300"
               containerClassName="max-h-[calc(100vh_-_var(--top-bar-height))]"
             >
-              <TableHeader className={cn("sticky top-0 z-20 bg-background")}>
+              <TableHeader className={cn('sticky top-0 z-20 bg-background')}>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow
                     key={headerGroup.id}
                     className={cn(
-                      "bg-muted/50 hover:bg-muted/50",
-                      "[&>*]:border-t [&>*]:border-gray-300 [&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300",
+                      'bg-muted/50 hover:bg-muted/50',
+                      '[&>*]:border-t [&>*]:border-gray-300 [&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300'
                     )}
                   >
                     {headerGroup.headers.map((header) => {
@@ -389,31 +399,31 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                         <TableHead
                           key={header.id}
                           className={cn(
-                            "relative select-none truncate border-b border-gray-300 [&>.cursor-col-resize]:last:opacity-0",
-                            header.column.columnDef.meta?.headerClassName,
+                            'relative truncate border-b border-gray-300 select-none [&>.cursor-col-resize]:last:opacity-0',
+                            header.column.columnDef.meta?.headerClassName
                           )}
                           aria-sort={
-                            header.column.getIsSorted() === "asc"
-                              ? "ascending"
-                              : header.column.getIsSorted() === "desc"
-                                ? "descending"
-                                : "none"
+                            header.column.getIsSorted() === 'asc'
+                              ? 'ascending'
+                              : header.column.getIsSorted() === 'desc'
+                                ? 'descending'
+                                : 'none'
                           }
                         >
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}
                               onMouseDown={header.getResizeHandler()}
                               onTouchStart={header.getResizeHandler()}
                               className={cn(
-                                "user-select-none absolute -right-2 top-0 z-10 flex h-full w-4 cursor-col-resize touch-none justify-center",
-                                "before:absolute before:inset-y-0 before:w-px before:translate-x-px before:bg-gray-300",
+                                'user-select-none absolute top-0 -right-2 z-10 flex h-full w-4 cursor-col-resize touch-none justify-center',
+                                'before:absolute before:inset-y-0 before:w-px before:translate-x-px before:bg-gray-300'
                               )}
                             />
                           )}
@@ -428,7 +438,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                 tabIndex={-1}
                 className="outline-1 -outline-offset-1 outline-gray-300 transition-colors focus-visible:outline"
                 style={{
-                  scrollMarginTop: "calc(var(--top-bar-height) + 40px)",
+                  scrollMarginTop: 'calc(var(--top-bar-height) + 40px)',
                 }}
               >
                 {table.getRowModel().rows?.length ? (
@@ -437,33 +447,33 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                       key={row.id}
                       id={row.id}
                       tabIndex={0}
-                      data-state={row.getIsSelected() && "selected"}
+                      data-state={row.getIsSelected() && 'selected'}
                       onClick={() => row.toggleSelected()}
                       onKeyDown={(event) => {
-                        if (event.key === "Enter") {
+                        if (event.key === 'Enter') {
                           event.preventDefault();
                           row.toggleSelected();
                         }
                       }}
                       className={cn(
-                        "border-b border-gray-300",
-                        "[&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300",
-                        "outline-1 -outline-offset-1 outline-gray-300 transition-colors",
-                        "focus-visible:bg-muted/50 focus-visible:outline data-[state=selected]:outline",
-                        table.options.meta?.getRowClassName?.(row),
+                        'border-b border-gray-300',
+                        '[&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300',
+                        'outline-1 -outline-offset-1 outline-gray-300 transition-colors',
+                        'focus-visible:bg-muted/50 focus-visible:outline data-[state=selected]:outline',
+                        table.options.meta?.getRowClassName?.(row)
                       )}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
                           className={cn(
-                            "truncate border-b border-gray-300",
-                            cell.column.columnDef.meta?.cellClassName,
+                            'truncate border-b border-gray-300',
+                            cell.column.columnDef.meta?.cellClassName
                           )}
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext(),
+                            cell.getContext()
                           )}
                         </TableCell>
                       ))}

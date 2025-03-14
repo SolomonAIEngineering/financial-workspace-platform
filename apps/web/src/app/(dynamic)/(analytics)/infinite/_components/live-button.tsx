@@ -1,29 +1,29 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
-import { CirclePause, CirclePlay } from "lucide-react";
+import { CirclePause, CirclePlay } from 'lucide-react';
 
-import { Button } from "@/registry/default/potion-ui/button";
-import { FetchPreviousPageOptions } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
-import { searchParamsParser } from "../search-params";
-import { useDataTable } from "@/components/data-table/data-table-provider";
-import { useHotKey } from "@/hooks/use-hot-key";
-import { useQueryStates } from "nuqs";
+import { Button } from '@/registry/default/potion-ui/button';
+import { FetchPreviousPageOptions } from '@tanstack/react-query';
+import { cn } from '@/lib/utils';
+import { searchParamsParser } from '../search-params';
+import { useDataTable } from '@/components/data-table/data-table-provider';
+import { useHotKey } from '@/hooks/use-hot-key';
+import { useQueryStates } from 'nuqs';
 
 const REFRESH_INTERVAL = 4_000;
 
 interface LiveButtonProps {
   fetchPreviousPage?: (
-    options?: FetchPreviousPageOptions | undefined,
+    options?: FetchPreviousPageOptions | undefined
   ) => Promise<unknown>;
 }
 
 export function LiveButton({ fetchPreviousPage }: LiveButtonProps) {
   const [{ live, date, sort }, setSearch] = useQueryStates(searchParamsParser);
   const { table } = useDataTable();
-  useHotKey(handleClick, "j");
+  useHotKey(handleClick, 'j');
 
   React.useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -59,13 +59,13 @@ export function LiveButton({ fetchPreviousPage }: LiveButtonProps) {
       date: null,
       sort: null,
     }));
-    table.getColumn("date")?.setFilterValue(undefined);
+    table.getColumn('date')?.setFilterValue(undefined);
     table.resetSorting();
   }
 
   return (
     <Button
-      className={cn(live && "border-info text-info hover:text-info")}
+      className={cn(live && 'border-info text-info hover:text-info')}
       onClick={handleClick}
       variant="outline"
       size="sm"

@@ -35,11 +35,11 @@ const groupFilters = <TData,>(filterFields: DataTableFilterField<TData>[]) => {
     numeric: [],
     selection: [],
     text: [],
-    other: []
+    other: [],
   };
 
   // Group filters by their type
-  filterFields?.forEach(field => {
+  filterFields?.forEach((field) => {
     switch (field.type) {
       case 'timerange':
         groups.timerange.push(field);
@@ -73,7 +73,7 @@ export function DataTableFilterControls() {
     ...filterGroups.numeric,
     ...filterGroups.selection,
     ...filterGroups.text,
-    ...filterGroups.other
+    ...filterGroups.other,
   ];
 
   return (
@@ -88,8 +88,8 @@ export function DataTableFilterControls() {
         {orderedFilters.map((field, index) => {
           const value = field.value as string;
           const isTimerange = field.type === 'timerange';
-          const isNewGroup = index > 0 &&
-            orderedFilters[index - 1]?.type !== field.type;
+          const isNewGroup =
+            index > 0 && orderedFilters[index - 1]?.type !== field.type;
 
           let filterComponent;
           switch (field.type) {
@@ -121,15 +121,16 @@ export function DataTableFilterControls() {
               <AccordionItem
                 value={value}
                 className={cn(
-                  "border-none rounded-md overflow-hidden",
-                  isTimerange && "bg-gray-50/50 dark:bg-gray-800/20"
+                  'overflow-hidden rounded-md border-none',
+                  isTimerange && 'bg-gray-50/50 dark:bg-gray-800/20'
                 )}
               >
                 <AccordionTrigger className="w-full px-2 py-0 hover:no-underline data-[state=closed]:text-muted-foreground focus-within:data-[state=closed]:text-foreground hover:data-[state=closed]:text-foreground data-[state=open]:text-foreground">
                   <div className="flex w-full items-center justify-between gap-2 truncate py-2 pr-2">
                     <div className="flex items-center gap-2 truncate">
                       <p className="text-sm font-medium">{field.label}</p>
-                      {value !== field.label.toLowerCase() && !field.commandDisabled ? (
+                      {value !== field.label.toLowerCase() &&
+                      !field.commandDisabled ? (
                         <p className="mt-px truncate font-mono text-[10px] text-muted-foreground">
                           {value}
                         </p>
@@ -139,9 +140,7 @@ export function DataTableFilterControls() {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="transition-all">
-                  <div className="p-2 rounded-md">
-                    {filterComponent}
-                  </div>
+                  <div className="rounded-md p-2">{filterComponent}</div>
                 </AccordionContent>
               </AccordionItem>
             </Fragment>
@@ -151,4 +150,3 @@ export function DataTableFilterControls() {
     </div>
   );
 }
-

@@ -1,12 +1,12 @@
-import type { Percentile } from "@/lib/request/percentile";
-import { infiniteQueryOptions, keepPreviousData } from "@tanstack/react-query";
-import SuperJSON from "superjson";
+import type { Percentile } from '@/lib/request/percentile';
+import { infiniteQueryOptions, keepPreviousData } from '@tanstack/react-query';
+import SuperJSON from 'superjson';
 import type {
   BaseChartSchema,
   ColumnSchema,
   FacetMetadataSchema,
-} from "./schema";
-import { searchParamsSerializer, type SearchParamsType } from "./search-params";
+} from './schema';
+import { searchParamsSerializer, type SearchParamsType } from './search-params';
 
 export type LogsMeta = {
   currentPercentiles: Record<Percentile, number>;
@@ -30,12 +30,12 @@ export type InfiniteQueryResponse<TData = ColumnSchema[]> = {
 export const dataOptions = (search: SearchParamsType) => {
   return infiniteQueryOptions({
     queryKey: [
-      "data-table",
+      'data-table',
       searchParamsSerializer({ ...search, uuid: null, live: null }),
     ], // remove uuid/live as it would otherwise retrigger a fetch
     queryFn: async ({ pageParam }) => {
       const cursor = new Date(pageParam.cursor);
-      const direction = pageParam.direction as "next" | "prev" | undefined;
+      const direction = pageParam.direction as 'next' | 'prev' | undefined;
       const serialize = searchParamsSerializer({
         ...search,
         cursor,
@@ -47,14 +47,14 @@ export const dataOptions = (search: SearchParamsType) => {
       const json = await response.json();
       return SuperJSON.parse<InfiniteQueryResponse<ColumnSchema[]>>(json);
     },
-    initialPageParam: { cursor: new Date().getTime(), direction: "next" },
+    initialPageParam: { cursor: new Date().getTime(), direction: 'next' },
     getPreviousPageParam: (firstGroup, _groups) => {
       if (!firstGroup.prevCursor) return null;
-      return { cursor: firstGroup.prevCursor, direction: "prev" };
+      return { cursor: firstGroup.prevCursor, direction: 'prev' };
     },
     getNextPageParam: (lastGroup, _groups) => {
       if (!lastGroup.nextCursor) return null;
-      return { cursor: lastGroup.nextCursor, direction: "next" };
+      return { cursor: lastGroup.nextCursor, direction: 'next' };
     },
     refetchOnWindowFocus: false,
     placeholderData: keepPreviousData,

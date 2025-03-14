@@ -16,25 +16,22 @@ export function DataTableFilterTimerange<TData>({
   const column = table.getColumn(value);
   const filterValue = columnFilters.find((i) => i.id === value)?.value;
 
-  const date: DateRange | undefined = useMemo(
-    () => {
-      if (!filterValue) return undefined;
+  const date: DateRange | undefined = useMemo(() => {
+    if (!filterValue) return undefined;
 
-      if (filterValue instanceof Date) {
-        return { from: filterValue, to: undefined };
-      }
+    if (filterValue instanceof Date) {
+      return { from: filterValue, to: undefined };
+    }
 
-      if (Array.isArray(filterValue) && isArrayOfDates(filterValue)) {
-        return {
-          from: filterValue[0] || undefined,
-          to: filterValue[1] || undefined
-        };
-      }
+    if (Array.isArray(filterValue) && isArrayOfDates(filterValue)) {
+      return {
+        from: filterValue[0] || undefined,
+        to: filterValue[1] || undefined,
+      };
+    }
 
-      return undefined;
-    },
-    [filterValue]
-  );
+    return undefined;
+  }, [filterValue]);
 
   const setDate = (date: DateRange | undefined) => {
     if (!date || !date.from) {

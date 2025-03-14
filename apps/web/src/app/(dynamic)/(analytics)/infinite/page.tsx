@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { Client } from "./client";
-import { dataOptions } from "./query-options";
-import { getQueryClient } from "@/providers/get-query-client";
-import { searchParamsCache } from "./search-params";
+import { Client } from './client';
+import { dataOptions } from './query-options';
+import { getQueryClient } from '@/providers/get-query-client';
+import { searchParamsCache } from './search-params';
 
 export default async function Page({
   searchParams,

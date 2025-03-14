@@ -1,10 +1,10 @@
-import { calculateSpecificPercentile } from "@/lib/request/percentile";
-import { addDays } from "date-fns";
-import { NextRequest } from "next/server";
-import SuperJSON from "superjson";
-import type { InfiniteQueryResponse } from "../query-options";
-import { ColumnSchema } from "../schema";
-import { searchParamsCache } from "../search-params";
+import { calculateSpecificPercentile } from '@/lib/request/percentile';
+import { addDays } from 'date-fns';
+import { NextRequest } from 'next/server';
+import SuperJSON from 'superjson';
+import type { InfiniteQueryResponse } from '../query-options';
+import { ColumnSchema } from '../schema';
+import { searchParamsCache } from '../search-params';
 import {
   filterData,
   getFacetsFromData,
@@ -13,10 +13,10 @@ import {
   sliderFilterValues,
   sortData,
   splitData,
-} from "./helpers";
-import { mock, mockLive } from "./mock";
+} from './helpers';
+import { mock, mockLive } from './mock';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   // TODO: we could use a POST request to avoid this
@@ -34,8 +34,8 @@ export async function GET(req: NextRequest) {
   // REMINDER: we need to filter out the slider values because they are not part of the search params
   const _rest = Object.fromEntries(
     Object.entries(search).filter(
-      ([key]) => !sliderFilterValues.includes(key as any),
-    ),
+      ([key]) => !sliderFilterValues.includes(key as any)
+    )
   );
 
   const rangedData = filterData(totalData, { date: _date });
@@ -75,14 +75,14 @@ export async function GET(req: NextRequest) {
           ...withoutSliderFacets,
           ...Object.fromEntries(
             Object.entries(facets).filter(
-              ([key]) => !sliderFilterValues.includes(key as any),
-            ),
+              ([key]) => !sliderFilterValues.includes(key as any)
+            )
           ),
         },
         metadata: { currentPercentiles },
       },
       prevCursor,
       nextCursor,
-    } satisfies InfiniteQueryResponse<ColumnSchema[]>),
+    } satisfies InfiniteQueryResponse<ColumnSchema[]>)
   );
 }

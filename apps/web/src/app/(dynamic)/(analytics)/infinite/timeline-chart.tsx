@@ -1,47 +1,45 @@
-"use client";
+'use client';
 
-import { useDataTable } from "@/components/data-table/data-table-provider";
+import { useDataTable } from '@/components/data-table/data-table-provider';
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
-import { getLevelLabel } from "@/lib/request/level";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, ReferenceArea, XAxis } from "recharts";
-import type { CategoricalChartFunc } from "recharts/types/chart/generateCategoricalChart";
-import { BaseChartSchema, TimelineChartSchema } from "./schema";
+} from '@/components/ui/chart';
+import { getLevelLabel } from '@/lib/request/level';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { useMemo, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, ReferenceArea, XAxis } from 'recharts';
+import type { CategoricalChartFunc } from 'recharts/types/chart/generateCategoricalChart';
+import { BaseChartSchema, TimelineChartSchema } from './schema';
 
-export const description = "A stacked bar chart";
+export const description = 'A stacked bar chart';
 
 const chartConfig = {
   success: {
     label: <TooltipLabel level="success" />,
-    color: "hsl(var(--success))",
+    color: 'hsl(var(--success))',
   },
   warning: {
     label: <TooltipLabel level="warning" />,
-    color: "hsl(var(--warning))",
+    color: 'hsl(var(--warning))',
   },
   error: {
     label: <TooltipLabel level="error" />,
-    color: "hsl(var(--error))",
+    color: 'hsl(var(--error))',
   },
 } satisfies ChartConfig;
 
 interface TimelineChartProps<TChart extends BaseChartSchema> {
   className?: string;
   /**
-   * The table column id to filter by - needs to be a type of `timerange` (e.g. "date").
-   * TBD: if using keyof TData to be closer to the data table props
+   * The table column id to filter by - needs to be a type of `timerange` (e.g.
+   * "date"). TBD: if using keyof TData to be closer to the data table props
    */
   columnId: string;
-  /**
-   * Same data as of the InfiniteQueryMeta.
-   */
+  /** Same data as of the InfiniteQueryMeta. */
   data: TChart[];
 }
 
@@ -63,7 +61,7 @@ export function TimelineChart<TChart extends BaseChartSchema>({
         ...item,
         [columnId]: new Date(item.timestamp).toString(),
       })),
-    [data],
+    [data]
   );
 
   // REMINDER: time difference (ms) between the first and last timestamp
@@ -88,7 +86,7 @@ export function TimelineChart<TChart extends BaseChartSchema>({
   const handleMouseUp: CategoricalChartFunc = (e) => {
     if (refAreaLeft && refAreaRight) {
       const [left, right] = [refAreaLeft, refAreaRight].sort(
-        (a, b) => new Date(a).getTime() - new Date(b).getTime(),
+        (a, b) => new Date(a).getTime() - new Date(b).getTime()
       );
       table
         .getColumn(columnId)
@@ -103,10 +101,10 @@ export function TimelineChart<TChart extends BaseChartSchema>({
     <ChartContainer
       config={chartConfig}
       className={cn(
-        "aspect-auto h-[60px] w-full",
-        "[&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted/50", // otherwise same color as 200
-        "select-none", // disable text selection
-        className,
+        'aspect-auto h-[60px] w-full',
+        '[&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted/50', // otherwise same color as 200
+        'select-none', // disable text selection
+        className
       )}
     >
       <BarChart
@@ -117,7 +115,7 @@ export function TimelineChart<TChart extends BaseChartSchema>({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        style={{ cursor: "crosshair" }}
+        style={{ cursor: 'crosshair' }}
       >
         <CartesianGrid vertical={false} />
         <XAxis
@@ -127,18 +125,18 @@ export function TimelineChart<TChart extends BaseChartSchema>({
           axisLine={false}
           tickFormatter={(value) => {
             const date = new Date(value);
-            if (isNaN(date.getTime())) return "N/A";
+            if (isNaN(date.getTime())) return 'N/A';
             // TODO: how to extract into helper functions
             if (interval <= 1000 * 60 * 10) {
-              return format(date, "HH:mm:ss");
+              return format(date, 'HH:mm:ss');
             } else if (interval <= 1000 * 60 * 60 * 24) {
-              return format(date, "HH:mm");
+              return format(date, 'HH:mm');
             } else if (interval <= 1000 * 60 * 60 * 24 * 7) {
-              return format(date, "LLL dd HH:mm");
+              return format(date, 'LLL dd HH:mm');
             }
-            return format(date, "LLL dd, y");
+            return format(date, 'LLL dd, y');
           }}
-        // interval="preserveStartEnd"
+          // interval="preserveStartEnd"
         />
         <ChartTooltip
           // defaultIndex={10}
@@ -146,12 +144,12 @@ export function TimelineChart<TChart extends BaseChartSchema>({
             <ChartTooltipContent
               labelFormatter={(value) => {
                 const date = new Date(value);
-                if (isNaN(date.getTime())) return "N/A";
+                if (isNaN(date.getTime())) return 'N/A';
                 // TODO: how to extract into helper functions
                 if (interval <= 1000 * 60 * 10) {
-                  return format(date, "LLL dd, HH:mm:ss");
+                  return format(date, 'LLL dd, HH:mm:ss');
                 }
-                return format(date, "LLL dd, y HH:mm");
+                return format(date, 'LLL dd, y HH:mm');
               }}
             />
           }
@@ -178,11 +176,11 @@ export function TimelineChart<TChart extends BaseChartSchema>({
 function TooltipLabel({
   level,
 }: {
-  level: keyof Omit<TimelineChartSchema, "timestamp">;
+  level: keyof Omit<TimelineChartSchema, 'timestamp'>;
 }) {
   return (
     <div className="mr-2 flex w-20 items-center justify-between gap-2 font-mono">
-      <div className="capitalize text-gray-700 dark:text-gray-300">{level}</div>
+      <div className="text-gray-700 capitalize dark:text-gray-300">{level}</div>
       <div className="text-xs text-gray-500 dark:text-gray-400">
         {getLevelLabel(level)}
       </div>

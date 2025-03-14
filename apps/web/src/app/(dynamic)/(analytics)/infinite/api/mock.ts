@@ -1,7 +1,7 @@
-import { METHODS } from "@/constants/method";
-import { REGIONS } from "@/constants/region";
-import { subMinutes } from "date-fns";
-import { ColumnSchema } from "../schema";
+import { METHODS } from '@/constants/method';
+import { REGIONS } from '@/constants/region';
+import { subMinutes } from 'date-fns';
+import { ColumnSchema } from '../schema';
 
 const DAYS = 20;
 
@@ -16,11 +16,11 @@ function getRandomTiming(latency: number) {
   const remaining = 1 - (dns + connection + tls + transfer); // Calculate remaining for ttfb
 
   return {
-    "timing.dns": Math.round(latency * dns),
-    "timing.connection": Math.round(latency * connection),
-    "timing.tls": Math.round(latency * tls),
-    "timing.ttfb": Math.round(latency * remaining), // Use the remaining percentage for ttfb
-    "timing.transfer": Math.round(latency * transfer),
+    'timing.dns': Math.round(latency * dns),
+    'timing.connection': Math.round(latency * connection),
+    'timing.tls': Math.round(latency * tls),
+    'timing.ttfb': Math.round(latency * remaining), // Use the remaining percentage for ttfb
+    'timing.transfer': Math.round(latency * transfer),
   };
 }
 
@@ -29,20 +29,20 @@ function getRandomMetadata(): Record<string, string> {
   const rand = Math.random();
   if (rand < 0.5) {
     return {
-      env: "production",
+      env: 'production',
     };
   } else {
     return {
-      env: "staging",
+      env: 'staging',
     };
   }
 }
 
 function getLevel(status: number) {
-  if (`${status}`.startsWith("2")) return "success";
-  if (`${status}`.startsWith("4")) return "warning";
-  if (`${status}`.startsWith("5")) return "error";
-  return "error";
+  if (`${status}`.startsWith('2')) return 'success';
+  if (`${status}`.startsWith('4')) return 'warning';
+  if (`${status}`.startsWith('5')) return 'error';
+  return 'error';
 }
 
 function getRandomStatusCode() {
@@ -65,13 +65,13 @@ function getMessage() {
 }
 
 const shopPathnames = [
-  "/bikes/gravel/road",
-  "/bikes/racing/track",
-  "/bikes/mountain/trail",
-  "/bikes/city/cargo",
+  '/bikes/gravel/road',
+  '/bikes/racing/track',
+  '/bikes/mountain/trail',
+  '/bikes/city/cargo',
 ];
 
-const apiPathnames = ["/v1/products", "/v1/orders", "/v1/customers"];
+const apiPathnames = ['/v1/products', '/v1/orders', '/v1/customers'];
 
 function getRandomRequestObject(): {
   method: (typeof METHODS)[number];
@@ -81,14 +81,14 @@ function getRandomRequestObject(): {
   const rand = Math.random();
   if (rand < 0.5) {
     return {
-      method: "POST",
-      host: "api.acme-shop.com",
+      method: 'POST',
+      host: 'api.acme-shop.com',
       pathname: apiPathnames[Math.floor(Math.random() * apiPathnames.length)],
     };
   } else {
     return {
-      method: "GET",
-      host: "acme-shop.com",
+      method: 'GET',
+      host: 'acme-shop.com',
       pathname: shopPathnames[Math.floor(Math.random() * shopPathnames.length)],
     };
   }
@@ -96,9 +96,9 @@ function getRandomRequestObject(): {
 
 function getHeaders() {
   return {
-    Age: "0",
-    "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
-    Server: "Cloudflare",
+    Age: '0',
+    'Cache-Control': 'private, no-cache, no-store, max-age=0, must-revalidate',
+    Server: 'Cloudflare',
   };
 }
 
@@ -146,7 +146,7 @@ export function createMockData({
       uuid: crypto.randomUUID(),
       level: getLevel(statusCode.ams),
       latency: latency.ams,
-      regions: ["ams"],
+      regions: ['ams'],
       status: statusCode.ams,
       date,
       headers,
@@ -158,7 +158,7 @@ export function createMockData({
       uuid: crypto.randomUUID(),
       level: getLevel(statusCode.iad),
       latency: latency.iad,
-      regions: ["iad"],
+      regions: ['iad'],
       status: statusCode.iad,
       date,
       headers,
@@ -170,7 +170,7 @@ export function createMockData({
       uuid: crypto.randomUUID(),
       level: getLevel(statusCode.gru),
       latency: latency.gru,
-      regions: ["gru"],
+      regions: ['gru'],
       status: statusCode.gru,
       date,
       headers,
@@ -182,7 +182,7 @@ export function createMockData({
       uuid: crypto.randomUUID(),
       level: getLevel(statusCode.syd),
       latency: latency.syd,
-      regions: ["syd"],
+      regions: ['syd'],
       status: statusCode.syd,
       date,
       headers,
@@ -194,7 +194,7 @@ export function createMockData({
       uuid: crypto.randomUUID(),
       level: getLevel(statusCode.fra),
       latency: latency.fra,
-      regions: ["fra"],
+      regions: ['fra'],
       status: statusCode.fra,
       date,
       headers,
@@ -206,7 +206,7 @@ export function createMockData({
       uuid: crypto.randomUUID(),
       level: getLevel(statusCode.hkg),
       latency: latency.hkg,
-      regions: ["hkg"],
+      regions: ['hkg'],
       status: statusCode.hkg,
       date,
       headers,

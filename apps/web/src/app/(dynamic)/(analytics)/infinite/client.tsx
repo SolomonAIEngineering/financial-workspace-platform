@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
-import { filterFields as defaultFilterFields, sheetFields } from "./constants";
-import { useQueryState, useQueryStates } from "nuqs";
+import { filterFields as defaultFilterFields, sheetFields } from './constants';
+import { useQueryState, useQueryStates } from 'nuqs';
 
-import { DataTableInfinite } from "./data-table-infinite";
-import type { FacetMetadataSchema } from "./schema";
-import { LiveRow } from "./_components/live-row";
-import type { Table as TTable } from "@tanstack/react-table";
-import { cn } from "@/lib/utils";
-import { columns } from "./columns";
-import { dataOptions } from "./query-options";
-import { getLevelRowClassName } from "@/lib/request/level";
-import { searchParamsParser } from "./search-params";
-import { useHotKey } from "@/hooks/use-hot-key";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { DataTableInfinite } from './data-table-infinite';
+import type { FacetMetadataSchema } from './schema';
+import { LiveRow } from './_components/live-row';
+import type { Table as TTable } from '@tanstack/react-table';
+import { cn } from '@/lib/utils';
+import { columns } from './columns';
+import { dataOptions } from './query-options';
+import { getLevelRowClassName } from '@/lib/request/level';
+import { searchParamsParser } from './search-params';
+import { useHotKey } from '@/hooks/use-hot-key';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 export function Client() {
   const [search] = useQueryStates(searchParamsParser);
@@ -31,7 +31,7 @@ export function Client() {
 
   const flatData = React.useMemo(
     () => data?.pages?.flatMap((page) => page.data ?? []) ?? [],
-    [data?.pages],
+    [data?.pages]
   );
 
   const liveMode = useLiveMode(flatData);
@@ -64,7 +64,7 @@ export function Client() {
         };
       });
 
-      if (field.type === "slider") {
+      if (field.type === 'slider') {
         return {
           ...field,
           min: facetsField.min ?? field.min,
@@ -96,11 +96,11 @@ export function Client() {
         // FIXME: make it configurable - TODO: use `columnHidden: boolean` in `filterFields`
         defaultColumnVisibility={{
           uuid: false,
-          "timing.dns": false,
-          "timing.connection": false,
-          "timing.tls": false,
-          "timing.ttfb": false,
-          "timing.transfer": false,
+          'timing.dns': false,
+          'timing.connection': false,
+          'timing.tls': false,
+          'timing.ttfb': false,
+          'timing.transfer': false,
         }}
         meta={metadata}
         filterFields={filterFields}
@@ -115,7 +115,7 @@ export function Client() {
           const rowTimestamp = row.original.date.getTime();
           const isPast = rowTimestamp <= (liveMode.timestamp || -1);
           const levelClassName = getLevelRowClassName(row.original.level);
-          return cn(levelClassName, isPast ? "opacity-50" : "opacity-100");
+          return cn(levelClassName, isPast ? 'opacity-50' : 'opacity-100');
         }}
         getRowId={(row) => row.uuid}
         getFacetedUniqueValues={getFacetedUniqueValues(facets)}
@@ -135,18 +135,18 @@ function useResetFocus() {
     // FIXME: some dedicated div[tabindex="0"] do not auto-unblur (e.g. the DataTableFilterResetButton)
     // REMINDER: we cannot just document.activeElement?.blur(); as the next tab will focus the next element in line,
     // which is not what we want. We want to reset entirely.
-    document.body.setAttribute("tabindex", "0");
+    document.body.setAttribute('tabindex', '0');
     document.body.focus();
-    document.body.removeAttribute("tabindex");
-  }, ".");
+    document.body.removeAttribute('tabindex');
+  }, '.');
 }
 
 // TODO: make a BaseObject (incl. date and uuid e.g. for every upcoming branch of infinite table)
 function useLiveMode<TData extends { date: Date }>(data: TData[]) {
-  const [live] = useQueryState("live", searchParamsParser.live);
+  const [live] = useQueryState('live', searchParamsParser.live);
   // REMINDER: used to capture the live mode on timestamp
   const liveTimestamp = React.useRef<number | undefined>(
-    live ? new Date().getTime() : undefined,
+    live ? new Date().getTime() : undefined
   );
 
   React.useEffect(() => {
@@ -173,17 +173,17 @@ function useLiveMode<TData extends { date: Date }>(data: TData[]) {
 }
 
 function getFacetedUniqueValues<TData>(
-  facets?: Record<string, FacetMetadataSchema>,
+  facets?: Record<string, FacetMetadataSchema>
 ) {
   return (_: TTable<TData>, columnId: string): Map<string, number> => {
     return new Map(
-      facets?.[columnId]?.rows?.map(({ value, total }) => [value, total]) || [],
+      facets?.[columnId]?.rows?.map(({ value, total }) => [value, total]) || []
     );
   };
 }
 
 function getFacetedMinMaxValues<TData>(
-  facets?: Record<string, FacetMetadataSchema>,
+  facets?: Record<string, FacetMetadataSchema>
 ) {
   return (_: TTable<TData>, columnId: string): [number, number] | undefined => {
     const min = facets?.[columnId]?.min;

@@ -4,7 +4,7 @@ import { fontHeading, fontMono, fontSans } from '@/lib/fonts';
 
 import { GA } from '@/components/analytics/ga';
 import { META_THEME_COLORS } from '@/config';
-import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Providers } from '@/components/providers/providers';
 import { ProvidersServer } from '@/components/providers/providers-server';
 import { ReactQueryProvider } from '@/providers/react-query';
@@ -39,8 +39,8 @@ export default function RootLayout({ children }) {
           }}
         />
         <meta name="darkreader-lock" />
-        {process.env.NODE_ENV === "development" ||
-          process.env.NEXT_PUBLIC_REACT_SCAN === "true" ? (
+        {process.env.NODE_ENV === 'development' ||
+        process.env.NEXT_PUBLIC_REACT_SCAN === 'true' ? (
           <script
             src="https://unpkg.com/react-scan/dist/auto.global.js"
             async

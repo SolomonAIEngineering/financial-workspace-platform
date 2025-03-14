@@ -1,4 +1,4 @@
-import { MiniSidebar } from "@/components/sidebar/mini-sidebar";
+import { MiniSidebar } from '@/components/sidebar/mini-sidebar';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -6,9 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="sticky top-0 z-30 h-screen flex-shrink-0">
         <MiniSidebar />
       </div>
-      <div className="flex-1 overflow-auto p-[2%]">
-        {children}
-      </div>
+      <div className="flex-1 overflow-auto p-[2%]">{children}</div>
     </div>
   );
 }

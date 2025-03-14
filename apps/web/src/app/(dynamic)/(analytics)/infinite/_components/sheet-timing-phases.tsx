@@ -4,10 +4,10 @@ import {
   getTimingLabel,
   getTimingPercentage,
   timingPhases,
-} from "@/lib/request/timing";
+} from '@/lib/request/timing';
 
-import { cn } from "@/lib/utils";
-import { formatMilliseconds } from "@/lib/format";
+import { cn } from '@/lib/utils';
+import { formatMilliseconds } from '@/lib/format';
 
 export function SheetTimingPhases({
   latency,
@@ -20,13 +20,13 @@ export function SheetTimingPhases({
 }) {
   const timingPercentage = getTimingPercentage(timing, latency);
   return (
-    <div className={cn("w-full space-y-1 text-left", className)}>
+    <div className={cn('w-full space-y-1 text-left', className)}>
       {timingPhases.map((phase) => (
         <div
           key={phase}
           className="grid grid-cols-3 items-center justify-between gap-2 text-xs"
         >
-          <div className="truncate font-mono uppercase text-foreground">
+          <div className="truncate font-mono text-foreground uppercase">
             {getTimingLabel(phase)}
           </div>
           <div className="col-span-2 flex gap-2">
@@ -40,7 +40,7 @@ export function SheetTimingPhases({
               </div>
             </div>
             <div
-              className={cn(getTimingColor(phase), "h-4")}
+              className={cn(getTimingColor(phase), 'h-4')}
               style={{ width: `${(timing[phase] / latency) * 100}%` }}
             />
           </div>
