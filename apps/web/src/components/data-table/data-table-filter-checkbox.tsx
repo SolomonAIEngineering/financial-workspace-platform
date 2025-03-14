@@ -98,33 +98,43 @@ export function DataTableFilterCheckbox<TData>({
                     );
                   }}
                 />
-                <Label
-                  htmlFor={`${value}-${option.value}`}
-                  className="flex w-full items-center justify-center gap-1 truncate text-foreground/70 group-hover:text-accent-foreground"
-                >
-                  {Component ? (
-                    <Component {...option} />
-                  ) : (
-                    <span className="truncate font-normal">{option.label}</span>
-                  )}
-                  <span className="ml-auto flex items-center justify-center font-mono text-xs">
-                    {isLoading ? (
-                      <Skeleton className="h-4 w-4" />
-                    ) : facetedValue?.has(option.value) ? (
-                      formatCompactNumber(facetedValue.get(option.value) || 0)
-                    ) : null}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => column?.setFilterValue([option.value])}
-                    className={cn(
-                      'absolute inset-y-0 right-0 hidden font-normal text-muted-foreground backdrop-blur-sm group-hover:block hover:text-foreground',
-                      'rounded-md ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none'
-                    )}
+                <div className="w-full cursor-pointer" onClick={() => {
+                  const element = document.getElementById(`${value}-${option.value}`);
+                  if (element instanceof HTMLInputElement) {
+                    element.click();
+                  }
+                }}>
+                  <Label
+                    htmlFor={`${value}-${option.value}`}
+                    className="flex w-full items-center justify-center gap-1 truncate text-foreground/70 group-hover:text-accent-foreground"
                   >
-                    <span className="px-2">only</span>
-                  </button>
-                </Label>
+                    {Component ? (
+                      <Component {...option} />
+                    ) : (
+                      <span className="truncate font-normal">{option.label}</span>
+                    )}
+                    <span className="ml-auto flex items-center justify-center font-mono text-xs">
+                      {isLoading ? (
+                        <Skeleton className="h-4 w-4" />
+                      ) : facetedValue?.has(option.value) ? (
+                        formatCompactNumber(facetedValue.get(option.value) || 0)
+                      ) : null}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        column?.setFilterValue([option.value]);
+                      }}
+                      className={cn(
+                        'absolute inset-y-0 right-0 hidden font-normal text-muted-foreground backdrop-blur-sm group-hover:block hover:text-foreground',
+                        'rounded-md ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none'
+                      )}
+                    >
+                      <span className="px-2">only</span>
+                    </button>
+                  </Label>
+                </div>
               </div>
             );
           })}

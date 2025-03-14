@@ -17,24 +17,41 @@ export function DataTableFilterTimerange<TData>({
   const filterValue = columnFilters.find((i) => i.id === value)?.value;
 
   const date: DateRange | undefined = useMemo(
-    () =>
-      filterValue instanceof Date
-        ? { from: filterValue, to: undefined }
-        : Array.isArray(filterValue) && isArrayOfDates(filterValue)
-          ? { from: filterValue?.[0], to: filterValue?.[1] }
-          : undefined,
+    () => {
+      if (!filterValue) return undefined;
+
+      if (filterValue instanceof Date) {
+        return { from: filterValue, to: undefined };
+      }
+
+      if (Array.isArray(filterValue) && isArrayOfDates(filterValue)) {
+        return {
+          from: filterValue[0] || undefined,
+          to: filterValue[1] || undefined
+        };
+      }
+
+      return undefined;
+    },
     [filterValue]
   );
 
   const setDate = (date: DateRange | undefined) => {
-    if (!date) return; // TODO: remove from search params if columnFilter is removed
+    if (!date || !date.from) {
+      column?.setFilterValue(undefined);
+      return;
+    }
+
     if (date.from && !date.to) {
       column?.setFilterValue([date.from]);
-    }
-    if (date.to && date.from) {
+    } else if (date.from && date.to) {
       column?.setFilterValue([date.from, date.to]);
     }
   };
 
-  return <DatePickerWithRange {...{ date, setDate, presets }} />;
+  return (
+    <div className="w-full">
+      <DatePickerWithRange date={date} setDate={setDate} presets={presets} />
+    </div>
+  );
 }

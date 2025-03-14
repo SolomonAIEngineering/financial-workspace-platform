@@ -24,6 +24,7 @@ export function DataTableFilterResetButton<TData>({
 
   return (
     <Button
+      type="button"
       variant="outline"
       className="h-5 rounded-full px-1.5 py-1 font-mono text-[10px]"
       onClick={(e) => {
@@ -36,13 +37,9 @@ export function DataTableFilterResetButton<TData>({
           column?.setFilterValue(undefined);
         }
       }}
-      asChild
     >
-      {/* REMINDER: `AccordionTrigger` is also a button(!) and we get Hydration error when rendering button within button */}
-      <div role="button" tabIndex={0}>
-        <span>{filters.length}</span>
-        <X className="ml-1 h-2.5 w-2.5 text-muted-foreground" />
-      </div>
+      <span>{filters.length}</span>
+      <X className="ml-1 h-2.5 w-2.5 text-muted-foreground" />
     </Button>
   );
 }

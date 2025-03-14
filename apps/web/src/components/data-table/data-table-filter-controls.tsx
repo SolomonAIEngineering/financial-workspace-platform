@@ -31,14 +31,36 @@ export function DataTableFilterControls() {
     >
       {filterFields?.map((field) => {
         const value = field.value as string;
+
+        let filterComponent;
+        switch (field.type) {
+          case 'checkbox': {
+            filterComponent = <DataTableFilterCheckbox {...field} />;
+            break;
+          }
+          case 'slider': {
+            filterComponent = <DataTableFilterSlider {...field} />;
+            break;
+          }
+          case 'input': {
+            filterComponent = <DataTableFilterInput {...field} />;
+            break;
+          }
+          case 'timerange': {
+            filterComponent = <DataTableFilterTimerange {...field} />;
+            break;
+          }
+          default:
+            filterComponent = null;
+        }
+
         return (
           <AccordionItem key={value} value={value} className="border-none">
             <AccordionTrigger className="w-full px-2 py-0 hover:no-underline data-[state=closed]:text-muted-foreground focus-within:data-[state=closed]:text-foreground hover:data-[state=closed]:text-foreground data-[state=open]:text-foreground">
               <div className="flex w-full items-center justify-between gap-2 truncate py-2 pr-2">
                 <div className="flex items-center gap-2 truncate">
                   <p className="text-sm font-medium">{field.label}</p>
-                  {value !== field.label.toLowerCase() &&
-                  !field.commandDisabled ? (
+                  {value !== field.label.toLowerCase() && !field.commandDisabled ? (
                     <p className="mt-px truncate font-mono text-[10px] text-muted-foreground">
                       {value}
                     </p>
@@ -48,25 +70,8 @@ export function DataTableFilterControls() {
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              {/* REMINDER: avoid the focus state to be cut due to overflow-hidden */}
-              {/* REMINDER: need to move within here because of accordion height animation */}
               <div className="p-1">
-                {(() => {
-                  switch (field.type) {
-                    case 'checkbox': {
-                      return <DataTableFilterCheckbox {...field} />;
-                    }
-                    case 'slider': {
-                      return <DataTableFilterSlider {...field} />;
-                    }
-                    case 'input': {
-                      return <DataTableFilterInput {...field} />;
-                    }
-                    case 'timerange': {
-                      return <DataTableFilterTimerange {...field} />;
-                    }
-                  }
-                })()}
+                {filterComponent}
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -75,3 +80,4 @@ export function DataTableFilterControls() {
     </Accordion>
   );
 }
+

@@ -78,53 +78,55 @@ export function Client() {
   }, [facets]);
 
   return (
-    <DataTableInfinite
-      columns={columns}
-      data={flatData}
-      totalRows={totalDBRowCount}
-      filterRows={filterDBRowCount}
-      totalRowsFetched={totalFetched}
-      defaultColumnFilters={Object.entries(filter)
-        .map(([key, value]) => ({
-          id: key,
-          value,
-        }))
-        .filter(({ value }) => value ?? undefined)}
-      defaultColumnSorting={sort ? [sort] : undefined}
-      defaultRowSelection={search.uuid ? { [search.uuid]: true } : undefined}
-      // FIXME: make it configurable - TODO: use `columnHidden: boolean` in `filterFields`
-      defaultColumnVisibility={{
-        uuid: false,
-        "timing.dns": false,
-        "timing.connection": false,
-        "timing.tls": false,
-        "timing.ttfb": false,
-        "timing.transfer": false,
-      }}
-      meta={metadata}
-      filterFields={filterFields}
-      sheetFields={sheetFields}
-      isFetching={isFetching}
-      isLoading={isLoading}
-      fetchNextPage={fetchNextPage}
-      fetchPreviousPage={fetchPreviousPage}
-      refetch={refetch}
-      chartData={chartData}
-      getRowClassName={(row) => {
-        const rowTimestamp = row.original.date.getTime();
-        const isPast = rowTimestamp <= (liveMode.timestamp || -1);
-        const levelClassName = getLevelRowClassName(row.original.level);
-        return cn(levelClassName, isPast ? "opacity-50" : "opacity-100");
-      }}
-      getRowId={(row) => row.uuid}
-      getFacetedUniqueValues={getFacetedUniqueValues(facets)}
-      getFacetedMinMaxValues={getFacetedMinMaxValues(facets)}
-      renderLiveRow={(props) => {
-        if (!liveMode.timestamp) return null;
-        if (props?.row.original.uuid !== liveMode?.row?.uuid) return null;
-        return <LiveRow />;
-      }}
-    />
+    <div>
+      <DataTableInfinite
+        columns={columns}
+        data={flatData}
+        totalRows={totalDBRowCount}
+        filterRows={filterDBRowCount}
+        totalRowsFetched={totalFetched}
+        defaultColumnFilters={Object.entries(filter)
+          .map(([key, value]) => ({
+            id: key,
+            value,
+          }))
+          .filter(({ value }) => value ?? undefined)}
+        defaultColumnSorting={sort ? [sort] : undefined}
+        defaultRowSelection={search.uuid ? { [search.uuid]: true } : undefined}
+        // FIXME: make it configurable - TODO: use `columnHidden: boolean` in `filterFields`
+        defaultColumnVisibility={{
+          uuid: false,
+          "timing.dns": false,
+          "timing.connection": false,
+          "timing.tls": false,
+          "timing.ttfb": false,
+          "timing.transfer": false,
+        }}
+        meta={metadata}
+        filterFields={filterFields}
+        sheetFields={sheetFields}
+        isFetching={isFetching}
+        isLoading={isLoading}
+        fetchNextPage={fetchNextPage}
+        fetchPreviousPage={fetchPreviousPage}
+        refetch={refetch}
+        chartData={chartData}
+        getRowClassName={(row) => {
+          const rowTimestamp = row.original.date.getTime();
+          const isPast = rowTimestamp <= (liveMode.timestamp || -1);
+          const levelClassName = getLevelRowClassName(row.original.level);
+          return cn(levelClassName, isPast ? "opacity-50" : "opacity-100");
+        }}
+        getRowId={(row) => row.uuid}
+        getFacetedUniqueValues={getFacetedUniqueValues(facets)}
+        getFacetedMinMaxValues={getFacetedMinMaxValues(facets)}
+        renderLiveRow={(props) => {
+          if (!liveMode.timestamp) return null;
+          if (props?.row.original.uuid !== liveMode?.row?.uuid) return null;
+          return <LiveRow />;
+        }}
+      />
+    </div>
   );
 }
 

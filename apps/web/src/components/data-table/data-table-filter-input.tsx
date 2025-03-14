@@ -38,19 +38,21 @@ export function DataTableFilterInput<TData>({
   }, [filters]);
 
   return (
-    <div className="grid w-full gap-1.5">
-      <Label htmlFor={value} className="sr-only px-2 text-muted-foreground">
-        {value}
-      </Label>
-      <InputWithAddons
-        placeholder="Search"
-        leading={<Search className="mt-0.5 h-4 w-4" />}
-        containerClassName="h-9 rounded-lg"
-        name={value}
-        id={value}
-        value={input || ''}
-        onChange={(e) => setInput(e.target.value)}
-      />
+    <div className="w-full">
+      <div className="grid w-full gap-1.5">
+        <Label htmlFor={value} className="sr-only px-2 text-muted-foreground">
+          {value}
+        </Label>
+        <InputWithAddons
+          placeholder="Search"
+          leading={<Search className="mt-0.5 h-4 w-4" />}
+          containerClassName="h-9 rounded-lg"
+          name={value}
+          id={value}
+          value={input || ''}
+          onChange={(e) => setInput(e.target.value)}
+        />
+      </div>
     </div>
   );
 }

@@ -103,12 +103,14 @@ export function DataTableFilterSlider<TData>({
           />
         </div>
       </div>
-      <Slider
-        min={min}
-        max={max}
-        value={input?.length === 2 ? input : [min, max]}
-        onValueChange={(values) => setInput(values)}
-      />
+      <div className="w-full">
+        <Slider
+          min={min}
+          max={max}
+          value={input?.length === 2 ? input : [min, max]}
+          onValueChange={(values) => setInput(values)}
+        />
+      </div>
     </div>
   );
 }
