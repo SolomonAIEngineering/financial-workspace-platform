@@ -1,9 +1,9 @@
-import { data, filterFields } from "./constants";
-
-import { DataTable } from "./data-table";
+import { DataTable } from "@/components/tables/transaction/data-table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
-import { columns } from "./columns";
+import { columns } from "@/components/tables/transaction/columns";
+import { data } from "@/components/tables/transaction/constants";
+import { filterFields } from "@/components/tables/transaction/constants";
 
 export const metadata = {
   title: "Transactions",

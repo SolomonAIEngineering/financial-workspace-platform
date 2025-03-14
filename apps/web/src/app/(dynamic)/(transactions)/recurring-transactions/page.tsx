@@ -1,4 +1,4 @@
-import { RecurringTransactionsView } from "./recurring-transactions-view";
+import { RecurringTransactionsView } from "../../../../components/tables/recurring-transaction/recurring-transactions-view";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 

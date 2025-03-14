@@ -42,8 +42,7 @@ import { DataTableProvider } from "@/components/data-table/data-table-provider";
 import { DataTableResetButton } from "@/components/data-table/data-table-reset-button";
 import { DataTableSheetDetails } from "@/components/data-table/data-table-sheet/data-table-sheet-details";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { RefreshButton } from "../infinite/_components/refresh-button";
-import { TimelineChart } from "../infinite/timeline-chart";
+import { RefreshButton } from "@/components/buttons/refresh-button";
 import { TransactionSheetDetails } from "./data-table-sheet-transaction";
 import { cn } from "@/lib/utils";
 import { searchParamsParser } from "./search-params";
@@ -305,7 +304,6 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                 refetch && <RefreshButton key="refresh" onClick={refetch} />,
               ]}
             />
-            {chartData.length > 0 && <TimelineChart data={chartData} className="-mb-2" columnId="date" />}
           </div>
           <div className="z-0">
             <Table

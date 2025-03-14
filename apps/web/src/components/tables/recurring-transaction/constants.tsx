@@ -269,6 +269,7 @@ export const filterFields: DataTableFilterField<RecurringTransactionSchema>[] = 
             { value: "paused", label: "Paused" },
             { value: "failed", label: "Failed" },
             { value: "completed", label: "Completed" },
+            { value: "cancelled", label: "Cancelled" },
         ],
     },
     {
@@ -284,6 +285,115 @@ export const filterFields: DataTableFilterField<RecurringTransactionSchema>[] = 
         ],
     },
     {
+        type: "checkbox",
+        value: "frequency",
+        label: "Frequency",
+        options: [
+            { value: "WEEKLY", label: "Weekly" },
+            { value: "BIWEEKLY", label: "Biweekly" },
+            { value: "MONTHLY", label: "Monthly" },
+            { value: "SEMI_MONTHLY", label: "Semi-Monthly" },
+            { value: "ANNUALLY", label: "Annually" },
+            { value: "IRREGULAR", label: "Irregular" },
+            { value: "UNKNOWN", label: "Unknown" },
+        ],
+    },
+    {
+        type: "checkbox",
+        value: "importanceLevel",
+        label: "Importance",
+        options: [
+            { value: "critical", label: "Critical" },
+            { value: "high", label: "High" },
+            { value: "medium", label: "Medium" },
+            { value: "low", label: "Low" },
+        ],
+    },
+    {
+        type: "checkbox",
+        value: "affectAvailableBalance",
+        label: "Affects Balance",
+        options: [
+            { value: "true", label: "Affects Balance" },
+            { value: "false", label: "Does Not Affect Balance" },
+        ],
+    },
+    {
+        type: "checkbox",
+        value: "isAutomated",
+        label: "Automation",
+        options: [
+            { value: "true", label: "Automated" },
+            { value: "false", label: "Manual" },
+        ],
+    },
+    {
+        type: "checkbox",
+        value: "requiresApproval",
+        label: "Approval Required",
+        options: [
+            { value: "true", label: "Required" },
+            { value: "false", label: "Not Required" },
+        ],
+    },
+    {
+        type: "checkbox",
+        value: "isVariable",
+        label: "Amount Type",
+        options: [
+            { value: "true", label: "Variable" },
+            { value: "false", label: "Fixed" },
+        ],
+    },
+    {
+        type: "checkbox",
+        value: "currency",
+        label: "Currency",
+        options: [
+            { value: "USD", label: "USD ($)" },
+            { value: "EUR", label: "EUR (€)" },
+            { value: "GBP", label: "GBP (£)" },
+            { value: "CAD", label: "CAD ($)" },
+            { value: "AUD", label: "AUD ($)" },
+            { value: "JPY", label: "JPY (¥)" },
+        ],
+    },
+    {
+        type: "checkbox",
+        value: "dayOfMonth",
+        label: "Day of Month",
+        options: [
+            { value: "1", label: "1st" },
+            { value: "15", label: "15th" },
+            { value: "30", label: "30th" },
+            { value: "last", label: "Last Day" },
+        ],
+    },
+    {
+        type: "checkbox",
+        value: "dayOfWeek",
+        label: "Day of Week",
+        options: [
+            { value: "0", label: "Sunday" },
+            { value: "1", label: "Monday" },
+            { value: "2", label: "Tuesday" },
+            { value: "3", label: "Wednesday" },
+            { value: "4", label: "Thursday" },
+            { value: "5", label: "Friday" },
+            { value: "6", label: "Saturday" },
+        ],
+    },
+    {
+        type: "input",
+        value: "merchantName",
+        label: "Merchant",
+    },
+    {
+        type: "input",
+        value: "title",
+        label: "Title",
+    },
+    {
         type: "slider",
         value: "amount",
         label: "Amount",
@@ -291,9 +401,62 @@ export const filterFields: DataTableFilterField<RecurringTransactionSchema>[] = 
         max: 5000,
     },
     {
+        type: "slider",
+        value: "interval",
+        label: "Interval",
+        min: 1,
+        max: 12,
+    },
+    {
+        type: "slider",
+        value: "executionCount",
+        label: "Execution Count",
+        min: 0,
+        max: 100,
+    },
+    {
+        type: "slider",
+        value: "totalExecuted",
+        label: "Total Executed Amount",
+        min: 0,
+        max: 10000,
+    },
+    {
+        type: "slider",
+        value: "minBalanceRequired",
+        label: "Min. Balance Required",
+        min: 0,
+        max: 2000,
+    },
+    {
         type: "timerange",
         value: "nextScheduledDate",
         label: "Next Execution Date",
+    },
+    {
+        type: "timerange",
+        value: "lastExecutedAt",
+        label: "Last Execution Time",
+    },
+    {
+        type: "timerange",
+        value: "startDate",
+        label: "Start Date",
+    },
+    {
+        type: "timerange",
+        value: "endDate",
+        label: "End Date",
+    },
+    {
+        type: "timerange",
+        value: "createdAt",
+        label: "Created Date",
+    },
+    {
+        type: "timerange",
+        value: "updatedAt",
+        label: "Last Updated",
     },
 ];
 
@@ -301,8 +464,31 @@ export const filterFields: DataTableFilterField<RecurringTransactionSchema>[] = 
 export const groupFilters = (fields: DataTableFilterField<RecurringTransactionSchema>[]) => {
     // Group filters by their type
     const statusFilters = fields.filter(field => field.value === "status");
-    const typeFilters = fields.filter(field => field.value === "transactionType");
-    const rangeFilters = fields.filter(field => field.type === "slider" || field.type === "timerange");
+
+    const typeFilters = fields.filter(field =>
+        field.value === "transactionType" ||
+        field.value === "frequency" ||
+        field.value === "importanceLevel" ||
+        field.value === "currency"
+    );
+
+    const configFilters = fields.filter(field =>
+        field.value === "isAutomated" ||
+        field.value === "requiresApproval" ||
+        field.value === "isVariable" ||
+        field.value === "affectAvailableBalance"
+    );
+
+    const scheduleFilters = fields.filter(field =>
+        field.value === "dayOfMonth" ||
+        field.value === "dayOfWeek"
+    );
+
+    const textFilters = fields.filter(field => field.type === "input");
+
+    const rangeFilters = fields.filter(field => field.type === "slider");
+
+    const dateFilters = fields.filter(field => field.type === "timerange");
 
     return [
         {
@@ -310,12 +496,28 @@ export const groupFilters = (fields: DataTableFilterField<RecurringTransactionSc
             fields: statusFilters,
         },
         {
-            title: "Type",
+            title: "Types & Categories",
             fields: typeFilters,
         },
         {
-            title: "Ranges",
+            title: "Configuration",
+            fields: configFilters,
+        },
+        {
+            title: "Schedule",
+            fields: scheduleFilters,
+        },
+        {
+            title: "Text Search",
+            fields: textFilters,
+        },
+        {
+            title: "Numeric Ranges",
             fields: rangeFilters,
+        },
+        {
+            title: "Date Ranges",
+            fields: dateFilters,
         },
     ];
 }; 
