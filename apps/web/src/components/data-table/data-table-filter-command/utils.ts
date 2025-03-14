@@ -46,6 +46,7 @@ export function replaceInputByFieldType<TData>({
         const input = prev.replace(currentWord, words.join(ARRAY_DELIMITER));
         return `${input.trim()} `;
       }
+      break;
     }
     case 'slider': {
       if (currentWord.includes(SLIDER_DELIMITER)) {
@@ -54,6 +55,7 @@ export function replaceInputByFieldType<TData>({
         const input = prev.replace(currentWord, words.join(SLIDER_DELIMITER));
         return `${input.trim()} `;
       }
+      break;
     }
     case 'timerange': {
       if (currentWord.includes(RANGE_DELIMITER)) {
@@ -62,6 +64,7 @@ export function replaceInputByFieldType<TData>({
         const input = prev.replace(currentWord, words.join(RANGE_DELIMITER));
         return `${input.trim()} `;
       }
+      break;
     }
     default: {
       const input = prev.replace(currentWord, value);
@@ -79,13 +82,13 @@ export function getFieldOptions<TData>({
     case 'slider': {
       return field.options?.length
         ? field.options
-            .map(({ value }) => value)
-            .sort((a, b) => Number(a) - Number(b))
-            .filter(notEmpty)
+          .map(({ value }) => value)
+          .sort((a, b) => Number(a) - Number(b))
+          .filter(notEmpty)
         : Array.from(
-            { length: field.max - field.min + 1 },
-            (_, i) => field.min + i
-          ) || [];
+          { length: field.max - field.min + 1 },
+          (_, i) => field.min + i
+        ) || [];
     }
     default: {
       return field.options?.map(({ value }) => value).filter(notEmpty) || [];

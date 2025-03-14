@@ -1,7 +1,7 @@
-import { logger, schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
-import { BANK_JOBS } from "../../constants";
-import { client } from "@/jobs/client";
+import { BANK_JOBS } from '../../constants';
+import { client } from '@/jobs/client';
 import { getItemDetails } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
 import { z } from 'zod';
@@ -92,7 +92,7 @@ export const connectionRecoveryJob = schemaTask({
   run: async (payload, io) => {
     const { connectionId, provider, accessToken, retryCount = 0 } = payload;
 
-    await logger.info('Starting connection recovery job', {
+    logger.info('Starting connection recovery job', {
       connectionId,
       provider,
       retryCount,
@@ -168,7 +168,6 @@ export const connectionRecoveryJob = schemaTask({
           where: { id: connectionId },
         });
 
-
         // If we haven't exceeded max retries, schedule another attempt
         if (newRetryCount < 3) {
           // Schedule with exponential backoff
@@ -187,7 +186,7 @@ export const connectionRecoveryJob = schemaTask({
             },
           });
 
-          await logger.info('Scheduled next recovery attempt', {
+          logger.info('Scheduled next recovery attempt', {
             connectionId,
             nextAttempt: `in ${delayMinutes} minutes`,
             retryCount: newRetryCount,
@@ -233,7 +232,7 @@ export const connectionRecoveryJob = schemaTask({
         };
       }
     } catch (error) {
-      await logger.error('Connection recovery job failed', {
+      logger.error('Connection recovery job failed', {
         connectionId,
         provider,
         error: error.message,

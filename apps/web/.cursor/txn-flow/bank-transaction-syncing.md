@@ -1102,9 +1102,7 @@ export const upsertTransactionsJob = schemaTask({
   run: async (payload, io) => {
     const { accessToken, bankAccountId, userId } = payload;
 
-    await logger.info(
-      `Starting transaction sync for account ${bankAccountId}`
-    );
+    await logger.info(`Starting transaction sync for account ${bankAccountId}`);
 
     try {
       // Get the bank account details

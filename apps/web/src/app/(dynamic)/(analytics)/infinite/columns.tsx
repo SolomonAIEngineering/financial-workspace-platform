@@ -89,7 +89,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     header: 'Status',
     cell: ({ row }) => {
       const value = row.getValue('status');
-      if (typeof value === 'undefined') {
+      if (!value) {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
       if (typeof value === 'number') {

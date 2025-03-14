@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useCallback, useMemo } from 'react';
 

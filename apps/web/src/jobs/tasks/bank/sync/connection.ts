@@ -1,12 +1,11 @@
-import { logger, schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@prisma/client';
 import { client } from '../../../client';
-import { eventTrigger } from '@trigger.dev/sdk';
 import { getItemDetails } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * This job manages the synchronization of an entire bank connection and all its

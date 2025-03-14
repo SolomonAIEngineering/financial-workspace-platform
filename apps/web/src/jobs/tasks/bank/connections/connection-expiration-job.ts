@@ -67,7 +67,7 @@ export const connectionExpirationJob = schemaTask({
    * @returns A result object containing success status and notification counts
    */
   run: async (payload) => {
-    await logger.info('Starting connection expiration check');
+    logger.info('Starting connection expiration check');
 
     try {
       const now = new Date();
@@ -88,7 +88,7 @@ export const connectionExpirationJob = schemaTask({
             expiresAt: {
               not: null,
               gt: now,
-              lte: criticalDate
+              lte: criticalDate,
             },
             status: BankConnectionStatus.ACTIVE,
           },
@@ -106,14 +106,14 @@ export const connectionExpirationJob = schemaTask({
             expiresAt: {
               not: null,
               gt: criticalDate,
-              lte: warningDate
+              lte: warningDate,
             },
             status: BankConnectionStatus.ACTIVE,
           },
-        })
+        }),
       ]);
 
-      await logger.info(
+      logger.info(
         `Found ${criticalConnections.length} critical and ${warningConnections.length} warning connections`
       );
 
@@ -124,7 +124,13 @@ export const connectionExpirationJob = schemaTask({
       for (const connection of criticalConnections) {
         if (!connection.expiresAt) continue;
 
-        const daysUntilExpiration = Math.max(1, Math.ceil((connection.expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+        const daysUntilExpiration = Math.max(
+          1,
+          Math.ceil(
+            (connection.expiresAt.getTime() - now.getTime()) /
+            (1000 * 60 * 60 * 24)
+          )
+        );
 
         await client.sendEvent({
           name: 'connection-notification',
@@ -142,7 +148,7 @@ export const connectionExpirationJob = schemaTask({
         });
         criticalCount++;
 
-        await logger.info(
+        logger.info(
           `Sent critical expiration notification for connection ${connection.id}`
         );
       }
@@ -151,7 +157,10 @@ export const connectionExpirationJob = schemaTask({
       for (const connection of warningConnections) {
         if (!connection.expiresAt) continue;
 
-        const daysUntilExpiration = Math.ceil((connection.expiresAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        const daysUntilExpiration = Math.ceil(
+          (connection.expiresAt.getTime() - now.getTime()) /
+          (1000 * 60 * 60 * 24)
+        );
 
         await client.sendEvent({
           name: 'connection-notification',
@@ -169,12 +178,12 @@ export const connectionExpirationJob = schemaTask({
         });
         warningCount++;
 
-        await logger.info(
+        logger.info(
           `Sent warning expiration notification for connection ${connection.id}`
         );
       }
 
-      await logger.info(
+      logger.info(
         `Connection expiration check completed: ${warningCount} warnings, ${criticalCount} critical notifications sent`
       );
 
@@ -184,9 +193,7 @@ export const connectionExpirationJob = schemaTask({
         criticalCount,
       };
     } catch (error) {
-      await logger.error(
-        `Connection expiration check failed: ${error.message}`
-      );
+      logger.error(`Connection expiration check failed: ${error.message}`);
 
       return {
         success: false,

@@ -1,9 +1,3 @@
-import {
-  ARRAY_DELIMITER,
-  RANGE_DELIMITER,
-  SLIDER_DELIMITER,
-} from '@/lib/delimiters';
-
 import { z } from 'zod';
 
 /**
@@ -218,4 +212,4 @@ export type RecurringTransactionFilterSchema = z.infer<
  * @property [key: string] - Dynamic properties storing numeric values for the
  *   chart
  */
-export type BaseChartSchema = { timestamp: number; [key: string]: number };
+export type BaseChartSchema = { timestamp: number;[key: string]: number };

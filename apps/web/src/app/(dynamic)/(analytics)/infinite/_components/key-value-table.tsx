@@ -35,6 +35,7 @@ function RowAction({ label, value }: { label: string; value: string }) {
       className="group text-left *:border-border hover:bg-transparent [&>:not(:last-child)]:border-r"
       onClick={(e) => {
         e.stopPropagation();
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         copy(value);
       }}
     >

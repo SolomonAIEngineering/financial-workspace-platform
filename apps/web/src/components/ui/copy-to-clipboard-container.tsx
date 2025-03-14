@@ -14,9 +14,9 @@ const CopyToClipboardContainer = React.forwardRef<
   const innerRef = React.useRef<HTMLDivElement>(null);
   const { copy, isCopied } = useCopyToClipboard();
 
-  const onClick = () => {
+  const onClick = async () => {
     const content = innerRef.current?.textContent;
-    if (content) copy(content);
+    if (content) await copy(content);
   };
 
   return (

@@ -1,9 +1,9 @@
+import { logger, schedules } from '@trigger.dev/sdk/v3';
+
 import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@prisma/client';
 import { getAccounts } from '@/server/services/plaid';
-import { logger } from '@trigger.dev/sdk/v3';
 import { prisma } from '@/server/db';
-import { schedules } from '@trigger.dev/sdk/v3';
 
 /**
  * This job updates bank account balances on a frequent basis without pulling

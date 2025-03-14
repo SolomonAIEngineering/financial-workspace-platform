@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
   const nextCursor =
     data.length > 0 ? data[data.length - 1].date.getTime() : null;
   const prevCursor =
-    data.length > 0 ? data[0].date.getTime() : new Date().getTime();
+    data.length > 0 ? data[0].date.getTime() : Date.now();
 
   return Response.json(
     SuperJSON.stringify({

@@ -16,7 +16,7 @@ const REFRESH_INTERVAL = 4_000;
 
 interface LiveButtonProps {
   fetchPreviousPage?: (
-    options?: FetchPreviousPageOptions | undefined
+    options?: FetchPreviousPageOptions
   ) => Promise<unknown>;
 }
 
@@ -37,6 +37,7 @@ export function LiveButton({ fetchPreviousPage }: LiveButtonProps) {
       }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchData();
 
     return () => {
@@ -48,11 +49,13 @@ export function LiveButton({ fetchPreviousPage }: LiveButtonProps) {
   // TODO: test properly
   React.useEffect(() => {
     if ((date || sort) && live) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setSearch((prev) => ({ ...prev, live: null }));
     }
   }, [date, sort]);
 
   function handleClick() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     setSearch((prev) => ({
       ...prev,
       live: !prev.live,

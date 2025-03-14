@@ -240,7 +240,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   });
 
   // reset columns, filters and sorting
-  const resetColumns = React.useCallback(() => {
+  const resetColumns = React.useCallback(async () => {
     setColumnFilters(defaultColumnFilters);
     setColumnVisibility(defaultColumnVisibility);
     setSorting(defaultColumnSorting);
@@ -249,7 +249,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
       pageSize: 10,
     });
     if (searchParams) {
-      setSearchParams({}, { shallow: false });
+      await setSearchParams({}, { shallow: false });
     }
   }, [
     setSearchParams,
@@ -325,7 +325,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
             <div className="flex h-[46px] items-center justify-between gap-3 px-4">
               <p className="font-medium text-foreground">Filters</p>
               <div>
-                {table.getState().columnFilters.length ? (
+                {table.getState().columnFilters.length > 0 ? (
                   <DataTableResetButton />
                 ) : null}
               </div>

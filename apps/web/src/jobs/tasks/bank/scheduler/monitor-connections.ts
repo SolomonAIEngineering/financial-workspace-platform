@@ -1,10 +1,9 @@
-import { logger, schemaTask } from '@trigger.dev/sdk/v3';
+import { logger, schedules } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@prisma/client';
 import { getItemDetails } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
-import { schedules } from '@trigger.dev/sdk/v3';
 
 /**
  * This job monitors bank connections for issues and automatically updates their
@@ -63,7 +62,8 @@ export const monitorBankConnectionsJob = schedules.task({
           const errorMessage = String(
             itemDetails.status.error_code || 'Unknown error'
           );
-          await logger.warn(
+
+          logger.warn(
             `Error with connection ${connection.id}: ${errorMessage}`
           );
 

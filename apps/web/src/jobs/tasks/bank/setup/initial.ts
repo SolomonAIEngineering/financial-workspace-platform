@@ -4,15 +4,13 @@ import {
   AccountType,
   BankConnectionStatus,
 } from '@prisma/client';
-import { eventTrigger } from '@trigger.dev/sdk';
 
 import { prisma } from '@/server/db';
 import { getAccounts, getInstitutionById } from '@/server/services/plaid';
 
 import { client } from '../../../client';
 import { BANK_JOBS } from '../../constants';
-import { logger } from "@trigger.dev/sdk/v3";
-import { schemaTask } from '@trigger.dev/sdk/v3';
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 import { z } from 'zod';
 
 /**
@@ -84,7 +82,14 @@ export const initialSetupJob = schemaTask({
    * @throws Error if any part of the setup process fails
    */
   run: async (payload, io) => {
-    const { accessToken, institutionId, itemId, publicToken, userId, provider } = payload;
+    const {
+      accessToken,
+      institutionId,
+      itemId,
+      publicToken,
+      userId,
+      provider,
+    } = payload;
 
     await logger.info(
       `Starting initial setup for institution ${institutionId}`
@@ -139,10 +144,7 @@ export const initialSetupJob = schemaTask({
             plaidAccountId: plaidAccount.plaidAccountId,
             status: AccountStatus.ACTIVE,
             subtype: plaidAccount.subtype,
-            type: mapPlaidAccountType(
-              plaidAccount.type,
-              plaidAccount.subtype
-            ),
+            type: mapPlaidAccountType(plaidAccount.type, plaidAccount.subtype),
             updatedAt: new Date(),
             userId,
           },
@@ -151,7 +153,6 @@ export const initialSetupJob = schemaTask({
       }
 
       bankAccounts = accounts;
-
 
       await logger.info(`Created ${bankAccounts.length} bank accounts`);
 

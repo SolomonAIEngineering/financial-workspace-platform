@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-
 import {
   Calendar,
   CalendarClock,
@@ -12,13 +10,13 @@ import {
   RefreshCw,
   X,
 } from 'lucide-react';
-import { format, isAfter, isBefore } from 'date-fns';
 
 import { Badge } from '@/components/ui/badge';
 import type { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import type { RecurringTransactionSchema } from './schema';
 import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 
 /**
  * Defines the data table columns for recurring transactions. This file contains

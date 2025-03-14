@@ -1,8 +1,7 @@
-import { logger, schedules } from "@trigger.dev/sdk/v3";
+import { logger, schedules } from '@trigger.dev/sdk/v3';
 
 import { BankConnectionStatus } from '@prisma/client';
 import { client } from '../../client';
-import { cronTrigger } from '@trigger.dev/sdk';
 import { prisma } from '@/server/db';
 import { subDays } from 'date-fns';
 

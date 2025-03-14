@@ -44,8 +44,7 @@ export function DataTableFilterSlider<TData>({
   }, [debouncedInput]);
 
   useEffect(() => {
-    if (debouncedInput?.length !== 2) {
-    } else if (!filters) {
+    if (debouncedInput?.length !== 2 || !filters) {
       setInput(null);
     } else if (
       debouncedInput[0] !== filters[0] ||

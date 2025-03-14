@@ -252,17 +252,19 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
       {} as Record<string, unknown>
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     setSearch(search);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnFilters]);
 
   React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     setSearch({ sort: sorting?.[0] || null });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting]);
 
   const selectedRow = React.useMemo(() => {
-    if ((isLoading || isFetching) && !data.length) return;
+    if ((isLoading || isFetching) && data.length === 0) return;
     const selectedRowKey = Object.keys(rowSelection)?.[0];
     return table
       .getCoreRowModel()
@@ -272,9 +274,12 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   React.useEffect(() => {
     if (isLoading || isFetching) return;
     if (Object.keys(rowSelection)?.length && !selectedRow) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setSearch({ uuid: null });
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setRowSelection({});
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setSearch({ uuid: Object.keys(rowSelection)?.[0] || null });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -339,7 +344,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
             <div className="flex h-[46px] items-center justify-between gap-3 px-4">
               <p className="font-medium text-foreground">Filters</p>
               <div>
-                {table.getState().columnFilters.length ? (
+                {table.getState().columnFilters.length > 0 ? (
                   <DataTableResetButton />
                 ) : null}
               </div>
@@ -413,9 +418,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}

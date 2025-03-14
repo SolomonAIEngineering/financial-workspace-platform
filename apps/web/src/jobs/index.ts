@@ -4,7 +4,6 @@ export { client } from './client';
 // Export all jobs
 export * from './tasks/bank/scheduler/monitor-connections';
 export * from './tasks/bank/scheduler/update-balances';
-export * from './tasks/transactions/analyze-spending';
 export * from './tasks/reconnect/send-reconnect-alerts';
 export * from './tasks/bank/transactions/upsert';
 export * from './tasks/bank/sync/account';
@@ -22,7 +21,6 @@ import {
   syncUserTransactionsJob,
 } from './tasks/transactions/sync-transactions';
 
-import { analyzeSpendingJob } from './tasks/transactions/analyze-spending';
 import { connectionExpirationJob } from './tasks/bank/connections/connection-expiration-job';
 import { connectionRecoveryJob } from './tasks/bank/connections/connection-recovery-job';
 import { expiringNotificationsJob } from './tasks/bank/notifications/expiring';
@@ -47,8 +45,6 @@ const jobs = [
   monitorBankConnectionsJob,
   updateBalancesJob,
 
-  // Analysis jobs
-  analyzeSpendingJob,
 
   // Alert/notification jobs
   sendReconnectAlertsJob,
@@ -83,7 +79,6 @@ export {
   syncUserTransactionsJob,
   monitorBankConnectionsJob,
   updateBalancesJob,
-  analyzeSpendingJob,
   sendReconnectAlertsJob,
   upsertTransactionsJob,
   syncAccountJob,

@@ -3,7 +3,7 @@ import {
   AccountType,
   BankConnectionStatus,
 } from '@prisma/client';
-import { logger, schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
 import { client } from '../../../client';

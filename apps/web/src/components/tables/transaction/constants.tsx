@@ -4,10 +4,7 @@ import type {
   DataTableFilterField,
   Option,
 } from '@/components/data-table/types';
-import { REGIONS } from '@/constants/region';
-import { TAGS } from '@/constants/tag';
-import { cn } from '@/lib/utils';
-import { subDays, subHours, subMinutes } from 'date-fns';
+import { subDays, subHours } from 'date-fns';
 import {
   type ColumnSchema,
   TRANSACTION_CATEGORIES,
@@ -78,7 +75,7 @@ export const data = [
     id: uuidv4(),
     bankAccountId: 'acct_checking_primary',
     bankAccountName: 'Primary Checking',
-    amount: 1250.0,
+    amount: 1250,
     name: 'Payroll Deposit',
     merchantName: 'Acme Corp',
     description: 'Bi-weekly salary payment',
@@ -211,7 +208,7 @@ export const data = [
     id: uuidv4(),
     bankAccountId: 'acct_checking_primary',
     bankAccountName: 'Primary Checking',
-    amount: 1200.0,
+    amount: 1200,
     name: 'Rent Payment',
     merchantName: 'Property Management LLC',
     description: 'Monthly rent',
@@ -296,7 +293,7 @@ export const data = [
     id: uuidv4(),
     bankAccountId: 'acct_checking_primary',
     bankAccountName: 'Primary Checking',
-    amount: 150.0,
+    amount: 150,
     name: 'Utility Bill',
     merchantName: 'City Power & Water',
     description: 'Monthly utility payment',
@@ -364,7 +361,7 @@ export const data = [
     id: uuidv4(),
     bankAccountId: 'acct_checking_primary',
     bankAccountName: 'Primary Checking',
-    amount: 500.0,
+    amount: 500,
     name: 'Transfer to Savings',
     merchantName: null,
     description: 'Monthly savings transfer',
@@ -401,7 +398,7 @@ export const data = [
     id: uuidv4(),
     bankAccountId: 'acct_credit_main',
     bankAccountName: 'Main Credit Card',
-    amount: 120.0,
+    amount: 120,
     name: 'Clothing Store',
     merchantName: 'Fashion Outlet',
     description: 'New clothes purchase',
@@ -437,7 +434,7 @@ export const data = [
     id: uuidv4(),
     bankAccountId: 'acct_checking_primary',
     bankAccountName: 'Primary Checking',
-    amount: 35.0,
+    amount: 35,
     name: 'Pharmacy',
     merchantName: 'CVS',
     description: 'Prescription medication',
@@ -511,7 +508,7 @@ export const data = [
     id: uuidv4(),
     bankAccountId: 'acct_checking_primary',
     bankAccountName: 'Primary Checking',
-    amount: 25.0,
+    amount: 25,
     name: 'ATM Withdrawal',
     merchantName: null,
     description: 'Cash withdrawal',
@@ -688,7 +685,7 @@ export const filterFields = [
     type: 'checkbox',
     defaultOpen: true,
     options: TRANSACTION_CATEGORIES.map((category) => ({
-      label: category.replace(/_/g, ' '),
+      label: category.replaceAll(/_/g, ' '),
       value: category,
     })),
   },
@@ -697,7 +694,7 @@ export const filterFields = [
     value: 'paymentMethod',
     type: 'checkbox',
     options: PAYMENT_METHODS.map((method) => ({
-      label: method.replace(/_/g, ' '),
+      label: method.replaceAll(/_/g, ' '),
       value: method,
     })),
   },
@@ -706,7 +703,7 @@ export const filterFields = [
     value: 'transactionType',
     type: 'checkbox',
     options: TRANSACTION_TYPES.map((type) => ({
-      label: type.replace(/_/g, ' '),
+      label: type.replaceAll(/_/g, ' '),
       value: type,
     })),
   },
@@ -724,7 +721,7 @@ export const filterFields = [
     value: 'frequency',
     type: 'checkbox',
     options: TRANSACTION_FREQUENCIES.map((frequency) => ({
-      label: frequency.replace(/_/g, ' '),
+      label: frequency.replaceAll(/_/g, ' '),
       value: frequency,
     })),
   },
@@ -735,7 +732,7 @@ export const filterFields = [
     defaultOpen: true,
     component: (props: Option) => {
       if (typeof props.value === 'boolean') return null;
-      if (typeof props.value === 'undefined') return null;
+      if (!props.value) return null;
       return (
         <div className="flex w-full items-center justify-between gap-2">
           <span className="truncate font-normal">{props.value}</span>

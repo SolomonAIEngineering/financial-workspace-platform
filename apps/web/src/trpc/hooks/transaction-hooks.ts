@@ -1,68 +1,13 @@
 import { DEFAULT_QUERY_OPTIONS, QueryOptions } from './query-options';
 import { api, useTRPC } from '@/trpc/react';
 
-import type { RouterOutputs } from '@/server/api/root';
 import { Transaction } from '@/server/types/index';
-import type { TransactionCategory } from '@prisma/client';
 import { mergeDefined } from '@/lib/mergeDefined';
 import { produce } from 'immer';
 import { toast } from 'sonner';
 import { useCallback } from 'react';
 import { useDebouncedCallback } from '@/hooks/useDebounceCallback';
-import { useState } from 'react';
 import { useWarnIfUnsavedChanges } from '@/hooks/useWarnIfUnsavedChanges';
-
-/** Hook for fetching a list of transactions with optional filtering */
-export function useTransactions(
-  filters?: {
-    merchant?: string;
-    category?: TransactionCategory;
-    tags?: string[];
-    method?: string;
-    assignedTo?: string;
-    status?: string;
-    dateFrom?: string;
-    dateTo?: string;
-    minAmount?: number;
-    maxAmount?: number;
-    page?: number;
-    limit?: number;
-  },
-  options: QueryOptions = DEFAULT_QUERY_OPTIONS
-) {
-  const [page, setPage] = useState(filters?.page || 1);
-  const [limit, setLimit] = useState(filters?.limit || 20);
-
-  const query = api.transactions.getTransactions.useQuery(
-    {
-      ...filters,
-      page,
-      limit,
-    },
-    {
-      ...options,
-    }
-  );
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleLimitChange = (newLimit: number) => {
-    setLimit(newLimit);
-    setPage(1); // Reset to first page when changing limit
-  };
-
-  return {
-    ...query,
-    transactions: query.data?.transactions || [],
-    pagination: query.data?.pagination,
-    page,
-    limit,
-    setPage: handlePageChange,
-    setLimit: handleLimitChange,
-  };
-}
 
 /** Hook for fetching a specific transaction by ID */
 export function useTransaction(

@@ -17,20 +17,20 @@ export function DataTableFilterTimerange<TData>({
   const filterValue = columnFilters.find((i) => i.id === value)?.value;
 
   const date: DateRange | undefined = useMemo(() => {
-    if (!filterValue) return undefined;
+    if (!filterValue) return;
 
     if (filterValue instanceof Date) {
-      return { from: filterValue, to: undefined };
+      return { from: filterValue };
     }
 
     if (Array.isArray(filterValue) && isArrayOfDates(filterValue)) {
       return {
-        from: filterValue[0] || undefined,
-        to: filterValue[1] || undefined,
+        from: filterValue[0],
+        to: filterValue[1],
       };
     }
 
-    return undefined;
+    return;
   }, [filterValue]);
 
   const setDate = (date: DateRange | undefined) => {

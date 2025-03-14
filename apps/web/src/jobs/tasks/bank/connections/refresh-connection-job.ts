@@ -1,5 +1,5 @@
-import { schemaTask } from "@trigger.dev/sdk/v3";
-import { z } from "zod";
+import { schemaTask } from '@trigger.dev/sdk/v3';
+import { z } from 'zod';
 
 /**
  * This job handles the token refresh process for bank connections across
@@ -44,7 +44,7 @@ import { z } from "zod";
  *   }
  */
 export const refreshConnectionJob = schemaTask({
-  id: "refresh-connection",
+  id: 'refresh-connection',
   maxDuration: 300,
   retry: {
     maxAttempts: 2,
@@ -53,7 +53,6 @@ export const refreshConnectionJob = schemaTask({
     connectionId: z.string().uuid(),
   }),
   run: async ({ connectionId }, { ctx }) => {
-
     //   try {
     //     logger.info("Starting connection refresh job", { connectionId });
 

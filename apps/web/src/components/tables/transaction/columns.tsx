@@ -1,7 +1,5 @@
 'use client';
 
-import * as React from 'react';
-
 import { Check, CreditCard, Download, Minus, Upload, X } from 'lucide-react';
 import {
   HoverCard,
@@ -15,14 +13,9 @@ import { Badge } from '@/components/ui/badge';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { ColumnSchema } from './schema';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
-import { DataTableSheetDetails } from '@/components/data-table/data-table-sheet/data-table-sheet-details';
 import { HoverCardPortal } from '@radix-ui/react-hover-card';
 // Add imports for SheetDetails
-import { MemoizedDataTableSheetContent } from '@/components/data-table/data-table-sheet/data-table-sheet-content';
-import type { SheetField } from '@/components/data-table/types';
-import { TRANSACTION_CATEGORIES } from './schema';
 import { TextWithTooltip } from '@/components/ui/text-with-tooltip';
-import { cn } from '@/lib/utils';
 
 /**
  * Defines the data table columns for financial transactions. This file contains
@@ -266,7 +259,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
                 <Badge
                   className={`${categoryColors[category].badge} rounded-md px-2 py-1 text-xs font-medium shadow-sm transition-all duration-200`}
                 >
-                  {category.replace(/_/g, ' ')}
+                  {category.replaceAll(/_/g, ' ')}
                 </Badge>
               </div>
             </HoverCardTrigger>
@@ -278,7 +271,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
               >
                 <div className="flex flex-col gap-2">
                   <div className="text-sm font-medium">
-                    {category.replace(/_/g, ' ')}
+                    {category.replaceAll(/_/g, ' ')}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {getCategoryDescription(category)}
@@ -366,6 +359,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
           );
         }
       }
+
       return false;
     },
     size: 120,
@@ -381,7 +375,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       if (value) {
         return (
           <div className="font-mono text-sm text-muted-foreground">
-            {`${value}`.replace(/_/g, ' ')}
+            {`${value}`.replaceAll(/_/g, ' ')}
           </div>
         );
       }
@@ -444,14 +438,14 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       // Convert enum values to more readable format
       const formattedFrequency = frequency
         ? {
-            WEEKLY: 'Weekly',
-            BIWEEKLY: 'Every 2 Weeks',
-            MONTHLY: 'Monthly',
-            SEMI_MONTHLY: 'Twice Monthly',
-            ANNUALLY: 'Yearly',
-            IRREGULAR: 'Irregular',
-            UNKNOWN: 'Unknown',
-          }[frequency] || frequency
+          WEEKLY: 'Weekly',
+          BIWEEKLY: 'Every 2 Weeks',
+          MONTHLY: 'Monthly',
+          SEMI_MONTHLY: 'Twice Monthly',
+          ANNUALLY: 'Yearly',
+          IRREGULAR: 'Irregular',
+          UNKNOWN: 'Unknown',
+        }[frequency] || frequency
         : null;
 
       return formattedFrequency ? (
@@ -494,7 +488,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       if (value) {
         return (
           <div className="font-mono text-sm text-muted-foreground">
-            {`${value}`.replace(/_/g, ' ')}
+            {`${value}`.replaceAll(/_/g, ' ')}
           </div>
         );
       }

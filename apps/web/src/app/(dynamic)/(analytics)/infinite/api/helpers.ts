@@ -217,7 +217,7 @@ export function groupChartData(
   const between =
     _dates || (data?.length ? [data[data.length - 1].date, data[0].date] : []);
 
-  if (!between.length) return [];
+  if (between.length === 0) return [];
   const interval = evaluateInterval(between);
 
   const duration = Math.abs(

@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { produce } from 'immer';
 
@@ -7,94 +6,7 @@ import { useDebouncedCallback } from '@/hooks/useDebounceCallback';
 import { useWarnIfUnsavedChanges } from '@/hooks/useWarnIfUnsavedChanges';
 import { mergeDefined } from '@/lib/mergeDefined';
 import { api, useTRPC } from '@/trpc/react';
-import type { TransactionCategory, TransactionFrequency } from '@prisma/client';
 import { DEFAULT_QUERY_OPTIONS, type QueryOptions } from './query-options';
-
-/**
- * Hook for fetching a list of recurring transactions with optional filtering
- *
- * This hook provides pagination and filtering capabilities for recurring
- * transactions. It automatically handles pagination state and returns both the
- * raw query result and helper methods for pagination.
- *
- * @example
- *   // Example usage:
- *   function RecurringTransactionsList() {
- *     const [filters, setFilters] = useState({
- *       isActive: true,
- *       frequency: 'MONTHLY' as TransactionFrequency,
- *       minAmount: 100,
- *     });
- *
- *     const { recurringTransactions, isLoading, pagination, page, setPage } =
- *       useRecurringTransactions(filters);
- *
- *     // Render the transactions list with pagination
- *   }
- *
- * @param filters - Optional filters to apply to the recurring transactions
- *   query
- * @param options - TRPC query options
- * @returns Object containing query result, transaction list, pagination data,
- *   and page controls
- */
-export function useRecurringTransactions(
-  filters?: {
-    isActive?: boolean;
-    category?: TransactionCategory;
-    frequency?: TransactionFrequency;
-    startDateFrom?: string;
-    startDateTo?: string;
-    minAmount?: number;
-    maxAmount?: number;
-    title?: string;
-    merchantName?: string;
-    tags?: string[];
-    page?: number;
-    limit?: number;
-  },
-  options: QueryOptions = DEFAULT_QUERY_OPTIONS
-) {
-  const [page, setPage] = useState(filters?.page || 1);
-  const [limit, setLimit] = useState(filters?.limit || 20);
-
-  const apiFilters = {
-    page,
-    limit,
-    status: filters?.isActive ? 'active' : undefined,
-    maxAmount: filters?.maxAmount,
-    minAmount: filters?.minAmount,
-    title: filters?.title,
-    merchantName: filters?.merchantName,
-    frequency: filters?.frequency,
-  };
-
-  const query = api.recurringTransactions.getRecurringTransactions.useQuery(
-    apiFilters,
-    {
-      ...options,
-    }
-  );
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleLimitChange = (newLimit: number) => {
-    setLimit(newLimit);
-    setPage(1);
-  };
-
-  return {
-    ...query,
-    recurringTransactions: query.data?.recurringTransactions || [],
-    pagination: query.data?.pagination,
-    page,
-    limit,
-    setPage: handlePageChange,
-    setLimit: handleLimitChange,
-  };
-}
 
 /**
  * Hook for fetching a specific recurring transaction by ID

@@ -78,9 +78,7 @@ export const transactionNotificationsJob = schemaTask({
   run: async (payload, io) => {
     const { userId } = payload;
 
-    await logger.info(
-      `Starting transaction notifications for user ${userId}`
-    );
+    await logger.info(`Starting transaction notifications for user ${userId}`);
 
     try {
       // Find user details

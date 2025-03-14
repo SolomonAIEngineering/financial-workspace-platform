@@ -1,6 +1,5 @@
-import eslintPluginUnicorn from 'eslint-plugin-unicorn';
-
 import { defineConfig } from '../utils.js';
+import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 
 export default defineConfig(eslintPluginUnicorn.configs['flat/recommended'], {
   rules: {
@@ -34,5 +33,23 @@ export default defineConfig(eslintPluginUnicorn.configs['flat/recommended'], {
     'unicorn/prefer-spread': 'off',
     'unicorn/prefer-ternary': 'off',
     'unicorn/prevent-abbreviations': 'off',
+    'unicorn/catch-error-name': 'off',
+    'unicorn/switch-case-braces': 'off',
+    'unicorn/numeric-separators-style': 'off',
+    'unicorn/prefer-includes': 'off',
+    'unicorn/no-zero-fractions': 'off',
+    'unicorn/new-for-builtins': 'off',
+    'unicorn/prefer-at': "off",
+    'unicorn/prefer-string-replace-all': 'off',
+    'unicorn/prefer-optional-catch-binding': 'off',
+    'unicorn/prefer-at': 'off',
+    'unicorn/prefer-math-min-max': 'off',
+    'unicorn/prefer-string-slice': 'off',
+    'unicorn/prefer-array-flat': 'off',
+    'unicorn/no-object-as-default-parameter': 'off',
+    'unicorn/no-lonely-if': 'off',
+    'unicorn/no-array-reduce-type-parameter': 'off',
+    'unicorn/explicit-length-check': 'off',
+    'prefer-const': 'off',
   },
 });

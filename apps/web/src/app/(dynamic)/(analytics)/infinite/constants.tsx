@@ -17,6 +17,7 @@ import { PopoverPercentile } from './_components/popover-percentile';
 import { SheetTimingPhases } from './_components/sheet-timing-phases';
 import { TabsObjectView } from './_components/tabs-object-view';
 import type { LogsMeta } from './query-options';
+// eslint-disable-next-line @typescript-eslint/no-import-type-side-effects
 import { type ColumnSchema } from './schema';
 import CopyToClipboardContainer from '@/components/ui/copy-to-clipboard-container';
 
@@ -81,7 +82,7 @@ export const filterFields = [
     ], // REMINDER: this is a placeholder to set the type in the client.tsx
     component: (props: Option) => {
       if (typeof props.value === 'boolean') return null;
-      if (typeof props.value === 'undefined') return null;
+      if (!props.value) return null;
       if (typeof props.value === 'string') return null;
       return (
         <span className={cn('font-mono', getStatusColor(props.value).text)}>

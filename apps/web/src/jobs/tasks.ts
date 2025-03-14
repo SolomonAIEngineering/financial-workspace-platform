@@ -8,7 +8,6 @@ import {
   syncUserTransactionsJob,
 } from './tasks/transactions/sync-transactions';
 
-import { analyzeSpendingJob } from './tasks/transactions/analyze-spending';
 import { connectionExpirationJob } from './tasks/bank/connections/connection-expiration-job';
 import { connectionRecoveryJob } from './tasks/bank/connections/connection-recovery-job';
 import { expiringNotificationsJob } from './tasks/bank/notifications/expiring';
@@ -32,9 +31,6 @@ const jobs = [
   // Bank connection management
   monitorBankConnectionsJob,
   updateBalancesJob,
-
-  // Analysis jobs
-  analyzeSpendingJob,
 
   // Alert/notification jobs
   sendReconnectAlertsJob,
@@ -60,7 +56,6 @@ export {
   syncUserTransactionsJob,
   monitorBankConnectionsJob,
   updateBalancesJob,
-  analyzeSpendingJob,
   sendReconnectAlertsJob,
   upsertTransactionsJob,
   syncAccountJob,

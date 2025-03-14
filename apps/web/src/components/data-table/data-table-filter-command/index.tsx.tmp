@@ -265,7 +265,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
                               optionValue,
                               value,
                               field,
-                            }) ?? prev
+                            })
                           );
                           setCurrentWord('');
                         }}
@@ -359,7 +359,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
                   Range: <Kbd variant="outline">p95:59-340</Kbd>
                 </span>
               </div>
-              {lastSearches.length > 0 ? (
+              {lastSearches.length ? (
                 <button
                   type="button"
                   className="text-muted-foreground hover:text-accent-foreground"

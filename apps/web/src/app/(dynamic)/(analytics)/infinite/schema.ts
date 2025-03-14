@@ -17,7 +17,7 @@ const stringToBoolean = z
       return JSON.parse(val);
     } catch (e) {
       console.error(e);
-      return undefined;
+      return;
     }
   })
   .pipe(z.boolean().optional());
@@ -122,7 +122,7 @@ export const facetMetadataSchema = z.object({
 
 export type FacetMetadataSchema = z.infer<typeof facetMetadataSchema>;
 
-export type BaseChartSchema = { timestamp: number; [key: string]: number };
+export type BaseChartSchema = { timestamp: number;[key: string]: number };
 
 export const timelineChartSchema = z.object({
   timestamp: z.number(), // UNIX

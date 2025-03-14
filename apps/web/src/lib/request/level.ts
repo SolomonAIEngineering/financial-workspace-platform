@@ -23,7 +23,6 @@ export function getLevelColor(
         bg: 'bg-error',
         border: 'border-error',
       };
-    case 'info':
     default:
       return {
         text: 'text-info',

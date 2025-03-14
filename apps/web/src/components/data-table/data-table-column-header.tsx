@@ -24,7 +24,7 @@ export function DataTableColumnHeader<TData, TValue>({
       variant="ghost"
       size="sm"
       onClick={() => {
-        column.toggleSorting(undefined);
+        column.toggleSorting();
       }}
       className={cn(
         'flex h-7 w-full items-center justify-between gap-2 px-0 py-0 hover:bg-transparent',

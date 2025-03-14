@@ -4,8 +4,6 @@ import {
   SLIDER_DELIMITER,
 } from '@/lib/delimiters';
 
-import { REGIONS } from '@/constants/region';
-import { TAGS } from '@/constants/tag';
 import { z } from 'zod';
 
 /**
@@ -35,7 +33,6 @@ const stringToBoolean = z
       return JSON.parse(val);
     } catch (e) {
       console.error(e);
-      return undefined;
     }
   })
   .pipe(z.boolean().optional());
@@ -599,4 +596,4 @@ export type ColumnFilterSchema = z.infer<typeof columnFilterSchema>;
  * @property [key: string] - Dynamic properties storing numeric values for the
  *   chart
  */
-export type BaseChartSchema = { timestamp: number; [key: string]: number };
+export type BaseChartSchema = { timestamp: number;[key: string]: number };

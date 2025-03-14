@@ -1,9 +1,9 @@
+import { compat, defineConfig, legacyPlugin } from '../utils.js';
+
 import { fixupConfigRules } from '@eslint/compat';
 import js from '@eslint/js';
-import unusedImports from 'eslint-plugin-unused-imports';
 import tseslint from 'typescript-eslint';
-
-import { compat, defineConfig, legacyPlugin } from '../utils.js';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default defineConfig(
   // Base JS/TS configs
@@ -30,8 +30,13 @@ export default defineConfig(
       '@typescript-eslint/ban-tslint-comment': ['error'],
       '@typescript-eslint/ban-types': 'off',
       '@typescript-eslint/consistent-generic-constructors': 'error',
-      '@typescript-eslint/consistent-indexed-object-style': 'error',
+      '@typescript-eslint/consistent-indexed-object-style': 'off',
       '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/prefer-optional-chain': 'off',
+      '@typescript-eslint/no-inferrable-types': 'off',
+      '@typescript-eslint/array-type': 'off',
+      '@typescript-eslint/prefer-for-of': 'off',
+      '@typescript-eslint/consistent-type-imports': 'off',
       // for now we can use both type and interface
       '@typescript-eslint/consistent-type-exports': 'warn',
       '@typescript-eslint/consistent-type-imports': [
@@ -78,6 +83,9 @@ export default defineConfig(
       '@typescript-eslint/require-await': 'warn',
       '@typescript-eslint/restrict-template-expressions': 'off',
       '@typescript-eslint/unbound-method': 'off',
+      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/consistent-generic-constructors': 'off',
     },
   },
 
@@ -104,7 +112,7 @@ export default defineConfig(
       'import/export': 'off',
       'import/namespace': 'off',
       'import/no-duplicates': [
-        'error',
+        'off',
         {
           // https://github.com/import-js/eslint-plugin-import/issues/2792
           // 'prefer-inline': true

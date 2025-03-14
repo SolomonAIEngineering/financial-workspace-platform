@@ -125,7 +125,7 @@ export function TimelineChart<TChart extends BaseChartSchema>({
           axisLine={false}
           tickFormatter={(value) => {
             const date = new Date(value);
-            if (isNaN(date.getTime())) return 'N/A';
+            if (Number.isNaN(date.getTime())) return 'N/A';
             // TODO: how to extract into helper functions
             if (interval <= 1000 * 60 * 10) {
               return format(date, 'HH:mm:ss');
@@ -136,7 +136,7 @@ export function TimelineChart<TChart extends BaseChartSchema>({
             }
             return format(date, 'LLL dd, y');
           }}
-          // interval="preserveStartEnd"
+        // interval="preserveStartEnd"
         />
         <ChartTooltip
           // defaultIndex={10}
@@ -144,7 +144,7 @@ export function TimelineChart<TChart extends BaseChartSchema>({
             <ChartTooltipContent
               labelFormatter={(value) => {
                 const date = new Date(value);
-                if (isNaN(date.getTime())) return 'N/A';
+                if (Number.isNaN(date.getTime())) return 'N/A';
                 // TODO: how to extract into helper functions
                 if (interval <= 1000 * 60 * 10) {
                   return format(date, 'LLL dd, HH:mm:ss');

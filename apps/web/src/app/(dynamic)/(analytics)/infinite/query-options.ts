@@ -47,7 +47,7 @@ export const dataOptions = (search: SearchParamsType) => {
       const json = await response.json();
       return SuperJSON.parse<InfiniteQueryResponse<ColumnSchema[]>>(json);
     },
-    initialPageParam: { cursor: new Date().getTime(), direction: 'next' },
+    initialPageParam: { cursor: Date.now(), direction: 'next' },
     getPreviousPageParam: (firstGroup, _groups) => {
       if (!firstGroup.prevCursor) return null;
       return { cursor: firstGroup.prevCursor, direction: 'prev' };

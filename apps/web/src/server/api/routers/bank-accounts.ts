@@ -183,6 +183,7 @@ export const bankAccountsRouter = createRouter({
             institution_id: z.string(),
             name: z.string(),
           }),
+          provider: z.string(),
         }),
         publicToken: z.string(),
       })
@@ -227,6 +228,7 @@ export const bankAccountsRouter = createRouter({
             institutionId,
             institutionName,
             itemId,
+            provider: input.metadata.provider,
             status: 'ACTIVE',
             userId,
           },
@@ -551,9 +553,9 @@ export const bankAccountsRouter = createRouter({
         const monthlyAvgSpending =
           monthlySpendings.length > 0
             ? monthlySpendings.reduce(
-                (acc, curr) => acc + Number.parseFloat(curr.total_amount),
-                0
-              ) / monthlySpendings.length
+              (acc, curr) => acc + Number.parseFloat(curr.total_amount),
+              0
+            ) / monthlySpendings.length
             : 0;
 
         return {

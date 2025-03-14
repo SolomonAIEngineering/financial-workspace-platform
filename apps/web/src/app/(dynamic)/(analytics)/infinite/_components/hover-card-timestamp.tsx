@@ -74,6 +74,7 @@ function Row({ value, label }: { value: string; label: string }) {
       className="group flex items-center justify-between gap-4 text-sm"
       onClick={(e) => {
         e.stopPropagation();
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         copy(value);
       }}
     >

@@ -1,13 +1,10 @@
 import { AccountStatus, TransactionCategory } from '@prisma/client';
 import { addDays, format, subDays } from 'date-fns';
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
-import { client } from '../../../client';
-import { eventTrigger } from '@trigger.dev/sdk';
 import { getTransactions } from '@/server/services/plaid';
-import { logger } from "@trigger.dev/sdk/v3";
 import { prisma } from '@/server/db';
-import { schemaTask } from '@trigger.dev/sdk/v3';
 import { z } from 'zod';
 
 /**

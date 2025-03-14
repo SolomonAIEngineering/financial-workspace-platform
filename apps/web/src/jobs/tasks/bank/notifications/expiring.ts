@@ -145,7 +145,7 @@ export const expiringNotificationsJob = schemaTask({
         reconnectUrl: `https://yourdomain.com/app/accounts/reconnect/${connectionId}`,
       });
 
-      await logger.info(
+      logger.info(
         `Expiring notification sent for ${institutionName} connection`
       );
 
@@ -158,9 +158,7 @@ export const expiringNotificationsJob = schemaTask({
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      await logger.error(
-        `Failed to send expiring notification: ${errorMessage}`
-      );
+      logger.error(`Failed to send expiring notification: ${errorMessage}`);
 
       throw error;
     }

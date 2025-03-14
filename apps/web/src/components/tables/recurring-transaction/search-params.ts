@@ -23,11 +23,10 @@ import {
   createParser,
   createSearchParamsCache,
   parseAsArrayOf,
-  parseAsBoolean,
   parseAsInteger,
   parseAsString,
   parseAsStringLiteral,
-  parseAsTimestamp,
+  parseAsTimestamp
 } from 'nuqs/server';
 
 /**

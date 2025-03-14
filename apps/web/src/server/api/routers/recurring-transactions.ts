@@ -1,6 +1,5 @@
-import { TransactionCategory, TransactionFrequency } from "@prisma/client";
-
 import { TRPCError } from "@trpc/server";
+import { TransactionFrequency } from "@prisma/client";
 import { createRouter } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import { protectedProcedure } from "../middlewares/procedures";
@@ -1021,8 +1020,9 @@ export const recurringTransactionsRouter = createRouter({
                 const isVariableAmount = (amountStdDev / Math.abs(avgAmount)) > 0.05; // 5% threshold
 
                 // Calculate next scheduled date based on detected pattern
-                const lastTransactionDate = merchantTransactions[merchantTransactions.length - 1].date;
-                let nextScheduledDate = new Date(lastTransactionDate);
+                const lastTransactionDate = merchantTransactions.at(-1)?.date;
+                if (!lastTransactionDate) continue;
+                const nextScheduledDate = new Date(lastTransactionDate);
 
                 switch (frequency) {
                     case "WEEKLY":

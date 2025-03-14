@@ -58,7 +58,6 @@ import { RefreshButton } from './_components/refresh-button';
 import { BaseChartSchema, columnFilterSchema, ColumnSchema } from './schema';
 import { searchParamsParser } from './search-params';
 import { TimelineChart } from './timeline-chart';
-import { MiniSidebar } from '@/components/sidebar/mini-sidebar';
 
 // TODO: add a possible chartGroupBy
 export interface DataTableInfiniteProps<TData, TValue, TMeta> {
@@ -90,12 +89,12 @@ export interface DataTableInfiniteProps<TData, TValue, TMeta> {
   isFetching?: boolean;
   isLoading?: boolean;
   fetchNextPage: (
-    options?: FetchNextPageOptions | undefined
+    options?: FetchNextPageOptions
   ) => Promise<unknown>;
   fetchPreviousPage?: (
-    options?: FetchPreviousPageOptions | undefined
+    options?: FetchPreviousPageOptions
   ) => Promise<unknown>;
-  refetch: (options?: RefetchOptions | undefined) => void;
+  refetch: (options?: RefetchOptions) => void;
   renderLiveRow: (props?: { row: Row<TData> }) => React.ReactNode;
 }
 
@@ -151,6 +150,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
         e.currentTarget.scrollHeight;
 
       if (onPageBottom && !isFetching && totalRowsFetched < filterRows) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         fetchNextPage();
       }
     },
@@ -218,17 +218,19 @@ export function DataTableInfinite<TData, TValue, TMeta>({
       {} as Record<string, unknown>
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     setSearch(search);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columnFilters]);
 
   React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     setSearch({ sort: sorting?.[0] || null });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting]);
 
   const selectedRow = React.useMemo(() => {
-    if ((isLoading || isFetching) && !data.length) return;
+    if ((isLoading || isFetching) && data.length === 0) return;
     const selectedRowKey = Object.keys(rowSelection)?.[0];
     return table
       .getCoreRowModel()
@@ -239,9 +241,12 @@ export function DataTableInfinite<TData, TValue, TMeta>({
   React.useEffect(() => {
     if (isLoading || isFetching) return;
     if (Object.keys(rowSelection)?.length && !selectedRow) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setSearch({ uuid: null });
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setRowSelection({});
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setSearch({ uuid: Object.keys(rowSelection)?.[0] || null });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -312,7 +317,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
             <div className="flex h-[46px] items-center justify-between gap-3">
               <p className="px-2 font-medium text-foreground">Filters</p>
               <div>
-                {table.getState().columnFilters.length ? (
+                {table.getState().columnFilters.length > 0 ? (
                   <DataTableResetButton />
                 ) : null}
               </div>
@@ -382,9 +387,9 @@ export function DataTableInfinite<TData, TValue, TMeta>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}
@@ -439,7 +444,7 @@ export function DataTableInfinite<TData, TValue, TMeta>({
                 <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
                   <TableCell colSpan={columns.length} className="text-center">
                     {totalRowsFetched < filterRows ||
-                    !table.getCoreRowModel().rows?.length ? (
+                      !table.getCoreRowModel().rows?.length ? (
                       <Button
                         disabled={isFetching || isLoading}
                         onClick={() => fetchNextPage()}

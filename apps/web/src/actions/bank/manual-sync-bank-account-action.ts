@@ -10,7 +10,7 @@ import { revalidatePath } from 'next/cache';
  *   const result = await manualSyncTransactionsAction('conn_123456');
  *
  *   if (result.success) {
- *     console.log(result.message); // "Sync started for X accounts"
+ *     console.info(result.message); // "Sync started for X accounts"
  *   } else {
  *     console.error(result.error); // Error message if sync failed
  *   }

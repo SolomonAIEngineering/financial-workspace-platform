@@ -279,7 +279,6 @@ export default defineConfig(perfectionist.configs['recommended-natural'], {
     ],
     'react/jsx-sort-props': 'off',
     'sort-imports': 'off',
-
     'sort-keys': 'off',
   },
   settings: {

@@ -146,16 +146,16 @@ function useLiveMode<TData extends { date: Date }>(data: TData[]) {
   const [live] = useQueryState('live', searchParamsParser.live);
   // REMINDER: used to capture the live mode on timestamp
   const liveTimestamp = React.useRef<number | undefined>(
-    live ? new Date().getTime() : undefined
+    live ? Date.now() : undefined
   );
 
   React.useEffect(() => {
-    if (live) liveTimestamp.current = new Date().getTime();
+    if (live) liveTimestamp.current = Date.now();
     else liveTimestamp.current = undefined;
   }, [live]);
 
   const anchorRow = React.useMemo(() => {
-    if (!live) return undefined;
+    if (!live) return;
 
     const item = data.find((item) => {
       // return first item that is there if not liveTimestamp

@@ -38,7 +38,7 @@ export function DataTableViewOptions() {
       table.getAllColumns().sort((a, b) => {
         return columnOrder.indexOf(a.id) - columnOrder.indexOf(b.id);
       }),
-    [columnOrder]
+    [columnOrder, table]
   );
 
   return (
@@ -78,7 +78,7 @@ export function DataTableViewOptions() {
                 {sortedColumns
                   .filter(
                     (column) =>
-                      typeof column.accessorFn !== 'undefined' &&
+                      column.accessorFn &&
                       column.getCanHide()
                   )
                   .map((column) => (
