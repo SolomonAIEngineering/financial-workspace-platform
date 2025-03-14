@@ -261,9 +261,8 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
             "hidden sm:flex",
           )}
         >
-          <div className="border-b border-gray-300 bg-background p-2 md:sticky md:top-0">
-            <div className="flex h-[46px] items-center justify-between gap-3">
-              <p className="px-2 font-medium text-foreground">Filters</p>
+          <div className="bg-background md:sticky md:top-0 border-gray-200 dark:border-gray-800 rounded-t-lg">
+            <div className="flex h-[46px] items-center justify-between gap-3 px-4">
               <div>
                 {table.getState().columnFilters.length ? (
                   <DataTableResetButton />
@@ -271,13 +270,24 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
               </div>
             </div>
           </div>
-          <div className="flex-1 p-2 sm:overflow-y-scroll">
+          <div
+            className="flex-1 p-3 overflow-y-auto no-scrollbar"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+            }}
+          >
+            <style jsx global>{`
+              .no-scrollbar::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
             <DataTableFilterControls />
           </div>
         </div>
         <div
           className={cn(
-            "flex max-w-full flex-1 flex-col border-gray-300 sm:border-l",
+            "flex max-w-full flex-1 flex-col border-gray-300 md:p-[2%]",
             "group-data-[expanded=true]/controls:sm:max-w-[calc(100vw_-_208px)] group-data-[expanded=true]/controls:md:max-w-[calc(100vw_-_288px)]",
           )}
         >
