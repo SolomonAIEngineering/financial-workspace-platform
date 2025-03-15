@@ -370,4 +370,296 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       return format(new Date(date), 'MMM d, yyyy');
     },
   },
+  {
+    accessorKey: 'startDate',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Start Date" />
+    ),
+    cell: ({ row }) => {
+      const date = row.original.startDate;
+      if (!date) return <span className="text-muted-foreground">-</span>;
+      return format(new Date(date), 'MMM d, yyyy');
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'endDate',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="End Date" />
+    ),
+    cell: ({ row }) => {
+      const date = row.original.endDate;
+      if (!date) return <span className="text-muted-foreground">-</span>;
+      return format(new Date(date), 'MMM d, yyyy');
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'createdAt',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Created At" />
+    ),
+    cell: ({ row }) => {
+      const date = row.original.createdAt;
+      if (!date) return <span className="text-muted-foreground">-</span>;
+      return format(new Date(date), 'MMM d, yyyy');
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'updatedAt',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Updated At" />
+    ),
+    cell: ({ row }) => {
+      const date = row.original.updatedAt;
+      if (!date) return <span className="text-muted-foreground">-</span>;
+      return format(new Date(date), 'MMM d, yyyy');
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'interval',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Interval" />
+    ),
+    cell: ({ row }) => {
+      const interval = row.original.interval;
+      return <span>{interval || 1}</span>;
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'totalExecuted',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Total Executed" />
+    ),
+    cell: ({ row }) => {
+      const total = row.original.totalExecuted;
+      const currency = row.original.currency || 'USD';
+      return (
+        <span>
+          {new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency,
+          }).format(total || 0)}
+        </span>
+      );
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'minBalanceRequired',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Min Balance Required" />
+    ),
+    cell: ({ row }) => {
+      const minBalance = row.original.minBalanceRequired;
+      const currency = row.original.currency || 'USD';
+      if (minBalance === undefined || minBalance === null) return <span className="text-muted-foreground">-</span>;
+      return (
+        <span>
+          {new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: currency,
+          }).format(minBalance)}
+        </span>
+      );
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'importanceLevel',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Importance" />
+    ),
+    cell: ({ row }) => {
+      const level = row.original.importanceLevel;
+      const levelColor = importanceLevelColors[level as keyof typeof importanceLevelColors] || importanceLevelColors.low;
+
+      if (!level) return <span className="text-muted-foreground">-</span>;
+
+      return (
+        <Badge
+          variant="outline"
+          className={cn('capitalize', levelColor.badge)}
+        >
+          {level}
+        </Badge>
+      );
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'affectAvailableBalance',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Affects Balance" />
+    ),
+    cell: ({ row }) => {
+      const affects = row.original.affectAvailableBalance;
+      return (
+        <span>
+          {affects ? (
+            <Check className="h-4 w-4 text-green-500" />
+          ) : (
+            <X className="h-4 w-4 text-muted-foreground" />
+          )}
+        </span>
+      );
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'isAutomated',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Automated" />
+    ),
+    cell: ({ row }) => {
+      const isAutomated = row.original.isAutomated;
+      return (
+        <span>
+          {isAutomated ? (
+            <Check className="h-4 w-4 text-green-500" />
+          ) : (
+            <X className="h-4 w-4 text-muted-foreground" />
+          )}
+        </span>
+      );
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'requiresApproval',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Requires Approval" />
+    ),
+    cell: ({ row }) => {
+      const requiresApproval = row.original.requiresApproval;
+      return (
+        <span>
+          {requiresApproval ? (
+            <Check className="h-4 w-4 text-amber-500" />
+          ) : (
+            <X className="h-4 w-4 text-muted-foreground" />
+          )}
+        </span>
+      );
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'isVariable',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Variable Amount" />
+    ),
+    cell: ({ row }) => {
+      const isVariable = row.original.isVariable;
+      return (
+        <span>
+          {isVariable ? (
+            <Check className="h-4 w-4 text-blue-500" />
+          ) : (
+            <X className="h-4 w-4 text-muted-foreground" />
+          )}
+        </span>
+      );
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'currency',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Currency" />
+    ),
+    cell: ({ row }) => {
+      const currency = row.original.currency;
+      return <span>{currency || 'USD'}</span>;
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'dayOfMonth',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Day of Month" />
+    ),
+    cell: ({ row }) => {
+      const dayOfMonth = row.original.dayOfMonth;
+      if (dayOfMonth === undefined || dayOfMonth === null) return <span className="text-muted-foreground">-</span>;
+      return <span>{dayOfMonth}</span>;
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'dayOfWeek',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Day of Week" />
+    ),
+    cell: ({ row }) => {
+      const dayOfWeek = row.original.dayOfWeek;
+      if (dayOfWeek === undefined || dayOfWeek === null) return <span className="text-muted-foreground">-</span>;
+
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      return <span>{days[dayOfWeek] || dayOfWeek}</span>;
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  },
+  {
+    accessorKey: 'merchantName',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Merchant" />
+    ),
+    cell: ({ row }) => {
+      const merchantName = row.original.merchantName;
+      return <span>{merchantName || 'Manual entry'}</span>;
+    },
+    enableHiding: true,
+    meta: {
+      cellClassName: 'hidden md:hidden lg:hidden'
+    },
+  }
 ];

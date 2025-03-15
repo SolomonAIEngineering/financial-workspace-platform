@@ -125,20 +125,22 @@ export function DataTableFilterControls() {
                   isTimerange && 'bg-gray-50/50 dark:bg-gray-800/20'
                 )}
               >
-                <AccordionTrigger className="w-full px-2 py-0 hover:no-underline data-[state=closed]:text-muted-foreground focus-within:data-[state=closed]:text-foreground hover:data-[state=closed]:text-foreground data-[state=open]:text-foreground">
-                  <div className="flex w-full items-center justify-between gap-2 truncate py-2 pr-2">
-                    <div className="flex items-center gap-2 truncate">
+                <div className="flex w-full items-center justify-between">
+                  <AccordionTrigger className="flex-1 px-2 py-0 hover:no-underline data-[state=closed]:text-muted-foreground focus-within:data-[state=closed]:text-foreground hover:data-[state=closed]:text-foreground data-[state=open]:text-foreground">
+                    <div className="flex w-full items-center gap-2 truncate py-2">
                       <p className="text-sm font-medium">{field.label}</p>
                       {value !== field.label.toLowerCase() &&
-                      !field.commandDisabled ? (
+                        !field.commandDisabled ? (
                         <p className="mt-px truncate font-mono text-[10px] text-muted-foreground">
                           {value}
                         </p>
                       ) : null}
                     </div>
+                  </AccordionTrigger>
+                  <div className="pr-2">
                     <DataTableFilterResetButton {...field} />
                   </div>
-                </AccordionTrigger>
+                </div>
                 <AccordionContent className="transition-all">
                   <div className="rounded-md p-2">{filterComponent}</div>
                 </AccordionContent>
