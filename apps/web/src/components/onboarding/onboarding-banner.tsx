@@ -3,10 +3,13 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Button } from '@/registry/default/potion-ui/button';
 import Link from 'next/link';
 import { Progress } from '@/registry/default/potion-ui/progress';
-import { getOnboardingStatus } from '@/lib/onboarding';
+import { getUserOnboardingStatus } from '@/lib/onboarding';
+import { trpc } from '@/trpc/server';
 
 export async function OnboardingBanner() {
-    const { isComplete, currentStep, nextStep } = await getOnboardingStatus();
+    const currentUser = (await trpc.layout.app()).currentUser;
+
+    const { isComplete, currentStep, nextStep } = await getUserOnboardingStatus(currentUser?.id);
 
     // If onboarding is complete, don't show banner
     if (isComplete) {

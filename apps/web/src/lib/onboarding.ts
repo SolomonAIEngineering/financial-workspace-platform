@@ -11,6 +11,7 @@ export interface OnboardingStatus {
     hasBankSkipped: boolean;
     isComplete: boolean;
     nextStep: string;
+    currentStep: number;
 }
 
 /**
@@ -28,6 +29,7 @@ export async function getUserOnboardingStatus(userId: string): Promise<Onboardin
         hasBankSkipped: false,
         isComplete: false,
         nextStep: '/onboarding/team',
+        currentStep: 1,
     };
 
     try {
@@ -57,6 +59,7 @@ export async function getUserOnboardingStatus(userId: string): Promise<Onboardin
         // Update next step if user has a team
         if (status.hasTeam) {
             status.nextStep = '/onboarding/profile';
+            status.currentStep = 2;
         }
 
         // Check if user has completed profile
@@ -67,6 +70,7 @@ export async function getUserOnboardingStatus(userId: string): Promise<Onboardin
         // Update next step if user has a profile
         if (status.hasTeam && status.hasProfile) {
             status.nextStep = '/onboarding/bank-connection';
+            status.currentStep = 3;
         }
 
         // Check if user has connected a bank account
@@ -83,6 +87,7 @@ export async function getUserOnboardingStatus(userId: string): Promise<Onboardin
         // Update next step if onboarding is complete
         if (status.isComplete) {
             status.nextStep = '/dashboard';
+            status.currentStep = 4;
         }
 
         return status;
@@ -90,4 +95,6 @@ export async function getUserOnboardingStatus(userId: string): Promise<Onboardin
         console.error('Error checking onboarding status:', error);
         return status;
     }
-} 
+}
+
+

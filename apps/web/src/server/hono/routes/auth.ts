@@ -1,20 +1,19 @@
-import { zValidator } from '@hono/zod-validator';
-import { Hono } from 'hono';
-import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
-import { z } from 'zod';
-
-import { env } from '@/env';
 import {
+  OAuth2RequestError,
   generateCodeVerifier,
   generateState,
-  OAuth2RequestError,
 } from '@/server/auth/lib';
 import { authProviders, lucia } from '@/server/auth/lucia';
-
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import {
   protectedMiddlewares,
   publicMiddlewares,
 } from '../middlewares/auth-middleware';
+
+import { Hono } from 'hono';
+import { env } from '@/env';
+import { z } from 'zod';
+import { zValidator } from '@hono/zod-validator';
 
 export const authRoutes = new Hono()
   .get(

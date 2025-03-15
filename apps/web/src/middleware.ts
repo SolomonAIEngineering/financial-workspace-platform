@@ -3,11 +3,20 @@ import { NextResponse } from 'next/server';
 
 // Define paths that should bypass onboarding checks
 const PUBLIC_PATHS = [
+    '/',
     '/login',
     '/register',
     '/api/',
     '/_next/',
     '/favicon.ico',
+];
+
+// Define auth callback paths that should bypass all middleware checks
+const AUTH_CALLBACK_PATHS = [
+    '/api/auth/google/callback',
+    '/api/auth/github/callback',
+    '/api/auth/google/login',
+    '/api/auth/github/login',
 ];
 
 // Define onboarding steps in order
@@ -20,11 +29,19 @@ const ONBOARDING_STEPS = [
 
 export async function middleware(request: NextRequest) {
     console.log('🔍 MIDDLEWARE STARTED:', request.nextUrl.pathname);
+    console.log('🌐 Full URL:', request.url);
 
-    // Skip middleware for public paths
+    // Skip middleware for auth callback paths - these need special handling
     const { pathname } = request.nextUrl;
     console.log('📍 Current pathname:', pathname);
 
+    // First check for auth callback paths - these should bypass ALL middleware
+    if (AUTH_CALLBACK_PATHS.some((path) => pathname.includes(path))) {
+        console.log('🔐 Auth callback detected, bypassing all middleware:', pathname);
+        return NextResponse.next();
+    }
+
+    // Then check for other public paths
     if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
         console.log('⏭️ Skipping middleware for public path:', pathname);
         return NextResponse.next();
@@ -56,7 +73,7 @@ export async function middleware(request: NextRequest) {
 
         const response = await fetch(apiUrl, {
             headers: {
-                Cookie: `session=${sessionId}`,
+                cookie: request.headers.get("cookie") || "",
             },
         });
         console.log('📊 API response status:', response.status);
