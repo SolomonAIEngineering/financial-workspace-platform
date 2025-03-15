@@ -652,7 +652,6 @@ export function ConnectTransactionsModal({
       }}
     >
       <DialogContent className="overflow-hidden border-gray-200 p-0 shadow-xl md:min-h-[60%] md:min-w-[60%] dark:border-gray-800">
-        {/* Add explicit close button in the top-right corner */}
         <Button
           variant="ghost"
           size="icon"
@@ -698,8 +697,8 @@ export function ConnectTransactionsModal({
               results={results}
               openPlaid={handleOpenPlaid}
               onSetStepToNull={resetStep}
-              onImport={() => {}}
-              onContactUs={() => {}}
+              onImport={() => { }}
+              onContactUs={() => { }}
             />
           </>
         )}
