@@ -10,7 +10,7 @@ const transactionSchema = z.object({
   method: z.string().nullable(),
   date: z.string(),
   name: z.string(),
-  status: z.enum(["pending", "posted"]),
+  status: z.enum(['pending', 'posted']),
   balance: z.number().nullable(),
   currency: z.string(),
   amount: z.number(),
@@ -142,7 +142,7 @@ export const upsertTransactionsJob = schemaTask({
       //   }
       // }
     } catch (error) {
-      logger.error("Failed to upsert transactions", { error });
+      logger.error('Failed to upsert transactions', { error });
 
       throw error;
     }

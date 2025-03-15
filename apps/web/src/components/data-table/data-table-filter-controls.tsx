@@ -130,7 +130,7 @@ export function DataTableFilterControls() {
                     <div className="flex w-full items-center gap-2 truncate py-2">
                       <p className="text-sm font-medium">{field.label}</p>
                       {value !== field.label.toLowerCase() &&
-                        !field.commandDisabled ? (
+                      !field.commandDisabled ? (
                         <p className="mt-px truncate font-mono text-[10px] text-muted-foreground">
                           {value}
                         </p>

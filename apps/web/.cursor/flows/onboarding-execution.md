@@ -36,11 +36,13 @@ Now I have a good understanding of the codebase structure. Let's create a compre
 ```markdown:.cursor/snippets/flows/multi-step-onboarding.md
 
 ```
+
 Let me create a new file with the markdown guide:
 
 ```markdown:docs/multi-step-onboarding-guide.md
 
 ```
+
 I'll provide the markdown content directly in my response:
 
 # Multi-Step Onboarding Implementation Guide
@@ -86,14 +88,14 @@ const ONBOARDING_STEPS = [
 export async function middleware(request: NextRequest) {
   // Skip middleware for public paths
   const { pathname } = request.nextUrl;
-  
-  if (PUBLIC_PATHS.some(path => pathname.startsWith(path))) {
+
+  if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 
   // Get authentication state
   const { user, session } = await getAuth();
-  
+
   // If not authenticated, allow the auth system to handle redirection
   if (!user || !session) {
     return NextResponse.next();
@@ -102,45 +104,55 @@ export async function middleware(request: NextRequest) {
   // Check if user has a team
   // If not, redirect to team creation step
   const hasTeam = user.teamId !== null;
-  
+
   if (!hasTeam && !pathname.startsWith('/onboarding/team')) {
     return NextResponse.redirect(new URL('/onboarding/team', request.url));
   }
-  
+
   // If user has a team but is in team creation step, move to next step
   if (hasTeam && pathname === '/onboarding/team') {
     return NextResponse.redirect(new URL('/onboarding/profile', request.url));
   }
-  
+
   // Check if user has completed profile
-  const hasProfile = Boolean(
-    user.name && 
-    user.email && 
-    user.profileImageUrl
-  );
-  
+  const hasProfile = Boolean(user.name && user.email && user.profileImageUrl);
+
   if (hasTeam && !hasProfile && !pathname.startsWith('/onboarding/profile')) {
     return NextResponse.redirect(new URL('/onboarding/profile', request.url));
   }
-  
+
   // If user has profile but is in profile step, move to next step
   if (hasTeam && hasProfile && pathname === '/onboarding/profile') {
-    return NextResponse.redirect(new URL('/onboarding/bank-connection', request.url));
+    return NextResponse.redirect(
+      new URL('/onboarding/bank-connection', request.url)
+    );
   }
-  
+
   // Check if user has connected a bank account
-  const hasBankConnection = user.bankConnections && user.bankConnections.length > 0;
-  
-  if (hasTeam && hasProfile && !hasBankConnection && 
-      !pathname.startsWith('/onboarding/bank-connection')) {
-    return NextResponse.redirect(new URL('/onboarding/bank-connection', request.url));
+  const hasBankConnection =
+    user.bankConnections && user.bankConnections.length > 0;
+
+  if (
+    hasTeam &&
+    hasProfile &&
+    !hasBankConnection &&
+    !pathname.startsWith('/onboarding/bank-connection')
+  ) {
+    return NextResponse.redirect(
+      new URL('/onboarding/bank-connection', request.url)
+    );
   }
-  
+
   // If all steps are complete and user is still in onboarding, redirect to dashboard
-  if (hasTeam && hasProfile && hasBankConnection && pathname.startsWith('/onboarding')) {
+  if (
+    hasTeam &&
+    hasProfile &&
+    hasBankConnection &&
+    pathname.startsWith('/onboarding')
+  ) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
-  
+
   // Allow the request to proceed
   return NextResponse.next();
 }
@@ -177,28 +189,28 @@ interface OnboardingLayoutProps {
 export default async function OnboardingLayout({ children }: OnboardingLayoutProps) {
   // Get authentication state
   const { user } = await getAuth();
-  
+
   // If not authenticated, redirect to login
   if (!user) {
     redirect('/login');
   }
-  
+
   // Calculate current step based on user data
   let currentStep = 1;
-  
+
   if (user.teamId) {
     currentStep = 2;
   }
-  
+
   if (user.teamId && user.name && user.email && user.profileImageUrl) {
     currentStep = 3;
   }
-  
-  if (user.teamId && user.name && user.email && user.profileImageUrl && 
+
+  if (user.teamId && user.name && user.email && user.profileImageUrl &&
       user.bankConnections && user.bankConnections.length > 0) {
     currentStep = 4;
   }
-  
+
   return (
     <div className="flex min-h-screen flex-col bg-muted/20">
       <div className="container max-w-6xl py-6 md:py-10">
@@ -211,9 +223,9 @@ export default async function OnboardingLayout({ children }: OnboardingLayoutPro
               Let's get your account set up so you can start managing your finances.
             </p>
           </div>
-          
+
           <OnboardingProgress currentStep={currentStep} />
-          
+
           <div className="rounded-lg border bg-card p-6 shadow-sm">
             {children}
           </div>
@@ -290,12 +302,12 @@ import { redirect } from 'next/navigation';
 
 export default async function TeamCreationPage() {
   const { user } = await getAuth();
-  
+
   // If user already has a team, redirect to next step
   if (user?.teamId) {
     redirect('/onboarding/profile');
   }
-  
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -304,7 +316,7 @@ export default async function TeamCreationPage() {
           Set up your organization to start managing your finances.
         </p>
       </div>
-      
+
       <TeamCreationForm userId={user?.id} />
     </div>
   );
@@ -353,7 +365,7 @@ interface TeamCreationFormProps {
 export function TeamCreationForm({ userId }: TeamCreationFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const form = useForm<TeamFormValues>({
     resolver: zodResolver(teamFormSchema),
     defaultValues: {
@@ -362,10 +374,10 @@ export function TeamCreationForm({ userId }: TeamCreationFormProps) {
       baseCurrency: 'USD',
     },
   });
-  
+
   async function onSubmit(data: TeamFormValues) {
     setIsSubmitting(true);
-    
+
     try {
       await createTeam({
         name: data.name,
@@ -373,7 +385,7 @@ export function TeamCreationForm({ userId }: TeamCreationFormProps) {
         baseCurrency: data.baseCurrency,
         userId,
       });
-      
+
       // Refresh the page to trigger middleware redirect
       router.refresh();
     } catch (error) {
@@ -382,7 +394,7 @@ export function TeamCreationForm({ userId }: TeamCreationFormProps) {
       setIsSubmitting(false);
     }
   }
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -399,7 +411,7 @@ export function TeamCreationForm({ userId }: TeamCreationFormProps) {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="email"
@@ -413,7 +425,7 @@ export function TeamCreationForm({ userId }: TeamCreationFormProps) {
             </FormItem>
           )}
         />
-        
+
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Creating...' : 'Create Team'}
         </Button>
@@ -433,17 +445,17 @@ import { redirect } from 'next/navigation';
 
 export default async function ProfilePage() {
   const { user } = await getAuth();
-  
+
   // If user doesn't have a team yet, redirect to team creation
   if (!user?.teamId) {
     redirect('/onboarding/team');
   }
-  
+
   // If user already has a complete profile, redirect to next step
   if (user?.name && user?.email && user?.profileImageUrl) {
     redirect('/onboarding/bank-connection');
   }
-  
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -452,8 +464,8 @@ export default async function ProfilePage() {
           Tell us a bit about yourself to personalize your experience.
         </p>
       </div>
-      
-      <ProfileForm 
+
+      <ProfileForm
         userId={user?.id}
         initialData={{
           name: user?.name || '',
@@ -476,21 +488,21 @@ import { redirect } from 'next/navigation';
 
 export default async function BankConnectionPage() {
   const { user } = await getAuth();
-  
+
   // If user doesn't have a team or profile, redirect to appropriate step
   if (!user?.teamId) {
     redirect('/onboarding/team');
   }
-  
+
   if (!(user?.name && user?.email && user?.profileImageUrl)) {
     redirect('/onboarding/profile');
   }
-  
+
   // If user already has bank connections, redirect to completion
   if (user?.bankConnections && user.bankConnections.length > 0) {
     redirect('/onboarding/complete');
   }
-  
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -499,7 +511,7 @@ export default async function BankConnectionPage() {
           Connect your bank accounts to start tracking your finances.
         </p>
       </div>
-      
+
       <BankConnectionForm userId={user?.id} teamId={user?.teamId} />
     </div>
   );
@@ -518,36 +530,36 @@ import { CheckCircle } from 'lucide-react';
 
 export default async function CompletePage() {
   const { user } = await getAuth();
-  
+
   // Check if all onboarding steps are complete
   const hasTeam = Boolean(user?.teamId);
   const hasProfile = Boolean(user?.name && user?.email && user?.profileImageUrl);
   const hasBankConnection = Boolean(user?.bankConnections && user.bankConnections.length > 0);
-  
+
   // If any step is incomplete, redirect to the appropriate step
   if (!hasTeam) {
     redirect('/onboarding/team');
   }
-  
+
   if (!hasProfile) {
     redirect('/onboarding/profile');
   }
-  
+
   if (!hasBankConnection) {
     redirect('/onboarding/bank-connection');
   }
-  
+
   return (
     <div className="flex flex-col items-center gap-6 py-8 text-center">
       <CheckCircle className="h-16 w-16 text-primary" />
-      
+
       <div>
         <h2 className="text-2xl font-bold">Setup Complete!</h2>
         <p className="text-muted-foreground">
           You're all set to start managing your finances with Solomon AI.
         </p>
       </div>
-      
+
       <Button asChild size="lg">
         <Link href="/dashboard">Go to Dashboard</Link>
       </Button>
@@ -579,7 +591,7 @@ const teamSchema = z.object({
 
 export async function createTeam(data: z.infer<typeof teamSchema>) {
   const validated = teamSchema.parse(data);
-  
+
   try {
     // Create a new team
     const team = await prisma.team.create({
@@ -589,7 +601,7 @@ export async function createTeam(data: z.infer<typeof teamSchema>) {
         baseCurrency: validated.baseCurrency,
       },
     });
-    
+
     // Create the user-team relationship
     await prisma.usersOnTeam.create({
       data: {
@@ -598,13 +610,13 @@ export async function createTeam(data: z.infer<typeof teamSchema>) {
         role: 'OWNER',
       },
     });
-    
+
     // Update the user with the team ID
     await prisma.user.update({
       where: { id: validated.userId },
       data: { teamId: team.id },
     });
-    
+
     revalidatePath('/onboarding');
     return { success: true, team };
   } catch (error) {
@@ -636,7 +648,7 @@ const profileSchema = z.object({
 
 export async function updateProfile(data: z.infer<typeof profileSchema>) {
   const validated = profileSchema.parse(data);
-  
+
   try {
     // Update user profile
     const user = await prisma.user.update({
@@ -650,7 +662,7 @@ export async function updateProfile(data: z.infer<typeof profileSchema>) {
         phoneNumber: validated.phoneNumber,
       },
     });
-    
+
     revalidatePath('/onboarding');
     return { success: true, user };
   } catch (error) {
@@ -680,9 +692,11 @@ const bankConnectionSchema = z.object({
   provider: z.string().default('plaid'),
 });
 
-export async function createBankConnection(data: z.infer<typeof bankConnectionSchema>) {
+export async function createBankConnection(
+  data: z.infer<typeof bankConnectionSchema>
+) {
   const validated = bankConnectionSchema.parse(data);
-  
+
   try {
     // Create bank connection
     const connection = await prisma.bankConnection.create({
@@ -696,7 +710,7 @@ export async function createBankConnection(data: z.infer<typeof bankConnectionSc
         provider: validated.provider,
       },
     });
-    
+
     // Add connection to team
     await prisma.team.update({
       where: { id: validated.teamId },
@@ -706,7 +720,7 @@ export async function createBankConnection(data: z.infer<typeof bankConnectionSc
         },
       },
     });
-    
+
     revalidatePath('/onboarding');
     return { success: true, connection };
   } catch (error) {
@@ -770,7 +784,7 @@ interface ProfileFormProps {
 export function ProfileForm({ userId, initialData }: ProfileFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -782,16 +796,16 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
       phoneNumber: initialData.phoneNumber || '',
     },
   });
-  
+
   async function onSubmit(data: ProfileFormValues) {
     setIsSubmitting(true);
-    
+
     try {
       await updateProfile({
         userId,
         ...data,
       });
-      
+
       // Refresh the page to trigger middleware redirect
       router.refresh();
     } catch (error) {
@@ -800,7 +814,7 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
       setIsSubmitting(false);
     }
   }
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -811,7 +825,7 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
               {form.watch('name')?.charAt(0) || 'U'}
             </AvatarFallback>
           </Avatar>
-          
+
           <FormField
             control={form.control}
             name="profileImageUrl"
@@ -826,7 +840,7 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
             )}
           />
         </div>
-        
+
         <FormField
           control={form.control}
           name="name"
@@ -840,7 +854,7 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
             </FormItem>
           )}
         />
-        
+
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <FormField
             control={form.control}
@@ -855,7 +869,7 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="lastName"
@@ -870,7 +884,7 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
             )}
           />
         </div>
-        
+
         <FormField
           control={form.control}
           name="email"
@@ -884,7 +898,7 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="phoneNumber"
@@ -898,7 +912,7 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
             </FormItem>
           )}
         />
-        
+
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : 'Save Profile'}
         </Button>
@@ -910,7 +924,7 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
 
 ## 7. Bank Connection Form Component
 
-```typescript
+````typescript
 // src/components/onboarding/bank-connection-form.tsx
 'use client';
 
@@ -932,16 +946,16 @@ interface BankConnectionFormProps {
 export function BankConnectionForm({ userId, teamId }: BankConnectionFormProps) {
   const router = useRouter();
   const [isConnecting, setIsConnecting] = useState(false);
-  
+
   // Mock function to simulate bank connection
   // In a real implementation, this would open Plaid Link or similar
   async function connectBank(bankType: string) {
     setIsConnecting(true);
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       // Mock data - in a real implementation, this would come from Plaid
       const mockData = {
         institutionId: `inst_${Math.random().toString(36).substring(2, 9)}`,
@@ -949,7 +963,7 @@ export function BankConnectionForm({ userId, teamId }: BankConnectionFormProps) 
         accessToken: `access-sandbox-${Math.random().toString(36).substring(2, 9)}`,
         itemId: `item-sandbox-${Math.random().toString(36).substring(2, 9)}`,
       };
-      
+
       // Create bank connection
       await createBankConnection({
         userId,
@@ -957,7 +971,7 @@ export function BankConnectionForm({ userId, teamId }: BankConnectionFormProps) 
         ...mockData,
         provider: 'plaid',
       });
-      
+
       // Refresh the page to trigger middleware redirect
       router.refresh();
     } catch (error) {
@@ -966,7 +980,7 @@ export function BankConnectionForm({ userId, teamId }: BankConnectionFormProps) 
       setIsConnecting(false);
     }
   }
-  
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Card className="cursor-pointer hover:bg-muted/50" onClick={() => connectBank('bank')}>
@@ -983,7 +997,7 @@ export function BankConnectionForm({ userId, teamId }: BankConnectionFormProps) 
           </Button>
         </CardContent>
       </Card>
-      
+
       <Card className="cursor-pointer hover:bg-muted/50" onClick={() => connectBank('credit')}>
         <CardHeader>
           <CreditCard className="h-8 w-8 text-primary" />
@@ -998,7 +1012,7 @@ export function BankConnectionForm({ userId, teamId }: BankConnectionFormProps) 
           </Button>
         </CardContent>
       </Card>
-      
+
       <Card className="md:col-span-2">
         <CardHeader>
           <DollarSign className="h-8 w-8 text-muted-foreground" />
@@ -1008,8 +1022,8 @@ export function BankConnectionForm({ userId, teamId }: BankConnectionFormProps) 
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full"
             onClick={() => router.push('/onboarding/complete')}
           >
@@ -1026,7 +1040,7 @@ I'll continue with the rest of the multi-step onboarding implementation guide.
     </div>
   );
 }
-```
+````
 
 ## 8. Checking Onboarding Status in Components
 
@@ -1047,7 +1061,7 @@ export interface OnboardingStatus {
 
 export async function getOnboardingStatus(): Promise<OnboardingStatus> {
   const { user } = await getAuth();
-  
+
   if (!user) {
     return {
       isComplete: false,
@@ -1058,38 +1072,33 @@ export async function getOnboardingStatus(): Promise<OnboardingStatus> {
       nextStep: '/login',
     };
   }
-  
+
   const hasTeam = Boolean(user.teamId);
-  const hasProfile = Boolean(
-    user.name && 
-    user.email && 
-    user.profileImageUrl
-  );
+  const hasProfile = Boolean(user.name && user.email && user.profileImageUrl);
   const hasBankConnection = Boolean(
-    user.bankConnections && 
-    user.bankConnections.length > 0
+    user.bankConnections && user.bankConnections.length > 0
   );
-  
+
   let currentStep = 1;
   let nextStep = '/onboarding/team';
-  
+
   if (hasTeam) {
     currentStep = 2;
     nextStep = '/onboarding/profile';
   }
-  
+
   if (hasTeam && hasProfile) {
     currentStep = 3;
     nextStep = '/onboarding/bank-connection';
   }
-  
+
   if (hasTeam && hasProfile && hasBankConnection) {
     currentStep = 4;
     nextStep = '/onboarding/complete';
   }
-  
+
   const isComplete = hasTeam && hasProfile && hasBankConnection;
-  
+
   return {
     isComplete,
     currentStep,
@@ -1115,13 +1124,13 @@ import { getOnboardingStatus } from '@/lib/onboarding';
 
 export async function OnboardingBanner() {
   const { isComplete, currentStep, nextStep } = await getOnboardingStatus();
-  
+
   if (isComplete) {
     return null;
   }
-  
+
   const progress = (currentStep / 4) * 100;
-  
+
   return (
     <Alert className="mb-6">
       <AlertTitle className="flex items-center justify-between">
@@ -1158,7 +1167,7 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout({ children }: DashboardLayoutProps) {
   // Ensure user is authenticated
   await requireAuth();
-  
+
   return (
     <div className="flex min-h-screen flex-col">
       <div className="container flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
@@ -1192,7 +1201,7 @@ export async function skipBankConnection() {
     maxAge: 60 * 60 * 24 * 30, // 30 days
     path: '/',
   });
-  
+
   revalidatePath('/onboarding');
   return { success: true };
 }
@@ -1205,17 +1214,29 @@ Update the middleware to handle this case:
 // Add this to the middleware function
 
 // Check if user has skipped bank connection
-const hasBankSkipped = request.cookies.get('onboarding-bank-skipped')?.value === 'true';
+const hasBankSkipped =
+  request.cookies.get('onboarding-bank-skipped')?.value === 'true';
 
 // Modify the bank connection check
-if (hasTeam && hasProfile && !hasBankConnection && !hasBankSkipped && 
-    !pathname.startsWith('/onboarding/bank-connection')) {
-  return NextResponse.redirect(new URL('/onboarding/bank-connection', request.url));
+if (
+  hasTeam &&
+  hasProfile &&
+  !hasBankConnection &&
+  !hasBankSkipped &&
+  !pathname.startsWith('/onboarding/bank-connection')
+) {
+  return NextResponse.redirect(
+    new URL('/onboarding/bank-connection', request.url)
+  );
 }
 
 // If user skipped bank connection, treat as complete for onboarding purposes
-if (hasTeam && hasProfile && (hasBankConnection || hasBankSkipped) && 
-    pathname.startsWith('/onboarding')) {
+if (
+  hasTeam &&
+  hasProfile &&
+  (hasBankConnection || hasBankSkipped) &&
+  pathname.startsWith('/onboarding')
+) {
   return NextResponse.redirect(new URL('/dashboard', request.url));
 }
 ```
@@ -1237,7 +1258,7 @@ interface ResumeOnboardingProps {
 
 export function ResumeOnboarding({ nextStep }: ResumeOnboardingProps) {
   const router = useRouter();
-  
+
   return (
     <Button onClick={() => router.push(nextStep)}>
       Resume Onboarding
@@ -1253,6 +1274,7 @@ Based on the Prisma schema provided, here are some key models and fields relevan
 ### 12.1 User Model
 
 The `User` model contains fields needed for profile completion:
+
 - `name`, `firstName`, `lastName` - User's name information
 - `email` - User's email address
 - `profileImageUrl` - User's profile image
@@ -1261,6 +1283,7 @@ The `User` model contains fields needed for profile completion:
 ### 12.2 Team Model
 
 The `Team` model represents an organization:
+
 - `name` - Team name
 - `email` - Team email
 - `baseCurrency` - Default currency for the team
@@ -1269,6 +1292,7 @@ The `Team` model represents an organization:
 ### 12.3 UsersOnTeam Model
 
 This join table manages the relationship between users and teams:
+
 - `userId` - Reference to the user
 - `teamId` - Reference to the team
 - `role` - User's role in the team (OWNER, MEMBER)
@@ -1276,6 +1300,7 @@ This join table manages the relationship between users and teams:
 ### 12.4 BankConnection Model
 
 Represents a connection to a financial institution:
+
 - `userId` - Reference to the user
 - `institutionId` - ID of the financial institution
 - `institutionName` - Name of the financial institution
@@ -1288,18 +1313,22 @@ Represents a connection to a financial institution:
 ### 13.1 Manual Testing Checklist
 
 1. **Authentication**
+
    - Register a new user
    - Verify redirect to onboarding flow
 
 2. **Team Creation**
+
    - Fill out team form
    - Submit and verify redirect to profile step
 
 3. **Profile Completion**
+
    - Fill out profile form
    - Submit and verify redirect to bank connection step
 
 4. **Bank Connection**
+
    - Test connecting a bank
    - Test skipping bank connection
    - Verify redirect to completion step
@@ -1321,29 +1350,32 @@ test.describe('Onboarding Flow', () => {
     // Register a new user
     await page.goto('/register');
     // Fill registration form and submit
-    
+
     // Team Creation
     await expect(page).toHaveURL('/onboarding/team');
     await page.fill('input[name="name"]', 'Test Team');
     await page.fill('input[name="email"]', 'team@example.com');
     await page.click('button[type="submit"]');
-    
+
     // Profile Completion
     await expect(page).toHaveURL('/onboarding/profile');
     await page.fill('input[name="name"]', 'Test User');
     await page.fill('input[name="email"]', 'user@example.com');
-    await page.fill('input[name="profileImageUrl"]', 'https://example.com/avatar.jpg');
+    await page.fill(
+      'input[name="profileImageUrl"]',
+      'https://example.com/avatar.jpg'
+    );
     await page.click('button[type="submit"]');
-    
+
     // Bank Connection
     await expect(page).toHaveURL('/onboarding/bank-connection');
     // Test skipping for simplicity
     await page.click('text=Skip This');
-    
+
     // Completion
     await expect(page).toHaveURL('/onboarding/complete');
     await page.click('text=Go to Dashboard');
-    
+
     // Dashboard
     await expect(page).toHaveURL('/dashboard');
   });

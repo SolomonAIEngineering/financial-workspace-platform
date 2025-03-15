@@ -1,6 +1,6 @@
-import { type OpenAIProvider, createOpenAI } from "@ai-sdk/openai";
-import { generateObject } from "ai";
-import { z } from "zod";
+import { type OpenAIProvider, createOpenAI } from '@ai-sdk/openai';
+import { generateObject } from 'ai';
+import { z } from 'zod';
 
 type Transaction = {
   id: string;
@@ -23,7 +23,7 @@ export class EnrichmentService {
   }
 
   async enrichTransactions(
-    transactions: Transaction[],
+    transactions: Transaction[]
   ): Promise<EnrichedTransaction[]> {
     const { object } = await generateObject({
       model: this.model.chat(process.env.AI_GATEWAY_MODEL!),
@@ -47,26 +47,26 @@ export class EnrichmentService {
             
             Important: Return the transactions array in the exact same order as provided.`,
       temperature: 1,
-      mode: "json",
+      mode: 'json',
       schema: z.object({
         transactions: z.array(
           z.object({
             category: z
               .enum([
-                "travel",
-                "office_supplies",
-                "meals",
-                "software",
-                "rent",
-                "equipment",
-                "internet_and_telephone",
-                "facilities_expenses",
-                "activity",
-                "taxes",
-                "fees",
+                'travel',
+                'office_supplies',
+                'meals',
+                'software',
+                'rent',
+                'equipment',
+                'internet_and_telephone',
+                'facilities_expenses',
+                'activity',
+                'taxes',
+                'fees',
               ])
-              .describe("The most appropriate category for the transaction"),
-          }),
+              .describe('The most appropriate category for the transaction'),
+          })
         ),
       }),
     });
@@ -79,14 +79,14 @@ export class EnrichmentService {
   }
 
   async batchEnrichTransactions(
-    transactions: Transaction[],
+    transactions: Transaction[]
   ): Promise<EnrichedTransaction[]> {
     const MAX_TOKENS_PER_BATCH = 4000;
     const ESTIMATED_TOKENS_PER_TRANSACTION = 40;
 
     const batchSize = Math.max(
       1,
-      Math.floor(MAX_TOKENS_PER_BATCH / ESTIMATED_TOKENS_PER_TRANSACTION),
+      Math.floor(MAX_TOKENS_PER_BATCH / ESTIMATED_TOKENS_PER_TRANSACTION)
     );
 
     const enrichedTransactions: EnrichedTransaction[] = [];

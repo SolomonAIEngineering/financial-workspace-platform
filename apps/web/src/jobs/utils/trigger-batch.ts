@@ -1,4 +1,4 @@
-import type { BatchRunHandle } from "@trigger.dev/sdk/v3";
+import type { BatchRunHandle } from '@trigger.dev/sdk/v3';
 
 const BATCH_SIZE = 100;
 
@@ -8,7 +8,7 @@ interface BatchItem<T> {
 
 interface BatchTriggerTask<T> {
   batchTrigger: (
-    items: BatchItem<T>[],
+    items: BatchItem<T>[]
   ) => Promise<BatchRunHandle<string, T, void>>;
 }
 
@@ -19,7 +19,7 @@ export async function triggerBatch<T>(data: T[], task: BatchTriggerTask<T>) {
     await task.batchTrigger(
       chunk.map((item) => ({
         payload: item,
-      })),
+      }))
     );
   }
 }

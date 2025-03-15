@@ -1,5 +1,5 @@
 export function parseAPIError(error: unknown) {
-  if (typeof error === "object" && error !== null && "error" in error) {
+  if (typeof error === 'object' && error !== null && 'error' in error) {
     const apiError = error as { error: { code: string; message: string } };
 
     return {
@@ -8,5 +8,5 @@ export function parseAPIError(error: unknown) {
     };
   }
 
-  return { code: "unknown", message: "An unknown error occurred" };
+  return { code: 'unknown', message: 'An unknown error occurred' };
 }

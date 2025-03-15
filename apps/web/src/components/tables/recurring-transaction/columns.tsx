@@ -382,7 +382,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -397,7 +397,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -412,7 +412,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -427,7 +427,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -441,7 +441,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -463,7 +463,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -474,7 +474,8 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     cell: ({ row }) => {
       const minBalance = row.original.minBalanceRequired;
       const currency = row.original.currency || 'USD';
-      if (minBalance === undefined || minBalance === null) return <span className="text-muted-foreground">-</span>;
+      if (minBalance === undefined || minBalance === null)
+        return <span className="text-muted-foreground">-</span>;
       return (
         <span>
           {new Intl.NumberFormat('en-US', {
@@ -486,7 +487,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -496,22 +497,21 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     ),
     cell: ({ row }) => {
       const level = row.original.importanceLevel;
-      const levelColor = importanceLevelColors[level as keyof typeof importanceLevelColors] || importanceLevelColors.low;
+      const levelColor =
+        importanceLevelColors[level as keyof typeof importanceLevelColors] ||
+        importanceLevelColors.low;
 
       if (!level) return <span className="text-muted-foreground">-</span>;
 
       return (
-        <Badge
-          variant="outline"
-          className={cn('capitalize', levelColor.badge)}
-        >
+        <Badge variant="outline" className={cn('capitalize', levelColor.badge)}>
           {level}
         </Badge>
       );
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -533,7 +533,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -555,7 +555,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -577,7 +577,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -599,7 +599,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -613,7 +613,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -623,12 +623,13 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     ),
     cell: ({ row }) => {
       const dayOfMonth = row.original.dayOfMonth;
-      if (dayOfMonth === undefined || dayOfMonth === null) return <span className="text-muted-foreground">-</span>;
+      if (dayOfMonth === undefined || dayOfMonth === null)
+        return <span className="text-muted-foreground">-</span>;
       return <span>{dayOfMonth}</span>;
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -638,14 +639,23 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     ),
     cell: ({ row }) => {
       const dayOfWeek = row.original.dayOfWeek;
-      if (dayOfWeek === undefined || dayOfWeek === null) return <span className="text-muted-foreground">-</span>;
+      if (dayOfWeek === undefined || dayOfWeek === null)
+        return <span className="text-muted-foreground">-</span>;
 
-      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const days = [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ];
       return <span>{days[dayOfWeek] || dayOfWeek}</span>;
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
   },
   {
@@ -659,7 +669,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     },
     enableHiding: true,
     meta: {
-      cellClassName: 'hidden md:hidden lg:hidden'
+      cellClassName: 'hidden md:hidden lg:hidden',
     },
-  }
+  },
 ];

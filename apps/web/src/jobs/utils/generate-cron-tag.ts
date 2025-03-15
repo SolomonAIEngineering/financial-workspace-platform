@@ -2,7 +2,7 @@ export function generateCronTag(teamId: string): string {
   // Use teamId to generate a deterministic random minute and hour
   const hash = Array.from(teamId).reduce(
     (acc, char) => acc + char.charCodeAt(0),
-    0,
+    0
   );
 
   // Generate minute (0-59) and hour (0-23) based on hash

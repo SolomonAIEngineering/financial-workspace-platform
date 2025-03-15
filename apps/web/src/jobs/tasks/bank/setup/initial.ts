@@ -3,7 +3,7 @@ import { logger, schedules, schemaTask } from '@trigger.dev/sdk/v3';
 import { BANK_JOBS } from '../../constants';
 import { bankSyncScheduler } from '../scheduler/bank-scheduler';
 import { generateCronTag } from '@/lib/generate-cron-tag';
-import { syncConnectionJob as syncConnection } from "../sync/connection";
+import { syncConnectionJob as syncConnection } from '../sync/connection';
 import { z } from 'zod';
 
 /**
@@ -58,7 +58,7 @@ export const initialSetupJob = schemaTask({
    *
    * @param payload - The job payload containing connection details
    * @param payload.teamId - The ID of the team
-   * @param payload.connectionId - The ID of the bank connection  
+   * @param payload.connectionId - The ID of the bank connection
    * @param io - The I/O context provided by Trigger.dev for logging, running
    *   tasks, etc.
    * @returns A result object containing the connection ID, account count, and
@@ -67,9 +67,7 @@ export const initialSetupJob = schemaTask({
    */
   run: async (payload, io) => {
     const { teamId, connectionId } = payload;
-    logger.info(
-      `Starting initial setup for institution ${connectionId}`
-    );
+    logger.info(`Starting initial setup for institution ${connectionId}`);
 
     // S  chedule the bank sync task to run daily at a random time to distribute load
     // Use a deduplication key to prevent duplicate schedules for the same team
@@ -77,7 +75,7 @@ export const initialSetupJob = schemaTask({
     await schedules.create({
       task: bankSyncScheduler.id,
       cron: generateCronTag(teamId),
-      timezone: "UTC",
+      timezone: 'UTC',
       externalId: teamId,
       deduplicationKey: `${teamId}-${bankSyncScheduler.id}`,
     });
@@ -97,8 +95,8 @@ export const initialSetupJob = schemaTask({
         manualSync: true,
       },
       {
-        delay: "5m",
-      },
+        delay: '5m',
+      }
     );
   },
 });

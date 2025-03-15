@@ -44,8 +44,10 @@ export const disconnectedSchedulerJob = schedules.task({
   run: async () => {
     await logger.info('Starting disconnected connections scheduler');
 
-    if (process.env.TRIGGER_ENVIRONMENT !== "production") {
-      await logger.info("Disconnected connections scheduler skipped in non-production environment");
+    if (process.env.TRIGGER_ENVIRONMENT !== 'production') {
+      await logger.info(
+        'Disconnected connections scheduler skipped in non-production environment'
+      );
       return;
     }
 

@@ -3,6 +3,6 @@ export async function blobToSerializable(blob: Blob) {
   return Array.from(new Uint8Array(arrayBuffer));
 }
 
-export function serializableToBlob(array: number[], contentType = "") {
+export function serializableToBlob(array: number[], contentType = '') {
   return new Blob([new Uint8Array(array)], { type: contentType });
 }

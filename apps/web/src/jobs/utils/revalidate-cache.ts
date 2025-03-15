@@ -11,8 +11,8 @@ export async function revalidateCache({
       headers: {
         Authorization: `Bearer ${process.env.MIDDAY_CACHE_API_SECRET}`,
       },
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify({ tag, id }),
-    },
+    }
   );
 }

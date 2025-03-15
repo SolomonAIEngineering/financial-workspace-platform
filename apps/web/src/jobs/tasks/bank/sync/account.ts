@@ -1,17 +1,17 @@
-import { logger, schemaTask } from "@trigger.dev/sdk/v3";
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
-import { AccountType } from "@/server/types/index";
-import { engine as client } from "@/lib/engine";
-import { getClassification } from "@/jobs/utils/transform";
-import { parseAPIError } from "@/jobs/utils/parse-error";
-import { prisma } from "@/server/db";
-import { upsertTransactionsJob as upsertTransactions } from "../transactions/upsert";
-import { z } from "zod";
+import { AccountType } from '@/server/types/index';
+import { engine as client } from '@/lib/engine';
+import { getClassification } from '@/jobs/utils/transform';
+import { parseAPIError } from '@/jobs/utils/parse-error';
+import { prisma } from '@/server/db';
+import { upsertTransactionsJob as upsertTransactions } from '../transactions/upsert';
+import { z } from 'zod';
 
 const BATCH_SIZE = 500;
 
 export const syncAccount = schemaTask({
-  id: "sync-account",
+  id: 'sync-account',
   maxDuration: 300,
   retry: {
     maxAttempts: 2,
@@ -20,9 +20,17 @@ export const syncAccount = schemaTask({
     id: z.string().uuid(),
     teamId: z.string(),
     accountId: z.string(),
-    accessToken: z.enum(Object.values(AccountType) as [string, ...string[]]).optional(),
+    accessToken: z
+      .enum(Object.values(AccountType) as [string, ...string[]])
+      .optional(),
     errorRetries: z.number().optional(),
-    provider: z.enum(["gocardless", "plaid", "teller", "enablebanking", "stripe"]),
+    provider: z.enum([
+      'gocardless',
+      'plaid',
+      'teller',
+      'enablebanking',
+      'stripe',
+    ]),
     manualSync: z.boolean().optional(),
     accountType: z.enum(Object.values(AccountType) as [string, ...string[]]),
   }),
@@ -41,13 +49,13 @@ export const syncAccount = schemaTask({
     // Get the balance
     try {
       const balanceResponse = await client.apiFinancialAccounts.listBalances({
-        provider: provider as "gocardless" | "plaid" | "teller" | "stripe",
+        provider: provider as 'gocardless' | 'plaid' | 'teller' | 'stripe',
         id: accountId,
         accessToken,
       });
 
       if (!balanceResponse) {
-        throw new Error("Failed to get balance");
+        throw new Error('Failed to get balance');
       }
 
       const { data: balanceData } = balanceResponse;
@@ -78,9 +86,9 @@ export const syncAccount = schemaTask({
     } catch (error) {
       const parsedError = parseAPIError(error);
 
-      logger.error("Failed to sync account balance", { error: parsedError });
+      logger.error('Failed to sync account balance', { error: parsedError });
 
-      if (parsedError.code === "disconnected") {
+      if (parsedError.code === 'disconnected') {
         const retries = errorRetries ? errorRetries + 1 : 1;
 
         // Update the account with the error details and retries
@@ -99,16 +107,21 @@ export const syncAccount = schemaTask({
     // Get the transactions
     try {
       const transactionsResponse = await client.apiTransactions.list({
-        provider: provider as "gocardless" | "plaid" | "teller" | "stripe",
+        provider: provider as 'gocardless' | 'plaid' | 'teller' | 'stripe',
         accountId,
-        accountType: classification as "credit" | "depository" | "loan" | "other_asset" | "other_liability",
+        accountType: classification as
+          | 'credit'
+          | 'depository'
+          | 'loan'
+          | 'other_asset'
+          | 'other_liability',
         accessToken,
         // If the transactions are being synced manually, we want to get all transactions
-        latest: manualSync ? "false" : "true",
+        latest: manualSync ? 'false' : 'true',
       });
 
       if (!transactionsResponse) {
-        throw new Error("Failed to get transactions");
+        throw new Error('Failed to get transactions');
       }
 
       // Reset error details and retries if we successfully got the transactions
@@ -139,7 +152,7 @@ export const syncAccount = schemaTask({
         });
       }
     } catch (error) {
-      logger.error("Failed to sync transactions", { error });
+      logger.error('Failed to sync transactions', { error });
 
       throw error;
     }

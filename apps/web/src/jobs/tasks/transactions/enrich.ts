@@ -1,16 +1,16 @@
-import { EnrichmentService } from "../../utils/enrichment-service";
-import { prisma } from "@/server/db";
-import { schemaTask } from "@trigger.dev/sdk/v3";
-import { z } from "zod";
+import { EnrichmentService } from '../../utils/enrichment-service';
+import { prisma } from '@/server/db';
+import { schemaTask } from '@trigger.dev/sdk/v3';
+import { z } from 'zod';
 
 export const enrichTransactions = schemaTask({
-  id: "enrich-transactions",
+  id: 'enrich-transactions',
   schema: z.object({
     transactions: z.array(
       z.object({
         id: z.string(),
         name: z.string(),
-      }),
+      })
     ),
   }),
   maxDuration: 300,
@@ -18,7 +18,6 @@ export const enrichTransactions = schemaTask({
     concurrencyLimit: 10,
   },
   run: async ({ transactions }) => {
-
     const enrichmentService = new EnrichmentService();
 
     const data = await enrichmentService.batchEnrichTransactions(transactions);
@@ -28,8 +27,8 @@ export const enrichTransactions = schemaTask({
     await prisma.transaction.updateMany({
       where: {
         id: {
-          in: data.map((t) => t.id)
-        }
+          in: data.map((t) => t.id),
+        },
       },
       data: {
         categorySlug: data.map((t) => t.category_slug).join(','),

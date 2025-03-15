@@ -128,7 +128,7 @@ export const connectionExpirationJob = schemaTask({
           1,
           Math.ceil(
             (connection.expiresAt.getTime() - now.getTime()) /
-            (1000 * 60 * 60 * 24)
+              (1000 * 60 * 60 * 24)
           )
         );
 
@@ -159,7 +159,7 @@ export const connectionExpirationJob = schemaTask({
 
         const daysUntilExpiration = Math.ceil(
           (connection.expiresAt.getTime() - now.getTime()) /
-          (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24)
         );
 
         await client.sendEvent({

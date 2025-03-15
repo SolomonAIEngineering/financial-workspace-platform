@@ -43,7 +43,7 @@ import { z } from 'zod';
  */
 
 export const expiringNotifications = schemaTask({
-  id: "expiring-notifications",
+  id: 'expiring-notifications',
   maxDuration: 300,
   queue: {
     concurrencyLimit: 1,
@@ -60,7 +60,7 @@ export const expiringNotifications = schemaTask({
           full_name: z.string(),
           locale: z.string(),
         }),
-      }),
+      })
     ),
   }),
   run: async ({ users }) => {
@@ -78,12 +78,12 @@ export const expiringNotifications = schemaTask({
         const html = `<h1>Hello</h1>`;
 
         return {
-          from: "Solomon AI <hello@solomonai.com>",
+          from: 'Solomon AI <hello@solomonai.com>',
           to: [user.email],
-          subject: "Bank Connection Expiring Soon",
+          subject: 'Bank Connection Expiring Soon',
           html,
         };
-      },
+      }
     );
 
     const emails = await Promise.all(emailPromises);
@@ -91,7 +91,6 @@ export const expiringNotifications = schemaTask({
     await resend?.batch.send(emails);
   },
 });
-
 
 /**
  * Generates the plain text version of the expiring connection email
