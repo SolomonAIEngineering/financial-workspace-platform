@@ -112,6 +112,20 @@ export function transformTransaction({
 }
 
 /**
+ * The classification of an account.
+ *
+ * @typedef {string} AccountClassification
+ * @enum {string}
+ * @readonly
+ */
+export type AccountClassification =
+  | 'credit'
+  | 'depository'
+  | 'other_asset'
+  | 'loan'
+  | 'other_liability';
+
+/**
  * Gets the classification string for a given account type.
  *
  * This function maps the internal AccountType enum to standardized
@@ -123,7 +137,7 @@ export function transformTransaction({
  * @returns {string} The classification string for the account type: "credit",
  *   "depository", "loan", or "investment"
  */
-export function getClassification(type: AccountType) {
+export function getClassification(type: AccountType): AccountClassification {
   switch (type) {
     case AccountType.CREDIT:
       return 'credit';
@@ -132,7 +146,7 @@ export function getClassification(type: AccountType) {
     case AccountType.LOAN:
       return 'loan';
     case AccountType.INVESTMENT:
-      return 'investment';
+      return 'other_asset';
     default:
       return 'depository';
   }

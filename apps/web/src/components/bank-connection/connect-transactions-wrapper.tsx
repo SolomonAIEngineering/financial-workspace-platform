@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 
 import { ConnectTransactionsModal } from '../modals/connect-transactions-modal';
-import { useConnectParams } from '@/lib/hooks/use-connect-params';
+import { useConnectParams } from '@/hooks/use-connect-params';
 import { useConnectTransactions } from './connect-transactions-context';
 
 /**

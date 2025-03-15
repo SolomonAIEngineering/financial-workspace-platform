@@ -72,7 +72,7 @@ export const upsertTransactionsJob = schemaTask({
   id: BANK_JOBS.UPSERT_TRANSACTIONS,
   description: 'Upsert Transactions',
   schema: z.object({
-    teamId: z.string().uuid(),
+    userId: z.string().uuid(),
     bankAccountId: z.string().uuid(),
     manualSync: z.boolean().optional(),
     transactions: z.array(transactionSchema),
@@ -99,13 +99,13 @@ export const upsertTransactionsJob = schemaTask({
    */
   run: async (payload, io) => {
     try {
-      const { transactions, teamId, bankAccountId, manualSync } = payload;
+      const { transactions, userId, bankAccountId, manualSync } = payload;
 
       // Transform transactions to match our DB schema
       const formattedTransactions = transactions.map((transaction) => {
         return transformTransaction({
           transaction: transaction as any,
-          teamId,
+          teamId: userId,
           bankAccountId,
           notified: manualSync,
         });

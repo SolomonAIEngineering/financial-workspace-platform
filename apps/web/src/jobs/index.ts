@@ -26,6 +26,7 @@ import { initialSetupJob } from './tasks/bank/setup/initial';
 import { monitorBankConnectionsJob } from './tasks/bank/scheduler/monitor-connections';
 import { refreshConnectionJob } from './tasks/bank/connections/refresh-connection-job';
 import { sendReconnectAlertsJob } from './tasks/reconnect/send-reconnect-alerts';
+import { syncAccount } from './tasks/bank/sync/account';
 import { syncConnectionJob } from './tasks/bank/sync/connection';
 import { updateBalancesJob } from './tasks/bank/scheduler/update-balances';
 import { upsertTransactionsJob } from './tasks/bank/transactions/upsert';
@@ -53,6 +54,9 @@ const jobs = [
   refreshConnectionJob,
   connectionRecoveryJob,
   connectionExpirationJob,
+
+  // Bank account sync jobs
+  syncAccount,
 ];
 
 // This is required for Trigger.dev v3
@@ -78,4 +82,5 @@ export {
   refreshConnectionJob,
   connectionRecoveryJob,
   connectionExpirationJob,
+  syncAccount,
 };

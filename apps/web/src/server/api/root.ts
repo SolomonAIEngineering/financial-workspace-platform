@@ -7,6 +7,7 @@ import { documentRouter } from './routers/document';
 import { fileRouter } from './routers/file';
 import { layoutRouter } from './routers/layout';
 import { recurringTransactionsRouter } from './routers/recurring-transactions';
+import { teamRouter } from './routers/team';
 import { transactionsRouter } from './routers/transactions';
 import { userRouter } from './routers/user';
 import { versionRouter } from './routers/version';
@@ -17,6 +18,7 @@ export const appRouter = createRouter({
   document: documentRouter,
   file: fileRouter,
   layout: layoutRouter,
+  team: teamRouter,
   user: userRouter,
   version: versionRouter,
   transactions: transactionsRouter,

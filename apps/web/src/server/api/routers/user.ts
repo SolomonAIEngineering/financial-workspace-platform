@@ -292,6 +292,34 @@ export const userRouter = createRouter({
     return { success: true };
   }),
 
+  /**
+   * Check if the user has at least one team
+   * 
+   * This procedure checks if the authenticated user is a member of at least one team.
+   * It can be used to determine if a user needs to create or join a team.
+   * 
+   * @returns A boolean indicating whether the user has at least one team
+   * 
+   * @example
+   * ```tsx
+   * const { hasTeam } = api.user.hasTeam.useQuery();
+   * 
+   * if (!hasTeam) {
+   *   // Show team creation or join UI
+   * }
+   * ```
+   */
+  hasTeam: protectedProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx;
+
+    // Count the number of teams the user is a member of
+    const teamsCount = await prisma.usersOnTeam.count({
+      where: { userId },
+    });
+
+    return { hasTeam: teamsCount > 0 };
+  }),
+
   // EXISTING ENDPOINTS
 
   // Get enhanced profile completeness with all relevant fields for business profile
@@ -588,6 +616,16 @@ export const userRouter = createRouter({
           lastName: true,
           name: true,
           profileImageUrl: true,
+          teamName: true,
+          team: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              baseCurrency: true,
+              createdAt: true,
+            },
+          },
         },
         where: { id: input.id },
       });

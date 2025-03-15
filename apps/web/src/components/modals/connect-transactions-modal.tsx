@@ -27,15 +27,17 @@ import { Input } from '@/registry/default/potion-ui/input';
 import { InstitutionDetails } from '../institution/institution-details';
 import { LogEvents } from '@v1/analytics/events';
 import { Skeleton } from '../ui/skeleton';
+import { SyncLogs } from '@/components/sync/sync-logs';
 import { createPlaidLinkTokenAction } from '@/actions/institution/create-link';
 import { exchangePublicTokenAction } from '@/actions/institution/exchange-public-token';
 import { getInstitutionsAction } from '@/actions/institution/get-institution';
 import { motion } from 'framer-motion';
 import { syncTransactionsAction } from '@/actions/transactions/sync-transactions-action';
 import { track } from '@v1/analytics/client';
-import { useConnectParams } from '@/lib/hooks/use-connect-params';
+import { useConnectParams } from '@/hooks/use-connect-params';
 import { usePlaidLink } from 'react-plaid-link';
 import { useRouter } from 'next/navigation';
+import { useSyncProgress } from '@/hooks/use-sync-progress';
 
 /** Renders a skeleton loading state for institution search results */
 function SearchSkeleton() {
@@ -269,12 +271,26 @@ function SearchResults({
 
 /** Component to display the transaction sync status */
 function SyncStatusContent({
-  status,
+  runId,
+  status: initialStatus,
   onComplete,
 }: {
-  status: 'idle' | 'syncing' | 'success' | 'error';
+  runId?: string;
+  status?: 'idle' | 'syncing' | 'success' | 'error';
   onComplete: () => void;
 }) {
+  // Use the sync progress hook if we have a runId
+  const {
+    progress,
+    streams,
+    status: syncStatus,
+    error,
+    isLoading,
+  } = useSyncProgress(runId);
+
+  // Use the hook status if available, otherwise use the prop
+  const status = runId ? syncStatus : initialStatus || 'idle';
+
   return (
     <div className="flex flex-col items-center justify-center space-y-6 px-4 py-12 text-center">
       {status === 'syncing' && (
@@ -283,6 +299,41 @@ function SyncStatusContent({
             <RefreshCw className="h-16 w-16 animate-spin text-primary" />
           </div>
           <h3 className="text-xl font-semibold">Syncing Your Data</h3>
+
+          {/* Show progress bar if we have progress data */}
+          {progress && typeof progress === 'object' && (
+            <div className="w-full max-w-md">
+              <div className="mb-2 flex justify-between text-sm">
+                <span>
+                  {progress.message || 'Processing your financial data...'}
+                </span>
+                {progress.current !== undefined && progress.total && (
+                  <span>
+                    {Math.round((progress.current / progress.total) * 100)}%
+                  </span>
+                )}
+              </div>
+
+              {progress.current !== undefined && progress.total && (
+                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                  <div
+                    className="h-full bg-primary transition-all duration-300"
+                    style={{
+                      width: `${(progress.current / progress.total) * 100}%`,
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Use the SyncLogs component to display detailed logs */}
+              {streams && streams.length > 0 && (
+                <div className="mt-4">
+                  <SyncLogs streams={streams} maxHeight="150px" />
+                </div>
+              )}
+            </div>
+          )}
+
           <p className="max-w-md text-muted-foreground">
             We're connecting to your financial institution and syncing your
             transactions, accounts, and balances. This process may take a minute
@@ -301,6 +352,14 @@ function SyncStatusContent({
             Your accounts and transactions have been successfully synced. You
             can now view your accounts and transactions.
           </p>
+
+          {/* Show sync logs in success state too */}
+          {streams && streams.length > 0 && (
+            <div className="mt-2 w-full max-w-md">
+              <SyncLogs streams={streams} maxHeight="150px" />
+            </div>
+          )}
+
           <Button onClick={onComplete} className="mt-4">
             Go to Accounts
           </Button>
@@ -314,16 +373,40 @@ function SyncStatusContent({
           </div>
           <h3 className="text-xl font-semibold">Sync Failed</h3>
           <p className="max-w-md text-muted-foreground">
-            We encountered an error while syncing your accounts and
-            transactions. Please try again later or contact support if the issue
-            persists.
+            {error?.message ||
+              'We encountered an error while syncing your accounts and transactions. Please try again later or contact support if the issue persists.'}
           </p>
+
+          {/* Show sync logs in error state for debugging */}
+          {streams && streams.length > 0 && (
+            <div className="mt-2 w-full max-w-md">
+              <SyncLogs
+                streams={streams}
+                maxHeight="150px"
+                showToggle={false}
+              />
+            </div>
+          )}
+
           <div className="mt-4 flex space-x-4">
             <Button onClick={() => window.location.reload()} variant="outline">
               Try Again
             </Button>
             <Button onClick={onComplete}>Continue Anyway</Button>
           </div>
+        </>
+      )}
+
+      {isLoading && status === 'idle' && (
+        <>
+          <div className="relative flex h-20 w-20 items-center justify-center">
+            <RefreshCw className="h-16 w-16 animate-spin text-primary" />
+          </div>
+          <h3 className="text-xl font-semibold">Connecting to Sync Service</h3>
+          <p className="max-w-md text-muted-foreground">
+            We're establishing a connection to the sync service. This should
+            only take a moment...
+          </p>
         </>
       )}
     </div>
@@ -356,6 +439,7 @@ export function ConnectTransactionsModal({
   const [syncStatus, setSyncStatus] = useState<
     'idle' | 'syncing' | 'success' | 'error'
   >('idle');
+  const [syncRunId, setSyncRunId] = useState<string | null>(null);
 
   const {
     countryCode,
@@ -401,29 +485,31 @@ export function ConnectTransactionsModal({
       });
 
       // Trigger background job to sync transactions, bank accounts, and connections
-      // Use the syncTransactionsAction to trigger the sync
       try {
-        await syncTransactionsAction({
+        const syncResult = await syncTransactionsAction({
           accessToken,
           itemId,
           institutionId,
           userId,
         });
 
-        // If we get here, the action was successful
+        // log out the syncResult
+        console.info('syncResult', syncResult);
+
+        // Check if the result has a runId property
+        setSyncRunId(syncResult?.data?.id ?? null);
+
+        // Track analytics event
+        track({
+          event: LogEvents.ConnectBankAuthorized.name,
+          channel: LogEvents.ConnectBankAuthorized.channel,
+          provider: 'plaid',
+        });
       } catch (syncError) {
         console.error('Error syncing transactions:', syncError);
+        setSyncStatus('error');
         throw new Error('Failed to trigger sync job');
       }
-
-      // Mark sync as successful
-      setSyncStatus('success');
-
-      track({
-        event: LogEvents.ConnectBankAuthorized.name,
-        channel: LogEvents.ConnectBankAuthorized.channel,
-        provider: 'plaid',
-      });
     } catch (error) {
       console.error('Error in exchangePublicToken or syncing:', error);
       setSyncStatus('error');
@@ -468,7 +554,19 @@ export function ConnectTransactionsModal({
 
   // Handle sync completion and redirect to accounts or dashboard
   const handleSyncComplete = async () => {
-    await setParams({ step: null });
+    // Reset sync state
+    setSyncRunId(null);
+    setSyncStatus('idle');
+
+    // Clear URL parameters
+    await setParams({
+      step: null,
+      provider: null,
+      token: null,
+      institution_id: null,
+      item_id: null,
+    });
+
     // Redirect to accounts page or dashboard
     router.push('/accounts');
   };
@@ -705,6 +803,7 @@ export function ConnectTransactionsModal({
 
         {(step === 'syncing' || step === 'account') && (
           <SyncStatusContent
+            runId={syncRunId || undefined}
             status={syncStatus}
             onComplete={handleSyncComplete}
           />

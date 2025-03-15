@@ -65,7 +65,7 @@ export const initialSetupJob = schemaTask({
    *   status
    * @throws Error if any part of the setup process fails
    */
-  run: async (payload, io) => {
+  run: async (payload) => {
     const { teamId, connectionId } = payload;
     logger.info(`Starting initial setup for institution ${connectionId}`);
 

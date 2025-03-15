@@ -1,16 +1,13 @@
 /** Authentication utilities for the application */
 
-import { cache } from 'react';
-
-import type { AuthUser } from '@/server/auth/getAuthUser';
 import type { AuthSession } from '@/server/auth/lib';
-
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-
+import type { AuthUser } from '@/server/auth/getAuthUser';
 import { CookieNames } from '@/lib/storage/cookies';
+import { cache } from 'react';
+import { cookies } from 'next/headers';
 import { getAuthUser } from '@/server/auth/getAuthUser';
 import { lucia } from '@/server/auth/lucia';
+import { redirect } from 'next/navigation';
 
 /**
  * Get the current authentication state
