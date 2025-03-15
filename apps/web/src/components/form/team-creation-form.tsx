@@ -13,8 +13,9 @@ import {
 import { Button } from '@/registry/default/potion-ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/registry/default/potion-ui/input';
-import { createTeam } from '@/actions/team';
+import { createTeamAction } from '@/actions/team/create-team-action';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -33,11 +34,7 @@ const teamFormSchema = z.object({
 
 type TeamFormValues = z.infer<typeof teamFormSchema>;
 
-interface TeamCreationFormProps {
-    userId: string;
-}
-
-export function TeamCreationForm({ userId }: TeamCreationFormProps) {
+export function TeamCreationForm() {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -54,17 +51,27 @@ export function TeamCreationForm({ userId }: TeamCreationFormProps) {
         setIsSubmitting(true);
 
         try {
-            await createTeam({
+            await createTeamAction({
                 name: data.name,
                 email: data.email,
                 baseCurrency: data.baseCurrency,
-                userId,
+            });
+
+            // Show success toast
+            toast.success('Team created successfully!', {
+                description: `${data.name} has been set up and is ready to go.`,
+                duration: 5000,
             });
 
             // Refresh the page to trigger middleware redirect
             router.refresh();
         } catch (error) {
             console.error('Failed to create team:', error);
+
+            // Show error toast
+            toast.error('Failed to create team', {
+                description: 'Please try again or contact support if the issue persists.',
+            });
         } finally {
             setIsSubmitting(false);
         }
