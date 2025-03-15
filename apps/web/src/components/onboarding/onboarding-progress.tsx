@@ -56,32 +56,45 @@ export function OnboardingProgress({
                             <span className="text-xs text-gray-500 mt-1">
                                 {step.description}
                             </span>
-
-                            {isCurrent && (
-                                <div className="mt-2 h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-primary rounded-full"
-                                        style={{ width: `${progress}%` }}
-                                    />
-                                </div>
-                            )}
                         </div>
                     );
                 })}
             </div>
 
-            <div className="relative mt-2">
+            {/* Progress bar for current step */}
+            {steps.map((step) => {
+                const isCurrent = step.id === currentStep;
+
+                if (isCurrent) {
+                    return (
+                        <div key={`progress-${step.id}`} className="mt-2 px-4 w-full">
+                            <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-primary rounded-full"
+                                    style={{ width: `${progress}%` }}
+                                />
+                            </div>
+                        </div>
+                    );
+                }
+                return null;
+            })}
+
+            {/* Connecting lines between steps */}
+            <div className="relative mt-4">
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                     <div className="h-0.5 w-full bg-gray-200"></div>
                 </div>
-                <div className="relative flex justify-between">
+                <div className="relative flex">
                     {steps.map((step, index) => {
                         const isCompleted = step.id < currentStep;
-                        const isCurrent = step.id === currentStep;
+                        const isLast = index === steps.length - 1;
+
+                        if (isLast) return null;
 
                         return (
                             <div
-                                key={step.id}
+                                key={`line-${step.id}`}
                                 className={cn(
                                     "h-0.5 flex-1",
                                     isCompleted ? "bg-primary" : "bg-gray-200"
