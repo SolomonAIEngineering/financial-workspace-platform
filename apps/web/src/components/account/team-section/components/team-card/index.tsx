@@ -74,7 +74,6 @@ export function TeamCard({
         data: { slug },
       });
       toast.success('Team slug updated successfully');
-      return true;
     } catch (error: any) {
       console.error('Failed to update slug:', error);
       if (error.message?.includes('unique constraint')) {

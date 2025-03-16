@@ -20,6 +20,7 @@ import { TeamCreationForm } from '@/components/form/team-creation-form';
 import { TeamHeader } from './components/team-header';
 import { TeamSelector } from './components/team-selector';
 import { Users } from 'lucide-react';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useTRPC } from '@/trpc/react';
 import {
@@ -100,11 +101,25 @@ export function TeamSection({ userId }: TeamSectionProps) {
     };
 
     // Handle team creation completion
-    const handleTeamCreated = () => {
+    const handleTeamCreated = async (newTeam?: any) => {
         // Close dialog
         setIsCreateDialogOpen(false);
-        // Refresh data
-        trpc.team.invalidate();
+
+        // Invalidate team cache
+        await trpc.team.invalidate();
+
+        // Refetch teams data
+        const updatedTeams = await trpc.team.getAll.fetch();
+
+        // If we have the newly created team and it exists in the updated list, select it
+        if (newTeam && newTeam.id) {
+            setSelectedTeamId(newTeam.id);
+            toast.success(`Team "${newTeam.name}" created and selected`);
+        } else if (updatedTeams && updatedTeams.length > 0) {
+            // Otherwise select the first team if available
+            const lastCreatedTeam = updatedTeams[updatedTeams.length - 1];
+            setSelectedTeamId(lastCreatedTeam.id);
+        }
     };
 
     // Navigate to team settings page
@@ -157,7 +172,7 @@ export function TeamSection({ userId }: TeamSectionProps) {
                                         key={selectedTeam.id}
                                         team={selectedTeam}
                                         userRole={getUserRoleInTeam(selectedTeam.id)}
-                                        onManageTeam={handleManageTeam}
+                                        onManageTeam={() => { }}
                                         router={router}
                                     />
                                 )}
@@ -169,7 +184,7 @@ export function TeamSection({ userId }: TeamSectionProps) {
                 </CardContent>
 
                 <TeamActions
-                    onViewAllTeams={() => router.push('/teams')}
+                    onViewAllTeams={() => { }}
                     onCreateTeam={handleOpenCreateTeamDialog}
                 />
             </Card>
@@ -188,7 +203,10 @@ export function TeamSection({ userId }: TeamSectionProps) {
                     </DialogHeader>
 
                     <div className="py-4">
-                        <TeamCreationForm onSuccess={handleTeamCreated} isDialog={true} />
+                        <TeamCreationForm
+                            onSuccess={(team) => handleTeamCreated(team)}
+                            isDialog={true}
+                        />
                     </div>
                 </DialogContent>
             </Dialog>
