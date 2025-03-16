@@ -43,6 +43,7 @@ export type RouteSchemas = {
 
 export const routes = {
   account: defineRoute('/dashboard/account'),
+  dashboard: defineRoute('/dashboard'),
   document: defineRoute<RouteSchemas['document']>('/dashboard/[documentId]'),
   transaction: defineRoute<RouteSchemas['transaction']>(
     '/dashboard/[transactionId]'
@@ -66,6 +67,22 @@ export const routes = {
   signup: defineRoute('/signup'),
   terms: defineRoute('https://www.solomon-ai.app/terms-of-service'),
   user: defineRoute<RouteSchemas['user']>('/user/[userId]'),
+  onboardingTeam: defineRoute('/onboarding/team'),
+  onboardingProfile: defineRoute('/onboarding/profile'),
+  onboardingBankConnections: defineRoute('/onboarding/bank-connections'),
+  onboardingComplete: defineRoute('/onboarding/complete'),
+  financialOverview: defineRoute('/financial-overview'),
+  financialAnalytics: defineRoute('/financial-analytics'),
+  documents: defineRoute('/documents'),
+  templates: defineRoute('/templates'),
+  messages: defineRoute('/messages'),
+  analytics: defineRoute('/analytics'),
+  calendar: defineRoute('/calendar'),
+  transactions: defineRoute('/transactions'),
+  invoices: defineRoute('/invoices'),
+  customers: defineRoute('/customers'),
+  help: defineRoute('/help'),
+  editor: defineRoute('/editor'),
 };
 
 export const useDocumentId = () => {

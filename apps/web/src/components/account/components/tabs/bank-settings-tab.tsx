@@ -31,6 +31,7 @@ import {
 import { useEffect, useState } from 'react';
 
 import { Button } from '@/registry/default/potion-ui/button';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
@@ -145,6 +146,10 @@ export function BankSettings({ userId }: BankSettingsProps) {
                       <FormLabel className="flex items-center gap-2">
                         <RefreshCw className="h-4 w-4 text-primary/60" />
                         Sync Frequency
+                        <InfoTooltip
+                          description="Controls how often your account information is automatically updated from your bank. Daily is recommended for most users."
+                          size="sm"
+                        />
                       </FormLabel>
                       <Select
                         defaultValue={field.value}
@@ -176,7 +181,13 @@ export function BankSettings({ userId }: BankSettingsProps) {
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Default Currency</FormLabel>
+                      <FormLabel className="flex items-center gap-2">
+                        Default Currency
+                        <InfoTooltip
+                          description="Sets the default currency for displaying monetary values throughout the application. This affects reports and dashboard displays."
+                          size="sm"
+                        />
+                      </FormLabel>
                       <Select
                         defaultValue={field.value}
                         onValueChange={field.onChange}
@@ -213,6 +224,10 @@ export function BankSettings({ userId }: BankSettingsProps) {
                       <FormLabel className="flex items-center gap-2">
                         <Bell className="h-4 w-4 text-primary/60" />
                         Transaction Notifications
+                        <InfoTooltip
+                          description="When enabled, you'll receive notifications about new transactions in your connected accounts. Useful for tracking spending in real-time."
+                          size="sm"
+                        />
                       </FormLabel>
                       <FormDescription>
                         Receive notifications for new transactions
@@ -235,7 +250,13 @@ export function BankSettings({ userId }: BankSettingsProps) {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel>Low Balance Alerts</FormLabel>
+                      <FormLabel className="flex items-center gap-2">
+                        Low Balance Alerts
+                        <InfoTooltip
+                          description="Enables alerts when your account balance drops below a specified threshold. Helps prevent overdrafts and manage cash flow."
+                          size="sm"
+                        />
+                      </FormLabel>
                       <FormDescription>
                         Receive alerts when your account balance falls below the
                         threshold
@@ -258,7 +279,13 @@ export function BankSettings({ userId }: BankSettingsProps) {
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Low Balance Threshold</FormLabel>
+                      <FormLabel className="flex items-center gap-2">
+                        Low Balance Threshold
+                        <InfoTooltip
+                          description="The dollar amount that triggers a low balance alert. Set this to an amount that gives you enough time to take action before your account is overdrawn."
+                          size="sm"
+                        />
+                      </FormLabel>
                       <FormControl>
                         <div className="flex items-center">
                           <span className="mr-2">$</span>
@@ -296,6 +323,10 @@ export function BankSettings({ userId }: BankSettingsProps) {
                           <Eye className="h-4 w-4 text-primary/60" />
                         )}
                         Hide Account Balances
+                        <InfoTooltip
+                          description="Masks balance amounts with asterisks for privacy. Useful when working in public places or when sharing your screen."
+                          size="sm"
+                        />
                       </FormLabel>
                       <FormDescription>
                         Hide your account balances for privacy
@@ -318,7 +349,13 @@ export function BankSettings({ userId }: BankSettingsProps) {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel>Auto-categorize Transactions</FormLabel>
+                      <FormLabel className="flex items-center gap-2">
+                        Auto-categorize Transactions
+                        <InfoTooltip
+                          description="Automatically assigns categories to new transactions based on merchant information and past behavior. Saves time on manual categorization."
+                          size="sm"
+                        />
+                      </FormLabel>
                       <FormDescription>
                         Automatically categorize transactions based on merchant
                         and description

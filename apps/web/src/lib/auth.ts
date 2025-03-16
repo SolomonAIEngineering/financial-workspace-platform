@@ -1,7 +1,5 @@
 /** Authentication utilities for the application */
 
-import { getCookie, setCookie } from 'cookies-next';
-
 import type { AuthSession } from '@/server/auth/lib';
 import type { AuthUser } from '@/server/auth/getAuthUser';
 import { CookieNames } from '@/lib/storage/cookies';
@@ -21,8 +19,10 @@ export const getAuth = cache(
     session: AuthSession | null;
     user: AuthUser | null;
   }> => {
-    const sessionId = getCookie(lucia.sessionCookieName)?.toString() ?? null;
-    const devUser = getCookie(CookieNames.devUser)?.toString();
+    const cookieStore = await cookies();
+
+    const sessionId = cookieStore.get(lucia.sessionCookieName)?.value ?? null;
+    const devUser = cookieStore.get(CookieNames.devUser)?.value;
 
     if (!sessionId) {
       return { session: null, user: null };
@@ -34,7 +34,7 @@ export const getAuth = cache(
     try {
       if (session?.fresh) {
         const sessionCookie = lucia.createSessionCookie(session.id);
-        setCookie(
+        cookieStore.set(
           sessionCookie.name,
           sessionCookie.value,
           sessionCookie.attributes
@@ -42,7 +42,7 @@ export const getAuth = cache(
       }
       if (!session) {
         const sessionCookie = lucia.createBlankSessionCookie();
-        setCookie(
+        cookieStore.set(
           sessionCookie.name,
           sessionCookie.value,
           sessionCookie.attributes

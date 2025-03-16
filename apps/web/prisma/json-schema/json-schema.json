@@ -2758,6 +2758,9 @@
             "null"
           ]
         },
+        "slug": {
+          "type": "string"
+        },
         "baseCurrency": {
           "type": [
             "string",
@@ -2937,7 +2940,9 @@
           }
         }
       },
-      "required": []
+      "required": [
+        "slug"
+      ]
     },
     "UsersOnTeam": {
       "type": "object",

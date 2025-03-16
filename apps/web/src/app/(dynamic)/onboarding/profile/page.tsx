@@ -2,6 +2,7 @@ import { ProfileForm } from '@/components/form/profile-form';
 import { getAuth } from '@/lib/auth';
 import { prisma } from '@/server/db';
 import { redirect } from 'next/navigation';
+import { routes } from '@/lib/navigation/routes';
 import { trpc } from '@/trpc/server';
 
 export default async function ProfilePage() {
@@ -9,7 +10,7 @@ export default async function ProfilePage() {
 
     // If user doesn't have a team yet, redirect to team creation
     if (currentUser?.teamId) {
-        redirect('/onboarding/team');
+        redirect(routes.onboardingTeam());
     }
 
 

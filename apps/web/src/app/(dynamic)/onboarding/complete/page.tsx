@@ -2,6 +2,7 @@ import { Button } from '@/registry/default/potion-ui/button';
 import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { routes } from '@/lib/navigation/routes';
 import { trpc } from '@/trpc/server';
 
 export default async function CompletePage() {
@@ -11,11 +12,11 @@ export default async function CompletePage() {
 
     // If any required step is incomplete, redirect to the appropriate step
     if (!currentUser?.teamId) {
-        redirect('/onboarding/team');
+        redirect(routes.onboardingTeam());
     }
 
     if (!hasProfile) {
-        redirect('/onboarding/profile');
+        redirect(routes.onboardingProfile());
     }
 
     return (
@@ -30,7 +31,7 @@ export default async function CompletePage() {
             </div>
 
             <Button asChild size="lg">
-                <Link href="/dashboard">Go to Dashboard</Link>
+                <Link href={routes.dashboard()}>Go to Dashboard</Link>
             </Button>
         </div>
     );

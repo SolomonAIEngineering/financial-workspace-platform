@@ -462,6 +462,7 @@ export interface SpendingInsight {
 export interface Team {
   id: string;
   name: string| null;
+  slug: string;
   baseCurrency: string| null;
   email: string| null;
   logoUrl: string| null;

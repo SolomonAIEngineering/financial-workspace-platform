@@ -28,7 +28,7 @@ export async function getUserOnboardingStatus(userId: string): Promise<Onboardin
         hasBankConnection: false,
         hasBankSkipped: false,
         isComplete: false,
-        nextStep: '/onboarding/team',
+        nextStep: routes.onboardingTeam(),
         currentStep: 1,
     };
 

@@ -192,6 +192,8 @@ export interface ProfileFormFieldProps {
   placeholder: string;
   /** Optional description displayed below the field */
   description?: string;
+  /** Optional detailed description for the tooltip */
+  tooltipDescription?: string;
   /** Input type (text, textarea, etc.) */
   type?: string;
 }

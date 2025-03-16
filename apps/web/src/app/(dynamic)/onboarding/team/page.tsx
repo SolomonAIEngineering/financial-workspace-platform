@@ -1,4 +1,5 @@
 import { Building } from 'lucide-react';
+import { CubeIcon } from '@radix-ui/react-icons';
 import { TeamCreationForm } from '@/components/form/team-creation-form';
 import { redirect } from 'next/navigation';
 import { trpc } from '@/trpc/server';
@@ -16,16 +17,16 @@ export default async function TeamCreationPage() {
             <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                        <Building className="h-5 w-5 text-primary" />
+                        <CubeIcon className="h-5 w-5 text-primary" />
                     </div>
-                    <h2 className="text-2xl font-bold tracking-tight">Create Your Team</h2>
+                    <h2 className="text-2xl font-semibold tracking-tight">Create Your Team</h2>
                 </div>
                 <p className="text-muted-foreground max-w-md">
                     Set up your organization to start managing your finances. Your team will be the central hub for all your financial data.
                 </p>
             </div>
 
-            {/* <TeamCreationForm /> */}
+            <TeamCreationForm />
         </div>
     );
 } 

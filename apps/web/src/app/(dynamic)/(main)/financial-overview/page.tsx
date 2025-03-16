@@ -30,6 +30,7 @@ import { PageSkeleton } from '@/components/ui/page-skeleton';
 // Feature flags
 // Waitlist functionality
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
+import { routes } from '@/lib/navigation/routes';
 
 export default function FinancialOverviewPage() {
   // Check if the feature is enabled
@@ -77,8 +78,8 @@ export default function FinancialOverviewPage() {
         description="Monitor your financial health with real-time dashboards and actionable insights."
         title="Financial Overview"
         breadcrumbs={[
-          { href: '/dashboard', label: 'Dashboard' },
-          { href: '/financial-overview', label: 'Financial Overview' },
+          { href: routes.dashboard(), label: 'Dashboard' },
+          { href: routes.financialOverview(), label: 'Financial Overview' },
         ]}
         actions={
           <WaitlistFeature
@@ -217,8 +218,8 @@ export default function FinancialOverviewPage() {
         />
       }
       breadcrumbs={[
-        { href: '/dashboard', label: 'Dashboard' },
-        { href: '/financial-overview', label: 'Financial Overview' },
+        { href: routes.dashboard(), label: 'Dashboard' },
+        { href: routes.financialOverview(), label: 'Financial Overview' },
       ]}
       headerContent={
         <div className="w-full max-w-md">

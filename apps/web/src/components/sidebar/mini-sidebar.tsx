@@ -28,6 +28,7 @@ import Link from 'next/link';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
 import { cn } from '@udecode/cn';
+import { routes } from '@/lib/navigation/routes';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 
@@ -65,12 +66,12 @@ const MiniSidebarItem = ({
           animate={
             active
               ? {
-                  boxShadow: [
-                    '0 0 0 rgba(var(--primary) / 0.2)',
-                    '0 0 12px rgba(var(--primary) / 0.3)',
-                    '0 0 0 rgba(var(--primary) / 0.2)',
-                  ],
-                }
+                boxShadow: [
+                  '0 0 0 rgba(var(--primary) / 0.2)',
+                  '0 0 12px rgba(var(--primary) / 0.3)',
+                  '0 0 0 rgba(var(--primary) / 0.2)',
+                ],
+              }
               : {}
           }
           transition={{
@@ -138,51 +139,51 @@ const MiniSidebarItem = ({
 const demoItems = [
   {
     category: 'main',
-    href: '/dashboard',
+    href: routes.dashboard(),
     icon: HomeIcon,
     tooltip: 'Workspace',
   },
   {
     badge: 3,
     category: 'documents',
-    href: '/financial-overview',
+    href: routes.financialOverview(),
     icon: BarChart2Icon,
     tooltip: 'Financial Overview',
   },
   {
     category: 'documents',
-    href: '/financial-analytics',
+    href: routes.financialAnalytics(),
     icon: PaperAirplaneIcon,
     tooltip: 'Financial Analytics',
   },
   {
     category: 'documents',
-    href: '/documents',
+    href: routes.documents(),
     icon: DocumentDuplicateIcon,
     tooltip: 'Documents',
   },
   {
     category: 'documents',
-    href: '/templates',
+    href: routes.templates(),
     icon: DocumentTextIcon,
     tooltip: 'Templates',
   },
   {
     badge: 5,
     category: 'communication',
-    href: '/messages',
+    href: routes.messages(),
     icon: ChatBubbleLeftRightIcon,
     tooltip: 'Messages',
   },
   {
     category: 'tools',
-    href: '/analytics',
+    href: routes.analytics(),
     icon: ChartBarIcon,
     tooltip: 'Analytics',
   },
   {
     category: 'tools',
-    href: '/calendar',
+    href: routes.calendar(),
     icon: CalendarIcon,
     tooltip: 'Calendar',
   },
@@ -197,67 +198,67 @@ export function MiniSidebar() {
 
   const sidebarItems = useDemoItems
     ? demoItems.map((item) => ({
-        ...item,
-        isActive: pathname.includes(item.href),
-      }))
+      ...item,
+      isActive: pathname.includes(item.href),
+    }))
     : [
-        {
-          category: 'main',
-          href: '/dashboard',
-          icon: HomeIcon,
-          isActive: pathname.includes('/dashboard'),
-          tooltip: 'Workspace',
-        },
-        {
-          category: 'documents',
-          href: '/financial-overview',
-          icon: ChartBarSquareIcon,
-          isActive: pathname.includes('/financial-overview'),
-          tooltip: 'Financial Overview',
-        },
-        {
-          category: 'documents',
-          href: '/financial-analytics',
-          icon: CubeIcon,
-          isActive: pathname.includes('/financial-analytics'),
-          tooltip: 'Financial Analytics',
-        },
-        {
-          category: 'documents',
-          href: '/transactions',
-          icon: TableCellsIcon,
-          isActive: pathname.includes('/transactions'),
-          tooltip: 'Transactions',
-        },
-        {
-          category: 'documents',
-          href: '/regular-transactions',
-          icon: DiamondPercentIcon,
-          isActive: pathname.includes('/regular-transactions'),
-          tooltip: 'Regular Transactions',
-        },
-        {
-          category: 'documents',
-          href: '/recurring-transactions',
-          icon: ReloadIcon,
-          isActive: pathname.includes('/recurring-transactions'),
-          tooltip: 'Recurring Transactions',
-        },
-        {
-          category: 'documents',
-          href: '/invoices',
-          icon: CurrencyDollarIcon,
-          isActive: pathname.includes('/invoices'),
-          tooltip: 'invoices',
-        },
-        {
-          category: 'documents',
-          href: '/customers',
-          icon: UserGroupIcon,
-          isActive: pathname.includes('/customers'),
-          tooltip: 'customers',
-        },
-      ];
+      {
+        category: 'main',
+        href: '/dashboard',
+        icon: HomeIcon,
+        isActive: pathname.includes('/dashboard'),
+        tooltip: 'Workspace',
+      },
+      {
+        category: 'documents',
+        href: '/financial-overview',
+        icon: ChartBarSquareIcon,
+        isActive: pathname.includes('/financial-overview'),
+        tooltip: 'Financial Overview',
+      },
+      {
+        category: 'documents',
+        href: '/financial-analytics',
+        icon: CubeIcon,
+        isActive: pathname.includes('/financial-analytics'),
+        tooltip: 'Financial Analytics',
+      },
+      {
+        category: 'documents',
+        href: '/transactions',
+        icon: TableCellsIcon,
+        isActive: pathname.includes('/transactions'),
+        tooltip: 'Transactions',
+      },
+      {
+        category: 'documents',
+        href: '/regular-transactions',
+        icon: DiamondPercentIcon,
+        isActive: pathname.includes('/regular-transactions'),
+        tooltip: 'Regular Transactions',
+      },
+      {
+        category: 'documents',
+        href: '/recurring-transactions',
+        icon: ReloadIcon,
+        isActive: pathname.includes('/recurring-transactions'),
+        tooltip: 'Recurring Transactions',
+      },
+      {
+        category: 'documents',
+        href: '/invoices',
+        icon: CurrencyDollarIcon,
+        isActive: pathname.includes('/invoices'),
+        tooltip: 'invoices',
+      },
+      {
+        category: 'documents',
+        href: '/customers',
+        icon: UserGroupIcon,
+        isActive: pathname.includes('/customers'),
+        tooltip: 'customers',
+      },
+    ];
 
   const container = {
     hidden: { opacity: 0 },
@@ -435,7 +436,7 @@ export function MiniSidebar() {
           transition={{ delay: 0.75, duration: 0.4, type: 'spring' }}
         >
           <TooltipTC content="Settings" side="right">
-            <Link className="block" href="/dashboard/account">
+            <Link className="block" href={routes.account()}>
               <motion.div
                 className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
                 whileHover={{
@@ -456,7 +457,7 @@ export function MiniSidebar() {
           transition={{ delay: 0.85, duration: 0.4, type: 'spring' }}
         >
           <TooltipTC content="Help & Resources" side="right">
-            <Link className="mt-4 block" href="/help">
+            <Link className="mt-4 block" href={routes.help()}>
               <motion.div
                 className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/20 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
                 whileHover={{

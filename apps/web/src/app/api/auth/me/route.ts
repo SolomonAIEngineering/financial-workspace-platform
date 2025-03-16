@@ -14,21 +14,31 @@ export async function GET(request: Request) {
     console.log('📡 /api/auth/me endpoint called');
 
     try {
-        console.log('🔑 Attempting to get authenticated user');
-        // Get the current authenticated user
-        const user = await getOrThrowCurrentUser();
+        // Get userId from query parameters or headers
+        const url = new URL(request.url);
+        const userIdFromQuery = url.searchParams.get('userId');
+        const userIdFromHeader = request.headers.get('X-User-ID');
+        const userId = userIdFromQuery || userIdFromHeader;
 
-        console.log('👤 Auth user retrieved:', user ? `ID: ${user.id}` : 'No user found');
+        console.log('🔍 Extracted userId from request:', userId);
 
-        if (!user) {
-            console.log('❌ No authenticated user found, returning 401');
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        if (!userId) {
+            console.log('❌ No userId provided, returning 400');
+            return NextResponse.json(
+                { error: 'UserId is required' },
+                {
+                    status: 400,
+                    headers: {
+                        'Cache-Control': 'no-store, must-revalidate',
+                    }
+                }
+            );
         }
 
-        console.log('🔍 Fetching detailed user data from database');
+        console.log('🔍 Fetching detailed user data from database for userId:', userId);
         // Fetch additional user data including team and bank connections
         const userData = await prisma.user.findUnique({
-            where: { id: user.id },
+            where: { id: userId },
             select: {
                 id: true,
                 name: true,
@@ -59,7 +69,15 @@ export async function GET(request: Request) {
 
         if (!userData) {
             console.log('❌ User data not found in database, returning 404');
-            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+            return NextResponse.json(
+                { error: 'User not found' },
+                {
+                    status: 404,
+                    headers: {
+                        'Cache-Control': 'no-store, must-revalidate',
+                    }
+                }
+            );
         }
 
         console.log('✅ User data retrieved successfully:', JSON.stringify({
@@ -78,14 +96,28 @@ export async function GET(request: Request) {
             cookie: headers.cookie ? 'Present (not shown for security)' : 'Not present',
             referer: headers.referer,
             'user-agent': headers['user-agent']?.substring(0, 50) + '...',
+            'x-user-id': headers['x-user-id'] || 'Not present'
         }));
 
-        return NextResponse.json(userData);
+        // Return the data with caching headers
+        // private: only cache in browser, not in shared caches
+        // max-age: cache for 60 seconds
+        // stale-while-revalidate: continue serving stale response while fetching a fresh one
+        return NextResponse.json(userData, {
+            headers: {
+                'Cache-Control': 'private, max-age=60, stale-while-revalidate=30',
+            }
+        });
     } catch (error) {
         console.error('❌ ERROR in /api/auth/me endpoint:', error);
         return NextResponse.json(
             { error: 'Failed to fetch user data' },
-            { status: 500 }
+            {
+                status: 500,
+                headers: {
+                    'Cache-Control': 'no-store, must-revalidate',
+                }
+            }
         );
     }
 } 

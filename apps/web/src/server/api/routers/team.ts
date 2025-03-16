@@ -1,4 +1,5 @@
 import { TRPCError } from '@trpc/server';
+import { TeamRole } from '@prisma/client';
 import { createRouter } from '../trpc';
 import { prisma } from '@/server/db';
 import { protectedProcedure } from '../middlewares/procedures';
@@ -14,6 +15,7 @@ const teamCreateSchema = z.object({
     inboxForwarding: z.boolean().optional(),
     documentClassification: z.boolean().optional(),
     flags: z.array(z.string()).optional(),
+    slug: z.string().optional(),
 });
 
 const teamUpdateSchema = teamCreateSchema.partial();
@@ -45,24 +47,28 @@ export const teamRouter = createRouter({
                     });
                 }
 
-                // Create the team
-                const team = await prisma.team.create({
-                    data: {
-                        ...input,
-                        // Create the user-team relationship with OWNER role
-                        usersOnTeam: {
-                            create: {
-                                userId,
-                                role: 'OWNER',
-                            },
-                        },
-                        // Add the user to the team
-                        users: {
-                            connect: {
-                                id: userId,
-                            },
+                // Create the team - normalize input data
+                const teamData = {
+                    ...input,
+                    // Ensure slug is not undefined by providing a default if needed
+                    slug: input.slug || input.name?.toLowerCase().replace(/[^a-z0-9]/g, '-') || `team-${Date.now()}`,
+                    // Create the user-team relationship with OWNER role
+                    usersOnTeam: {
+                        create: {
+                            userId,
+                            role: TeamRole.OWNER,
                         },
                     },
+                    // Add the user to the team
+                    users: {
+                        connect: {
+                            id: userId,
+                        },
+                    },
+                };
+
+                const team = await prisma.team.create({
+                    data: teamData,
                     include: {
                         usersOnTeam: true,
                     },
@@ -131,6 +137,11 @@ export const teamRouter = createRouter({
                         userId,
                     },
                 },
+                users: {
+                    some: {
+                        id: userId,
+                    },
+                },
             },
             include: {
                 usersOnTeam: {
@@ -179,7 +190,7 @@ export const teamRouter = createRouter({
                 where: {
                     teamId: id,
                     userId,
-                    role: 'OWNER', // Only owners can update team details
+                    role: TeamRole.OWNER, // Only admins or superadmins can update team details
                 },
             });
 
@@ -244,7 +255,7 @@ export const teamRouter = createRouter({
                 where: {
                     teamId: id,
                     userId,
-                    role: 'OWNER', // Only owners can delete teams
+                    role: TeamRole.OWNER, // Only owners can delete teams
                 },
             });
 
@@ -276,7 +287,7 @@ export const teamRouter = createRouter({
         .input(z.object({
             teamId: z.string().min(1, 'Team ID is required'),
             userId: z.string().min(1, 'User ID is required'),
-            role: z.enum(['OWNER', 'MEMBER']).default('MEMBER'),
+            role: z.enum([TeamRole.OWNER, TeamRole.MEMBER]).default(TeamRole.MEMBER),
         }))
         .mutation(async ({ ctx, input }) => {
             const { userId: currentUserId } = ctx;
@@ -311,7 +322,7 @@ export const teamRouter = createRouter({
                 where: {
                     teamId,
                     userId: currentUserId,
-                    role: 'OWNER', // Only owners can add users
+                    role: TeamRole.OWNER, // Only owners can add users
                 },
             });
 
@@ -404,7 +415,7 @@ export const teamRouter = createRouter({
                 where: {
                     teamId,
                     userId: currentUserId,
-                    role: 'OWNER', // Only owners can remove users
+                    role: TeamRole.OWNER, // Only owners can remove users
                 },
             });
 
@@ -420,7 +431,7 @@ export const teamRouter = createRouter({
                 const ownersCount = await prisma.usersOnTeam.count({
                     where: {
                         teamId,
-                        role: 'OWNER',
+                        role: TeamRole.OWNER,
                     },
                 });
 
@@ -470,7 +481,7 @@ export const teamRouter = createRouter({
         .input(z.object({
             teamId: z.string().min(1, 'Team ID is required'),
             userId: z.string().min(1, 'User ID is required'),
-            role: z.enum(['OWNER', 'MEMBER']),
+            role: z.nativeEnum(TeamRole),
         }))
         .mutation(async ({ ctx, input }) => {
             const { userId: currentUserId } = ctx;
@@ -488,13 +499,12 @@ export const teamRouter = createRouter({
                 });
             }
 
-
             // Check if current user has permission to update roles
             const userTeam = await prisma.usersOnTeam.findFirst({
                 where: {
                     teamId,
                     userId: currentUserId,
-                    role: 'OWNER', // Only owners can update roles
+                    role: TeamRole.OWNER, // Only owners can update roles
                 },
             });
 
@@ -506,11 +516,11 @@ export const teamRouter = createRouter({
             }
 
             // Prevent downgrading the last owner
-            if (userToUpdateId === currentUserId && role !== 'OWNER') {
+            if (userToUpdateId === currentUserId && role !== TeamRole.OWNER) {
                 const ownersCount = await prisma.usersOnTeam.count({
                     where: {
                         teamId,
-                        role: 'OWNER',
+                        role: TeamRole.OWNER,
                     },
                 });
 
@@ -561,7 +571,7 @@ export const teamRouter = createRouter({
         .input(z.object({
             teamId: z.string().min(1, 'Team ID is required'),
             email: z.string().email('Invalid email'),
-            role: z.enum(['OWNER', 'MEMBER']).default('MEMBER'),
+            role: z.enum([TeamRole.OWNER, TeamRole.MEMBER]).default(TeamRole.MEMBER),
         }))
         .mutation(async ({ ctx, input }) => {
             const { userId } = ctx;
@@ -584,7 +594,7 @@ export const teamRouter = createRouter({
                 where: {
                     teamId,
                     userId,
-                    role: 'OWNER', // Only owners can create invites
+                    role: TeamRole.OWNER, // Only owners can create invites
                 },
             });
 
@@ -733,7 +743,7 @@ export const teamRouter = createRouter({
                 where: {
                     teamId: invite.teamId!,
                     userId,
-                    role: 'OWNER', // Only owners can delete invites
+                    role: TeamRole.OWNER, // Only owners can delete invites
                 },
             });
 

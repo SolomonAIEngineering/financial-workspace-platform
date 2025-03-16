@@ -10,6 +10,7 @@ import {
 import { FeatureDevelopment } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
+import { routes } from '@/lib/navigation/routes';
 
 export default function CustomersPage() {
   const featureName = 'Customer Intelligence Platform';
@@ -19,8 +20,8 @@ export default function CustomersPage() {
       description="Manage your customer relationships and gain actionable insights into customer behavior."
       title="Merchant Management"
       breadcrumbs={[
-        { href: '/dashboard', label: 'Dashboard' },
-        { href: '/customers', label: 'Merchant Management' },
+        { href: routes.dashboard(), label: 'Dashboard' },
+        { href: routes.customers(), label: 'Merchant Management' },
       ]}
       actions={
         <WaitlistFeature featureName={featureName} buttonIcon={UserGroupIcon} />

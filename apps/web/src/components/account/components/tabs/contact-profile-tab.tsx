@@ -4,13 +4,11 @@
  * @file Contact Profile Tab Component
  */
 
-import { Icons } from '@/components/ui/icons';
 import { Button } from '@/registry/default/potion-ui/button';
-import { TabsContent } from '@/registry/default/potion-ui/tabs';
-
-import type { TabComponentProps } from '../../types/profile-types';
-
+import { Icons } from '@/components/ui/icons';
 import { ProfileFormField } from '../profile-form-field';
+import type { TabComponentProps } from '../../types/profile-types';
+import { TabsContent } from '@/registry/default/potion-ui/tabs';
 
 /**
  * Contact profile tab component that displays and allows editing of contact and
@@ -40,6 +38,7 @@ export function ContactProfileTab({
           name="phoneNumber"
           label="Phone Number"
           placeholder="+1 (555) 123-4567"
+          tooltipDescription="Your primary personal phone number for account security and recovery purposes."
           control={form.control}
           icon={<Icons.message className="size-4 text-muted-foreground" />}
         />
@@ -48,6 +47,7 @@ export function ContactProfileTab({
           name="businessEmail"
           label="Business Email"
           placeholder="you@company.com"
+          tooltipDescription="Your work email address used for business communications and notifications."
           control={form.control}
           icon={<Icons.message className="size-4 text-muted-foreground" />}
         />
@@ -59,6 +59,7 @@ export function ContactProfileTab({
           name="businessPhone"
           label="Business Phone"
           placeholder="+1 (555) 987-6543"
+          tooltipDescription="Your work phone or business contact number for professional communications."
           control={form.control}
           icon={<Icons.message className="size-4 text-muted-foreground" />}
         />
@@ -67,6 +68,7 @@ export function ContactProfileTab({
           name="officeLocation"
           label="Office Location"
           placeholder="Building 3, Floor 5"
+          tooltipDescription="Physical location of your office or workspace to help with directory listings."
           control={form.control}
           icon={<Icons.info className="size-4 text-muted-foreground" />}
         />
@@ -77,6 +79,7 @@ export function ContactProfileTab({
         name="addressLine1"
         label="Address Line 1"
         placeholder="123 Main St"
+        tooltipDescription="First line of your address including street number and name."
         control={form.control}
         icon={<Icons.info className="size-4 text-muted-foreground" />}
       />
@@ -85,6 +88,7 @@ export function ContactProfileTab({
         name="addressLine2"
         label="Address Line 2"
         placeholder="Apt 4B"
+        tooltipDescription="Additional address information like apartment, suite, or unit number (if applicable)."
         control={form.control}
         icon={<Icons.info className="size-4 text-muted-foreground" />}
       />
@@ -95,6 +99,7 @@ export function ContactProfileTab({
           name="city"
           label="City"
           placeholder="San Francisco"
+          tooltipDescription="City or town where your address is located."
           control={form.control}
           icon={<Icons.settings className="size-4 text-muted-foreground" />}
         />
@@ -103,6 +108,7 @@ export function ContactProfileTab({
           name="state"
           label="State/Province"
           placeholder="CA"
+          tooltipDescription="State, province, or region where your address is located."
           control={form.control}
           icon={<Icons.globe className="size-4 text-muted-foreground" />}
         />
@@ -111,6 +117,7 @@ export function ContactProfileTab({
           name="postalCode"
           label="Postal Code"
           placeholder="94103"
+          tooltipDescription="ZIP or postal code for your address, used for mail delivery and local services."
           control={form.control}
           icon={<Icons.info className="size-4 text-muted-foreground" />}
         />
@@ -121,6 +128,7 @@ export function ContactProfileTab({
         name="country"
         label="Country"
         placeholder="United States"
+        tooltipDescription="Country where your address is located, used for international features and region-specific services."
         control={form.control}
         icon={<Icons.globe className="size-4 text-muted-foreground" />}
       />

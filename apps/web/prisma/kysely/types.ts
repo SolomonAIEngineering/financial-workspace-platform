@@ -637,6 +637,7 @@ export type Tag = {
 export type Team = {
   id: string
   name: string | null
+  slug: string
   base_currency: string | null
   email: string | null
   logo_url: string | null

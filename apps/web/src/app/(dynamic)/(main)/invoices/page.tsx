@@ -10,6 +10,7 @@ import {
 import { FeatureDevelopment } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
+import { routes } from '@/lib/navigation/routes';
 
 export default function InvoicesPage() {
   const featureName = 'Invoice Management';
@@ -19,8 +20,8 @@ export default function InvoicesPage() {
       description="Create professional invoices, track payments, and manage your accounts receivable efficiently."
       title="Invoice Management"
       breadcrumbs={[
-        { href: '/dashboard', label: 'Dashboard' },
-        { href: '/invoices', label: 'Invoice Management' },
+        { href: routes.dashboard(), label: 'Dashboard' },
+        { href: routes.invoices(), label: 'Invoice Management' },
       ]}
       actions={
         <WaitlistFeature

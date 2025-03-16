@@ -106,7 +106,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
           <div className="flex flex-col gap-0.5">
             <NavItem
               className="text-xs font-medium text-muted-foreground/90"
-              onClick={() => {}}
+              onClick={() => { }}
               label={session ? 'Private' : 'Draft'}
             >
               <Button
@@ -124,7 +124,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             </NavItem>
             <NavItem
               className="text-xs transition-colors"
-              onClick={() => {}}
+              onClick={() => { }}
               label="Feedback"
               icon={Icons.alertCircle}
               tooltip="Leave us some feedback"
@@ -133,7 +133,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             </NavItem>
             <NavItem
               className="text-xs transition-colors"
-              onClick={() => {}}
+              onClick={() => { }}
               label="Bank Account"
               icon={Icons.chrome}
             >
@@ -154,7 +154,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             <NavItem
               className="text-sm transition-colors"
               label="Editor"
-              href="/editor"
+              href={routes.editor()}
               icon={Icons.editor}
             />
 

@@ -10,6 +10,7 @@ import {
 import { FeatureDevelopment } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
+import { routes } from '@/lib/navigation/routes';
 
 export default function TransactionsPage() {
   const featureName = 'Transaction Management';
@@ -19,8 +20,8 @@ export default function TransactionsPage() {
       description="Monitor, categorize, and analyze all your financial transactions in one unified interface."
       title="Transaction Management"
       breadcrumbs={[
-        { href: '/dashboard', label: 'Dashboard' },
-        { href: '/transactions', label: 'Transaction Management' },
+        { href: routes.dashboard(), label: 'Dashboard' },
+        { href: routes.transactions(), label: 'Transaction Management' },
       ]}
       actions={
         <WaitlistFeature featureName={featureName} buttonIcon={BanknotesIcon} />

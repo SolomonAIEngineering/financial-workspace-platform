@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { getCookie } from 'cookies-next';
+import { routes } from '@/lib/navigation/routes';
 
 /**
  * Interface for user onboarding status
@@ -30,7 +31,7 @@ export function useOnboardingStatus(): OnboardingStatus {
         hasBankConnection: false,
         hasBankSkipped: false,
         isComplete: false,
-        nextStep: '/onboarding/team',
+        nextStep: routes.onboardingTeam(),
         isLoading: true,
     });
 
@@ -61,21 +62,21 @@ export function useOnboardingStatus(): OnboardingStatus {
                 const hasBankConnection = userData.bankConnections && userData.bankConnections.length > 0;
 
                 // Determine next step
-                let nextStep = '/onboarding/team';
+                let nextStep = routes.onboardingTeam();
 
                 if (hasTeam) {
-                    nextStep = '/onboarding/profile';
+                    nextStep = routes.onboardingProfile();
                 }
 
                 if (hasTeam && hasProfile) {
-                    nextStep = '/onboarding/bank-connection';
+                    nextStep = routes.onboardingBankConnections();
                 }
 
                 // Check if onboarding is complete
                 const isComplete = hasTeam && hasProfile && (hasBankConnection || hasBankSkipped);
 
                 if (isComplete) {
-                    nextStep = '/dashboard';
+                    nextStep = routes.dashboard();
                 }
 
                 setStatus({

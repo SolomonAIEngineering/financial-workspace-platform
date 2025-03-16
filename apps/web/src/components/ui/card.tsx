@@ -1,17 +1,17 @@
 'use client';
 
-import { withVariants } from '@udecode/cn';
 import { cva } from 'class-variance-authority';
+import { withVariants } from '@udecode/cn';
 
-const cardVariants = cva('rounded-lg bg-card text-card-foreground', {
+const cardVariants = cva('rounded-2xl bg-card text-card-foreground border-2 border-gray-50 dark:border-gray-900', {
   defaultVariants: {
     variant: 'default',
   },
   variants: {
     variant: {
-      cv: 'flex flex-col overflow-hidden border border-border/70 p-3',
+      cv: 'flex flex-col overflow-hidden border border-border/70 p-3 ',
       cvRow: '',
-      default: 'border shadow-xs',
+      default: 'border shadow-xs border-2 border-gray-50 dark:border-gray-900',
     },
   },
 });
@@ -25,7 +25,7 @@ const cardHeaderVariants = cva('flex flex-col space-y-1', {
   variants: {
     variant: {
       cv: '',
-      default: 'p-6',
+      default: 'p-6 border-2 border-gray-50 dark:border-gray-900',
     },
   },
 });

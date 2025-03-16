@@ -7,6 +7,7 @@ import {
 
 import { ConnectTransactionsButton } from '../bank-connection/connect-transactions-button';
 import { Icons } from '@/components/ui/icons';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { cn } from '@/lib/utils';
 
 interface BankAccountSettingsProps {
@@ -18,8 +19,13 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
     <div className="rounded-xl border-2 border-muted/10 shadow-md transition-all duration-300 hover:shadow-lg md:p-[4%]">
       <div className="w-full">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold tracking-tight">
+          <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
             Bank Account Settings
+            <InfoTooltip
+              title="Bank Account Settings"
+              description="Manage your financial institution connections, account preferences, and how transaction data is processed and displayed."
+              size="default"
+            />
           </h2>
           <p className="mt-1 text-muted-foreground">
             Manage settings for your bank connections, accounts, and
@@ -35,6 +41,12 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
             >
               <Icons.link className="size-4" />
               <span>Connection Settings</span>
+              <InfoTooltip
+                title="Connection Settings"
+                description="Manage your existing financial institution connections and add new ones."
+                size="sm"
+                side="bottom"
+              />
             </TabsTrigger>
             <TabsTrigger
               className="flex items-center gap-2 data-[state=active]:bg-background"
@@ -42,6 +54,12 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
             >
               <Icons.creditCard className="size-4" />
               <span>Account Settings</span>
+              <InfoTooltip
+                title="Account Settings"
+                description="Customize the display of your bank accounts, set nicknames, and manage account visibility."
+                size="sm"
+                side="bottom"
+              />
             </TabsTrigger>
             <TabsTrigger
               className="flex items-center gap-2 data-[state=active]:bg-background"
@@ -49,6 +67,12 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
             >
               <Icons.arrowLeftRight className="size-4" />
               <span>Transaction Settings</span>
+              <InfoTooltip
+                title="Transaction Settings"
+                description="Configure how transactions are categorized, displayed, and processed in reports and analysis."
+                size="sm"
+                side="bottom"
+              />
             </TabsTrigger>
             <TabsTrigger
               className="flex items-center gap-2 data-[state=active]:bg-background"
@@ -56,6 +80,12 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
             >
               <Icons.alertCircle className="size-4" />
               <span>Notifications</span>
+              <InfoTooltip
+                title="Notification Settings"
+                description="Set up alerts for balance changes, large transactions, and other account activity."
+                size="sm"
+                side="bottom"
+              />
             </TabsTrigger>
           </TabsList>
 
@@ -65,7 +95,13 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium">Bank Connections</h3>
+                <h3 className="text-lg font-medium flex items-center gap-2">
+                  Bank Connections
+                  <InfoTooltip
+                    description="Connect to your financial institutions to automatically import transactions and account data."
+                    size="sm"
+                  />
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   Connect to your financial institutions and manage existing
                   connections
@@ -90,8 +126,12 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium">
+                <h3 className="text-lg font-medium flex items-center gap-2">
                   Account Display Settings
+                  <InfoTooltip
+                    description="Customize how your bank accounts are displayed, including nicknames and grouping options."
+                    size="sm"
+                  />
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Customize how your bank accounts are displayed and organized
@@ -147,7 +187,13 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium">Transaction Settings</h3>
+                <h3 className="text-lg font-medium flex items-center gap-2">
+                  Transaction Settings
+                  <InfoTooltip
+                    description="Configure how transactions are categorized and create rules for automatic processing."
+                    size="sm"
+                  />
+                </h3>
                 <p className="text-sm text-muted-foreground">
                   Customize how transactions are categorized and displayed
                 </p>
@@ -201,8 +247,12 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium">
+                <h3 className="text-lg font-medium flex items-center gap-2">
                   Notification Preferences
+                  <InfoTooltip
+                    description="Set up alerts for account activity including low balances, large transactions, and suspicious activity."
+                    size="sm"
+                  />
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   Manage how and when you receive notifications about your

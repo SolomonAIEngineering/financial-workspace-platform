@@ -1,3 +1,4 @@
+import { TeamRole } from "@prisma/client";
 import { authActionClient } from "../safe-action";
 import { revalidatePath } from "next/cache";
 import { trpc } from "@/trpc/server";
@@ -14,7 +15,7 @@ import { z } from "zod";
 const updateUserRoleSchema = z.object({
     teamId: z.string(),
     userId: z.string(),
-    role: z.enum(["OWNER", "MEMBER"]),
+    role: z.nativeEnum(TeamRole),
 });
 
 /**

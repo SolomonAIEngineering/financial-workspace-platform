@@ -1,16 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-
-import { useCurrentUser } from '@/components/auth/useCurrentUser';
-import { useLogoutMutation } from '@/components/auth/useLogoutMutation';
-import { routes } from '@/lib/navigation/routes';
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from '@/registry/default/potion-ui/avatar';
-import { Button } from '@/registry/default/potion-ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,17 +12,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/registry/default/potion-ui/dropdown-menu';
-import { Spinner } from '@/registry/default/potion-ui/spinner';
 
-import { useAuthGuard } from '../auth/useAuthGuard';
-import { pushModal } from '../modals';
+import { Button } from '@/registry/default/potion-ui/button';
 import { Icons } from '../ui/icons';
 import { Skeleton } from '../ui/skeleton';
+import { Spinner } from '@/registry/default/potion-ui/spinner';
+import { pushModal } from '../modals';
+import { routes } from '@/lib/navigation/routes';
+import { useAuthGuard } from '../auth/useAuthGuard';
+import { useCurrentUser } from '@/components/auth/useCurrentUser';
+import { useLogoutMutation } from '@/components/auth/useLogoutMutation';
+import { useRouter } from 'next/navigation';
 
 export function SidebarSwitcher() {
   const user = useCurrentUser();
   const logout = useLogoutMutation();
   const authGuard = useAuthGuard();
+  const router = useRouter();
 
   // Workspace name based on the user's name
   const workspaceName = user.firstName
@@ -84,8 +84,8 @@ export function SidebarSwitcher() {
         </div>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-[280px]" align="start" alignOffset={11}>
-        <div className="p-3">
+      <DropdownMenuContent className="w-[300px] md:p-[3%]" align="start" alignOffset={11}>
+        <div className="md:p-[3%]">
           <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -164,9 +164,12 @@ export function SidebarSwitcher() {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className="flex items-center gap-2 px-4 py-2 text-sm">
+        <DropdownMenuItem
+          className="flex items-center gap-2 px-4 py-2 text-sm"
+          onClick={() => router.push(routes.account())}
+        >
           <Icons.chevronRight className="size-4" />
-          <Link href={routes.account()}>Account</Link>
+          <span>Account</span>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />

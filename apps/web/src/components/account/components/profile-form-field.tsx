@@ -13,12 +13,14 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { Input } from '@/registry/default/potion-ui/input';
 import type { ProfileFormFieldProps } from '../types/profile-types';
 import { Textarea } from '@/registry/default/potion-ui/textarea';
 
 /**
  * A reusable form field component that handles various types of inputs
+ * with integrated help tooltips for better user guidance.
  *
  * @example
  *   <ProfileFormField
@@ -26,6 +28,8 @@ import { Textarea } from '@/registry/default/potion-ui/textarea';
  *     name="email"
  *     label="Email Address"
  *     placeholder="Enter your email"
+ *     description="Your primary email for account notifications."
+ *     tooltipDescription="This email is used for important account notifications and cannot be disabled for security purposes."
  *     icon={<Icons.email />}
  *   />;
  *
@@ -35,6 +39,7 @@ import { Textarea } from '@/registry/default/potion-ui/textarea';
 export function ProfileFormField({
   control,
   description,
+  tooltipDescription,
   icon,
   label,
   name,
@@ -50,6 +55,13 @@ export function ProfileFormField({
           <FormLabel className="flex items-center gap-2 text-sm font-medium">
             {icon}
             {label}
+            {tooltipDescription && (
+              <InfoTooltip
+                title={label}
+                description={tooltipDescription || description || ''}
+                size="sm"
+              />
+            )}
           </FormLabel>
           <FormControl>
             {type === 'textarea' ? (

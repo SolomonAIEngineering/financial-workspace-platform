@@ -279,12 +279,58 @@ export const userRouter = createRouter({
 
   deleteAccount: protectedProcedure.mutation(async ({ ctx }) => {
 
-    // delete the user from loops 
-    await deleteContactInLoopsAction({
-      email: ctx.user?.email ?? '',
-      userId: ctx.userId,
+    // First, check if user has a Stripe customer ID
+    const user = await prisma.user.findUnique({
+      where: { id: ctx.userId },
+      select: { stripeCustomerId: true, email: true }
     });
 
+    // If user has a Stripe customer ID, delete the customer
+    if (user?.stripeCustomerId) {
+      try {
+        // First, cancel any active subscriptions
+        const subscriptions = await stripe.subscriptions.list({
+          customer: user.stripeCustomerId,
+        });
+
+        // Cancel all active subscriptions
+        for (const subscription of subscriptions.data) {
+          if (subscription.status === 'active' || subscription.status === 'trialing') {
+            await stripe.subscriptions.cancel(subscription.id, {
+              invoice_now: false,
+              prorate: true,
+            });
+          }
+        }
+
+        // Optional: Delete the customer (or mark as deleted - depends on stripe retention policy)
+        await stripe.customers.del(user.stripeCustomerId);
+
+        console.log(`Stripe customer ${user.stripeCustomerId} deleted successfully`);
+      } catch (error) {
+        console.error('Failed to delete Stripe customer:', error);
+        // Continue with account deletion even if Stripe deletion fails
+      }
+    }
+
+    // delete the user from loops 
+    try {
+      await deleteContactInLoopsAction({
+        email: ctx.user?.email ?? '',
+        // Only include userId if we have it to avoid "Only one parameter is permitted" error
+        ...(ctx.userId ? { userId: ctx.userId } : {})
+      });
+    } catch (error) {
+      console.error("Error deleting contact from Loops:", error);
+      // Continue with account deletion even if Loops deletion fails
+    }
+
+    // First delete team associations to avoid foreign key constraint violation
+    await prisma.usersOnTeam.deleteMany({
+      where: { userId: ctx.userId },
+    });
+
+    // Now we can safely delete the user
     await prisma.user.delete({
       where: { id: ctx.userId },
     });

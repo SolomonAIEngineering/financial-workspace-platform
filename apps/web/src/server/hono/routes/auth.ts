@@ -129,6 +129,11 @@ export const authRoutes = new Hono()
         deleteCookie(c, 'code_verifier');
         deleteCookie(c, 'callback_url');
 
+        // set the user id in the cookie
+        setCookie(c, 'user_id', userId, {
+          maxAge: 60 * 60 * 24 * 30,
+        });
+
         return c.redirect(callbackUrl ?? '/settings');
       } catch (error) {
         if (error instanceof OAuth2RequestError) {

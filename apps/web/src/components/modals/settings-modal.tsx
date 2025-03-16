@@ -1,7 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-
 import {
   Avatar,
   AvatarFallback,
@@ -11,12 +9,13 @@ import {
   DialogContent,
   DialogTitle,
 } from '@/registry/default/potion-ui/dialog';
-import { Input } from '@/registry/default/potion-ui/input';
-import { Spinner } from '@/registry/default/potion-ui/spinner';
-import { useTRPC } from '@/trpc/react';
 
+import { DeleteAccountButton } from '../settings/delete-account-button';
+import { Input } from '@/registry/default/potion-ui/input';
 import { Label } from '../ui/label';
-import { DeleteAccountButton } from './delete-account-button';
+import { Spinner } from '@/registry/default/potion-ui/spinner';
+import { useQuery } from '@tanstack/react-query';
+import { useTRPC } from '@/trpc/react';
 
 export function SettingsModal() {
   const trpc = useTRPC();

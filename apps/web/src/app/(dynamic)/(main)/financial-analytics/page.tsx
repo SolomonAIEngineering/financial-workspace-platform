@@ -18,6 +18,7 @@ import { PageSkeleton } from '@/components/ui/page-skeleton';
 import { WaitlistFeature } from '@/components/waitlist/waitlist-feature';
 import { cn } from '@udecode/cn';
 import { motion } from 'framer-motion';
+import { routes } from '@/lib/navigation/routes';
 import { useState } from 'react';
 
 // Demo data
@@ -105,8 +106,8 @@ export default function FinancialAnalyticsPage() {
         description="Gain deeper insights into your financial data with advanced analytics and reporting."
         title="Financial Analytics"
         breadcrumbs={[
-          { href: '/dashboard', label: 'Dashboard' },
-          { href: '/financial-analytics', label: 'Financial Analytics' },
+          { href: routes.dashboard(), label: 'Dashboard' },
+          { href: routes.financialAnalytics(), label: 'Financial Analytics' },
         ]}
         actions={
           <WaitlistFeature
@@ -247,8 +248,8 @@ export default function FinancialAnalyticsPage() {
       title="Financial Analytics"
       actions={actions}
       breadcrumbs={[
-        { href: '/dashboard', label: 'Dashboard' },
-        { href: '/financial-analytics', label: 'Financial Analytics' },
+        { href: routes.dashboard(), label: 'Dashboard' },
+        { href: routes.financialAnalytics(), label: 'Financial Analytics' },
       ]}
       headerContent={headerContent}
       tabs={tabs}
@@ -276,7 +277,7 @@ export default function FinancialAnalyticsPage() {
                   'h-full transition-shadow duration-200 hover:shadow-md',
                   viewMode === 'list' ? 'max-w-full' : ''
                 )}
-                onClick={() => {}}
+                onClick={() => { }}
                 title={doc.title}
                 recipients={doc.recipients}
                 status={doc.status}

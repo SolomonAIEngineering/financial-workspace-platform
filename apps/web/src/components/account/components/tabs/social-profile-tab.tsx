@@ -4,13 +4,11 @@
  * @file Social Profile Tab Component
  */
 
-import { Icons } from '@/components/ui/icons';
 import { Button } from '@/registry/default/potion-ui/button';
-import { TabsContent } from '@/registry/default/potion-ui/tabs';
-
-import type { TabComponentProps } from '../../types/profile-types';
-
+import { Icons } from '@/components/ui/icons';
 import { ProfileFormField } from '../profile-form-field';
+import type { TabComponentProps } from '../../types/profile-types';
+import { TabsContent } from '@/registry/default/potion-ui/tabs';
 
 /**
  * Social profile tab component that displays and allows editing of social media
@@ -38,6 +36,7 @@ export function SocialProfileTab({
       <ProfileFormField
         name="linkedinProfile"
         description="Your LinkedIn profile URL."
+        tooltipDescription="Link to your professional LinkedIn profile to enhance networking opportunities and professional connections within the platform."
         label="LinkedIn Profile"
         placeholder="https://linkedin.com/in/yourprofile"
         control={form.control}
@@ -48,6 +47,7 @@ export function SocialProfileTab({
       <ProfileFormField
         name="twitterProfile"
         description="Your Twitter profile URL."
+        tooltipDescription="Link to your Twitter profile for social networking and communication features within the platform."
         label="Twitter Profile"
         placeholder="https://twitter.com/yourusername"
         control={form.control}
@@ -58,6 +58,7 @@ export function SocialProfileTab({
       <ProfileFormField
         name="githubProfile"
         description="Your GitHub profile URL."
+        tooltipDescription="Link to your GitHub profile to showcase your development projects and technical contributions."
         label="GitHub Profile"
         placeholder="https://github.com/yourusername"
         control={form.control}

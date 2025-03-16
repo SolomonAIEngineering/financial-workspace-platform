@@ -20,6 +20,7 @@ export function OnboardingProgress({
 }: OnboardingProgressProps) {
     return (
         <div className="w-full">
+            {/* Step indicators */}
             <div className="flex justify-between mb-1">
                 {steps.map((step) => {
                     const isCompleted = step.id < currentStep;
@@ -29,7 +30,7 @@ export function OnboardingProgress({
                         <div key={step.id} className="flex flex-col items-center">
                             <div
                                 className={cn(
-                                    "flex h-8 w-8 items-center justify-center rounded-full border",
+                                    "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300",
                                     isCompleted ? "bg-primary border-primary text-primary-foreground" :
                                         isCurrent ? "bg-white border-primary text-primary" :
                                             "bg-white border-gray-300 text-gray-500"
@@ -61,46 +62,59 @@ export function OnboardingProgress({
                 })}
             </div>
 
-            {/* Progress bar for current step */}
-            {steps.map((step) => {
-                const isCurrent = step.id === currentStep;
-
-                if (isCurrent) {
-                    return (
-                        <div key={`progress-${step.id}`} className="mt-2 px-4 w-full">
-                            <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-primary rounded-full"
-                                    style={{ width: `${progress}%` }}
-                                />
-                            </div>
-                        </div>
-                    );
-                }
-                return null;
-            })}
-
-            {/* Connecting lines between steps */}
+            {/* Connecting lines between steps - improved with active step progress */}
             <div className="relative mt-4">
+                {/* Background track */}
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                    <div className="h-0.5 w-full bg-gray-200"></div>
+                    <div className="h-0.5 w-full bg-gray-200 rounded-full"></div>
                 </div>
-                <div className="relative flex">
+
+                {/* Progress overlay */}
+                <div className="relative flex h-0.5">
                     {steps.map((step, index) => {
-                        const isCompleted = step.id < currentStep;
-                        const isLast = index === steps.length - 1;
+                        // Skip rendering for the last step since there's no line after it
+                        if (index === steps.length - 1) return null;
 
-                        if (isLast) return null;
+                        const nextStep = steps[index + 1];
 
-                        return (
-                            <div
-                                key={`line-${step.id}`}
-                                className={cn(
-                                    "h-0.5 flex-1",
-                                    isCompleted ? "bg-primary" : "bg-gray-200"
-                                )}
-                            />
-                        );
+                        // This line connects current step to next step
+                        const isCompletedLine = step.id < currentStep;
+                        const isActiveLine = step.id === currentStep;
+                        const lineWidth = `${100 / (steps.length - 1)}%`;
+
+                        if (isCompletedLine) {
+                            // Completed line segment
+                            return (
+                                <div
+                                    key={`line-${step.id}`}
+                                    className="bg-primary rounded-full transition-all duration-500"
+                                    style={{ width: lineWidth }}
+                                />
+                            );
+                        } else if (isActiveLine) {
+                            // Active line segment with partial progress
+                            return (
+                                <div
+                                    key={`line-${step.id}`}
+                                    className="rounded-full transition-all duration-500 relative"
+                                    style={{ width: lineWidth }}
+                                >
+                                    <div
+                                        className="absolute h-full bg-primary rounded-full transition-all duration-500"
+                                        style={{ width: `${progress}%` }}
+                                    />
+                                </div>
+                            );
+                        } else {
+                            // Inactive line segment
+                            return (
+                                <div
+                                    key={`line-${step.id}`}
+                                    className="rounded-full"
+                                    style={{ width: lineWidth }}
+                                />
+                            );
+                        }
                     })}
                 </div>
             </div>

@@ -140,34 +140,49 @@ export const findOrCreateUser = async ({
       [FEATURE_LAUNCH_MAIN_LIST as string]: true,
     };
 
-    // Create or update contact in Loops using the SDK
-    await loops.createContact(
-      email,
-      {
-        firstName: firstName || (name ? name.split(' ')[0] : ''),
-        lastName: lastName || (name && name.split(' ').length > 1 ? name.split(' ').slice(1).join(' ') : ''),
-        userId: user.id, // Store the user ID for future reference
-        source: `${providerId} OAuth`,
-        userGroup: 'creator',
-        createdAt: new Date().toISOString(),
-        subscribed: true,
-        signupIntent: 'creator',
-        organizationCreate: true,
-        organizationSlug: username || '',
-        organizationCount: 1,
-        subscribedAt: new Date().toISOString(),
-        ...(providerId === 'github' && {
-          githubLogin: true,
-        }),
-        ...(providerId === 'google' && {
-          googleLogin: true,
-        }),
-      },
-      mailingList
-    );
+    // First, check if the contact already exists in Loops
+    const existingContact = await loops.findContact({
+      email
+    });
 
-    // TODO: add telemetry and increase success count
-    console.info(`Successfully added user to Loops: ${email}`);
+    const contactProperties = {
+      firstName: firstName || (name ? name.split(' ')[0] : ''),
+      lastName: lastName || (name && name.split(' ').length > 1 ? name.split(' ').slice(1).join(' ') : ''),
+      userId: user.id, // Store the user ID for future reference
+      source: `${providerId} OAuth`,
+      userGroup: 'creator',
+      createdAt: new Date().toISOString(),
+      subscribed: true,
+      signupIntent: 'creator',
+      organizationCreate: true,
+      organizationSlug: username || '',
+      organizationCount: 1,
+      subscribedAt: new Date().toISOString(),
+      ...(providerId === 'github' && {
+        githubLogin: true,
+      }),
+      ...(providerId === 'google' && {
+        googleLogin: true,
+      }),
+    };
+
+    // If contact exists, update it instead of creating a new one
+    if (existingContact && existingContact.length > 0) {
+      await loops.updateContact(
+        email,
+        contactProperties,
+        mailingList
+      );
+      console.info(`Successfully updated user in Loops: ${email}`);
+    } else {
+      // Create contact if it doesn't exist
+      await loops.createContact(
+        email,
+        contactProperties,
+        mailingList
+      );
+      console.info(`Successfully added user to Loops: ${email}`);
+    }
   } catch (error) {
     console.error('Failed to create contact in Loops:', error);
     // Don't block the user creation process if Loops integration fails
@@ -175,18 +190,24 @@ export const findOrCreateUser = async ({
 
   // Send welcome email
   try {
-    await sendEmailViaResend({
-      email,
-      // Set this to prevent Gmail from threading emails
-      headers: {
-        'X-Entity-Ref-ID': Date.now() + '',
-      },
-      react: WelcomeEmail({
+    // Only send welcome email in production environment
+    if (env.NEXT_PUBLIC_ENVIRONMENT === 'production') {
+      await sendEmailViaResend({
         email,
-        name: firstName || name?.split(' ')[0] || 'there',
-      }),
-      subject: `Welcome to ${env.NEXT_PUBLIC_APP_NAME}!`,
-    });
+        // Set this to prevent Gmail from threading emails
+        headers: {
+          'X-Entity-Ref-ID': Date.now() + '',
+        },
+        react: WelcomeEmail({
+          email,
+          name: firstName || name?.split(' ')[0] || 'there',
+        }),
+        subject: `Welcome to ${env.NEXT_PUBLIC_APP_NAME}!`,
+      });
+      console.info(`Welcome email sent to ${email} in production environment`);
+    } else {
+      console.info(`Skipping welcome email to ${email} in ${env.NEXT_PUBLIC_ENVIRONMENT} environment`);
+    }
   } catch (error) {
     console.error('Failed to send welcome email:', error);
   }

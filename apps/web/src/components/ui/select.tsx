@@ -1,11 +1,10 @@
 'use client';
 
 import * as React from 'react';
-
 import * as SelectPrimitive from '@radix-ui/react-select';
-import { cn } from '@udecode/cn';
 
 import { Icons } from './icons';
+import { cn } from '@udecode/cn';
 
 const Select = SelectPrimitive.Root;
 
@@ -23,7 +22,7 @@ export function SelectTrigger({
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        'flex h-10 w-full items-center justify-between rounded-none border border-input bg-background px-3 py-2 placeholder:text-muted-foreground focus:ring-0 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
+        'flex h-10 w-full items-center justify-between rounded-none border border-input bg-background px-3 py-2 placeholder:text-muted-foreground focus:ring-0 focus:outline-hidden disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 border-2 border-gray-50 dark:border-gray-900',
         className
       )}
       {...props}
@@ -83,7 +82,7 @@ export function SelectContent({
         className={cn(
           'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 relative z-9999 max-h-96 min-w-32 overflow-hidden rounded-none border bg-popover text-popover-foreground shadow-md focus-visible:ring-0 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
           position === 'popper' &&
-            'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
+          'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
           className
         )}
         position={position}
@@ -95,7 +94,7 @@ export function SelectContent({
           className={cn(
             'p-1',
             position === 'popper' &&
-              'h-[var(--radix-select-trigger-height)] max-h-[calc(var(--radix-select-content-available-height)-var(--radix-select-trigger-height))] w-full min-w-[var(--radix-select-trigger-width)]'
+            'h-[var(--radix-select-trigger-height)] max-h-[calc(var(--radix-select-content-available-height)-var(--radix-select-trigger-height))] w-full min-w-[var(--radix-select-trigger-width)]'
           )}
         >
           {children}

@@ -11,6 +11,9 @@ import { z } from "zod";
  * - name: Optional team name with minimum length of 2 characters
  * - email: Optional valid email address for the team
  * - baseCurrency: Optional currency code
+ * - slug: Optional URL-friendly identifier (lowercase letters, numbers, and hyphens)
+ * - inboxForwarding: Optional boolean flag for enabling email forwarding
+ * - flags: Optional array of feature flag strings
  */
 const updateTeamSchema = z.object({
     id: z.string(),
@@ -18,6 +21,9 @@ const updateTeamSchema = z.object({
         name: z.string().min(2, "Team name must be at least 2 characters").optional(),
         email: z.string().email("Please provide a valid email address").optional(),
         baseCurrency: z.string().optional(),
+        slug: z.string().regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens").optional(),
+        inboxForwarding: z.boolean().optional(),
+        flags: z.array(z.string()).optional(),
     }),
 });
 

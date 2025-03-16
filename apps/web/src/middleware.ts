@@ -1,9 +1,9 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { routes } from './lib/navigation/routes';
 
 // Define paths that should bypass onboarding checks
 const PUBLIC_PATHS = [
-    '/',
     '/login',
     '/register',
     '/api/',
@@ -19,17 +19,12 @@ const AUTH_CALLBACK_PATHS = [
     '/api/auth/github/login',
 ];
 
-// Define onboarding steps in order
-const ONBOARDING_STEPS = [
-    '/onboarding/team',
-    '/onboarding/profile',
-    '/onboarding/bank-connection',
-    '/onboarding/complete',
-];
-
 export async function middleware(request: NextRequest) {
     console.log('🔍 MIDDLEWARE STARTED:', request.nextUrl.pathname);
     console.log('🌐 Full URL:', request.url);
+
+    const sessionId = request.cookies.get("session")?.value;
+    const userId = request.cookies.get("user_id")?.value;
 
     // Skip middleware for auth callback paths - these need special handling
     const { pathname } = request.nextUrl;
@@ -41,23 +36,26 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
+    // Check if path is exactly the root path
+    if (pathname === '/') {
+        console.log('⏭️ Skipping middleware for root path');
+        return NextResponse.next();
+    }
+
     // Then check for other public paths
     if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
         console.log('⏭️ Skipping middleware for public path:', pathname);
         return NextResponse.next();
     }
-    console.log('✅ Path is not public, continuing middleware checks', {
-        request
-    });
 
-    // Get session cookie
-    const sessionId = request.cookies.get('session')?.value;
-    console.log('🔑 Session cookie present:', !!sessionId);
+    console.log('🔒 Path is protected, checking authentication:', pathname);
 
-    // If no session, allow the auth system to handle redirection
-    if (!sessionId) {
-        console.log('❌ No session cookie found, proceeding to next middleware');
+    // If no session or user_id, allow the auth system to handle redirection
+    if (!sessionId || !userId) {
+        console.log('❌ No session cookie or user_id found, proceeding to next middleware');
         return NextResponse.next();
+    } else {
+        console.log('🔑 Session cookie found, user_id:', userId);
     }
 
     // Check if user has skipped bank connection
@@ -67,13 +65,14 @@ export async function middleware(request: NextRequest) {
 
     // Fetch user data from API
     try {
-        console.log('🔄 Fetching user data from API');
-        const apiUrl = `${request.nextUrl.origin}/api/auth/me`;
+        console.log('🔄 Fetching user data from API with userId:', userId);
+        const apiUrl = `${request.nextUrl.origin}/api/auth/me?userId=${userId}`;
         console.log('📡 API URL:', apiUrl);
 
         const response = await fetch(apiUrl, {
             headers: {
                 cookie: request.headers.get("cookie") || "",
+                "X-User-ID": userId || "",
             },
         });
         console.log('📊 API response status:', response.status);
@@ -97,15 +96,15 @@ export async function middleware(request: NextRequest) {
         const hasTeam = Boolean(user.teamId);
         console.log('👥 User has team:', hasTeam);
 
-        if (!hasTeam && !pathname.startsWith('/onboarding/team')) {
-            console.log('🔄 Redirecting to team creation:', '/onboarding/team');
-            return NextResponse.redirect(new URL('/onboarding/team', request.url));
+        if (!hasTeam && !pathname.startsWith(routes.onboardingTeam())) {
+            console.log('🔄 Redirecting to team creation:', routes.onboardingTeam());
+            return NextResponse.redirect(new URL(routes.onboardingTeam(), request.url));
         }
 
         // If user has a team but is in team creation step, move to next step
-        if (hasTeam && pathname === '/onboarding/team') {
-            console.log('🔄 Team exists, redirecting to profile step:', '/onboarding/profile');
-            return NextResponse.redirect(new URL('/onboarding/profile', request.url));
+        if (hasTeam && pathname === routes.onboardingTeam()) {
+            console.log('🔄 Team exists, redirecting to profile step:', routes.onboardingProfile());
+            return NextResponse.redirect(new URL(routes.onboardingProfile(), request.url));
         }
 
         // Check if user has completed profile
@@ -114,10 +113,10 @@ export async function middleware(request: NextRequest) {
         );
         console.log('👤 User has completed profile:', hasProfile);
 
-        if (hasTeam && !hasProfile && !pathname.startsWith('/onboarding/profile')) {
-            console.log('🔄 Redirecting to profile completion:', '/onboarding/profile');
+        if (hasTeam && !hasProfile && !pathname.startsWith(routes.onboardingProfile())) {
+            console.log('🔄 Redirecting to profile completion:', routes.onboardingProfile());
             return NextResponse.redirect(
-                new URL('/onboarding/profile', request.url)
+                new URL(routes.onboardingProfile(), request.url)
             );
         }
 
