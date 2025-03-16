@@ -1,8 +1,9 @@
 /**
  * Profile Management Actions
- * 
- * This module exports all profile-related server actions for managing user profiles.
- * These actions are used throughout the application to handle profile operations.
+ *
+ * This module exports all profile-related server actions for managing user
+ * profiles. These actions are used throughout the application to handle profile
+ * operations.
  */
 
 // Profile update actions
@@ -11,4 +12,3 @@ export { updateUserOrganizationProfileAction } from './update-organization-profi
 export { updateProfileContentInfoAction } from './update-profile-content-info-action';
 export { updateProfilePreferencesAction } from './update-profile-preference-action';
 export { updateSocialProfilesAction } from './update-social-profiles-action';
-

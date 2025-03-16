@@ -7,8 +7,8 @@
 'use client';
 
 import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/registry/default/potion-ui/dialog';
 import { Team, TeamSectionProps } from './types';
-import { useCreateTeamMutation, useTeamsQueryOptions, useUpdateTeamMutation, useUpdateUserRoleMutation } from '@/trpc/hooks/team-hooks';
 import { useMemo, useState } from 'react';
 
 import { AnimatePresence } from 'framer-motion';
@@ -16,31 +16,39 @@ import { EmptyTeamState } from './components/empty-team-state';
 import { Icons } from '@/components/ui/icons';
 import { TeamActions } from './components/team-actions';
 import { TeamCard } from './components/team-card';
+import { TeamCreationForm } from '@/components/form/team-creation-form';
 import { TeamHeader } from './components/team-header';
 import { TeamSelector } from './components/team-selector';
+import { Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTRPC } from '@/trpc/react';
+import {
+    useTeamsQueryOptions
+} from '@/trpc/hooks/team-hooks';
 
 /**
- * Team section component that displays the user's teams and provides management options
- * 
- * Main component for team management in the account settings section.
- * Allows users to view and switch between teams, manage team settings,
- * and navigate to team-specific pages.
+ * Team section component that displays the user's teams and provides management
+ * options
+ *
+ * Main component for team management in the account settings section. Allows
+ * users to view and switch between teams, manage team settings, and navigate to
+ * team-specific pages.
+ *
+ * @example
+ *   ```tsx
+ *   <TeamSection userId={session.user.id} />
+ *   ```;
  *
  * @param props - Component properties
  * @param props.userId - The ID of the current user
  * @returns Team management section component
- * 
- * @example
- * ```tsx
- * <TeamSection userId={session.user.id} />
- * ```
  */
 export function TeamSection({ userId }: TeamSectionProps) {
     const router = useRouter();
     const trpc = useTRPC();
     const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+    // State for team creation dialog
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
     // Fetch teams data
     const { data: apiTeams, isLoading } = useTeamsQueryOptions({
@@ -51,7 +59,7 @@ export function TeamSection({ userId }: TeamSectionProps) {
     const teams = useMemo(() => {
         if (!apiTeams) return undefined;
 
-        return apiTeams.map(team => ({
+        return apiTeams.map((team) => ({
             ...team,
             name: team.name || undefined,
             email: team.email || undefined,
@@ -61,10 +69,10 @@ export function TeamSection({ userId }: TeamSectionProps) {
             inboxForwarding: team.inboxForwarding || false,
             flags: team.flags || [],
             // Map each team member's role to correct UserRole enum
-            usersOnTeam: team.usersOnTeam?.map(member => ({
+            usersOnTeam: team.usersOnTeam?.map((member) => ({
                 ...member,
-                role: member.role
-            }))
+                role: member.role,
+            })),
         })) as unknown as Team[];
     }, [apiTeams]);
 
@@ -78,7 +86,7 @@ export function TeamSection({ userId }: TeamSectionProps) {
     // Current selected team
     const selectedTeam = useMemo(() => {
         if (!teams || !selectedTeamId) return null;
-        return teams.find(team => team.id === selectedTeamId);
+        return teams.find((team) => team.id === selectedTeamId);
     }, [teams, selectedTeamId]);
 
     // Handle team selection change
@@ -86,9 +94,17 @@ export function TeamSection({ userId }: TeamSectionProps) {
         setSelectedTeamId(teamId);
     };
 
-    // Navigate to team creation page
-    const handleCreateTeam = () => {
-        router.push('/teams/new');
+    // Open team creation dialog
+    const handleOpenCreateTeamDialog = () => {
+        setIsCreateDialogOpen(true);
+    };
+
+    // Handle team creation completion
+    const handleTeamCreated = () => {
+        // Close dialog
+        setIsCreateDialogOpen(false);
+        // Refresh data
+        trpc.team.invalidate();
     };
 
     // Navigate to team settings page
@@ -101,10 +117,10 @@ export function TeamSection({ userId }: TeamSectionProps) {
     // Get user role in selected team
     const getUserRoleInTeam = (teamId: string) => {
         if (!teams) return null;
-        const team = teams.find(t => t.id === teamId);
+        const team = teams.find((t) => t.id === teamId);
         if (!team || !team.usersOnTeam) return null;
 
-        const userOnTeam = team.usersOnTeam.find(ut => ut.userId === userId);
+        const userOnTeam = team.usersOnTeam.find((ut) => ut.userId === userId);
         return userOnTeam?.role || null;
     };
 
@@ -121,40 +137,61 @@ export function TeamSection({ userId }: TeamSectionProps) {
     }
 
     return (
-        <Card className="overflow-hidden border shadow-sm">
-            <TeamHeader isLoading={false} />
+        <>
+            <Card className="overflow-hidden border shadow-sm">
+                <TeamHeader isLoading={false} />
 
-            <CardContent className="space-y-6 px-6 pb-6">
-                {teams && teams.length > 0 ? (
-                    <>
-                        <TeamSelector
-                            teams={teams}
-                            selectedTeamId={selectedTeamId}
-                            onTeamChange={handleTeamChange}
-                            getUserRoleInTeam={getUserRoleInTeam}
-                        />
+                <CardContent className="space-y-6 px-6 pb-6">
+                    {teams && teams.length > 0 ? (
+                        <>
+                            <TeamSelector
+                                teams={teams}
+                                selectedTeamId={selectedTeamId}
+                                onTeamChange={handleTeamChange}
+                                getUserRoleInTeam={getUserRoleInTeam}
+                            />
 
-                        <AnimatePresence mode="wait">
-                            {selectedTeam && (
-                                <TeamCard
-                                    key={selectedTeam.id}
-                                    team={selectedTeam}
-                                    userRole={getUserRoleInTeam(selectedTeam.id)}
-                                    onManageTeam={handleManageTeam}
-                                    router={router}
-                                />
-                            )}
-                        </AnimatePresence>
-                    </>
-                ) : (
-                    <EmptyTeamState onCreateTeam={handleCreateTeam} />
-                )}
-            </CardContent>
+                            <AnimatePresence mode="wait">
+                                {selectedTeam && (
+                                    <TeamCard
+                                        key={selectedTeam.id}
+                                        team={selectedTeam}
+                                        userRole={getUserRoleInTeam(selectedTeam.id)}
+                                        onManageTeam={handleManageTeam}
+                                        router={router}
+                                    />
+                                )}
+                            </AnimatePresence>
+                        </>
+                    ) : (
+                        <EmptyTeamState onCreateTeam={handleOpenCreateTeamDialog} />
+                    )}
+                </CardContent>
 
-            <TeamActions
-                onViewAllTeams={() => router.push('/teams')}
-                onCreateTeam={handleCreateTeam}
-            />
-        </Card>
+                <TeamActions
+                    onViewAllTeams={() => router.push('/teams')}
+                    onCreateTeam={handleOpenCreateTeamDialog}
+                />
+            </Card>
+
+            {/* Team Creation Dialog */}
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                <DialogContent className="sm:max-w-[550px]">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Users className="h-5 w-5 text-primary" />
+                            Create a New Team
+                        </DialogTitle>
+                        <DialogDescription>
+                            Set up a team to collaborate with others and manage your organizational finances.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="py-4">
+                        <TeamCreationForm onSuccess={handleTeamCreated} isDialog={true} />
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
     );
-} 
+}

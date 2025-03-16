@@ -52,8 +52,8 @@ Follow these steps in order, using existing files as references:
 8. Implement Actions
 
    - Use the mutation in actions. create an action for each function
-      - location: `apps/web/src/actions/<feature>/<Action><Feature>-action.ts`
-      - reference: `apps/web/src/actions/team/accept-team-invite-action.ts`
+     - location: `apps/web/src/actions/<feature>/<Action><Feature>-action.ts`
+     - reference: `apps/web/src/actions/team/accept-team-invite-action.ts`
 
 ```ts
 const [data, { isLoading }] = useQuery({

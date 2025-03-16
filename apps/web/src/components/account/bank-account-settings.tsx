@@ -19,7 +19,7 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
     <div className="rounded-xl border-2 border-muted/10 shadow-md transition-all duration-300 hover:shadow-lg md:p-[4%]">
       <div className="w-full">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <h2 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
             Bank Account Settings
             <InfoTooltip
               title="Bank Account Settings"
@@ -95,7 +95,7 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium flex items-center gap-2">
+                <h3 className="flex items-center gap-2 text-lg font-medium">
                   Bank Connections
                   <InfoTooltip
                     description="Connect to your financial institutions to automatically import transactions and account data."
@@ -126,7 +126,7 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium flex items-center gap-2">
+                <h3 className="flex items-center gap-2 text-lg font-medium">
                   Account Display Settings
                   <InfoTooltip
                     description="Customize how your bank accounts are displayed, including nicknames and grouping options."
@@ -187,7 +187,7 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium flex items-center gap-2">
+                <h3 className="flex items-center gap-2 text-lg font-medium">
                   Transaction Settings
                   <InfoTooltip
                     description="Configure how transactions are categorized and create rules for automatic processing."
@@ -247,7 +247,7 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
           >
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-medium flex items-center gap-2">
+                <h3 className="flex items-center gap-2 text-lg font-medium">
                   Notification Preferences
                   <InfoTooltip
                     description="Set up alerts for account activity including low balances, large transactions, and suspicious activity."

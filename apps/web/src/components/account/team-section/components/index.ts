@@ -1,6 +1,6 @@
 /**
  * Barrel file for team components
- * 
+ *
  * @file Team Components Exports
  */
 
@@ -22,4 +22,4 @@ export { TeamFeaturesSetting } from './team-card/team-settings/features-setting'
 
 // Team members
 export { TeamMembersList } from './team-card/team-members/members-list';
-export { TeamMemberItem } from './team-card/team-members/member-item'; 
+export { TeamMemberItem } from './team-card/team-members/member-item';

@@ -3,60 +3,58 @@ import { useEffect, useState } from 'react';
 import { ExportStatus } from '@/types/status';
 import { useRealtimeRun } from '@trigger.dev/react-hooks';
 
-/**
- * Props for the useExportStatus hook.
- */
+/** Props for the useExportStatus hook. */
 type UseExportStatusProps = {
-  /**
-   * The ID of the export run to track.
-   */
+  /** The ID of the export run to track. */
   runId?: string;
-  /**
-   * The access token required for authentication with the export service.
-   */
+  /** The access token required for authentication with the export service. */
   accessToken?: string;
 };
 
 /**
  * UseExportStatus Hook
- * 
- * This hook manages the state and lifecycle of an export operation, providing real-time
- * status updates, progress tracking, and result handling.
- * 
+ *
+ * This hook manages the state and lifecycle of an export operation, providing
+ * real-time status updates, progress tracking, and result handling.
+ *
  * @remarks
- * The hook integrates with trigger.dev's real-time run tracking to monitor export jobs.
- * It automatically handles state transitions based on the export's progress and completion status.
- * 
- * The hook maintains several pieces of state:
- * - Current status of the export (in progress, completed, failed)
- * - Progress percentage of the export operation
- * - Result data once the export is complete
- * 
+ *   The hook integrates with trigger.dev's real-time run tracking to monitor
+ *   export jobs. It automatically handles state transitions based on the
+ *   export's progress and completion status.
+ *
+ *   The hook maintains several pieces of state:
+ *
+ *   - Current status of the export (in progress, completed, failed)
+ *   - Progress percentage of the export operation
+ *   - Result data once the export is complete
+ *
+ * @example
+ *   ```tsx
+ *   const { status, progress, result } = useExportStatus({
+ *     runId: 'export-123',
+ *     accessToken: 'user-token'
+ *   });
+ *
+ *   if (status === ExportStatus.IN_PROGRESS) {
+ *     return <ProgressBar value={progress} />;
+ *   } else if (status === ExportStatus.COMPLETED) {
+ *     return <ExportResult data={result} />;
+ *   } else if (status === ExportStatus.FAILED) {
+ *     return <ErrorMessage />;
+ *   }
+ *   ```;
+ *
  * @param props - Configuration options for the export tracking
  * @param props.runId - Initial run ID for the export operation
- * @param props.accessToken - Authentication token for accessing the export service
- * 
+ * @param props.accessToken - Authentication token for accessing the export
+ *   service
  * @returns An object containing:
- * - status: Current status of the export (IN_PROGRESS, COMPLETED, FAILED, or null)
- * - setStatus: Function to manually update the export status
- * - progress: Numerical progress value between 0-100
- * - result: The export result data (available when completed)
- * 
- * @example
- * ```tsx
- * const { status, progress, result } = useExportStatus({
- *   runId: 'export-123',
- *   accessToken: 'user-token'
- * });
- * 
- * if (status === ExportStatus.IN_PROGRESS) {
- *   return <ProgressBar value={progress} />;
- * } else if (status === ExportStatus.COMPLETED) {
- *   return <ExportResult data={result} />;
- * } else if (status === ExportStatus.FAILED) {
- *   return <ErrorMessage />;
- * }
- * ```
+ *
+ *   - Status: Current status of the export (IN_PROGRESS, COMPLETED, FAILED, or
+ *       null)
+ *   - SetStatus: Function to manually update the export status
+ *   - Progress: Numerical progress value between 0-100
+ *   - Result: The export result data (available when completed)
  */
 export function useExportStatus({
   runId: initialRunId,

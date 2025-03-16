@@ -14,7 +14,10 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { api, useTRPC } from '@/trpc/react';
 import { useEffect, useState } from 'react';
-import { useInvalidateSessionMutation, useLogoutMutation } from '../auth/useLogoutMutation';
+import {
+  useInvalidateSessionMutation,
+  useLogoutMutation,
+} from '../auth/useLogoutMutation';
 
 import { Icons } from '../ui/icons';
 import { Input } from '@/registry/default/potion-ui/input';
@@ -99,7 +102,7 @@ export function DeleteAccountButton() {
       toast.info('Redirecting to homepage...');
 
       // sleep for 1 second to allow toasts to be seen
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Force a complete reload from server rather than using cache
       // This approach is more likely to respect updated cookie state
@@ -165,7 +168,7 @@ export function DeleteAccountButton() {
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: "linear"
+            ease: 'linear',
           }}
         />
 
@@ -177,10 +180,10 @@ export function DeleteAccountButton() {
                 scale: isPulsing ? [1, 1.05, 1] : 1,
                 boxShadow: isPulsing
                   ? [
-                    '0 0 0 0 rgba(239, 68, 68, 0)',
-                    '0 0 0 10px rgba(239, 68, 68, 0.1)',
-                    '0 0 0 0 rgba(239, 68, 68, 0)',
-                  ]
+                      '0 0 0 0 rgba(239, 68, 68, 0)',
+                      '0 0 0 10px rgba(239, 68, 68, 0.1)',
+                      '0 0 0 0 rgba(239, 68, 68, 0)',
+                    ]
                   : '0 0 0 0 rgba(239, 68, 68, 0)',
               }}
               transition={{
@@ -224,7 +227,9 @@ export function DeleteAccountButton() {
               </AnimatePresence>
             </motion.div>
             <AlertDialogTitle className="mt-5 text-center text-2xl font-bold">
-              {deletionStage < 2 ? "Delete your account?" : "Final confirmation"}
+              {deletionStage < 2
+                ? 'Delete your account?'
+                : 'Final confirmation'}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center text-base">
               {deletionStage < 2 ? (
@@ -240,11 +245,11 @@ export function DeleteAccountButton() {
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-destructive font-medium"
+                  className="font-medium text-destructive"
                 >
                   {isCountingDown
                     ? `Account deletion will begin in ${countdown}...`
-                    : "Are you absolutely sure you want to proceed?"}
+                    : 'Are you absolutely sure you want to proceed?'}
                 </motion.span>
               )}
             </AlertDialogDescription>
@@ -293,10 +298,13 @@ export function DeleteAccountButton() {
                   transition={{ delay: 0.2, duration: 0.3 }}
                   className="flex flex-col space-y-5"
                 >
-                  <Label htmlFor="confirm-email" className="text-sm font-medium">
+                  <Label
+                    htmlFor="confirm-email"
+                    className="text-sm font-medium"
+                  >
                     Type{' '}
-                    <span className="font-semibold">{userSettings?.email}</span> to
-                    confirm
+                    <span className="font-semibold">{userSettings?.email}</span>{' '}
+                    to confirm
                   </Label>
                   <div className="relative">
                     <Input
@@ -307,10 +315,10 @@ export function DeleteAccountButton() {
                       className={cn(
                         'border-none border-input bg-muted/5 pr-9 transition-all duration-300 focus-visible:ring-1 focus-visible:ring-offset-0',
                         isConfirmEnabled &&
-                        'border-green-500/50 focus-visible:ring-green-500/30',
+                          'border-green-500/50 focus-visible:ring-green-500/30',
                         confirmEmail &&
-                        !isConfirmEnabled &&
-                        'border-destructive/50 focus-visible:ring-destructive/30'
+                          !isConfirmEnabled &&
+                          'border-destructive/50 focus-visible:ring-destructive/30'
                       )}
                     />
                     <AnimatePresence>
@@ -357,7 +365,7 @@ export function DeleteAccountButton() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="py-4 space-y-6"
+                className="space-y-6 py-4"
               >
                 <div className="space-y-4">
                   <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
@@ -366,8 +374,10 @@ export function DeleteAccountButton() {
                         <Icons.alertCircle className="size-5 text-destructive" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-medium text-destructive">What will be deleted:</h3>
-                        <ul className="mt-2 text-sm text-destructive/80 space-y-1">
+                        <h3 className="text-sm font-medium text-destructive">
+                          What will be deleted:
+                        </h3>
+                        <ul className="mt-2 space-y-1 text-sm text-destructive/80">
                           <li className="flex items-center">
                             <Icons.circle className="mr-2 size-3" />
                             Your user profile and settings
@@ -378,7 +388,8 @@ export function DeleteAccountButton() {
                           </li>
                           <li className="flex items-center">
                             <Icons.circle className="mr-2 size-3" />
-                            All your data including documents, files, and analytics
+                            All your data including documents, files, and
+                            analytics
                           </li>
                         </ul>
                       </div>
@@ -407,7 +418,7 @@ export function DeleteAccountButton() {
               {deletionStage < 1 ? (
                 <motion.div
                   key="initial-buttons"
-                  className="w-full flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-2"
+                  className="flex w-full flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-2"
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
@@ -437,7 +448,7 @@ export function DeleteAccountButton() {
               ) : deletionStage === 1 ? (
                 <motion.div
                   key="second-stage-buttons"
-                  className="w-full flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-2"
+                  className="flex w-full flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-2"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -466,14 +477,14 @@ export function DeleteAccountButton() {
               ) : isCountingDown ? (
                 <motion.div
                   key="counting-buttons"
-                  className="w-full flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-2"
+                  className="flex w-full flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-2"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
                   <AlertDialogCancel
                     size="md"
-                    className="w-full border border-destructive/30 font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                    className="w-full border border-destructive/30 font-medium text-destructive transition-colors hover:bg-destructive/10"
                   >
                     Cancel Deletion
                   </AlertDialogCancel>
@@ -481,7 +492,7 @@ export function DeleteAccountButton() {
               ) : (
                 <motion.div
                   key="final-buttons"
-                  className="w-full flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-2"
+                  className="flex w-full flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-2"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}

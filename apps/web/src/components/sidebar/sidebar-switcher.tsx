@@ -84,7 +84,11 @@ export function SidebarSwitcher() {
         </div>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-[300px] md:p-[3%]" align="start" alignOffset={11}>
+      <DropdownMenuContent
+        className="w-[300px] md:p-[3%]"
+        align="start"
+        alignOffset={11}
+      >
         <div className="md:p-[3%]">
           <div className="flex flex-col space-y-2">
             <div className="flex items-center justify-between">

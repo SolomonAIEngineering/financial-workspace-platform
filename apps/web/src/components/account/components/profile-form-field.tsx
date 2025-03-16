@@ -19,8 +19,8 @@ import type { ProfileFormFieldProps } from '../types/profile-types';
 import { Textarea } from '@/registry/default/potion-ui/textarea';
 
 /**
- * A reusable form field component that handles various types of inputs
- * with integrated help tooltips for better user guidance.
+ * A reusable form field component that handles various types of inputs with
+ * integrated help tooltips for better user guidance.
  *
  * @example
  *   <ProfileFormField

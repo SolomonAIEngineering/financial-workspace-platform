@@ -13,9 +13,21 @@ import { useState } from 'react';
 
 /**
  * Component for displaying and managing a list of team members
- * 
- * Shows all team members with their roles and allows role management
- * for team owners.
+ *
+ * Shows all team members with their roles and allows role management for team
+ * owners.
+ *
+ * @example
+ *   ```tsx
+ *   <TeamMembersList
+ *     team={team}
+ *     isOwner={isOwner}
+ *     onManageTeam={handleManageTeam}
+ *     onRoleUpdate={handleRoleUpdate}
+ *     isRoleUpdating={isRoleUpdating}
+ *     updatingMemberId={updatingMemberId}
+ *   />
+ *   ```;
  *
  * @param props - Component properties
  * @param props.team - Team information including member list
@@ -25,68 +37,56 @@ import { useState } from 'react';
  * @param props.isRoleUpdating - Whether role updates are in progress
  * @param props.updatingMemberId - ID of the member being updated
  * @returns Component for team members list
- * 
- * @example
- * ```tsx
- * <TeamMembersList
- *   team={team}
- *   isOwner={isOwner}
- *   onManageTeam={handleManageTeam}
- *   onRoleUpdate={handleRoleUpdate}
- *   isRoleUpdating={isRoleUpdating}
- *   updatingMemberId={updatingMemberId}
- * />
- * ```
  */
 export function TeamMembersList({
-    team,
-    isOwner,
-    onManageTeam,
-    onRoleUpdate,
-    isRoleUpdating,
-    updatingMemberId
+  team,
+  isOwner,
+  onManageTeam,
+  onRoleUpdate,
+  isRoleUpdating,
+  updatingMemberId,
 }: TeamMembersListProps) {
-    const memberCount = team.usersOnTeam?.length || 0;
-    const ownersCount = countTeamOwners(team);
+  const memberCount = team.usersOnTeam?.length || 0;
+  const ownersCount = countTeamOwners(team);
 
-    return (
-        <div className="col-span-2 space-y-1">
-            <div className="flex items-center justify-between">
-                <h4 className="text-xs font-medium uppercase text-muted-foreground">
-                    Members ({memberCount})
-                </h4>
-                {isOwner && memberCount > 0 && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onManageTeam()}
-                        className="h-6 px-2 text-xs"
-                    >
-                        Manage
-                    </Button>
-                )}
-            </div>
+  return (
+    <div className="col-span-2 space-y-1">
+      <div className="flex items-center justify-between">
+        <h4 className="text-xs font-medium text-muted-foreground uppercase">
+          Members ({memberCount})
+        </h4>
+        {isOwner && memberCount > 0 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onManageTeam()}
+            className="h-6 px-2 text-xs"
+          >
+            Manage
+          </Button>
+        )}
+      </div>
 
-            <div className="rounded-md border p-2 bg-background/50">
-                {team.usersOnTeam && team.usersOnTeam.length > 0 ? (
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {team.usersOnTeam.map((member) => (
-                            <TeamMemberItem
-                                key={member.userId}
-                                member={member}
-                                isOwner={isOwner}
-                                onRoleUpdate={onRoleUpdate}
-                                isUpdating={isRoleUpdating}
-                                isBeingUpdated={updatingMemberId === member.userId}
-                                ownersCount={ownersCount}
-                                isCurrentUser={false} // This would be determined by parent component
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <span className="text-sm text-muted-foreground">No members</span>
-                )}
-            </div>
-        </div>
-    );
-} 
+      <div className="rounded-md border bg-background/50 p-2">
+        {team.usersOnTeam && team.usersOnTeam.length > 0 ? (
+          <div className="max-h-40 space-y-2 overflow-y-auto">
+            {team.usersOnTeam.map((member) => (
+              <TeamMemberItem
+                key={member.userId}
+                member={member}
+                isOwner={isOwner}
+                onRoleUpdate={onRoleUpdate}
+                isUpdating={isRoleUpdating}
+                isBeingUpdated={updatingMemberId === member.userId}
+                ownersCount={ownersCount}
+                isCurrentUser={false} // This would be determined by parent component
+              />
+            ))}
+          </div>
+        ) : (
+          <span className="text-sm text-muted-foreground">No members</span>
+        )}
+      </div>
+    </div>
+  );
+}

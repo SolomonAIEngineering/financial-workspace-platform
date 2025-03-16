@@ -24,7 +24,6 @@ import { syncConnectionJob } from '@/jobs/tasks/bank/sync/connection';
 export const manualSyncTransactionsAction = authActionClient
   .schema(manualSyncTransactionsSchema)
   .action(async ({ parsedInput: { connectionId } }) => {
-
     // make sure the connection exists
     const connection = await prisma.bankConnection.findUnique({
       where: { id: connectionId },

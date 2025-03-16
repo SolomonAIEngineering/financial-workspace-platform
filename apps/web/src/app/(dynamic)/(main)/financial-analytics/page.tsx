@@ -277,7 +277,7 @@ export default function FinancialAnalyticsPage() {
                   'h-full transition-shadow duration-200 hover:shadow-md',
                   viewMode === 'list' ? 'max-w-full' : ''
                 )}
-                onClick={() => { }}
+                onClick={() => {}}
                 title={doc.title}
                 recipients={doc.recipients}
                 status={doc.status}

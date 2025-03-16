@@ -1,8 +1,9 @@
 /**
  * Team Management Actions
- * 
- * This module exports all team-related server actions for managing teams, team members, and team invites.
- * These actions are used throughout the application to handle team operations.
+ *
+ * This module exports all team-related server actions for managing teams, team
+ * members, and team invites. These actions are used throughout the application
+ * to handle team operations.
  */
 
 // Team CRUD operations

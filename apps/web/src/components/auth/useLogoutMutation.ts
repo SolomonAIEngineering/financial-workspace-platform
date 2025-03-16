@@ -54,7 +54,7 @@ export const useInvalidateSessionMutation = () => {
         logCookieDebug(`Cookies to clear: ${cookies.length}`);
 
         // Clear all cookies regardless of path, focusing only on domain
-        cookies.forEach(cookie => {
+        cookies.forEach((cookie) => {
           const [name] = cookie.trim().split('=');
           if (!name) return;
 

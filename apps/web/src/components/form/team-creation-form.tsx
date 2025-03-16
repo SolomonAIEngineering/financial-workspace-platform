@@ -10,7 +10,13 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { api, useTRPC } from '@/trpc/react';
 import { useEffect, useState } from 'react';
 
@@ -29,9 +35,11 @@ const teamFormSchema = z.object({
     name: z.string().min(2, {
         message: 'Team name must be at least 2 characters.',
     }),
-    slug: z.string().min(2, {
-        message: 'Team slug must be at least 2 characters.',
-    })
+    slug: z
+        .string()
+        .min(2, {
+            message: 'Team slug must be at least 2 characters.',
+        })
         .regex(/^[a-z0-9-]+$/, {
             message: 'Slug can only contain lowercase letters, numbers, and hyphens.',
         }),
@@ -43,9 +51,17 @@ const teamFormSchema = z.object({
     }),
 });
 
+// Add interface for component props
+interface TeamCreationFormProps {
+    /** Optional callback function called after successful team creation */
+    onSuccess?: (team: any) => void;
+    /** Flag to indicate if the form is being rendered inside a dialog */
+    isDialog?: boolean;
+}
+
 type TeamFormValues = z.infer<typeof teamFormSchema>;
 
-export function TeamCreationForm() {
+export function TeamCreationForm({ onSuccess, isDialog = false }: TeamCreationFormProps) {
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSlugEdited, setIsSlugEdited] = useState(false);
@@ -92,14 +108,16 @@ export function TeamCreationForm() {
 
         try {
             // Use the tRPC mutation instead of direct server call
-            const promise = createTeam.mutateAsync({
-                name: data.name,
-                slug: data.slug,
-                email: data.email,
-                baseCurrency: data.baseCurrency,
-            }).then((team) => {
-                return team;
-            });
+            const promise = createTeam
+                .mutateAsync({
+                    name: data.name,
+                    slug: data.slug,
+                    email: data.email,
+                    baseCurrency: data.baseCurrency,
+                })
+                .then((team) => {
+                    return team;
+                });
 
             // Use toast.promise for better UX
             toast.promise(promise, {
@@ -108,14 +126,22 @@ export function TeamCreationForm() {
                 error: 'Failed to create team. Please try again or contact support.',
             });
 
-            // Wait for the promise to resolve and then refresh the page
+            // Wait for the promise to resolve
             const team = await promise;
             if (team) {
-                // Add a small delay to ensure toast is visible before refresh
-                setTimeout(() => {
-                    // Refresh the page to trigger middleware redirect
-                    router.refresh();
-                }, 1500); // 1.5 seconds delay
+                // Call onSuccess callback if provided
+                if (onSuccess) {
+                    onSuccess(team);
+                }
+
+                // If not in dialog mode, refresh the page after a delay
+                if (!isDialog) {
+                    // Add a small delay to ensure toast is visible before refresh
+                    setTimeout(() => {
+                        // Refresh the page to trigger middleware redirect
+                        router.refresh();
+                    }, 1500); // 1.5 seconds delay
+                }
             }
         } catch (error) {
             console.error('Failed to create team:', error);
@@ -130,9 +156,9 @@ export function TeamCreationForm() {
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.1
-            }
-        }
+                staggerChildren: 0.1,
+            },
+        },
     };
 
     const itemVariants = {
@@ -141,20 +167,16 @@ export function TeamCreationForm() {
             y: 0,
             opacity: 1,
             transition: {
-                type: "spring",
+                type: 'spring',
                 stiffness: 300,
-                damping: 24
-            }
-        }
+                damping: 24,
+            },
+        },
     };
 
     return (
-        <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-        >
-            <Card className="overflow-hidden border border-border/70 bg-card/50 backdrop-blur-sm">
+        <motion.div initial="hidden" animate="visible" variants={containerVariants}>
+            <Card className={isDialog ? "border-0 shadow-none" : "overflow-hidden border border-border/70 bg-card/50 backdrop-blur-sm"}>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <CardContent className="space-y-6 p-6">
@@ -192,13 +214,13 @@ export function TeamCreationForm() {
                                                 Team URL Slug
                                             </FormLabel>
                                             <FormControl>
-                                                <div className="flex items-center gap-1 rounded-md border bg-backgroun pl-3">
+                                                <div className="bg-backgroun flex items-center gap-1 rounded-md border pl-3">
                                                     <span className="text-sm text-muted-foreground">
                                                         smb.solomon-ai.dev/
                                                     </span>
                                                     <Input
                                                         placeholder="acme-inc"
-                                                        className="h-10 flex-1 border-none shadow-none bg-background/50 focus:ring-0"
+                                                        className="h-10 flex-1 border-none bg-background/50 shadow-none focus:ring-0"
                                                         {...field}
                                                         onChange={(e) => {
                                                             field.onChange(e);
@@ -208,7 +230,8 @@ export function TeamCreationForm() {
                                                 </div>
                                             </FormControl>
                                             <FormDescription>
-                                                This will be used for your team URL and cannot be changed later.
+                                                This will be used for your team URL and cannot be
+                                                changed later.
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -254,27 +277,32 @@ export function TeamCreationForm() {
                                                 defaultValue={field.value}
                                             >
                                                 <FormControl>
-                                                    <SelectTrigger className="h-10 bg-background/50 backdrop-blur-sm focus:border-primary rounded-2xl">
+                                                    <SelectTrigger className="h-10 rounded-2xl bg-background/50 focus:border-primary">
                                                         <SelectValue placeholder="Select a currency" />
                                                     </SelectTrigger>
                                                 </FormControl>
-                                                <SelectContent className='rounded-2xl border-none shadow-none md:p-[2%]'>
+                                                <SelectContent className="rounded-2xl border-none shadow-none md:p-[2%]">
                                                     {currencies.map((currency) => (
                                                         <SelectItem
                                                             key={currency.code}
                                                             value={currency.code}
                                                         >
                                                             <span className="flex items-center gap-2">
-                                                                <span className="font-medium text-xs">{currency.symbol}</span>
-                                                                <span>{currency.name}</span>
-                                                                <span className="ml-1 text-muted-foreground">({currency.code})</span>
+                                                                <span className="text-sm font-medium">
+                                                                    {currency.symbol}
+                                                                </span>
+                                                                <span className="text-sm">{currency.name}</span>
+                                                                <span className="ml-1 text-muted-foreground text-sm">
+                                                                    ({currency.code})
+                                                                </span>
                                                             </span>
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
                                             </Select>
                                             <FormDescription>
-                                                The primary currency for financial tracking and reporting.
+                                                The primary currency for financial tracking and
+                                                reporting.
                                             </FormDescription>
                                             <FormMessage />
                                         </FormItem>
@@ -282,7 +310,7 @@ export function TeamCreationForm() {
                                 />
                             </motion.div>
                         </CardContent>
-                        <CardFooter className="flex justify-between border-t bg-muted/10 p-6">
+                        <CardFooter className="flex flex-col items-start justify-between gap-4 border-t bg-muted/10 p-6">
                             <div className="text-sm text-muted-foreground">
                                 <Icons.info className="mr-2 inline-block h-4 w-4" />
                                 Your team helps organize your financial data
@@ -290,7 +318,7 @@ export function TeamCreationForm() {
                             <Button
                                 type="submit"
                                 disabled={isSubmitting || createTeam.isPending}
-                                className="bg-primary hover:bg-primary/90 font-bold"
+                                className="bg-primary font-bold hover:bg-primary/90"
                                 size="md"
                             >
                                 {isSubmitting || createTeam.isPending ? (
@@ -311,4 +339,4 @@ export function TeamCreationForm() {
             </Card>
         </motion.div>
     );
-} 
+}

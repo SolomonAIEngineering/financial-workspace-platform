@@ -3,24 +3,17 @@ import { useEffect, useState } from 'react';
 import type { AnyTask } from '@trigger.dev/sdk/v3';
 import { useRealtimeRunWithStreams } from '@trigger.dev/react-hooks';
 
-/**
- * Represents the progress of a synchronization operation.
- */
+/** Represents the progress of a synchronization operation. */
 export type SyncProgress = {
-  /**
-   * The current progress value (e.g., number of items processed).
-   */
+  /** The current progress value (e.g., number of items processed). */
   current: number;
-  /**
-   * The total number of items to process.
-   */
+  /** The total number of items to process. */
   total: number;
-  /**
-   * A descriptive message about the current sync state.
-   */
+  /** A descriptive message about the current sync state. */
   message: string;
   /**
    * The current status of the synchronization.
+   *
    * - 'idle': Not started or waiting to begin
    * - 'syncing': Currently in progress
    * - 'success': Successfully completed
@@ -29,107 +22,89 @@ export type SyncProgress = {
   status?: 'idle' | 'syncing' | 'success' | 'error';
 };
 
-/**
- * Represents a stream of data from a sync operation.
- */
+/** Represents a stream of data from a sync operation. */
 export type SyncStream = {
-  /**
-   * Unique identifier for the stream.
-   */
+  /** Unique identifier for the stream. */
   id: string;
-  /**
-   * The content/payload of the stream.
-   */
+  /** The content/payload of the stream. */
   data: string;
-  /**
-   * ISO timestamp when the stream was created.
-   */
+  /** ISO timestamp when the stream was created. */
   createdAt: string;
-  /**
-   * The ID of the run that generated this stream.
-   */
+  /** The ID of the run that generated this stream. */
   runId: string;
 };
 
-/**
- * The result object returned by the useSyncProgress hook.
- */
+/** The result object returned by the useSyncProgress hook. */
 export type UseSyncProgressResult = {
-  /**
-   * Current progress information of the sync operation.
-   */
+  /** Current progress information of the sync operation. */
   progress: SyncProgress;
-  /**
-   * Array of data streams from the sync operation.
-   */
+  /** Array of data streams from the sync operation. */
   streams: SyncStream[];
-  /**
-   * Current status of the sync operation.
-   */
+  /** Current status of the sync operation. */
   status: 'idle' | 'syncing' | 'success' | 'error';
-  /**
-   * Error object if the sync operation failed, null otherwise.
-   */
+  /** Error object if the sync operation failed, null otherwise. */
   error: Error | null;
-  /**
-   * Indicates whether the hook is still loading initial data.
-   */
+  /** Indicates whether the hook is still loading initial data. */
   isLoading: boolean;
 };
 
 /**
  * UseSyncProgress Hook
- * 
- * This hook tracks the progress and status of a synchronization operation running
- * on Trigger.dev, providing real-time updates, stream data, and error handling.
- * 
+ *
+ * This hook tracks the progress and status of a synchronization operation
+ * running on Trigger.dev, providing real-time updates, stream data, and error
+ * handling.
+ *
  * @remarks
- * The hook integrates with Trigger.dev's real-time run tracking to monitor sync jobs.
- * It automatically handles state transitions based on the run's status and progress metadata.
- * 
- * The hook maintains several pieces of state:
- * - Current progress (current/total items and descriptive message)
- * - Stream data from the sync operation
- * - Overall status (idle, syncing, success, error)
- * - Error information if the operation fails
- * - Loading state while initial data is being fetched
- * 
- * @param runId - The ID of the Trigger.dev run to track
- * @param accessToken - Optional access token for authentication with Trigger.dev
- * 
- * @returns An object containing:
- * - progress: Current progress information (current/total/message)
- * - streams: Array of data streams from the sync operation
- * - status: Current status of the sync (idle/syncing/success/error)
- * - error: Error object if the sync failed, null otherwise
- * - isLoading: Boolean indicating if initial data is still loading
- * 
+ *   The hook integrates with Trigger.dev's real-time run tracking to monitor sync
+ *   jobs. It automatically handles state transitions based on the run's status
+ *   and progress metadata.
+ *
+ *   The hook maintains several pieces of state:
+ *
+ *   - Current progress (current/total items and descriptive message)
+ *   - Stream data from the sync operation
+ *   - Overall status (idle, syncing, success, error)
+ *   - Error information if the operation fails
+ *   - Loading state while initial data is being fetched
+ *
  * @example
- * ```tsx
- * const { progress, status, error, isLoading } = useSyncProgress(
- *   'run-123abc',
- *   'auth-token-xyz'
- * );
- * 
- * if (isLoading) {
- *   return <LoadingSpinner />;
- * }
- * 
- * if (status === 'error') {
- *   return <ErrorMessage error={error} />;
- * }
- * 
- * return (
- *   <div>
- *     <ProgressBar 
- *       value={progress.current} 
- *       max={progress.total} 
- *     />
- *     <p>{progress.message}</p>
- *     {status === 'success' && <SuccessMessage />}
- *   </div>
- * );
- * ```
+ *   ```tsx
+ *   const { progress, status, error, isLoading } = useSyncProgress(
+ *     'run-123abc',
+ *     'auth-token-xyz'
+ *   );
+ *
+ *   if (isLoading) {
+ *     return <LoadingSpinner />;
+ *   }
+ *
+ *   if (status === 'error') {
+ *     return <ErrorMessage error={error} />;
+ *   }
+ *
+ *   return (
+ *     <div>
+ *       <ProgressBar
+ *         value={progress.current}
+ *         max={progress.total}
+ *       />
+ *       <p>{progress.message}</p>
+ *       {status === 'success' && <SuccessMessage />}
+ *     </div>
+ *   );
+ *   ```;
+ *
+ * @param runId - The ID of the Trigger.dev run to track
+ * @param accessToken - Optional access token for authentication with
+ *   Trigger.dev
+ * @returns An object containing:
+ *
+ *   - Progress: Current progress information (current/total/message)
+ *   - Streams: Array of data streams from the sync operation
+ *   - Status: Current status of the sync (idle/syncing/success/error)
+ *   - Error: Error object if the sync failed, null otherwise
+ *   - IsLoading: Boolean indicating if initial data is still loading
  */
 export function useSyncProgress(
   runId?: string,
@@ -231,13 +206,13 @@ export function useSyncProgress(
   // Convert streams to our expected format
   const formattedStreams: SyncStream[] = Array.isArray(streams)
     ? streams.map((stream) => ({
-      id: typeof stream.id === 'string' ? stream.id : '',
-      data: typeof stream.data === 'string' ? stream.data : '',
-      createdAt: stream.createdAt
-        ? new Date(stream.createdAt).toISOString()
-        : new Date().toISOString(),
-      runId: typeof stream.runId === 'string' ? stream.runId : run?.id || '',
-    }))
+        id: typeof stream.id === 'string' ? stream.id : '',
+        data: typeof stream.data === 'string' ? stream.data : '',
+        createdAt: stream.createdAt
+          ? new Date(stream.createdAt).toISOString()
+          : new Date().toISOString(),
+        runId: typeof stream.runId === 'string' ? stream.runId : run?.id || '',
+      }))
     : [];
 
   return {

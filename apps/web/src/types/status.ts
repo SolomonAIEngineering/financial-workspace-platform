@@ -15,7 +15,7 @@ export enum ExportStatus {
 
 // Currency schema for a single currency
 export const currencySchema = z.object({
-  code: z.string().min(3).max(3),  // Currency codes are 3 characters (ISO 4217)
+  code: z.string().min(3).max(3), // Currency codes are 3 characters (ISO 4217)
   name: z.string().min(1),
   symbol: z.string().min(1),
 });
