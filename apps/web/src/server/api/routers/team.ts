@@ -1,9 +1,21 @@
+import { ResourceType } from '@/server/services/payment-tier';
 import { TRPCError } from '@trpc/server';
 import { TeamRole } from '@prisma/client';
+import { createResourceValidationMiddleware } from '../middlewares/resourceValidationMiddleware';
 import { createRouter } from '../trpc';
 import { prisma } from '@/server/db';
 import { protectedProcedure } from '../middlewares/procedures';
 import { z } from 'zod';
+
+// Create team-specific validation middlewares
+const validateTeamCreation = createResourceValidationMiddleware({
+    resourceType: ResourceType.TEAM
+});
+
+const validateTeamMemberAddition = createResourceValidationMiddleware({
+    resourceType: ResourceType.TEAM_MEMBER,
+    teamId: (input) => input.teamId
+});
 
 // Define validation schemas
 const teamCreateSchema = z.object({
@@ -28,11 +40,11 @@ export const teamRouter = createRouter({
     // Create a new team
     create: protectedProcedure
         .input(teamCreateSchema)
+        .use(validateTeamCreation)
         .mutation(async ({ ctx, input }) => {
             const { userId } = ctx;
 
             try {
-
                 // make sure no team with the same name exists
                 const existingTeam = await prisma.team.findFirst({
                     where: {
@@ -77,6 +89,9 @@ export const teamRouter = createRouter({
                 return team;
             } catch (error) {
                 console.error('Failed to create team:', error);
+                if (error instanceof TRPCError) {
+                    throw error;
+                }
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
                     message: 'Failed to create team',
@@ -279,90 +294,71 @@ export const teamRouter = createRouter({
 
     // Add a user to a team
     addUser: protectedProcedure
-        .input(z.object({
-            teamId: z.string().min(1, 'Team ID is required'),
-            userId: z.string().min(1, 'User ID is required'),
-            role: z.enum([TeamRole.OWNER, TeamRole.MEMBER]).default(TeamRole.MEMBER),
-        }))
+        .input(
+            z.object({
+                teamId: z.string(),
+                userId: z.string(),
+                role: z.nativeEnum(TeamRole).optional(),
+            })
+        )
+        .use(validateTeamMemberAddition)
         .mutation(async ({ ctx, input }) => {
             const { userId: currentUserId } = ctx;
-            const { teamId, userId: newUserId, role } = input;
-
-            // Check if the user exists
-            const userExists = await prisma.user.findUnique({
-                where: { id: newUserId },
-            });
-
-            if (!userExists) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'User not found',
-                });
-            }
-
-            // Check if the team exists
-            const teamExists = await prisma.team.findUnique({
-                where: { id: teamId },
-            });
-
-            if (!teamExists) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'Team not found',
-                });
-            }
-
-            // Check if current user has permission to add users to the team
-            const userTeam = await prisma.usersOnTeam.findFirst({
-                where: {
-                    teamId,
-                    userId: currentUserId,
-                    role: TeamRole.OWNER, // Only owners can add users
-                },
-            });
-
-            if (!userTeam) {
-                throw new TRPCError({
-                    code: 'FORBIDDEN',
-                    message: 'You do not have permission to add users to this team',
-                });
-            }
+            const { teamId, userId: newUserId, role = TeamRole.MEMBER } = input;
 
             try {
-                // Add the user to the team
-                const userOnTeam = await prisma.usersOnTeam.create({
-                    data: {
+                // Check if the current user has permission to add a user
+                const currentUserTeam = await prisma.usersOnTeam.findFirst({
+                    where: {
+                        userId: currentUserId,
                         teamId,
+                        role: {
+                            in: [TeamRole.OWNER, TeamRole.MEMBER],
+                        },
+                    },
+                });
+
+                if (!currentUserTeam) {
+                    throw new TRPCError({
+                        code: 'FORBIDDEN',
+                        message: 'You do not have permission to add users to this team',
+                    });
+                }
+
+                // Check if the user is already a member of the team
+                const existingMembership = await prisma.usersOnTeam.findFirst({
+                    where: {
                         userId: newUserId,
+                        teamId,
+                    },
+                });
+
+                if (existingMembership) {
+                    throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message: 'User is already a member of this team',
+                    });
+                }
+
+                // Add the user to the team
+                const membership = await prisma.usersOnTeam.create({
+                    data: {
+                        userId: newUserId,
+                        teamId,
                         role,
                     },
                     include: {
-                        user: {
-                            select: {
-                                id: true,
-                                name: true,
-                                email: true,
-                                profileImageUrl: true,
-                            },
-                        },
+                        user: true,
+                        team: true,
                     },
                 });
 
-                // Also connect the user to the team
-                await prisma.team.update({
-                    where: { id: teamId },
-                    data: {
-                        users: {
-                            connect: {
-                                id: newUserId,
-                            },
-                        },
-                    },
-                });
-
-                return userOnTeam;
+                return membership;
             } catch (error) {
                 console.error('Failed to add user to team:', error);
+                if (error instanceof TRPCError) {
+                    throw error;
+                }
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
                     message: 'Failed to add user to team',

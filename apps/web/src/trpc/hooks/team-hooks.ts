@@ -286,7 +286,6 @@ export const useDeleteTeamMutation = () => {
     onSuccess: () => {
       toast.success('Team deleted successfully');
       void trpc.team.getAll.invalidate();
-      router.push('/teams');
     },
   });
 };

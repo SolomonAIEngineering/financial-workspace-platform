@@ -13,13 +13,25 @@ import {
 } from '@/server/services/plaid';
 
 import { BankAccount } from '@/server/types/prisma';
+import { ResourceType } from '@/server/services/payment-tier';
 import { TRPCError } from '@trpc/server';
 import { TransactionCategory } from '@prisma/client';
+import { createResourceValidationMiddleware } from '../middlewares/resourceValidationMiddleware';
 import { createRouter } from '../trpc';
 import { prisma } from '@/server/db';
 import { protectedProcedure } from '../middlewares/procedures';
 import { client as triggerClient } from '@/jobs/client';
 import { z } from 'zod';
+
+// Create bank account specific validation middlewares
+const validateBankAccountCreation = createResourceValidationMiddleware({
+  resourceType: ResourceType.BANK_ACCOUNT
+});
+
+const validateFileUpload = createResourceValidationMiddleware({
+  resourceType: ResourceType.FILE,
+  getSize: (input) => input.fileSize,
+});
 
 export const bankAccountsRouter = createRouter({
   /** Add an attachment to a transaction */
@@ -33,6 +45,7 @@ export const bankAccountsRouter = createRouter({
         transactionId: z.string(),
       })
     )
+    .use(validateFileUpload)
     .mutation(async ({ ctx, input }) => {
       try {
         // Get the authenticated user ID
@@ -188,6 +201,7 @@ export const bankAccountsRouter = createRouter({
         publicToken: z.string(),
       })
     )
+    .use(validateBankAccountCreation)
     .mutation(async ({ ctx, input }) => {
       try {
         // Get the authenticated user ID
@@ -721,120 +735,8 @@ export const bankAccountsRouter = createRouter({
         // Get the first team or the specific requested team
         const teamId = input.teamId || userTeams[0].teamId;
 
-        // Mock response for development - in a real implementation you would query Prisma
-        // This shows the structure of the expected response
-        const mockAccounts = [
-          {
-            id: '1',
-            name: 'Checking Account',
-            type: 'CHECKING',
-            balance: 2500,
-            currency: 'USD',
-            enabled: true,
-            manual: false,
-            bank: {
-              id: 'bank1',
-              name: 'Chase Bank',
-              logo: 'https://placehold.co/50x50?text=Chase',
-              provider: 'plaid',
-              status: 'active',
-              expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days in the future
-            },
-          },
-          {
-            id: '2',
-            name: 'Savings Account',
-            type: 'SAVINGS',
-            currency: 'USD',
-            balance: 100_000,
-            enabled: true,
-            manual: false,
-            bank: {
-              id: 'bank1',
-              name: 'Chase Bank',
-              logo: 'https://placehold.co/50x50?text=Chase',
-              provider: 'plaid',
-              status: 'active',
-              expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            },
-          },
-          {
-            id: '3',
-            name: 'Business Checking',
-            type: 'CHECKING',
-            balance: 5000,
-            currency: 'USD',
-            enabled: true,
-            manual: false,
-            bank: {
-              id: 'bank2',
-              name: 'Bank of America',
-              logo: 'https://placehold.co/50x50?text=BoA',
-              provider: 'plaid',
-              status: 'requires_attention',
-              expires_at: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days in the future
-            },
-          },
-          {
-            id: '4',
-            name: 'Manual Business Account',
-            type: 'CHECKING',
-            balance: 7500,
-            currency: 'USD',
-            enabled: true,
-            manual: true,
-            bank: null,
-          },
-        ];
-
-        // For now, just return mock data
-        // In a real implementation, you would query the database and format the response
-        return mockAccounts;
-
-        /* Real implementation - commented out until database schema is updated
-        // Fetch bank accounts associated with this team
-        const connectedAccounts = await prisma.bankAccount.findMany({
-          where: {
-            Team: {
-              some: {
-                id: teamId,
-              },
-            },
-            deletedAt: null, 
-            status: 'ACTIVE',
-            bankConnectionId: { not: null }, // Proper way to check for non-null values
-          },
-          include: {
-            bankConnection: true, // Include all bankConnection fields
-          },
-          orderBy: {
-            createdAt: 'desc',
-          },
-        });
-
-        // Format the accounts for the frontend
-        const formattedAccounts = connectedAccounts.map((account) => {
-          return {
-            id: account.id,
-            name: account.displayName || account.name,
-            type: account.type,
-            balance: account.currentBalance || 0,
-            currency: account.isoCurrencyCode || 'USD',
-            enabled: account.enabled,
-            manual: false,
-            bank: {
-              id: account.bankConnectionId,
-              name: account.bankConnection.institutionName,
-              logo: account.bankConnection.logo || null,
-              provider: 'plaid', // Could be extended to support other providers
-              status: account.bankConnection.status,
-              expires_at: account.bankConnection.consentExpiresAt,
-            },
-          };
-        });
-
-        // Fetch manual accounts for this team (if any)
-        const manualAccounts = await prisma.bankAccount.findMany({
+        // Fetch all bank accounts associated with this team
+        const allAccounts = await prisma.bankAccount.findMany({
           where: {
             Team: {
               some: {
@@ -843,15 +745,19 @@ export const bankAccountsRouter = createRouter({
             },
             deletedAt: null,
             status: 'ACTIVE',
-            bankConnectionId: { equals: null }, // Proper way to check for null values
+          },
+          include: {
+            bankConnection: true,
           },
           orderBy: {
             createdAt: 'desc',
           },
         });
 
-        // Format manual accounts
-        const formattedManualAccounts = manualAccounts.map((account) => {
+        // Process the accounts into the expected format for the frontend
+        const processedAccounts = allAccounts.map(account => {
+          const isManual = !account.bankConnectionId || !account.bankConnection;
+
           return {
             id: account.id,
             name: account.displayName || account.name,
@@ -859,14 +765,19 @@ export const bankAccountsRouter = createRouter({
             balance: account.currentBalance || 0,
             currency: account.isoCurrencyCode || 'USD',
             enabled: account.enabled,
-            manual: true,
-            bank: null,
+            manual: isManual,
+            bank: isManual ? null : {
+              id: account.bankConnectionId,
+              name: account.bankConnection?.institutionName || 'Unknown Bank',
+              logo: account.bankConnection?.logo || null,
+              provider: 'plaid', // Could be extended to support other providers
+              status: account.bankConnection?.status || 'ACTIVE',
+              expires_at: account.bankConnection?.consentExpiresAt || null,
+            },
           };
         });
 
-        // Combine all accounts
-        return [...formattedAccounts, ...formattedManualAccounts];
-        */
+        return processedAccounts;
       } catch (error) {
         console.error('Error fetching team bank accounts:', error);
 

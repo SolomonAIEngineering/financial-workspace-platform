@@ -474,7 +474,162 @@ export const transactionsRouter = createRouter({
             };
         }),
 
+    // GET /api/transactions/:id/transactions - Get all transactions associated with a recurring transaction
+    getAssociatedTransactions: protectedProcedure
+        .input(z.object({
+            id: z.string(),
+        }))
+        .query(async ({ ctx, input }) => {
+            const transaction = await prisma.transaction.findUnique({
+                where: { id: input.id },
+                include: {
+                    recurringTransaction: true,
+                },
+            });
+
+            if (!transaction || transaction.userId !== ctx.userId) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Transaction not found",
+                });
+            }
+
+            const associatedTransactions = await prisma.transaction.findMany({
+                where: {
+                    userId: ctx.userId,
+                    recurringTransactionId: transaction.recurringTransactionId,
+                },
+                include: {
+                    bankAccount: {
+                        select: {
+                            name: true,
+                            plaidAccountId: true,
+                            type: true,
+                            subtype: true,
+                        },
+                    },
+                    transactionCategory: {
+                        select: {
+                            id: true,
+                            name: true,
+                            color: true,
+                        },
+                    },
+                    transactionTags: {
+                        select: {
+                            tag: true,
+                        },
+                    },
+                },
+            });
+
+            return associatedTransactions;
+        }),
+
     // Transaction Enhancement Endpoints
+
+    // Search transactions with comprehensive filters
+    searchTransactions: protectedProcedure
+        .input(
+            z.object({
+                query: z.string().optional(),
+                startDate: z.date().optional(),
+                endDate: z.date().optional(),
+                minAmount: z.number().optional(),
+                maxAmount: z.number().optional(),
+                categories: z.array(z.nativeEnum(TransactionCategory)).optional(),
+                bankAccountIds: z.array(z.string()).optional(),
+                limit: z.number().min(1).max(100).default(20),
+            })
+        )
+        .query(async ({ ctx, input }) => {
+            try {
+                const { userId } = ctx;
+                const { query, startDate, endDate, minAmount, maxAmount, categories, bankAccountIds, limit } = input;
+
+                // Build the where clause
+                const where: any = {
+                    userId,
+                };
+
+                // Text search
+                if (query && query.trim() !== '') {
+                    const searchTerm = query.trim();
+                    where.OR = [
+                        { name: { contains: searchTerm, mode: 'insensitive' } },
+                        { merchantName: { contains: searchTerm, mode: 'insensitive' } },
+                        { description: { contains: searchTerm, mode: 'insensitive' } },
+                        { notes: { contains: searchTerm, mode: 'insensitive' } },
+                    ];
+                }
+
+                // Date filters
+                if (startDate) {
+                    where.date = { ...where.date, gte: startDate };
+                }
+                if (endDate) {
+                    where.date = { ...where.date, lte: endDate };
+                }
+
+                // Amount filters
+                if (minAmount !== undefined) {
+                    where.amount = { ...where.amount, gte: minAmount };
+                }
+                if (maxAmount !== undefined) {
+                    where.amount = { ...where.amount, lte: maxAmount };
+                }
+
+                // Categories filter
+                if (categories && categories.length > 0) {
+                    where.category = { in: categories };
+                }
+
+                // Filter by specific bank accounts
+                if (bankAccountIds && bankAccountIds.length > 0) {
+                    where.bankAccountId = { in: bankAccountIds };
+                }
+
+                // Get total count for pagination
+                const totalCount = await prisma.transaction.count({ where });
+
+                // Execute the search
+                const transactions = await prisma.transaction.findMany({
+                    where,
+                    include: {
+                        bankAccount: {
+                            select: {
+                                name: true,
+                                mask: true,
+                                displayName: true,
+                            },
+                        },
+                        attachments: {
+                            select: {
+                                id: true,
+                                name: true,
+                                fileUrl: true,
+                                fileType: true,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        date: 'desc',
+                    },
+                    take: limit,
+                });
+
+                return {
+                    transactions,
+                    totalCount,
+                };
+            } catch (error) {
+                console.error('Error searching transactions:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to search transactions',
+                });
+            }
+        }),
 
     // POST /api/transactions/:id/tags - Associate tags with a transaction
     addTags: protectedProcedure

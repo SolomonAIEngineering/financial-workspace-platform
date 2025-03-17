@@ -1,5 +1,6 @@
+import { TransactionCategory, TransactionFrequency } from "@prisma/client";
+
 import { TRPCError } from "@trpc/server";
-import { TransactionFrequency } from "@prisma/client";
 import { createRouter } from "@/server/api/trpc";
 import { prisma } from "@/server/db";
 import { protectedProcedure } from "../middlewares/procedures";
@@ -1085,5 +1086,90 @@ export const recurringTransactionsRouter = createRouter({
                 detectedRecurringTransactions,
                 count: detectedRecurringTransactions.length,
             };
+        }),
+
+    // Search recurring transactions with comprehensive filters
+    searchRecurringTransactions: protectedProcedure
+        .input(
+            z.object({
+                query: z.string().optional(),
+                minAmount: z.number().optional(),
+                maxAmount: z.number().optional(),
+                categories: z.array(z.nativeEnum(TransactionCategory)).optional(),
+                bankAccountIds: z.array(z.string()).optional(),
+                limit: z.number().min(1).max(100).default(20),
+            })
+        )
+        .query(async ({ ctx, input }) => {
+            try {
+                const { userId } = ctx;
+                const { query, minAmount, maxAmount, categories, bankAccountIds, limit } = input;
+
+                // Build the where clause
+                const where: any = {
+                    userId,
+                    isRecurring: true,
+                };
+
+                // Text search
+                if (query && query.trim() !== '') {
+                    const searchTerm = query.trim();
+                    where.OR = [
+                        { name: { contains: searchTerm, mode: 'insensitive' } },
+                        { merchantName: { contains: searchTerm, mode: 'insensitive' } },
+                        { description: { contains: searchTerm, mode: 'insensitive' } },
+                    ];
+                }
+
+                // Amount filters
+                if (minAmount !== undefined) {
+                    where.amount = { ...where.amount, gte: minAmount };
+                }
+                if (maxAmount !== undefined) {
+                    where.amount = { ...where.amount, lte: maxAmount };
+                }
+
+                // Categories filter
+                if (categories && categories.length > 0) {
+                    where.category = { in: categories };
+                }
+
+                // Filter by specific bank accounts
+                if (bankAccountIds && bankAccountIds.length > 0) {
+                    where.bankAccountId = { in: bankAccountIds };
+                }
+
+                // Get total count for pagination
+                const totalCount = await prisma.transaction.count({ where });
+
+                // Execute the search
+                const recurringTransactions = await prisma.transaction.findMany({
+                    where,
+                    include: {
+                        bankAccount: {
+                            select: {
+                                name: true,
+                                mask: true,
+                                displayName: true,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        date: 'desc',
+                    },
+                    take: limit,
+                });
+
+                return {
+                    recurringTransactions,
+                    totalCount,
+                };
+            } catch (error) {
+                console.error('Error searching recurring transactions:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to search recurring transactions',
+                });
+            }
         }),
 }); 

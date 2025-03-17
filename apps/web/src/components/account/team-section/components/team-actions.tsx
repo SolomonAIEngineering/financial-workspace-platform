@@ -16,8 +16,8 @@ import { useState } from 'react';
  * Component for displaying team management action buttons
  *
  * Renders a footer with buttons for viewing all teams and creating new teams.
- * When "All Teams" is clicked, it opens a sheet displaying all teams in a modern,
- * beautiful manner allowing the user to select a team.
+ * When "All Teams" is clicked, it opens a sheet displaying all teams in a
+ * modern, beautiful manner allowing the user to select a team.
  *
  * @example
  *   ```tsx

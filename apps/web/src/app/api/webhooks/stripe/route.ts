@@ -4,11 +4,7 @@ import Stripe from 'stripe';
 
 import { env } from '@/env';
 import { prisma } from '@/server/db';
-
-// Initialize Stripe with your API key
-const stripe = new Stripe(env.STRIPE_API_KEY, {
-  apiVersion: '2025-02-24.acacia', // Using the current latest version
-});
+import { stripe } from '@/lib/stripe';
 
 /**
  * Handle Stripe webhook events
@@ -102,7 +98,6 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
 /** Handle checkout.session.completed event */
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId;

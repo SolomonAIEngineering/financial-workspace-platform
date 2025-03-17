@@ -32,7 +32,7 @@ export interface TeamCreationDialogProps {
   /** Function called when the open state changes */
   onOpenChange?: (open: boolean) => void;
   /** Function called after successful team creation */
-  onTeamCreated?: () => void;
+  onTeamCreated?: (team?: any) => void;
 }
 
 /**
@@ -68,13 +68,13 @@ export function TeamCreationDialog({
   const setIsOpen = onOpenChange || setInternalOpen;
 
   /** Handle team creation success */
-  const handleTeamCreated = () => {
+  const handleTeamCreated = (team?: any) => {
     // Close the dialog
     setIsOpen(false);
 
     // Call the external handler if provided
     if (onTeamCreated) {
-      onTeamCreated();
+      onTeamCreated(team);
     }
   };
 
@@ -96,7 +96,7 @@ export function TeamCreationDialog({
 
         <div className="py-4">
           <TeamCreationForm
-            onSuccess={() => handleTeamCreated()}
+            onSuccess={(team) => handleTeamCreated(team)}
             isDialog={true}
           />
         </div>

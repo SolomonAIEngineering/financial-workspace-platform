@@ -5,12 +5,8 @@ import { deleteContactInLoopsAction } from '@/actions/loops';
 import { env } from '@/env';
 import { prisma } from '@/server/db';
 import { protectedProcedure } from '../middlewares/procedures';
+import { stripe } from '@/lib/stripe';
 import { z } from 'zod';
-
-// Initialize Stripe
-const stripe = new Stripe(env.STRIPE_API_KEY, {
-  apiVersion: '2025-02-24.acacia', // Using the current latest version
-});
 
 const MAX_NAME_LENGTH = 100;
 const MAX_EMAIL_LENGTH = 255;
