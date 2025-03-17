@@ -763,11 +763,10 @@ export function RecurringTransactionSheetDetails() {
   const historicalTransactions = generateHistoricalTransactions();
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="h-full scrollbar-hide">
       <div className="flex flex-col px-1 py-2">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-lg font-medium">Recurring Transaction Details</h2>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <ChevronDown className="h-4 w-4" />

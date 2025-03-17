@@ -293,8 +293,8 @@ export function TransactionSheetDetails() {
   };
 
   return (
-    <ScrollArea className="h-full pr-4">
-      <div className="flex flex-col space-y-4 py-2">
+    <ScrollArea className="h-full scrollbar-hide">
+      <div className="flex flex-col px-1 py-2">
         {/* Primary Fields */}
         <div className="flex items-start justify-between">
           <p className="w-28 text-sm text-muted-foreground">Transaction ID</p>
@@ -597,8 +597,8 @@ export function TransactionSheetDetails() {
                     <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
                       {(related.category &&
                         categoryColors[related.category]?.icon) || (
-                        <DollarSign className="h-3 w-3" />
-                      )}
+                          <DollarSign className="h-3 w-3" />
+                        )}
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-xs font-medium">
