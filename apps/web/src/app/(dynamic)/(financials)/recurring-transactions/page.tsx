@@ -76,7 +76,7 @@ export default async function RecurringTransactionsPage() {
     // Query recurring transactions with default pagination
     const recurringTransactionsData = await trpc.recurringTransactions.getRecurringTransactions({
       page: 1,
-      limit: 100,
+      limit: 300,
     });
 
     return (

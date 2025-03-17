@@ -74,7 +74,7 @@ export default async function TransactionsPage() {
     // Query transactions with default pagination
     const transactionsData = await trpc.transactions.getTransactions({
       page: 1,
-      limit: 100,
+      limit: 300,
     });
 
     return (

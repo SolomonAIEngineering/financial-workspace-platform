@@ -294,7 +294,7 @@ export function TransactionSheetDetails() {
 
   return (
     <ScrollArea className="h-full scrollbar-hide">
-      <div className="flex flex-col px-1 py-2">
+      <div className="flex flex-col px-1 py-2 space-y-2">
         {/* Primary Fields */}
         <div className="flex items-start justify-between">
           <p className="w-28 text-sm text-muted-foreground">Transaction ID</p>
