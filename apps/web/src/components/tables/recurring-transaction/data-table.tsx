@@ -189,10 +189,12 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
     React.useState<RowSelectionState>(defaultRowSelection);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>(defaultColumnVisibility);
-  const [paginationState, setPaginationState] = React.useState<PaginationState>({
-    pageIndex: pagination?.page ? pagination.page - 1 : 0,
-    pageSize: pagination?.limit || 10,
-  });
+  const [paginationState, setPaginationState] = React.useState<PaginationState>(
+    {
+      pageIndex: pagination?.page ? pagination.page - 1 : 0,
+      pageSize: pagination?.limit || 10,
+    }
+  );
   const [columnOrder, setColumnOrder] = useLocalStorage<string[]>(
     'recurring-data-table-column-order',
     []
@@ -222,7 +224,10 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   );
 
   React.useEffect(() => {
-    if (!prevPaginationRef.current.page || !prevPaginationRef.current.pageSize) {
+    if (
+      !prevPaginationRef.current.page ||
+      !prevPaginationRef.current.pageSize
+    ) {
       return;
     }
 
@@ -491,9 +496,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}

@@ -51,9 +51,7 @@ function TransactionsPageUI({ children }: { children: React.ReactNode }) {
 
       <div className="relative overflow-hidden rounded-xl border border-border/40 bg-card shadow-sm backdrop-blur-sm">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-background/80 to-background" />
-        <div className="relative z-10">
-          {children}
-        </div>
+        <div className="relative z-10">{children}</div>
       </div>
     </div>
   );
@@ -74,7 +72,7 @@ export default async function TransactionsPage() {
     // Query transactions with default pagination
     const transactionsData = await trpc.transactions.getTransactions({
       page: 1,
-      limit: 300,
+      limit: 100,
     });
 
     return (

@@ -186,10 +186,12 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
     React.useState<ColumnFiltersState>(defaultColumnFilters);
   const [sorting, setSorting] =
     React.useState<SortingState>(defaultColumnSorting);
-  const [paginationState, setPaginationState] = React.useState<PaginationState>({
-    pageIndex: serverPagination?.page ? serverPagination.page - 1 : 0,
-    pageSize: serverPagination?.limit || 10,
-  });
+  const [paginationState, setPaginationState] = React.useState<PaginationState>(
+    {
+      pageIndex: serverPagination?.page ? serverPagination.page - 1 : 0,
+      pageSize: serverPagination?.limit || 10,
+    }
+  );
   const [rowSelection, setRowSelection] =
     React.useState<RowSelectionState>(defaultRowSelection);
   const [columnOrder, setColumnOrder] = useLocalStorage<string[]>(
@@ -251,7 +253,10 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   );
 
   React.useEffect(() => {
-    if (!prevPaginationRef.current.page || !prevPaginationRef.current.pageSize) {
+    if (
+      !prevPaginationRef.current.page ||
+      !prevPaginationRef.current.pageSize
+    ) {
       return;
     }
 
@@ -482,9 +487,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}

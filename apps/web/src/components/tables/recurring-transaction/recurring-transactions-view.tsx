@@ -39,8 +39,8 @@ interface RecurringTransactionsViewProps {
  *     return (
  *       <main>
  *         <h1>Recurring Transactions</h1>
- *         <RecurringTransactionsView 
- *           data={recurringTransactions} 
+ *         <RecurringTransactionsView
+ *           data={recurringTransactions}
  *           currentPage={1}
  *           pageSize={20}
  *           totalItems={100}
@@ -63,7 +63,7 @@ export function RecurringTransactionsView({
   totalItems,
   totalPages,
   onPageChange,
-  onPageSizeChange
+  onPageSizeChange,
 }: RecurringTransactionsViewProps = {}) {
   return (
     <DataTable
@@ -73,19 +73,19 @@ export function RecurringTransactionsView({
       pagination={
         currentPage && pageSize && totalItems && totalPages
           ? {
-            page: currentPage,
-            limit: pageSize,
-            total: totalItems,
-            pages: totalPages,
-          }
+              page: currentPage,
+              limit: pageSize,
+              total: totalItems,
+              pages: totalPages,
+            }
           : undefined
       }
       onPaginationChange={
         onPageChange && onPageSizeChange
           ? {
-            onPageChange,
-            onPageSizeChange,
-          }
+              onPageChange,
+              onPageSizeChange,
+            }
           : undefined
       }
     />

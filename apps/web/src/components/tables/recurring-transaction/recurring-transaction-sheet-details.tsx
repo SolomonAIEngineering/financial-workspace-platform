@@ -763,7 +763,7 @@ export function RecurringTransactionSheetDetails() {
   const historicalTransactions = generateHistoricalTransactions();
 
   return (
-    <ScrollArea className="h-full scrollbar-hide">
+    <ScrollArea className="scrollbar-hide h-full">
       <div className="flex flex-col px-1 py-2">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">

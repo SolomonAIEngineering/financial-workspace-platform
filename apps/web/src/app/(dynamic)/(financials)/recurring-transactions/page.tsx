@@ -11,7 +11,11 @@ export const metadata = {
 };
 
 // Extract the page UI to avoid duplication
-function RecurringTransactionsPageUI({ children }: { children: React.ReactNode }) {
+function RecurringTransactionsPageUI({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="fade-in animate-in py-8 duration-500 md:py-12">
       <div className="relative mb-10 md:mb-12">
@@ -53,9 +57,7 @@ function RecurringTransactionsPageUI({ children }: { children: React.ReactNode }
 
       <div className="relative overflow-hidden rounded-xl border border-border/40 bg-card shadow-sm backdrop-blur-sm">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-background/80 to-background" />
-        <div className="relative z-10">
-          {children}
-        </div>
+        <div className="relative z-10">{children}</div>
       </div>
     </div>
   );
@@ -74,10 +76,11 @@ export default async function RecurringTransactionsPage() {
 
   try {
     // Query recurring transactions with default pagination
-    const recurringTransactionsData = await trpc.recurringTransactions.getRecurringTransactions({
-      page: 1,
-      limit: 300,
-    });
+    const recurringTransactionsData =
+      await trpc.recurringTransactions.getRecurringTransactions({
+        page: 1,
+        limit: 100,
+      });
 
     return (
       <RecurringTransactionsPageUI>

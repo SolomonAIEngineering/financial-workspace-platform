@@ -45,11 +45,11 @@ export function UserAccountPage() {
   // Adapt userSettings to match expected interface
   const formattedSettings = userSettings
     ? {
-      darkMode: false,
-      emailNotifications: !!userSettings.email,
-      twoFactorEnabled: false,
-      ...userSettings,
-    }
+        darkMode: false,
+        emailNotifications: !!userSettings.email,
+        twoFactorEnabled: false,
+        ...userSettings,
+      }
     : undefined;
 
   if (isSettingsLoading || isProfileLoading || user.isLoading) {
