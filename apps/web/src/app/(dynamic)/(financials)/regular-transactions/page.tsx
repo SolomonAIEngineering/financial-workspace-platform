@@ -1,13 +1,16 @@
 import { ClientTransactionsTable } from './page.client';
+import { HydrateClient } from '@/trpc/server';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Suspense } from 'react';
+import { trpc } from '@/trpc/server';
 
 export const metadata = {
   title: 'Transactions',
   description: 'View and manage your financial transactions',
 };
 
-export default function TransactionsPage() {
+// Extract the page UI to avoid duplication
+function TransactionsPageUI({ children }: { children: React.ReactNode }) {
   return (
     <div className="fade-in animate-in py-8 duration-500 md:py-12">
       <div className="relative mb-10 md:mb-12">
@@ -49,20 +52,53 @@ export default function TransactionsPage() {
       <div className="relative overflow-hidden rounded-xl border border-border/40 bg-card shadow-sm backdrop-blur-sm">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-background/80 to-background" />
         <div className="relative z-10">
-          <Suspense
-            fallback={
-              <div className="flex min-h-[400px] flex-col items-center justify-center p-8">
-                <Skeleton className="h-96 w-full max-w-5xl rounded-lg" />
-                <div className="mt-4 animate-pulse text-sm text-muted-foreground">
-                  Loading transactions...
-                </div>
-              </div>
-            }
-          >
-            <ClientTransactionsTable />
-          </Suspense>
+          {children}
         </div>
       </div>
     </div>
   );
+}
+
+export default async function TransactionsPage() {
+  // Create a loading fallback component
+  const LoadingFallback = (
+    <div className="flex min-h-[400px] flex-col items-center justify-center p-8">
+      <Skeleton className="h-96 w-full max-w-5xl rounded-lg" />
+      <div className="mt-4 animate-pulse text-sm text-muted-foreground">
+        Loading transactions...
+      </div>
+    </div>
+  );
+
+  try {
+    // Query transactions with default pagination
+    const transactionsData = await trpc.transactions.getTransactions({
+      page: 1,
+      limit: 100,
+    });
+
+    return (
+      <TransactionsPageUI>
+        <Suspense fallback={LoadingFallback}>
+          <HydrateClient>
+            <ClientTransactionsTable initialData={transactionsData} />
+          </HydrateClient>
+        </Suspense>
+      </TransactionsPageUI>
+    );
+  } catch (error) {
+    // Log the error but don't expose it to the user
+    console.error('Error fetching transactions:', error);
+
+    // Fallback to render without initial data
+    return (
+      <TransactionsPageUI>
+        <Suspense fallback={LoadingFallback}>
+          <HydrateClient>
+            <ClientTransactionsTable />
+          </HydrateClient>
+        </Suspense>
+      </TransactionsPageUI>
+    );
+  }
 }

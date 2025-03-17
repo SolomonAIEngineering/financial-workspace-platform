@@ -156,7 +156,7 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
         filter={(value, search, keywords) =>
           getFilterValue({ value, search, keywords, currentWord })
         }
-        // loop
+      // loop
       >
         <CommandInput
           ref={inputRef}
@@ -354,10 +354,10 @@ export function DataTableFilterCommand<TSchema extends z.AnyZodObject>({
                 </span>
                 <Separator orientation="vertical" className="my-auto h-3" />
                 <span>
-                  Union: <Kbd variant="outline">regions:a,b</Kbd>
+                  Union: <Kbd variant="outline">frequency:weekly,monthly</Kbd>
                 </span>
                 <span>
-                  Range: <Kbd variant="outline">p95:59-340</Kbd>
+                  Range: <Kbd variant="outline">amount:59-340</Kbd>
                 </span>
               </div>
               {lastSearches.length > 0 ? (

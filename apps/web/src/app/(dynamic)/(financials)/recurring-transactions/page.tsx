@@ -10,13 +10,8 @@ export const metadata = {
     'Manage your recurring transactions, subscriptions, and scheduled payments',
 };
 
-export default async function RecurringTransactionsPage() {
-  // Query recurring transactions with default pagination
-  const recurringTransactionsData = await trpc.recurringTransactions.getRecurringTransactions({
-    page: 1,
-    limit: 100,
-  });
-
+// Extract the page UI to avoid duplication
+function RecurringTransactionsPageUI({ children }: { children: React.ReactNode }) {
   return (
     <div className="fade-in animate-in py-8 duration-500 md:py-12">
       <div className="relative mb-10 md:mb-12">
@@ -59,22 +54,53 @@ export default async function RecurringTransactionsPage() {
       <div className="relative overflow-hidden rounded-xl border border-border/40 bg-card shadow-sm backdrop-blur-sm">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-background/80 to-background" />
         <div className="relative z-10">
-          <Suspense
-            fallback={
-              <div className="flex min-h-[400px] flex-col items-center justify-center p-8">
-                <Skeleton className="h-96 w-full max-w-5xl rounded-lg" />
-                <div className="mt-4 animate-pulse text-sm text-muted-foreground">
-                  Loading recurring transactions...
-                </div>
-              </div>
-            }
-          >
-            <HydrateClient>
-              <ClientTransactionsTable initialData={recurringTransactionsData} />
-            </HydrateClient>
-          </Suspense>
+          {children}
         </div>
       </div>
     </div>
   );
+}
+
+export default async function RecurringTransactionsPage() {
+  // Create a loading fallback component
+  const LoadingFallback = (
+    <div className="flex min-h-[400px] flex-col items-center justify-center p-8">
+      <Skeleton className="h-96 w-full max-w-5xl rounded-lg" />
+      <div className="mt-4 animate-pulse text-sm text-muted-foreground">
+        Loading recurring transactions...
+      </div>
+    </div>
+  );
+
+  try {
+    // Query recurring transactions with default pagination
+    const recurringTransactionsData = await trpc.recurringTransactions.getRecurringTransactions({
+      page: 1,
+      limit: 100,
+    });
+
+    return (
+      <RecurringTransactionsPageUI>
+        <Suspense fallback={LoadingFallback}>
+          <HydrateClient>
+            <ClientTransactionsTable initialData={recurringTransactionsData} />
+          </HydrateClient>
+        </Suspense>
+      </RecurringTransactionsPageUI>
+    );
+  } catch (error) {
+    // Log the error but don't expose it to the user
+    console.error('Error fetching recurring transactions:', error);
+
+    // Fallback to render without initial data
+    return (
+      <RecurringTransactionsPageUI>
+        <Suspense fallback={LoadingFallback}>
+          <HydrateClient>
+            <ClientTransactionsTable />
+          </HydrateClient>
+        </Suspense>
+      </RecurringTransactionsPageUI>
+    );
+  }
 }
