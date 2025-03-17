@@ -246,6 +246,14 @@ export interface TeamActionsProps {
   onViewAllTeams: () => void;
   /** Handler for creating a new team */
   onCreateTeam: () => void;
+  /** List of available teams */
+  teams: Team[] | undefined;
+  /** ID of the currently selected team */
+  selectedTeamId: string | null;
+  /** Handler for team selection changes */
+  onTeamSelect: (teamId: string) => void;
+  /** Function to get user's role in a given team */
+  getUserRoleInTeam: (teamId: string) => string | null;
 }
 
 /**

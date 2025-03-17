@@ -137,11 +137,6 @@ export const teamRouter = createRouter({
                         userId,
                     },
                 },
-                users: {
-                    some: {
-                        id: userId,
-                    },
-                },
             },
             include: {
                 usersOnTeam: {
