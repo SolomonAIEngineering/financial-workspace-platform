@@ -1,6 +1,8 @@
-import { RecurringTransactionsView } from '../../../../components/tables/recurring-transaction/recurring-transactions-view';
+import { ClientTransactionsTable } from './page.client';
+import { HydrateClient } from '@/trpc/server';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Suspense } from 'react';
+import { trpc } from '@/trpc/server';
 
 export const metadata = {
   title: 'Recurring Transactions',
@@ -8,7 +10,13 @@ export const metadata = {
     'Manage your recurring transactions, subscriptions, and scheduled payments',
 };
 
-export default function RecurringTransactionsPage() {
+export default async function RecurringTransactionsPage() {
+  // Query recurring transactions with default pagination
+  const recurringTransactionsData = await trpc.recurringTransactions.getRecurringTransactions({
+    page: 1,
+    limit: 100,
+  });
+
   return (
     <div className="fade-in animate-in py-8 duration-500 md:py-12">
       <div className="relative mb-10 md:mb-12">
@@ -61,7 +69,9 @@ export default function RecurringTransactionsPage() {
               </div>
             }
           >
-            <RecurringTransactionsView />
+            <HydrateClient>
+              <ClientTransactionsTable initialData={recurringTransactionsData} />
+            </HydrateClient>
           </Suspense>
         </div>
       </div>

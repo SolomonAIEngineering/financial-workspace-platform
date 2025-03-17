@@ -11,6 +11,7 @@ import type {
   RowSelectionState,
   SortingState,
   Table as TTable,
+  Updater,
   VisibilityState,
 } from '@tanstack/react-table';
 import type {
@@ -83,6 +84,8 @@ import { useQueryStates } from 'nuqs';
  * @property getFacetedUniqueValues - Function to get faceted unique values
  * @property getFacetedMinMaxValues - Function to get faceted min/max values
  * @property meta - Additional metadata for the table
+ * @property pagination - Pagination information from the server
+ * @property onPaginationChange - Callback for pagination changes
  */
 export interface DataTableProps<
   TData,
@@ -111,6 +114,16 @@ export interface DataTableProps<
     columnId: string
   ) => undefined | [number, number];
   meta?: TMeta;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+  onPaginationChange?: {
+    onPageChange: (page: number) => void;
+    onPageSizeChange: (pageSize: number) => void;
+  };
 }
 
 /**
@@ -165,6 +178,8 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   getFacetedUniqueValues,
   getFacetedMinMaxValues,
   meta,
+  pagination,
+  onPaginationChange,
 }: DataTableProps<TData, TValue, TMeta>) {
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -174,9 +189,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
     React.useState<RowSelectionState>(defaultRowSelection);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>(defaultColumnVisibility);
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
+  const [paginationState, setPaginationState] = React.useState<PaginationState>({
+    pageIndex: pagination?.page ? pagination.page - 1 : 0,
+    pageSize: pagination?.limit || 10,
   });
   const [columnOrder, setColumnOrder] = useLocalStorage<string[]>(
     'recurring-data-table-column-order',
@@ -184,6 +199,46 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   );
   const topBarRef = React.useRef<HTMLDivElement>(null);
   const [topBarHeight, setTopBarHeight] = React.useState(0);
+
+  const prevPaginationRef = React.useRef<{
+    page?: number;
+    pageSize?: number;
+  }>({});
+
+  const handlePaginationChange = React.useCallback(
+    (updater: Updater<PaginationState>) => {
+      setPaginationState((prev) => {
+        const next = typeof updater === 'function' ? updater(prev) : updater;
+
+        prevPaginationRef.current = {
+          page: next.pageIndex + 1,
+          pageSize: next.pageSize,
+        };
+
+        return next;
+      });
+    },
+    []
+  );
+
+  React.useEffect(() => {
+    if (!prevPaginationRef.current.page || !prevPaginationRef.current.pageSize) {
+      return;
+    }
+
+    const newPage = prevPaginationRef.current.page;
+    const newPageSize = prevPaginationRef.current.pageSize;
+
+    if (onPaginationChange) {
+      if (newPage !== pagination?.page) {
+        onPaginationChange.onPageChange(newPage);
+      }
+
+      if (newPageSize !== pagination?.limit) {
+        onPaginationChange.onPageSizeChange(newPageSize);
+      }
+    }
+  }, [paginationState, onPaginationChange, pagination]);
 
   React.useEffect(() => {
     const observer = new ResizeObserver(() => {
@@ -200,6 +255,15 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
     return () => observer.unobserve(topBar);
   }, [topBarRef]);
 
+  React.useEffect(() => {
+    if (pagination) {
+      setPaginationState({
+        pageIndex: pagination.page - 1,
+        pageSize: pagination.limit,
+      });
+    }
+  }, [pagination]);
+
   const table = useReactTable({
     data,
     columns,
@@ -214,14 +278,14 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
     onSortingChange: setSorting,
     onRowSelectionChange: setRowSelection,
     onColumnVisibilityChange: setColumnVisibility,
-    onPaginationChange: setPagination,
+    onPaginationChange: handlePaginationChange,
     onColumnOrderChange: setColumnOrder,
     state: {
       columnFilters,
       sorting,
       rowSelection,
       columnVisibility,
-      pagination,
+      pagination: paginationState,
       columnOrder,
     },
     enableRowSelection: true,
@@ -244,7 +308,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
     setColumnFilters(defaultColumnFilters);
     setColumnVisibility(defaultColumnVisibility);
     setSorting(defaultColumnSorting);
-    setPagination({
+    setPaginationState({
       pageIndex: 0,
       pageSize: 10,
     });
@@ -296,7 +360,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
       filterFields={filterFields}
       columnFilters={columnFilters}
       sorting={sorting}
-      pagination={pagination}
+      pagination={paginationState}
       rowSelection={rowSelection}
       columnOrder={columnOrder}
       columnVisibility={columnVisibility}
@@ -427,9 +491,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}
