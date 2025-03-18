@@ -2,7 +2,6 @@ import { logger, schedules, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../constants';
 import { engine } from '@/lib/engine';
-import { prisma } from '@/server/db';
 import { z } from 'zod';
 
 /**
@@ -265,6 +264,6 @@ export const deleteTeam = schemaTask({
     }
 
     // For other errors, use the default retry strategy
-    return undefined;
+    return;
   },
 });

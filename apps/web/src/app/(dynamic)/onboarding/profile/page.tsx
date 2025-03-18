@@ -1,6 +1,4 @@
 import { ProfileForm } from '@/components/form/profile-form';
-import { getAuth } from '@/lib/auth';
-import { prisma } from '@/server/db';
 import { redirect } from 'next/navigation';
 import { routes } from '@/lib/navigation/routes';
 import { trpc } from '@/trpc/server';

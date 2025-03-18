@@ -437,6 +437,6 @@ export const syncAccount = schemaTask({
     }
 
     // For other errors, use the default retry strategy
-    return undefined;
+    return;
   },
 });

@@ -47,7 +47,7 @@ export const useStreamableText = (
         let value = '';
         for await (const delta of readStreamableValue(content)) {
           if (typeof delta === 'string') {
-            setRawContent((value = value + delta));
+            await setRawContent((value = value + delta));
           }
         }
       }

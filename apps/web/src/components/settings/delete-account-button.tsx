@@ -14,10 +14,6 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { api, useTRPC } from '@/trpc/react';
 import { useEffect, useState } from 'react';
-import {
-  useInvalidateSessionMutation,
-  useLogoutMutation,
-} from '../auth/useLogoutMutation';
 
 import { Icons } from '../ui/icons';
 import { Input } from '@/registry/default/potion-ui/input';
@@ -25,6 +21,9 @@ import { Label } from '../ui/label';
 import { Progress } from '@/registry/default/potion-ui/progress';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import {
+  useInvalidateSessionMutation
+} from '../auth/useLogoutMutation';
 import { useQuery } from '@tanstack/react-query';
 
 export function DeleteAccountButton() {
@@ -106,7 +105,7 @@ export function DeleteAccountButton() {
 
       // Force a complete reload from server rather than using cache
       // This approach is more likely to respect updated cookie state
-      window.location.href = '/?logout=true&t=' + new Date().getTime();
+      window.location.href = '/?logout=true&t=' + Date.now();
     },
   });
 
@@ -180,10 +179,10 @@ export function DeleteAccountButton() {
                 scale: isPulsing ? [1, 1.05, 1] : 1,
                 boxShadow: isPulsing
                   ? [
-                      '0 0 0 0 rgba(239, 68, 68, 0)',
-                      '0 0 0 10px rgba(239, 68, 68, 0.1)',
-                      '0 0 0 0 rgba(239, 68, 68, 0)',
-                    ]
+                    '0 0 0 0 rgba(239, 68, 68, 0)',
+                    '0 0 0 10px rgba(239, 68, 68, 0.1)',
+                    '0 0 0 0 rgba(239, 68, 68, 0)',
+                  ]
                   : '0 0 0 0 rgba(239, 68, 68, 0)',
               }}
               transition={{
@@ -315,10 +314,10 @@ export function DeleteAccountButton() {
                       className={cn(
                         'border-none border-input bg-muted/5 pr-9 transition-all duration-300 focus-visible:ring-1 focus-visible:ring-offset-0',
                         isConfirmEnabled &&
-                          'border-green-500/50 focus-visible:ring-green-500/30',
+                        'border-green-500/50 focus-visible:ring-green-500/30',
                         confirmEmail &&
-                          !isConfirmEnabled &&
-                          'border-destructive/50 focus-visible:ring-destructive/30'
+                        !isConfirmEnabled &&
+                        'border-destructive/50 focus-visible:ring-destructive/30'
                       )}
                     />
                     <AnimatePresence>

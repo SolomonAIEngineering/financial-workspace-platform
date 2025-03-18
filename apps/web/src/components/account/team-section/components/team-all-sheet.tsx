@@ -12,11 +12,10 @@ import {
 import { CheckCircle2, Users } from 'lucide-react';
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetTitle,
+  SheetTitle
 } from '@/registry/default/potion-ui/sheet';
 
 import { Badge } from '@/components/ui/badge';

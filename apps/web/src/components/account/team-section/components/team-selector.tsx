@@ -19,6 +19,7 @@ import {
 
 import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/ui/icons';
+import { Label } from '@/components/ui/label';
 import { TeamSelectorProps } from '../types';
 import { getAvatarFallback } from '../utils';
 
@@ -54,7 +55,7 @@ export function TeamSelector({
   return (
     <div className="space-y-2 md:py-[3%]">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">Active Team</label>
+        <Label className="text-sm font-medium">Active Team</Label>
         <span className="text-xs text-muted-foreground">
           {teams?.length} {teams?.length === 1 ? 'team' : 'teams'}
         </span>

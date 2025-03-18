@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-import { getOrThrowCurrentUser } from '@/lib/auth';
 import { prisma } from '@/server/db';
 
 /**

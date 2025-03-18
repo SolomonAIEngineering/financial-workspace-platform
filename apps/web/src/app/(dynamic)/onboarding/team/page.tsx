@@ -1,4 +1,3 @@
-import { Building } from 'lucide-react';
 import { CubeIcon } from '@radix-ui/react-icons';
 import { TeamCreationForm } from '@/components/form/team-creation-form';
 import { redirect } from 'next/navigation';

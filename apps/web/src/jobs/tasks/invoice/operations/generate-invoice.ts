@@ -1,7 +1,6 @@
 import { PdfTemplate, renderToBuffer } from '@solomonai/invoice';
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
-import { I } from 'node_modules/@upstash/redis/zmscore-C3G81zLz.mjs';
 import { prisma } from '@/server/db';
 import { utapi } from '@/lib/uploadthing';
 import { z } from 'zod';

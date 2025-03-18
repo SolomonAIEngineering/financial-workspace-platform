@@ -331,10 +331,9 @@ export const syncConnectionJob = schemaTask({
         } catch (updateError) {
           // Log but don't throw - we want to propagate the original error
           logger.error(
-            `Failed to update connection status: ${
-              updateError instanceof Error
-                ? updateError.message
-                : String(updateError)
+            `Failed to update connection status: ${updateError instanceof Error
+              ? updateError.message
+              : String(updateError)
             }`
           );
         }
@@ -392,6 +391,6 @@ export const syncConnectionJob = schemaTask({
     }
 
     // For other errors, use the default retry strategy
-    return undefined;
+    return;
   },
 });

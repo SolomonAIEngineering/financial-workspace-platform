@@ -1,5 +1,5 @@
-import { getCookie } from 'cookies-next';
 import { prisma } from '@/server/db';
+import { routes } from './navigation/routes';
 
 /** Interface for user onboarding status */
 export interface OnboardingStatus {

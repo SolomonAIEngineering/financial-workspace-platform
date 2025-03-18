@@ -7,9 +7,7 @@
 import { Button } from '@/registry/default/potion-ui/button';
 import { TeamMemberItem } from './member-item';
 import { TeamMembersListProps } from '../../../types';
-import { TeamRole } from '@prisma/client';
 import { countTeamOwners } from '../../../utils';
-import { useState } from 'react';
 
 /**
  * Component for displaying and managing a list of team members

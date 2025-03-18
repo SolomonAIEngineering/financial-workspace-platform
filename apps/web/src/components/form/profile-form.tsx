@@ -16,7 +16,7 @@ import {
 
 import { Button } from '@/registry/default/potion-ui/button';
 import { Input } from '@/registry/default/potion-ui/input';
-import { updateProfileAction } from '@/actions/profile';
+import { api } from '@/trpc/react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -52,7 +52,7 @@ interface ProfileFormProps {
 
 export function ProfileForm({ userId, initialData }: ProfileFormProps) {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -66,27 +66,60 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
     },
   });
 
+  // Define the tRPC mutations
+  const updateSettingsMutation = api.user.updateSettings.useMutation({
+    onError: (err) => {
+      console.error('Failed to update settings:', err);
+      setError(err.message || 'Failed to update profile settings');
+    },
+  });
+
+  const updateContactInfoMutation = api.user.updateContactInfo.useMutation({
+    onError: (err) => {
+      console.error('Failed to update contact info:', err);
+      setError(err.message || 'Failed to update contact information');
+    },
+  });
+
   async function onSubmit(data: ProfileFormValues) {
-    setIsSubmitting(true);
+    setError(null);
 
     try {
-      await updateProfileAction({
-        userId,
-        ...data,
+      // Update the main user settings
+      await updateSettingsMutation.mutateAsync({
+        bio: undefined, // Not included in the form
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        name: data.name,
+        profileImageUrl: data.profileImageUrl,
       });
 
-      // Refresh the page to trigger middleware redirect
+      // Update phone number if provided
+      if (data.phoneNumber) {
+        await updateContactInfoMutation.mutateAsync({
+          phoneNumber: data.phoneNumber,
+        });
+      }
+
+      // Refresh the page to show updated data
       router.refresh();
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-    } finally {
-      setIsSubmitting(false);
+    } catch (err) {
+      // Error handling already done in mutation callbacks
     }
   }
+
+  const isSubmitting = updateSettingsMutation.isPending || updateContactInfoMutation.isPending;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {error && (
+          <div className="p-3 text-sm font-medium text-white bg-red-500 rounded-md">
+            {error}
+          </div>
+        )}
+
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
             <AvatarImage

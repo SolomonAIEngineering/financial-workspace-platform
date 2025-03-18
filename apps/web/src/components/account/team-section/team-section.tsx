@@ -54,7 +54,7 @@ export function TeamSection({ userId }: TeamSectionProps) {
 
   // Transform API data to match Team interface (converting null to undefined)
   const teams = useMemo(() => {
-    if (!apiTeams) return undefined;
+    if (!apiTeams) return;
 
     return apiTeams.map((team) => ({
       ...team,
@@ -165,7 +165,7 @@ export function TeamSection({ userId }: TeamSectionProps) {
                     key={selectedTeam.id}
                     team={selectedTeam}
                     userRole={getUserRoleInTeam(selectedTeam.id)}
-                    onManageTeam={() => {}}
+                    onManageTeam={() => { }}
                     router={router}
                   />
                 )}
@@ -177,7 +177,7 @@ export function TeamSection({ userId }: TeamSectionProps) {
         </CardContent>
 
         <TeamActions
-          onViewAllTeams={() => {}}
+          onViewAllTeams={() => { }}
           onCreateTeam={handleOpenCreateTeamSheet}
           teams={teams}
           selectedTeamId={selectedTeamId}

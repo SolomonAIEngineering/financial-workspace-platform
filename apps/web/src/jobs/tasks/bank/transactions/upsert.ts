@@ -302,6 +302,6 @@ export const upsertTransactionsJob = schemaTask({
     }
 
     // For other errors, use the default retry strategy
-    return undefined;
+    return;
   },
 });

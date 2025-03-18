@@ -343,6 +343,6 @@ export const disconnectedSchedulerJob = schedules.task({
     }
 
     // For other errors, use the default retry strategy
-    return undefined;
+    return;
   },
 });

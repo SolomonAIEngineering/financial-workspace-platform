@@ -5,7 +5,6 @@
  */
 
 import { TeamRole } from '@/server/types/prisma';
-import { UserRole } from '@/server/types/index';
 
 /**
  * Props for the AccountInformation component

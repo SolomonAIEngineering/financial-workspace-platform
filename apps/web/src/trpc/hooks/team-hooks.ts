@@ -2,7 +2,6 @@ import { DEFAULT_QUERY_OPTIONS, QueryOptions } from './query-options';
 import { api, useTRPC } from '@/trpc/react';
 
 import { mergeDefined } from '@/lib/mergeDefined';
-import { produce } from 'immer';
 import { toast } from 'sonner';
 import { useCallback } from 'react';
 import { useDebouncedCallback } from '@/hooks/useDebounceCallback';

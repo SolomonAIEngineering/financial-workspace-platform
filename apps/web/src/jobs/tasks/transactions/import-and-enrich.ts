@@ -349,7 +349,7 @@ export const importAndEnrichTransactions = schemaTask({
             id: t.id || t.internal_id,
             name: t.name || t.description,
             description: t.description,
-            amount: parseFloat(t.amount) || 0,
+            amount: Number.parseFloat(t.amount) || 0,
             date: t.date,
             merchantName: t.merchant_name,
             // Fill in the minimum required fields for the enrichment service

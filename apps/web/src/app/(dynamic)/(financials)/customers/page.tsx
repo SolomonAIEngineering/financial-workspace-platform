@@ -3,8 +3,7 @@
 import {
   ChartBarIcon,
   FunnelIcon,
-  UserCircleIcon,
-  UserGroupIcon,
+  UserCircleIcon
 } from '@heroicons/react/24/outline';
 
 import { FeatureDevelopment } from '@/components/document-sending/feature-development';
@@ -24,7 +23,7 @@ export default function CustomersPage() {
         { href: routes.customers(), label: 'Merchant Management' },
       ]}
       actions={
-        <WaitlistFeature featureName={featureName} buttonIcon={UserGroupIcon} />
+        <WaitlistFeature featureName={featureName} />
       }
     >
       <FeatureDevelopment

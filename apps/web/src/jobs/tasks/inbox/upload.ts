@@ -11,7 +11,6 @@ import { DocumentClient } from '@solomonai/documents';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { prisma } from '@/server/db';
 import { schemaTask } from '@trigger.dev/sdk/v3';
-import { setTimeout as sleep } from 'timers/promises';
 import { utapi } from '@/lib/uploadthing';
 import { z } from 'zod';
 
@@ -22,14 +21,14 @@ const FILE_OPERATION_TIMEOUT = 30000; // 30 seconds
 // Document processing timeout in ms
 const DOC_PROCESSING_TIMEOUT = 120000; // 2 minutes
 // Supported content types for document processing
-const SUPPORTED_CONTENT_TYPES = [
+const SUPPORTED_CONTENT_TYPES: Set<string> = new Set([
   'application/pdf',
   'image/jpeg',
   'image/png',
   'image/tiff',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
   'application/msword', // doc
-];
+]);
 // Maximum file size for processing (50MB)
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
@@ -88,7 +87,7 @@ export const inboxUpload = schemaTask({
         );
       }
 
-      if (!SUPPORTED_CONTENT_TYPES.includes(mimetype)) {
+      if (!SUPPORTED_CONTENT_TYPES.has(mimetype)) {
         logger.warn('Unsupported content type, processing may fail', {
           mimetype,
         });
@@ -166,7 +165,6 @@ export const inboxUpload = schemaTask({
                 path: file_path.join('/'),
               }
             );
-            await sleep(backoffTime);
           }
 
           // Use a promise with a timeout via Trigger.dev's wait.for

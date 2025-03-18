@@ -1,6 +1,5 @@
-import { ResourceType, resourceValidator } from '@/server/services/payment-tier';
-
 import { NodeApi } from '@udecode/plate';
+import { ResourceType } from '@/server/services/payment-tier';
 import { TRPCError } from '@trpc/server';
 import { createResourceValidationMiddleware } from '../middlewares/resourceValidationMiddleware';
 import { createRouter } from '../trpc';
