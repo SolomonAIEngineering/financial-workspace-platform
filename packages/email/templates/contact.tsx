@@ -1,3 +1,9 @@
+/**
+ * Contact form email template module.
+ * Provides a standardized email template for contact form submissions.
+ * @module templates/contact
+ */
+
 import {
   Body,
   Container,
@@ -10,12 +16,31 @@ import {
   Text,
 } from '@react-email/components'
 
+/**
+ * Properties for the ContactTemplate component.
+ * 
+ * @interface ContactTemplateProps
+ * @property {string} name - The name of the person who submitted the contact form
+ * @property {string} email - The email address of the person who submitted the contact form
+ * @property {string} message - The message content from the contact form submission
+ */
 type ContactTemplateProps = {
   readonly name: string
   readonly email: string
   readonly message: string
 }
 
+/**
+ * Email template for contact form submissions.
+ * This component renders a professionally formatted email with the
+ * contact form details including the sender's name, email, and message.
+ * 
+ * @param props - Component properties
+ * @param props.name - The name of the person who submitted the contact form
+ * @param props.email - The email address of the person who submitted the contact form
+ * @param props.message - The message content from the contact form submission
+ * @returns JSX component for the contact form email
+ */
 export const ContactTemplate = ({
   name,
   email,
@@ -45,6 +70,12 @@ export const ContactTemplate = ({
   </Tailwind>
 )
 
+/**
+ * Example implementation of the ContactTemplate with sample data.
+ * This serves as both documentation and a preview of how the template renders.
+ * 
+ * @returns JSX component with sample contact form data
+ */
 const ExampleContactEmail = () => (
   <ContactTemplate
     name="Jane Smith"

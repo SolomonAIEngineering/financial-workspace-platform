@@ -3,20 +3,28 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
-    "@react-email/components": "0.0.30",
+    "@react-email/components": "^0.0.33",
+    "@react-email/tailwind": "^1.0.4",
     "@solomonai/env": "workspace:*",
+    "@solomonai/platform-config": "workspace:*",
+    "chrono-node": "^2.7.5",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.483.0",
     "react": "^19.0.0",
-    "react-dom": "^18.3.1",
+    "react-dom": "^19.0.0",
     "resend": "^4.0.1"
   },
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "dev": "email dev --dir src/emails",
+    "format": "prettier --write src"
   },
   "devDependencies": {
-    "tsconfig": "workspace:*",
     "@types/node": "22.10.1",
     "@types/react": "19.0.1",
     "@types/react-dom": "^19.0.1",
+    "react-email": "3.0.7",
+    "tsconfig": "workspace:*",
     "typescript": "^5.7.2"
   },
   "author": "Yoan Yomba",
