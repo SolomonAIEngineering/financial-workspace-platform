@@ -1,19 +1,22 @@
+import * as React from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "../utils";
 import { Button, type ButtonProps } from "./button";
 
+export interface SubmitButtonProps extends ButtonProps {
+  children: React.ReactNode;
+  isSubmitting?: boolean;
+}
+
 export function SubmitButton({
   children,
-  isSubmitting,
+  isSubmitting = false,
   disabled,
   ...props
-}: {
-  children: React.ReactNode;
-  isSubmitting: boolean;
-  disabled?: boolean;
-} & ButtonProps) {
+}: SubmitButtonProps) {
   return (
     <Button
+      type="submit"
       disabled={isSubmitting || disabled}
       {...props}
       className={cn(props.className, "relative")}

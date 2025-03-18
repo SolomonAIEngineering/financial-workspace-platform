@@ -19,5 +19,5 @@ export function useEnterSubmit(): {
     }
   };
 
-  return { formRef, onKeyDown: handleKeyDown };
+  return { formRef: formRef as RefObject<HTMLFormElement>, onKeyDown: handleKeyDown };
 }

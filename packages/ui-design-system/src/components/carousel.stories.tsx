@@ -8,10 +8,10 @@ import {
 } from "./carousel";
 import type { Meta, StoryObj } from "@storybook/react";
 
-const meta: Meta<typeof Carousel> = {
+const meta = {
     component: Carousel,
     tags: ["autodocs"],
-};
+} satisfies Meta<typeof Carousel>;
 
 export default meta;
 
@@ -59,7 +59,7 @@ export const MultipleItems: Story = {
 
 export const AutoPlay: Story = {
     render: () => (
-        <Carousel className="w-full max-w-xs" opts={{ loop: true }} autoPlay>
+        <Carousel className="w-full max-w-xs" opts={{ loop: true }}>
             <CarouselContent>
                 {Array.from({ length: 5 }).map((_, index) => (
                     <CarouselItem key={index}>

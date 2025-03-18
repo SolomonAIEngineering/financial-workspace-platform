@@ -21,12 +21,11 @@ export const Default: Story = {
 
         return (
             <TimeRangeInput
-                startTime={timeRange.startTime}
-                endTime={timeRange.endTime}
-                onStartTimeChange={(time) =>
-                    setTimeRange({ ...timeRange, startTime: time })
-                }
-                onEndTimeChange={(time) => setTimeRange({ ...timeRange, endTime: time })}
+                value={{ start: timeRange.startTime, end: timeRange.endTime }}
+                onChange={(value) => setTimeRange({
+                    startTime: value.start,
+                    endTime: value.end
+                })}
             />
         );
     },
@@ -43,14 +42,11 @@ export const WithLabel: Story = {
             <div className="space-y-2">
                 <label className="text-sm font-medium">Operating Hours</label>
                 <TimeRangeInput
-                    startTime={timeRange.startTime}
-                    endTime={timeRange.endTime}
-                    onStartTimeChange={(time) =>
-                        setTimeRange({ ...timeRange, startTime: time })
-                    }
-                    onEndTimeChange={(time) =>
-                        setTimeRange({ ...timeRange, endTime: time })
-                    }
+                    value={{ start: timeRange.startTime, end: timeRange.endTime }}
+                    onChange={(value) => setTimeRange({
+                        startTime: value.start,
+                        endTime: value.end
+                    })}
                 />
             </div>
         );
@@ -68,14 +64,11 @@ export const WithError: Story = {
             <div className="space-y-2">
                 <label className="text-sm font-medium">Operating Hours</label>
                 <TimeRangeInput
-                    startTime={timeRange.startTime}
-                    endTime={timeRange.endTime}
-                    onStartTimeChange={(time) =>
-                        setTimeRange({ ...timeRange, startTime: time })
-                    }
-                    onEndTimeChange={(time) =>
-                        setTimeRange({ ...timeRange, endTime: time })
-                    }
+                    value={{ start: timeRange.startTime, end: timeRange.endTime }}
+                    onChange={(value) => setTimeRange({
+                        startTime: value.start,
+                        endTime: value.end
+                    })}
                 />
                 <p className="text-sm text-red-500">
                     End time must be after start time
@@ -88,11 +81,8 @@ export const WithError: Story = {
 export const Disabled: Story = {
     render: () => (
         <TimeRangeInput
-            startTime="08:00"
-            endTime="16:00"
-            onStartTimeChange={() => { }}
-            onEndTimeChange={() => { }}
-            disabled
+            value={{ start: "08:00", end: "16:00" }}
+            onChange={() => { }}
         />
     ),
 }; 

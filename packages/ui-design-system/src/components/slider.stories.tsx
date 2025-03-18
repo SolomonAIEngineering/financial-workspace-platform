@@ -3,10 +3,10 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Slider } from "./slider";
 import { useState } from "react";
 
-const meta: Meta<typeof Slider> = {
+const meta = {
     component: Slider,
     tags: ["autodocs"],
-};
+} satisfies Meta<typeof Slider>;
 
 export default meta;
 

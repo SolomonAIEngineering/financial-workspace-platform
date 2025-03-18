@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,13 +13,21 @@ import {
 } from "./alert-dialog";
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Button } from "./button";
-
 const meta: Meta<typeof AlertDialog> = {
-  component: () => (
+  title: "UI/AlertDialog",
+  component: AlertDialog,
+  tags: ["autodocs"],
+};
+
+export default meta;
+
+type Story = StoryObj<typeof AlertDialog>;
+
+export const Default: Story = {
+  render: () => (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline">Show Dialog</Button>
+        <button className="border border-solid p-2 rounded">Show Dialog</button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
@@ -35,9 +45,3 @@ const meta: Meta<typeof AlertDialog> = {
     </AlertDialog>
   ),
 };
-
-export default meta;
-
-type Story = StoryObj<typeof AlertDialog>;
-
-export const Default: Story = {};

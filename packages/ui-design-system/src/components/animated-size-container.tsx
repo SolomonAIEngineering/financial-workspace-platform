@@ -1,17 +1,20 @@
 import { motion } from "framer-motion";
+import * as React from "react";
 import {
   type ComponentPropsWithoutRef,
-  type PropsWithChildren,
+  type ReactNode,
+  RefObject,
   forwardRef,
   useRef,
 } from "react";
 import { useResizeObserver } from "../hooks";
 import { cn } from "../utils";
 
-type AnimatedSizeContainerProps = PropsWithChildren<{
+type AnimatedSizeContainerProps = {
   width?: boolean;
   height?: boolean;
-}> &
+  children?: ReactNode;
+} &
   Omit<ComponentPropsWithoutRef<typeof motion.div>, "animate" | "children">;
 
 /**
@@ -33,7 +36,7 @@ const AnimatedSizeContainer = forwardRef<
     forwardedRef,
   ) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const resizeObserverEntry = useResizeObserver(containerRef);
+    const resizeObserverEntry = useResizeObserver(containerRef as RefObject<Element>);
 
     return (
       <motion.div

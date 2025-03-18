@@ -12,26 +12,26 @@ export default meta;
 type Story = StoryObj<typeof SubmitButton>;
 
 export const Default: Story = {
-    render: () => <SubmitButton>Submit</SubmitButton>,
+    render: () => <SubmitButton isSubmitting={false}>Submit</SubmitButton>,
 };
 
 export const Loading: Story = {
-    render: () => <SubmitButton isLoading>Submit</SubmitButton>,
+    render: () => <SubmitButton isSubmitting>Submit</SubmitButton>,
 };
 
 export const Disabled: Story = {
-    render: () => <SubmitButton disabled>Submit</SubmitButton>,
+    render: () => <SubmitButton disabled isSubmitting={false}>Submit</SubmitButton>,
 };
 
 export const WithVariant: Story = {
     render: () => (
         <div className="flex flex-col space-y-4">
-            <SubmitButton variant="default">Default</SubmitButton>
-            <SubmitButton variant="destructive">Destructive</SubmitButton>
-            <SubmitButton variant="outline">Outline</SubmitButton>
-            <SubmitButton variant="secondary">Secondary</SubmitButton>
-            <SubmitButton variant="ghost">Ghost</SubmitButton>
-            <SubmitButton variant="link">Link</SubmitButton>
+            <SubmitButton variant="default" isSubmitting={false}>Default</SubmitButton>
+            <SubmitButton variant="destructive" isSubmitting={false}>Destructive</SubmitButton>
+            <SubmitButton variant="outline" isSubmitting={false}>Outline</SubmitButton>
+            <SubmitButton variant="secondary" isSubmitting={false}>Secondary</SubmitButton>
+            <SubmitButton variant="ghost" isSubmitting={false}>Ghost</SubmitButton>
+            <SubmitButton variant="link" isSubmitting={false}>Link</SubmitButton>
         </div>
     ),
 };
@@ -39,9 +39,9 @@ export const WithVariant: Story = {
 export const WithSize: Story = {
     render: () => (
         <div className="flex items-center space-x-4">
-            <SubmitButton size="sm">Small</SubmitButton>
-            <SubmitButton size="default">Default</SubmitButton>
-            <SubmitButton size="lg">Large</SubmitButton>
+            <SubmitButton size="sm" isSubmitting={false}>Small</SubmitButton>
+            <SubmitButton size="default" isSubmitting={false}>Default</SubmitButton>
+            <SubmitButton size="lg" isSubmitting={false}>Large</SubmitButton>
         </div>
     ),
 }; 

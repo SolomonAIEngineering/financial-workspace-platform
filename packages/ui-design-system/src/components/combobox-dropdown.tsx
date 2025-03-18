@@ -1,11 +1,8 @@
 "use client";
 
-import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
 
-import { CommandList } from "cmdk";
-import { cn } from "../utils";
-import { Button } from "./button";
+import { Check, ChevronsUpDown } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -14,6 +11,10 @@ import {
   CommandItem,
 } from "./command";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+
+import { Button } from "./button";
+import { CommandList } from "cmdk";
+import { cn } from "../utils";
 
 export type ComboboxItem = {
   id: string;
@@ -159,11 +160,11 @@ export function ComboboxDropdown<T extends ComboboxItem>({
         >
           <span className="truncate text-ellipsis pr-3">
             {selectedItem
-              ? ((
-                  <span className="flex items-center overflow-hidden whitespace-nowrap text-ellipsis block">
-                    {renderSelectedItem?.(selectedItem)}
-                  </span>
-                ) ?? selectedItem.label)
+              ? (
+                <span className="flex items-center overflow-hidden whitespace-nowrap text-ellipsis">
+                  {renderSelectedItem?.(selectedItem)}
+                </span>
+              )
               : (placeholder ?? "Select item...")}
           </span>
           <ChevronsUpDown className="size-4 opacity-50 absolute right-2" />

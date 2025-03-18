@@ -16,13 +16,9 @@ export const Default: Story = {
 };
 
 export const Small: Story = {
-    render: () => <Spinner className="h-4 w-4" />,
+    render: () => <Spinner size={16} />,
 };
 
 export const Large: Story = {
-    render: () => <Spinner className="h-12 w-12" />,
+    render: () => <Spinner size={32} />,
 };
-
-export const CustomColor: Story = {
-    render: () => <Spinner className="text-blue-500" />,
-}; 

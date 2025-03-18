@@ -16,15 +16,17 @@ import {
     CommandSeparator,
     CommandShortcut,
 } from "./command";
+import { Dialog, DialogContent } from "./dialog";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Button } from "./button";
 import { useState } from "react";
 
-const meta: Meta<typeof Command> = {
+const meta = {
+    title: 'UI/Command',
     component: Command,
     tags: ["autodocs"],
-};
+} as Meta<typeof Command>;
 
 export default meta;
 
@@ -55,17 +57,14 @@ export const Default: Story = {
                     <CommandItem>
                         <PersonIcon className="mr-2 h-4 w-4" />
                         <span>Profile</span>
-                        <CommandShortcut>⌘P</CommandShortcut>
                     </CommandItem>
                     <CommandItem>
                         <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
                         <span>Mail</span>
-                        <CommandShortcut>⌘B</CommandShortcut>
                     </CommandItem>
                     <CommandItem>
                         <GearIcon className="mr-2 h-4 w-4" />
                         <span>Settings</span>
-                        <CommandShortcut>⌘S</CommandShortcut>
                     </CommandItem>
                 </CommandGroup>
             </CommandList>
@@ -73,7 +72,7 @@ export const Default: Story = {
     ),
 };
 
-export const CommandDialog: Story = {
+export const DialogExample: Story = {
     render: () => {
         const [open, setOpen] = useState(false);
 
@@ -89,44 +88,48 @@ export const CommandDialog: Story = {
                         <span className="text-xs">⌘</span>K
                     </kbd>
                 </Button>
-                <CommandDialog open={open} onOpenChange={setOpen}>
-                    <CommandInput placeholder="Type a command or search..." />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup heading="Suggestions">
-                            <CommandItem>
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                <span>Calendar</span>
-                            </CommandItem>
-                            <CommandItem>
-                                <FaceIcon className="mr-2 h-4 w-4" />
-                                <span>Search Emoji</span>
-                            </CommandItem>
-                            <CommandItem>
-                                <RocketIcon className="mr-2 h-4 w-4" />
-                                <span>Launch</span>
-                            </CommandItem>
-                        </CommandGroup>
-                        <CommandSeparator />
-                        <CommandGroup heading="Settings">
-                            <CommandItem>
-                                <PersonIcon className="mr-2 h-4 w-4" />
-                                <span>Profile</span>
-                                <CommandShortcut>⌘P</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem>
-                                <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
-                                <span>Mail</span>
-                                <CommandShortcut>⌘B</CommandShortcut>
-                            </CommandItem>
-                            <CommandItem>
-                                <GearIcon className="mr-2 h-4 w-4" />
-                                <span>Settings</span>
-                                <CommandShortcut>⌘S</CommandShortcut>
-                            </CommandItem>
-                        </CommandGroup>
-                    </CommandList>
-                </CommandDialog>
+                <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogContent className="overflow-hidden p-0 max-w-[740px]">
+                        <Command className="h-[480px]">
+                            <CommandInput placeholder="Type a command or search..." />
+                            <CommandList>
+                                <CommandEmpty>No results found.</CommandEmpty>
+                                <CommandGroup heading="Suggestions">
+                                    <CommandItem>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        <span>Calendar</span>
+                                    </CommandItem>
+                                    <CommandItem>
+                                        <FaceIcon className="mr-2 h-4 w-4" />
+                                        <span>Search Emoji</span>
+                                    </CommandItem>
+                                    <CommandItem>
+                                        <RocketIcon className="mr-2 h-4 w-4" />
+                                        <span>Launch</span>
+                                    </CommandItem>
+                                </CommandGroup>
+                                <CommandSeparator />
+                                <CommandGroup heading="Settings">
+                                    <CommandItem>
+                                        <PersonIcon className="mr-2 h-4 w-4" />
+                                        <span>Profile</span>
+                                        <CommandShortcut>⌘P</CommandShortcut>
+                                    </CommandItem>
+                                    <CommandItem>
+                                        <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
+                                        <span>Mail</span>
+                                        <CommandShortcut>⌘B</CommandShortcut>
+                                    </CommandItem>
+                                    <CommandItem>
+                                        <GearIcon className="mr-2 h-4 w-4" />
+                                        <span>Settings</span>
+                                        <CommandShortcut>⌘S</CommandShortcut>
+                                    </CommandItem>
+                                </CommandGroup>
+                            </CommandList>
+                        </Command>
+                    </DialogContent>
+                </Dialog>
             </>
         );
     },

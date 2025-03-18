@@ -1,16 +1,17 @@
 "use client";
 
-import { Command as CommandPrimitive } from "cmdk";
-import { Loader2 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
-import { cn } from "../utils";
 import {
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from "./command";
+import { useCallback, useRef, useState } from "react";
+
+import { Command as CommandPrimitive } from "cmdk";
 import { Icons } from "./icons";
+import { Loader2 } from "lucide-react";
+import { cn } from "../utils";
 
 export type Option = Record<"id" | "name", string> & Record<string, string>;
 
@@ -29,7 +30,7 @@ type ComboboxProps = {
   classNameList?: string;
   autoFocus?: boolean;
   showIcon?: boolean;
-  CreateComponent?: React.ReactElement<{ value: string }>;
+  CreateComponent?: React.ComponentType<{ value: string }>;
 };
 
 export const Combobox = ({
@@ -72,7 +73,7 @@ export const Combobox = ({
 
   const handleBlur = useCallback(() => {
     setOpen(false);
-    setInputValue(selected?.name);
+    setInputValue(selected?.name || "");
   }, [selected]);
 
   const handleOnFocus = () => {
@@ -105,7 +106,9 @@ export const Combobox = ({
         )}
 
         <CommandInput
-          ref={inputRef}
+          ref={(node) => {
+            if (node) inputRef.current = node;
+          }}
           value={inputValue}
           onValueChange={handleOnValueChange}
           onBlur={handleBlur}

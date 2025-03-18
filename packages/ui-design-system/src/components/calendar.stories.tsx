@@ -21,7 +21,7 @@ export const Default: Story = {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(day) => setDate(day as Date)}
         />
       </div>
     );
@@ -40,7 +40,7 @@ export const MultiSelection: Story = {
         <Calendar
           mode="multiple"
           selected={dates}
-          onSelect={setDates}
+          onSelect={(days) => setDates(days as Date[])}
         />
       </div>
     );
@@ -61,7 +61,7 @@ export const RangeSelection: Story = {
         <Calendar
           mode="range"
           selected={dateRange}
-          onSelect={setDateRange}
+          onSelect={(range) => setDateRange(range as { from: Date; to?: Date })}
         />
       </div>
     );
@@ -76,7 +76,7 @@ export const WithDisabledDates: Story = {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(day) => setDate(day as Date)}
           disabled={[
             { from: addDays(new Date(), -4), to: addDays(new Date(), -2) },
             { from: addDays(new Date(), 3), to: addDays(new Date(), 5) },
@@ -95,7 +95,7 @@ export const WithFooter: Story = {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(day) => setDate(day as Date)}
           footer={
             <div className="mt-2 text-center text-sm text-muted-foreground">
               Today: {new Date().toLocaleDateString()}
