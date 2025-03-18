@@ -53,6 +53,10 @@ export const initialSetupJob = schemaTask({
     teamId: z.string(),
     connectionId: z.string(),
   }),
+  maxDuration: 300,
+  queue: {
+    concurrencyLimit: 50,
+  },
   /**
    * Main job execution function that sets up a new bank connection
    *
