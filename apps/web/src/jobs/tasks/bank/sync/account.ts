@@ -13,39 +13,40 @@ import { upsertTransactionsJob as upsertTransactions } from '../transactions/ups
 import { z } from 'zod';
 
 /**
- * The number of transactions to process in a single batch to avoid memory issues
+ * The number of transactions to process in a single batch to avoid memory
+ * issues
  */
 const BATCH_SIZE = 500;
 
 /**
- * Syncs a bank account by fetching its latest balance and transactions.
- * This task is a critical component of the financial data refresh pipeline.
- * 
+ * Syncs a bank account by fetching its latest balance and transactions. This
+ * task is a critical component of the financial data refresh pipeline.
+ *
  * @remarks
- * This task handles two primary operations:
- * 1. Fetching and updating the current balance for the account
- * 2. Retrieving transactions and processing them in batches
- * 
- * The task implements error handling, retry mechanisms, and comprehensive
- * tracing to ensure reliable execution even with intermittent provider API issues.
- * It can handle various account types and financial providers.
- * 
+ *   This task handles two primary operations:
+ *
+ *   1. Fetching and updating the current balance for the account
+ *   2. Retrieving transactions and processing them in batches
+ *
+ *   The task implements error handling, retry mechanisms, and comprehensive
+ *   tracing to ensure reliable execution even with intermittent provider API
+ *   issues. It can handle various account types and financial providers.
  * @example
- * ```ts
- * await client.sendEvent({
- *   name: 'sync-account-trigger',
- *   payload: {
- *     id: 'account-123',
- *     teamId: 'team-456',
- *     accountId: 'ext-acct-789',
- *     provider: 'plaid',
- *     accessToken: 'access-token-xyz',
- *     manualSync: true,
- *     accountType: 'CHECKING'
- *   },
- * });
- * ```
- * 
+ *   ```ts
+ *   await client.sendEvent({
+ *     name: 'sync-account-trigger',
+ *     payload: {
+ *       id: 'account-123',
+ *       teamId: 'team-456',
+ *       accountId: 'ext-acct-789',
+ *       provider: 'plaid',
+ *       accessToken: 'access-token-xyz',
+ *       manualSync: true,
+ *       accountType: 'CHECKING'
+ *     },
+ *   });
+ *   ```;
+ *
  * @returns Void or throws an error if the process fails
  */
 export const syncAccount = schemaTask({
@@ -53,6 +54,7 @@ export const syncAccount = schemaTask({
   maxDuration: 300,
   /**
    * Configure retry behavior for the task
+   *
    * @see https://trigger.dev/docs/errors-retrying
    */
   retry: {
@@ -63,34 +65,22 @@ export const syncAccount = schemaTask({
     randomize: true,
   },
   schema: z.object({
-    /**
-     * The internal bank account ID
-     */
+    /** The internal bank account ID */
     id: z.string(),
 
-    /**
-     * The team ID that owns this account
-     */
+    /** The team ID that owns this account */
     teamId: z.string(),
 
-    /**
-     * The external account ID from the provider
-     */
+    /** The external account ID from the provider */
     accountId: z.string(),
 
-    /**
-     * The access token for the provider API
-     */
+    /** The access token for the provider API */
     accessToken: z.string(),
 
-    /**
-     * Number of previous error retries
-     */
+    /** Number of previous error retries */
     errorRetries: z.number().optional(),
 
-    /**
-     * The financial data provider
-     */
+    /** The financial data provider */
     provider: z.enum([
       'gocardless',
       'plaid',
@@ -99,21 +89,17 @@ export const syncAccount = schemaTask({
       'stripe',
     ]),
 
-    /**
-     * Whether this is a manually triggered sync
-     */
+    /** Whether this is a manually triggered sync */
     manualSync: z.boolean().optional(),
 
-    /**
-     * The type of bank account
-     */
+    /** The type of bank account */
     accountType: z
       .enum(Object.values(AccountType) as [string, ...string[]])
       .optional(),
   }),
   /**
    * Main execution function for the account sync task
-   * 
+   *
    * @param payload - The validated input parameters
    * @param payload.id - The internal bank account ID
    * @param payload.teamId - The team ID that owns this account
@@ -124,7 +110,6 @@ export const syncAccount = schemaTask({
    * @param payload.manualSync - Whether this is a manually triggered sync
    * @param payload.accountType - The type of bank account
    * @param ctx - The execution context provided by Trigger.dev
-   * 
    * @returns Void or throws an error if the process fails
    */
   run: async (payload, { ctx }) => {
@@ -140,13 +125,13 @@ export const syncAccount = schemaTask({
     } = payload;
 
     // Create a trace for the entire sync operation
-    return await logger.trace("sync-bank-account", async (span) => {
-      span.setAttribute("accountId", accountId);
-      span.setAttribute("provider", provider);
-      span.setAttribute("teamId", teamId);
-      span.setAttribute("manualSync", Boolean(manualSync));
+    return await logger.trace('sync-bank-account', async (span) => {
+      span.setAttribute('accountId', accountId);
+      span.setAttribute('provider', provider);
+      span.setAttribute('teamId', teamId);
+      span.setAttribute('manualSync', Boolean(manualSync));
       if (accountType) {
-        span.setAttribute("accountType", accountType);
+        span.setAttribute('accountType', accountType);
       }
 
       // Log start of sync process
@@ -159,24 +144,29 @@ export const syncAccount = schemaTask({
       }
 
       // Fetch and update balance
-      await logger.trace("fetch-account-balance", async (balanceSpan) => {
-        balanceSpan.setAttribute("accountId", accountId);
+      await logger.trace('fetch-account-balance', async (balanceSpan) => {
+        balanceSpan.setAttribute('accountId', accountId);
 
         try {
           logger.info('Fetching account balance', { accountId });
 
-          const balanceResponse = await client.apiFinancialAccounts.listBalances({
-            provider: provider as 'gocardless' | 'plaid' | 'teller' | 'stripe',
-            id: accountId,
-            accessToken,
-          });
+          const balanceResponse =
+            await client.apiFinancialAccounts.listBalances({
+              provider: provider as
+                | 'gocardless'
+                | 'plaid'
+                | 'teller'
+                | 'stripe',
+              id: accountId,
+              accessToken,
+            });
 
           if (!balanceResponse) {
             throw new Error('Failed to get balance');
           }
 
           const { data: balanceData } = balanceResponse;
-          balanceSpan.setAttribute("balanceReceived", Boolean(balanceData));
+          balanceSpan.setAttribute('balanceReceived', Boolean(balanceData));
 
           logger.info('Successfully fetched balance, updating database', {
             accountId,
@@ -184,7 +174,7 @@ export const syncAccount = schemaTask({
 
           // Only update the balance if it's greater than 0
           const balance = balanceData?.amount ?? 0;
-          balanceSpan.setAttribute("balance", balance);
+          balanceSpan.setAttribute('balance', balance);
 
           if (balance > 0) {
             // Reset error details and retries if we successfully got the balance
@@ -208,12 +198,14 @@ export const syncAccount = schemaTask({
               },
             });
 
-            logger.info('Account balance is zero or not available', { accountId });
+            logger.info('Account balance is zero or not available', {
+              accountId,
+            });
           }
         } catch (error) {
           const parsedError = parseAPIError(error);
-          balanceSpan.setAttribute("error", parsedError.message);
-          balanceSpan.setAttribute("errorCode", parsedError.code || "unknown");
+          balanceSpan.setAttribute('error', parsedError.message);
+          balanceSpan.setAttribute('errorCode', parsedError.code || 'unknown');
 
           logger.error('Failed to sync account balance', {
             error: parsedError,
@@ -222,7 +214,7 @@ export const syncAccount = schemaTask({
 
           if (parsedError.code === 'disconnected') {
             const retries = errorRetries ? errorRetries + 1 : 1;
-            balanceSpan.setAttribute("errorRetries", retries);
+            balanceSpan.setAttribute('errorRetries', retries);
 
             // Update the account with the error details and retries
             await prisma.bankAccount.update({
@@ -239,134 +231,152 @@ export const syncAccount = schemaTask({
       });
 
       // Fetch and process transactions
-      await logger.trace("fetch-account-transactions", async (transactionSpan) => {
-        transactionSpan.setAttribute("accountId", accountId);
-        transactionSpan.setAttribute("manualSync", Boolean(manualSync));
+      await logger.trace(
+        'fetch-account-transactions',
+        async (transactionSpan) => {
+          transactionSpan.setAttribute('accountId', accountId);
+          transactionSpan.setAttribute('manualSync', Boolean(manualSync));
 
-        try {
-          logger.info('Fetching transactions', { accountId });
+          try {
+            logger.info('Fetching transactions', { accountId });
 
-          const payload: APITransactionListParams = {
-            provider: provider as 'gocardless' | 'plaid' | 'teller' | 'stripe',
-            accountId,
-            accessToken,
-            // If the transactions are being synced manually, we want to get all transactions
-            latest: manualSync ? 'false' : 'true',
-            syncCursor: manualSync ? undefined : undefined,
-          };
+            const payload: APITransactionListParams = {
+              provider: provider as
+                | 'gocardless'
+                | 'plaid'
+                | 'teller'
+                | 'stripe',
+              accountId,
+              accessToken,
+              // If the transactions are being synced manually, we want to get all transactions
+              latest: manualSync ? 'false' : 'true',
+              syncCursor: manualSync ? undefined : undefined,
+            };
 
-          if (classification) {
-            payload.accountType = classification;
-            transactionSpan.setAttribute("classification", classification);
-          }
+            if (classification) {
+              payload.accountType = classification;
+              transactionSpan.setAttribute('classification', classification);
+            }
 
-          const transactionsResponse = await client.apiTransactions.list(payload);
+            const transactionsResponse =
+              await client.apiTransactions.list(payload);
 
-          if (!transactionsResponse) {
-            throw new Error('Failed to get transactions');
-          }
+            if (!transactionsResponse) {
+              throw new Error('Failed to get transactions');
+            }
 
-          // Reset error details and retries if we successfully got the transactions
-          await prisma.bankAccount.update({
-            where: { id },
-            data: {
-              errorDetails: null,
-              errorRetries: null,
-            },
-          });
-
-          const { data: transactionsData } = transactionsResponse;
-
-          if (!transactionsData) {
-            logger.info(`No transactions to upsert for account ${accountId}`);
-            return;
-          }
-
-          const transactionCount = transactionsData.length;
-          transactionSpan.setAttribute("transactionCount", transactionCount);
-
-          logger.info(`Found ${transactionCount} transactions to process`, {
-            accountId,
-          });
-
-          // Calculate batch info for logging
-          const batchCount = Math.ceil(transactionCount / BATCH_SIZE);
-          transactionSpan.setAttribute("batchCount", batchCount);
-
-          // Upsert transactions in batches of 500
-          // This is to avoid memory issues with the DB
-          for (let i = 0; i < transactionCount; i += BATCH_SIZE) {
-            const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
-            const transactionBatch = transactionsData.slice(i, i + BATCH_SIZE);
-            const batchSize = transactionBatch.length;
-
-            await logger.trace("process-transaction-batch", async (batchSpan) => {
-              batchSpan.setAttribute("batchNumber", batchNumber);
-              batchSpan.setAttribute("batchSize", batchSize);
-              batchSpan.setAttribute("batchStart", i);
-              batchSpan.setAttribute("batchEnd", i + batchSize - 1);
-
-              logger.info(
-                `Processing batch ${batchNumber} of ${batchCount} (${batchSize} transactions)`,
-                { accountId }
-              );
-
-              try {
-                await upsertTransactions.triggerAndWait({
-                  transactions: transactionBatch,
-                  userId: id,
-                  bankAccountId: id,
-                  manualSync,
-                });
-
-                logger.info(`Successfully processed batch ${batchNumber}`, {
-                  accountId,
-                  batchSize,
-                });
-              } catch (batchError) {
-                const errorMessage = batchError instanceof Error
-                  ? batchError.message
-                  : 'Unknown batch processing error';
-
-                batchSpan.setAttribute("error", errorMessage);
-                logger.error(`Failed to process transaction batch ${batchNumber}`, {
-                  error: errorMessage,
-                  accountId,
-                  batchNumber,
-                  batchSize,
-                });
-
-                // Continue with other batches even if one fails
-                // This ensures we don't lose all transactions if one batch fails
-              }
+            // Reset error details and retries if we successfully got the transactions
+            await prisma.bankAccount.update({
+              where: { id },
+              data: {
+                errorDetails: null,
+                errorRetries: null,
+              },
             });
+
+            const { data: transactionsData } = transactionsResponse;
+
+            if (!transactionsData) {
+              logger.info(`No transactions to upsert for account ${accountId}`);
+              return;
+            }
+
+            const transactionCount = transactionsData.length;
+            transactionSpan.setAttribute('transactionCount', transactionCount);
+
+            logger.info(`Found ${transactionCount} transactions to process`, {
+              accountId,
+            });
+
+            // Calculate batch info for logging
+            const batchCount = Math.ceil(transactionCount / BATCH_SIZE);
+            transactionSpan.setAttribute('batchCount', batchCount);
+
+            // Upsert transactions in batches of 500
+            // This is to avoid memory issues with the DB
+            for (let i = 0; i < transactionCount; i += BATCH_SIZE) {
+              const batchNumber = Math.floor(i / BATCH_SIZE) + 1;
+              const transactionBatch = transactionsData.slice(
+                i,
+                i + BATCH_SIZE
+              );
+              const batchSize = transactionBatch.length;
+
+              await logger.trace(
+                'process-transaction-batch',
+                async (batchSpan) => {
+                  batchSpan.setAttribute('batchNumber', batchNumber);
+                  batchSpan.setAttribute('batchSize', batchSize);
+                  batchSpan.setAttribute('batchStart', i);
+                  batchSpan.setAttribute('batchEnd', i + batchSize - 1);
+
+                  logger.info(
+                    `Processing batch ${batchNumber} of ${batchCount} (${batchSize} transactions)`,
+                    { accountId }
+                  );
+
+                  try {
+                    await upsertTransactions.triggerAndWait({
+                      transactions: transactionBatch,
+                      userId: id,
+                      bankAccountId: id,
+                      manualSync,
+                    });
+
+                    logger.info(`Successfully processed batch ${batchNumber}`, {
+                      accountId,
+                      batchSize,
+                    });
+                  } catch (batchError) {
+                    const errorMessage =
+                      batchError instanceof Error
+                        ? batchError.message
+                        : 'Unknown batch processing error';
+
+                    batchSpan.setAttribute('error', errorMessage);
+                    logger.error(
+                      `Failed to process transaction batch ${batchNumber}`,
+                      {
+                        error: errorMessage,
+                        accountId,
+                        batchNumber,
+                        batchSize,
+                      }
+                    );
+
+                    // Continue with other batches even if one fails
+                    // This ensures we don't lose all transactions if one batch fails
+                  }
+                }
+              );
+            }
+
+            logger.info('Transaction sync completed successfully', {
+              accountId,
+              transactionCount,
+              batchCount,
+            });
+
+            // Update the last synced timestamp
+            await prisma.bankAccount.update({
+              where: { id },
+              data: {
+                lastSyncedAt: new Date(),
+              },
+            });
+          } catch (error) {
+            const errorMessage =
+              error instanceof Error ? error.message : 'Unknown error';
+            transactionSpan.setAttribute('error', errorMessage);
+
+            logger.error('Failed to sync transactions', {
+              error: errorMessage,
+              accountId,
+            });
+            throw error;
           }
-
-          logger.info('Transaction sync completed successfully', {
-            accountId,
-            transactionCount,
-            batchCount,
-          });
-
-          // Update the last synced timestamp
-          await prisma.bankAccount.update({
-            where: { id },
-            data: {
-              lastSyncedAt: new Date(),
-            },
-          });
-
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          transactionSpan.setAttribute("error", errorMessage);
-
-          logger.error('Failed to sync transactions', {
-            error: errorMessage,
-            accountId,
-          });
-          throw error;
         }
-      });
+      );
 
       return {
         success: true,
@@ -378,7 +388,7 @@ export const syncAccount = schemaTask({
   },
   /**
    * Custom error handler to control retry behavior based on error type
-   * 
+   *
    * @param payload - The task payload
    * @param error - The error that occurred
    * @param options - Options object containing context and retry control
@@ -388,20 +398,28 @@ export const syncAccount = schemaTask({
     const { accountId, provider } = payload;
 
     // If it's a rate limiting error, wait longer
-    if (error instanceof Error &&
-      (error.message.includes("rate limit") ||
-        error.message.includes("too many requests"))) {
-      logger.warn(`Rate limit hit for ${provider}, delaying retry`, { accountId });
+    if (
+      error instanceof Error &&
+      (error.message.includes('rate limit') ||
+        error.message.includes('too many requests'))
+    ) {
+      logger.warn(`Rate limit hit for ${provider}, delaying retry`, {
+        accountId,
+      });
       return {
         retryAt: new Date(Date.now() + 300000), // Wait 5 minutes
       };
     }
 
     // If the API is down or unreachable, wait longer
-    if (error instanceof Error &&
-      (error.message.includes("service unavailable") ||
-        error.message.includes("connection refused"))) {
-      logger.warn(`Provider API unavailable for ${provider}, delaying retry`, { accountId });
+    if (
+      error instanceof Error &&
+      (error.message.includes('service unavailable') ||
+        error.message.includes('connection refused'))
+    ) {
+      logger.warn(`Provider API unavailable for ${provider}, delaying retry`, {
+        accountId,
+      });
       return {
         retryAt: new Date(Date.now() + 600000), // Wait 10 minutes
       };
@@ -410,7 +428,9 @@ export const syncAccount = schemaTask({
     // If it's a disconnected account, don't retry
     const parsedError = parseAPIError(error);
     if (parsedError.code === 'disconnected') {
-      logger.warn(`Account ${accountId} is disconnected, skipping retries`, { provider });
+      logger.warn(`Account ${accountId} is disconnected, skipping retries`, {
+        provider,
+      });
       return {
         skipRetrying: true,
       };

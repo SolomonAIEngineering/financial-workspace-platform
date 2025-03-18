@@ -4,9 +4,7 @@ import { prisma } from '@/server/db';
 import { syncConnectionJob } from '../sync/connection';
 import { z } from 'zod';
 
-/**
- * Schema for formatted connection objects used for batch triggering
- */
+/** Schema for formatted connection objects used for batch triggering */
 const formattedConnectionSchema = z.object({
   payload: z.object({
     connectionId: z.string(),
@@ -16,26 +14,27 @@ const formattedConnectionSchema = z.object({
 type FormattedConnection = z.infer<typeof formattedConnectionSchema>;
 
 /**
- * Scheduled task that handles periodic syncing of all bank connections for a team.
- * This implements a fan-out pattern to trigger individual sync jobs for each connection.
- * 
+ * Scheduled task that handles periodic syncing of all bank connections for a
+ * team. This implements a fan-out pattern to trigger individual sync jobs for
+ * each connection.
+ *
  * @remarks
- * This scheduler runs on a defined schedule and finds all bank connections
- * associated with a team, then triggers individual sync jobs for each connection.
- * It uses batch triggering for efficiency and implements error handling and retry mechanisms.
- * 
+ *   This scheduler runs on a defined schedule and finds all bank connections
+ *   associated with a team, then triggers individual sync jobs for each
+ *   connection. It uses batch triggering for efficiency and implements error
+ *   handling and retry mechanisms.
  * @example
- * This job is triggered automatically according to the schedule defined in the Trigger.dev dashboard.
- * It can also be manually triggered for testing:
- * ```ts
- * await client.sendEvent({
+ *   This job is triggered automatically according to the schedule defined in the Trigger.dev dashboard.
+ *   It can also be manually triggered for testing:
+ *   ```ts
+ *   await client.sendEvent({
  *   name: 'manual-bank-sync',
  *   payload: {
- *     externalId: 'team-123',
+ *   externalId: 'team-123',
  *   },
- * });
- * ```
- * 
+ *   });
+ *   ```
+ *
  * @returns Void or error if the process fails
  */
 export const bankSyncScheduler = schedules.task({
@@ -43,6 +42,7 @@ export const bankSyncScheduler = schedules.task({
   maxDuration: 600,
   /**
    * Configure retry behavior for the scheduled task
+   *
    * @see https://trigger.dev/docs/errors-retrying
    */
   retry: {
@@ -54,11 +54,10 @@ export const bankSyncScheduler = schedules.task({
   },
   /**
    * Main execution function for the bank sync scheduler
-   * 
+   *
    * @param payload - The scheduler payload
    * @param payload.externalId - The team ID to sync connections for
    * @param ctx - The execution context provided by Trigger.dev
-   * 
    * @returns Void or throws an error if the process fails
    */
   run: async (payload, ctx) => {
@@ -73,10 +72,10 @@ export const bankSyncScheduler = schedules.task({
 
     try {
       // Create a trace for the entire sync operation
-      return await logger.trace("bank-sync-scheduler", async (span) => {
-        span.setAttribute("teamId", teamId);
+      return await logger.trace('bank-sync-scheduler', async (span) => {
+        span.setAttribute('teamId', teamId);
 
-        logger.info("Starting bank connection sync for team", { teamId });
+        logger.info('Starting bank connection sync for team', { teamId });
 
         // Get all bank connections for the team
         const bankConnections = await prisma.bankConnection.findMany({
@@ -89,8 +88,10 @@ export const bankSyncScheduler = schedules.task({
           },
         });
 
-        span.setAttribute("connectionCount", bankConnections.length);
-        logger.info(`Found ${bankConnections.length} bank connections`, { teamId });
+        span.setAttribute('connectionCount', bankConnections.length);
+        logger.info(`Found ${bankConnections.length} bank connections`, {
+          teamId,
+        });
 
         // Format the bank connections for the sync connection job
         const formattedConnections: Array<FormattedConnection> =
@@ -115,7 +116,7 @@ export const bankSyncScheduler = schedules.task({
 
         logger.info('Successfully triggered sync for all connections', {
           teamId,
-          connectionCount: formattedConnections.length
+          connectionCount: formattedConnections.length,
         });
 
         return {
@@ -125,20 +126,23 @@ export const bankSyncScheduler = schedules.task({
         };
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error occurred';
 
       logger.error('Failed to sync bank connections', {
         teamId,
-        error: errorMessage
+        error: errorMessage,
       });
 
       // Propagate error with context
-      throw new Error(`Failed to sync bank connections for team ${teamId}: ${errorMessage}`);
+      throw new Error(
+        `Failed to sync bank connections for team ${teamId}: ${errorMessage}`
+      );
     }
   },
   /**
    * Custom error handler to control retry behavior based on error type
-   * 
+   *
    * @param payload - The task payload
    * @param error - The error that occurred
    * @param options - Options object containing context and retry control
@@ -146,7 +150,10 @@ export const bankSyncScheduler = schedules.task({
    */
   handleError: async (payload, error, { ctx, retryAt }) => {
     // If it's a database connection error, wait longer before retry
-    if (error instanceof Error && error.message.includes("database connection")) {
+    if (
+      error instanceof Error &&
+      error.message.includes('database connection')
+    ) {
       return {
         retryAt: new Date(Date.now() + 60000), // Wait at least 1 minute
       };
