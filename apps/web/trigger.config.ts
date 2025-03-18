@@ -22,12 +22,11 @@ export default defineConfig({
 
   // Build configuration
   build: {
-    external: [],
+    external: ['sharp'],
   },
 
   // Directory configuration
   dirs: [
     './src/jobs/tasks', // Individual task directories
-    './src/jobs', // For index.ts and tasks.ts
   ],
 });

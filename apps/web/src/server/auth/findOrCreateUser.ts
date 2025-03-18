@@ -7,7 +7,7 @@ import {
 
 import { LoopsClient } from 'loops';
 import { UserRole } from '@prisma/client';
-import WelcomeEmail from '@/components/email/welcome-email';
+import { WelcomeEmail } from '@solomonai/email';
 import { env } from '@/env';
 import { nid } from '@/lib/nid';
 import { prisma } from '@/server/db';

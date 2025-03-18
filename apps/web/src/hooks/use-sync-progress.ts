@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import type { AnyTask } from '@trigger.dev/sdk/v3';
 import { useRealtimeRunWithStreams } from '@trigger.dev/react-hooks';
 
 /** Represents the progress of a synchronization operation. */

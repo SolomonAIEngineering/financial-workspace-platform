@@ -1103,6 +1103,7 @@ model TransactionEnrichment {
 model Invoice {
   id              String         @id @default(cuid())
   teamId          String         @map("team_id")
+  title           String?        @map("title")
   status          InvoiceStatus  @default(DRAFT)
   customerId      String?        @map("customer_id")
   customerName    String?        @map("customer_name")
@@ -1118,7 +1119,7 @@ model Invoice {
   paidAt          DateTime?      @map("paid_at")
   viewedAt        DateTime?      @map("viewed_at")
   reminderSentAt  DateTime?      @map("reminder_sent_at")
-  lineItems       Json?          @map("line_items")
+  lineItems       InvoiceLineItem[]
   fromDetails     Json?          @map("from_details")
   customerDetails Json?          @map("customer_details")
   paymentDetails  Json?          @map("payment_details")
@@ -1143,6 +1144,18 @@ model Invoice {
   user            User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@map("invoices")
+}
+
+model InvoiceLineItem {
+  id        String    @id @default(cuid())
+  invoiceId String    @map("invoice_id")
+  name      String
+  quantity  Float
+  price     Float
+  unit      String?
+
+  @@map("invoice_line_items")
+  Invoice Invoice[]
 }
 
 model InvoiceTemplate {

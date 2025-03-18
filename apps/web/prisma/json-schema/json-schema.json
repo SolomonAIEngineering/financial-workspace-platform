@@ -3356,6 +3356,12 @@
         "id": {
           "type": "string"
         },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "status": {
           "type": "string",
           "default": "DRAFT",
@@ -3451,14 +3457,10 @@
           "format": "date-time"
         },
         "lineItems": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InvoiceLineItem"
+          }
         },
         "fromDetails": {
           "type": [
@@ -3607,6 +3609,44 @@
       "required": [
         "teamId",
         "token"
+      ]
+    },
+    "InvoiceLineItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "invoiceId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "number"
+        },
+        "price": {
+          "type": "number"
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "Invoice": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Invoice"
+          }
+        }
+      },
+      "required": [
+        "invoiceId",
+        "name",
+        "quantity",
+        "price"
       ]
     },
     "InvoiceTemplate": {
@@ -4580,6 +4620,9 @@
     },
     "invoice": {
       "$ref": "#/definitions/Invoice"
+    },
+    "invoiceLineItem": {
+      "$ref": "#/definitions/InvoiceLineItem"
     },
     "invoiceTemplate": {
       "$ref": "#/definitions/InvoiceTemplate"
