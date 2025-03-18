@@ -7,7 +7,9 @@ import { UTApi } from 'uploadthing/server';
  * including downloading file content, managing file metadata, and performing
  * other file-related operations.
  */
-export const utapi = new UTApi();
+export const utapi = new UTApi({
+  token: process.env.UPLOADTHING_TOKEN,
+});
 
 /**
  * Retrieves content from a file stored in UploadThing.
