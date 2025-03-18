@@ -21,18 +21,18 @@ import {
   Text,
 } from '@react-email/components'
 import {
-  BusinessConfig,
-  BusinessConfig as platform,
-} from '@solomonai/platform-config'
-import {
   Building,
   Calendar,
   CreditCard,
   DollarSign,
   FileText,
 } from 'lucide-react'
+import {
+  BusinessConfig,
+  BusinessConfig as platform,
+} from '@solomonai/platform-config'
 
-import Footer from '@/components/footer'
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
 
 /**

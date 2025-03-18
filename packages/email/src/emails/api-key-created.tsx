@@ -11,9 +11,9 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '@/components/footer'
-import { formatDate } from '@/utils/datetime'
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
+import { formatDate } from '../utils/datetime'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
 
 export default function APIKeyCreated({

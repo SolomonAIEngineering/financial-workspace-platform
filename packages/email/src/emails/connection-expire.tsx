@@ -19,9 +19,9 @@ import {
 } from '@solomonai/platform-config'
 import { addDays, formatDistance } from 'date-fns'
 
-import Footer from '@/components/footer'
-import { Tailwind } from '@react-email/tailwind'
 import { AlertCircle } from 'lucide-react'
+import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 
 interface ConnectionExpireEmailProps {
   fullName: string

@@ -5,6 +5,7 @@
  * @module transactions
  */
 
+import { ArrowDownRight, ArrowUpRight, FileText } from 'lucide-react'
 import {
   Body,
   Column,
@@ -20,12 +21,11 @@ import {
   Section,
   Text,
 } from '@react-email/components'
-import { ArrowDownRight, ArrowUpRight, FileText } from 'lucide-react'
 
-import Footer from '@/components/footer'
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
-import { BusinessConfig as platform } from '@solomonai/platform-config'
 import { format } from 'date-fns'
+import { BusinessConfig as platform } from '@solomonai/platform-config'
 
 /**
  * Represents a single financial transaction displayed in the email.
@@ -273,22 +273,20 @@ export default function TransactionsEmail({
                     <td className="py-2">
                       <Link
                         href={`${transactionUrl}/${transaction.id}`}
-                        className={`text-sm no-underline ${
-                          transaction?.category === 'income'
+                        className={`text-sm no-underline ${transaction?.category === 'income'
                             ? 'text-green-600'
                             : 'text-gray-900'
-                        }`}
+                          }`}
                       >
                         {transaction.name}
                       </Link>
                     </td>
                     <td align="right" className="py-2">
                       <Text
-                        className={`m-0 text-sm ${
-                          transaction?.category === 'income'
+                        className={`m-0 text-sm ${transaction?.category === 'income'
                             ? 'text-green-600'
                             : 'text-gray-900'
-                        }`}
+                          }`}
                       >
                         {formatCurrency(
                           transaction.amount,

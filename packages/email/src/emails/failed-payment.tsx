@@ -11,7 +11,7 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '@/components/footer'
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
 
@@ -29,13 +29,12 @@ export default function FailedPayment({
   amountDue: number
   attemptCount: number
 }) {
-  const title = `${
-    attemptCount === 2
+  const title = `${attemptCount === 2
       ? '2nd notice: '
       : attemptCount === 3
         ? '3rd notice: '
         : ''
-  }Your payment for ${platform.company} failed`
+    }Your payment for ${platform.company} failed`
 
   return (
     <Html>

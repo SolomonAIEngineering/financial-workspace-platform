@@ -10,9 +10,9 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '@/components/footer'
-import { getPlanDetails } from '@/utils/pricing'
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
+import { getPlanDetails } from '../utils/pricing'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
 
 export default function UpgradeEmail({

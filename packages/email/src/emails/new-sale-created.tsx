@@ -11,10 +11,10 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '@/components/footer'
-import { currencyFormatter } from '@/utils/currency-formatter'
-import { getPrettyUrl } from '@/utils/utils'
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
+import { currencyFormatter } from '../utils/currency-formatter'
+import { getPrettyUrl } from '../utils/utils'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
 
 export default function NewSaleCreated({

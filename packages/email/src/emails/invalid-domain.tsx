@@ -11,10 +11,10 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '@/components/footer'
+import Footer from '../components/footer'
+import { JSX } from 'react'
 import { Tailwind } from '@react-email/tailwind'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
-import { JSX } from 'react'
 
 export default function InvalidDomain({
   email = 'panic@thedis.co',
@@ -85,9 +85,8 @@ export default function InvalidDomain({
               </Link>{' '}
               or simply ignore this email. To respect your inbox,{' '}
               {invalidDays < 28
-                ? `we will only send you one more email about this in ${
-                    28 - invalidDays
-                  } days.`
+                ? `we will only send you one more email about this in ${28 - invalidDays
+                } days.`
                 : 'this will be the last time we will email you about this.'}
             </Text>
             <Footer

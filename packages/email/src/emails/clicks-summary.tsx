@@ -15,11 +15,11 @@ import {
 } from '@react-email/components'
 import { Link2, MousePointerClick } from 'lucide-react'
 
-import Footer from '@/components/footer'
-import { nFormatter } from '@/utils/nformatter'
-import { smartTruncate } from '@/utils/smart-truncate'
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
+import { nFormatter } from '../utils/nformatter'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
+import { smartTruncate } from '../utils/smart-truncate'
 
 export default function ClicksSummary({
   email = 'panic@thedis.co',

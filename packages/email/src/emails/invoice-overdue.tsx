@@ -5,6 +5,7 @@
  * @module invoice-overdue
  */
 
+import { AlertTriangle, Calendar, DollarSign, Send } from 'lucide-react'
 import {
   Body,
   Column,
@@ -24,9 +25,8 @@ import {
   BusinessConfig,
   BusinessConfig as platform,
 } from '@solomonai/platform-config'
-import { AlertTriangle, Calendar, DollarSign, Send } from 'lucide-react'
 
-import Footer from '@/components/footer'
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
 
 /**

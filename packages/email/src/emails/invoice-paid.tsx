@@ -32,7 +32,7 @@ import {
   FileText,
 } from 'lucide-react'
 
-import Footer from '@/components/footer'
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
 
 /**
