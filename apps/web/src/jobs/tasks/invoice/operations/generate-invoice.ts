@@ -23,6 +23,7 @@ export const generateInvoice = schemaTask({
       },
       include: {
         lineItems: true,
+        team: true,
       },
     });
 
