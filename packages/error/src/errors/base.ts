@@ -13,6 +13,13 @@
  */
 export type ErrorContext = Record<string, unknown>
 
+// Allow both with and without cause property in Error
+declare global {
+  interface Error {
+    cause?: unknown;
+  }
+}
+
 /**
  * Abstract base class for custom error handling with support for error chaining,
  * contextual information, and retry behavior.
@@ -44,7 +51,7 @@ export abstract class BaseError<
    * The error that caused this error, enabling error chaining.
    * Useful for tracking error propagation through the application.
    */
-  public readonly cause: BaseError | undefined
+  public override readonly cause: BaseError | undefined
 
   /**
    * Additional contextual information about the error.
@@ -55,13 +62,13 @@ export abstract class BaseError<
   /**
    * The error message describing what went wrong.
    */
-  public readonly message: string
+  public override readonly message: string
 
   /**
    * The name of the error class. Must be implemented by extending classes.
    * Used for error identification and logging purposes.
    */
-  public abstract readonly name: string
+  public abstract override readonly name: string
 
   /**
    * Creates a new instance of BaseError.
@@ -95,7 +102,7 @@ export abstract class BaseError<
    * // Output: CustomError: Something went wrong - {"userId":"user123"} - caused by undefined
    * ```
    */
-  public toString(): string {
+  public override toString(): string {
     return `${this.name}: ${this.message} - ${JSON.stringify(
       this.context,
     )} - caused by ${this.cause?.toString()}`

@@ -22,7 +22,8 @@ const Avatar = React.forwardRef<
 Avatar.displayName = AvatarPrimitive.Root.displayName
 
 export const AvatarImageNext: React.ForwardRefExoticComponent<
-  React.ComponentPropsWithoutRef<typeof Image> & React.RefAttributes<React.ElementRef<typeof Image>>
+  React.ComponentPropsWithoutRef<typeof Image> &
+    React.RefAttributes<React.ElementRef<typeof Image>>
 > = React.forwardRef<
   React.ElementRef<typeof Image>,
   React.ComponentPropsWithoutRef<typeof Image>

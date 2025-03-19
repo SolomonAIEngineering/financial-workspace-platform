@@ -201,7 +201,7 @@ export const client = new TriggerClient({
 });
 ```
 
-Jobs are defined using the `client.defineJob()` method, which provides type safety and built-in logging, retries, and monitoring:
+Jobs are defined using the `schemaTask()` method, which provides type safety and built-in logging, retries, and monitoring:
 
 ```typescript
 // Example job definition pattern
@@ -209,7 +209,7 @@ import { client } from '../client';
 import { eventTrigger } from '@trigger.dev/sdk';
 import { z } from 'zod';
 
-export const exampleSyncJob = client.defineJob({
+export const exampleSyncJob = schemaTask({
   // Unique identifier for the job
   id: 'sync-bank-example',
 
@@ -242,7 +242,7 @@ export const exampleSyncJob = client.defineJob({
     } = payload;
 
     // Log the start of the job
-    await io.logger.info('Starting bank sync job', {
+    await logger.info('Starting bank sync job', {
       connectionId,
       provider,
       userId,
@@ -259,7 +259,7 @@ export const exampleSyncJob = client.defineJob({
       };
     } catch (error) {
       // Error handling
-      await io.logger.error('Bank sync job failed', {
+      await logger.error('Bank sync job failed', {
         connectionId,
         provider,
         error: error.message,
@@ -314,7 +314,7 @@ import { client } from '../../../client';
  * This job handles syncing a bank connection and all its accounts It's a
  * fan-out job that triggers sync-account for each account
  */
-export const syncConnectionJob = client.defineJob({
+export const syncConnectionJob = schemaTask({
   id: 'sync-connection-job',
   name: 'Sync Bank Connection',
   trigger: eventTrigger({
@@ -324,7 +324,7 @@ export const syncConnectionJob = client.defineJob({
   run: async (payload, io) => {
     const { connectionId, manualSync = false } = payload;
 
-    await io.logger.info(`Starting connection sync for ${connectionId}`);
+    await logger.info(`Starting connection sync for ${connectionId}`);
 
     try {
       // Fetch the connection details
@@ -343,7 +343,7 @@ export const syncConnectionJob = client.defineJob({
       });
 
       if (!connection) {
-        await io.logger.error(`Connection ${connectionId} not found`);
+        await logger.error(`Connection ${connectionId} not found`);
         throw new Error(`Connection ${connectionId} not found`);
       }
 
@@ -384,7 +384,7 @@ export const syncConnectionJob = client.defineJob({
       });
 
       if (accounts.length === 0) {
-        await io.logger.info(
+        await logger.info(
           `No active accounts found for connection ${connectionId}`
         );
 
@@ -394,7 +394,7 @@ export const syncConnectionJob = client.defineJob({
         };
       }
 
-      await io.logger.info(`Found ${accounts.length} accounts to sync`);
+      await logger.info(`Found ${accounts.length} accounts to sync`);
 
       // Trigger account syncs with appropriate delays
       let accountsSynced = 0;
@@ -430,7 +430,7 @@ export const syncConnectionJob = client.defineJob({
         });
       }
 
-      await io.logger.info(
+      await logger.info(
         `Connection sync completed, triggered ${accountsSynced} account syncs`
       );
 
@@ -440,7 +440,7 @@ export const syncConnectionJob = client.defineJob({
         status: 'success',
       };
     } catch (error) {
-      await io.logger.error(`Connection sync failed: ${error.message}`, {
+      await logger.error(`Connection sync failed: ${error.message}`, {
         connectionId,
         error: error.stack,
       });
@@ -483,7 +483,7 @@ import { client } from '../../client';
  * This job updates bank account balances on a frequent basis without pulling
  * full transaction history, providing more real-time balance data.
  */
-export const updateBalancesJob = client.defineJob({
+export const updateBalancesJob = schemaTask({
   id: 'update-bank-balances-job',
   name: 'Update Bank Balances',
   trigger: cronTrigger({
@@ -491,7 +491,7 @@ export const updateBalancesJob = client.defineJob({
   }),
   version: '1.0.0',
   run: async (payload, io) => {
-    await io.logger.info('Starting balance update job');
+    await logger.info('Starting balance update job');
 
     // Find active connections to update
     const connections = await io.runTask('get-active-connections', async () => {
@@ -513,7 +513,7 @@ export const updateBalancesJob = client.defineJob({
       });
     });
 
-    await io.logger.info(
+    await logger.info(
       `Found ${connections.length} connections to update balances`
     );
 
@@ -529,7 +529,7 @@ export const updateBalancesJob = client.defineJob({
           continue;
         }
 
-        await io.logger.info(
+        await logger.info(
           `Updating balances for connection ${connection.id} with ${connection.accounts.length} accounts`
         );
 
@@ -575,14 +575,14 @@ export const updateBalancesJob = client.defineJob({
 
         successCount++;
       } catch (error) {
-        await io.logger.error(
+        await logger.error(
           `Error updating balances for connection ${connection.id}: ${error.message}`
         );
         errorCount++;
       }
     }
 
-    await io.logger.info(
+    await logger.info(
       `Balance update job completed: ${successCount} connections updated, ${accountsUpdated} account balances updated, ${errorCount} errors`
     );
 
@@ -620,7 +620,7 @@ import { client } from '../../../client';
  * successfully authenticated with Plaid. It creates the bank connection record
  * and all associated bank accounts, then triggers the initial sync.
  */
-export const initialSetupJob = client.defineJob({
+export const initialSetupJob = schemaTask({
   id: 'initial-setup-job',
   name: 'Initial Bank Connection Setup',
   trigger: eventTrigger({
@@ -630,7 +630,7 @@ export const initialSetupJob = client.defineJob({
   run: async (payload, io) => {
     const { accessToken, institutionId, itemId, publicToken, userId } = payload;
 
-    await io.logger.info(
+    await logger.info(
       `Starting initial setup for institution ${institutionId}`
     );
 
@@ -660,7 +660,7 @@ export const initialSetupJob = client.defineJob({
         return await getAccounts(accessToken);
       });
 
-      await io.logger.info(
+      await logger.info(
         `Found ${plaidAccounts.length} accounts for institution ${institution.name}`
       );
 
@@ -727,7 +727,7 @@ export const initialSetupJob = client.defineJob({
         },
       });
 
-      await io.logger.info(`Initial setup completed for ${institution.name}`);
+      await logger.info(`Initial setup completed for ${institution.name}`);
 
       return {
         accountCount: bankAccounts.length,
@@ -735,7 +735,7 @@ export const initialSetupJob = client.defineJob({
         status: 'success',
       };
     } catch (error) {
-      await io.logger.error(
+      await logger.error(
         `Initial setup failed for institution ${institutionId}: ${error.message}`
       );
 
@@ -1087,7 +1087,7 @@ import { client } from '../../../client';
  * This job fetches transactions for a specific bank account and upserts them
  * into the database. It also handles categorization of new transactions.
  */
-export const upsertTransactionsJob = client.defineJob({
+export const upsertTransactionsJob = schemaTask({
   id: 'upsert-transactions-job',
   name: 'Upsert Bank Transactions',
   trigger: eventTrigger({
@@ -1102,9 +1102,7 @@ export const upsertTransactionsJob = client.defineJob({
   run: async (payload, io) => {
     const { accessToken, bankAccountId, userId } = payload;
 
-    await io.logger.info(
-      `Starting transaction sync for account ${bankAccountId}`
-    );
+    await logger.info(`Starting transaction sync for account ${bankAccountId}`);
 
     try {
       // Get the bank account details
@@ -1140,7 +1138,7 @@ export const upsertTransactionsJob = client.defineJob({
         );
       });
 
-      await io.logger.info(
+      await logger.info(
         `Fetched ${transactions.length} transactions for account ${bankAccountId}`
       );
 
@@ -1227,7 +1225,7 @@ export const upsertTransactionsJob = client.defineJob({
         });
       }
 
-      await io.logger.info(
+      await logger.info(
         `Transaction sync completed for account ${bankAccountId}: ${newCount} new, ${updatedCount} updated`
       );
 
@@ -1238,7 +1236,7 @@ export const upsertTransactionsJob = client.defineJob({
         updatedTransactions: updatedCount,
       };
     } catch (error) {
-      await io.logger.error(
+      await logger.error(
         `Transaction sync failed for account ${bankAccountId}: ${error.message}`
       );
 
@@ -1268,7 +1266,7 @@ import { client } from '../client';
  * This job runs periodically to categorize any uncategorized transactions using
  * our machine learning categorization service.
  */
-export const categorizationJob = client.defineJob({
+export const categorizationJob = schemaTask({
   id: 'categorize-transactions-job',
   name: 'Categorize Transactions',
   trigger: cronTrigger({
@@ -1276,7 +1274,7 @@ export const categorizationJob = client.defineJob({
   }),
   version: '1.0.0',
   run: async (payload, io) => {
-    await io.logger.info('Starting transaction categorization job');
+    await logger.info('Starting transaction categorization job');
 
     try {
       // Find uncategorized transactions
@@ -1300,14 +1298,14 @@ export const categorizationJob = client.defineJob({
       );
 
       if (uncategorizedTransactions.length === 0) {
-        await io.logger.info('No uncategorized transactions found');
+        await logger.info('No uncategorized transactions found');
         return {
           categorizedCount: 0,
           status: 'success',
         };
       }
 
-      await io.logger.info(
+      await logger.info(
         `Found ${uncategorizedTransactions.length} uncategorized transactions`
       );
 
@@ -1342,7 +1340,7 @@ export const categorizationJob = client.defineJob({
 
               categorizedCount++;
             } catch (error) {
-              await io.logger.error(
+              await logger.error(
                 `Error categorizing transaction ${transaction.id}: ${error.message}`
               );
             }
@@ -1350,7 +1348,7 @@ export const categorizationJob = client.defineJob({
         });
       }
 
-      await io.logger.info(
+      await logger.info(
         `Categorization completed: ${categorizedCount} transactions categorized`
       );
 
@@ -1359,7 +1357,7 @@ export const categorizationJob = client.defineJob({
         status: 'success',
       };
     } catch (error) {
-      await io.logger.error(`Categorization job failed: ${error.message}`);
+      await logger.error(`Categorization job failed: ${error.message}`);
 
       return {
         error: error.message,
@@ -1477,7 +1475,7 @@ import { client } from '../../../client';
  * This job checks for disconnected bank connections and schedules reconnection
  * attempts or sends notifications to users.
  */
-export const disconnectedSchedulerJob = client.defineJob({
+export const disconnectedSchedulerJob = schemaTask({
   id: 'disconnected-scheduler-job',
   name: 'Check Disconnected Bank Connections',
   trigger: cronTrigger({
@@ -1485,7 +1483,7 @@ export const disconnectedSchedulerJob = client.defineJob({
   }),
   version: '1.0.0',
   run: async (payload, io) => {
-    await io.logger.info('Starting disconnected connections check');
+    await logger.info('Starting disconnected connections check');
 
     // Find disconnected connections
     const disconnectedConnections = await io.runTask(
@@ -1507,7 +1505,7 @@ export const disconnectedSchedulerJob = client.defineJob({
       }
     );
 
-    await io.logger.info(
+    await logger.info(
       `Found ${disconnectedConnections.length} disconnected connections`
     );
 
@@ -1541,7 +1539,7 @@ export const disconnectedSchedulerJob = client.defineJob({
       }
     }
 
-    await io.logger.info(
+    await logger.info(
       `Disconnected scheduler completed: ${notificationsSent} notifications sent`
     );
 
@@ -1569,7 +1567,7 @@ import { client } from '../../../client';
  * This job schedules notifications for connections that are about to expire.
  * It's triggered by a daily event but processes connections individually.
  */
-export const expiringSchedulerJob = client.defineJob({
+export const expiringSchedulerJob = schemaTask({
   id: 'expiring-scheduler-job',
   name: 'Schedule Expiring Connection Notifications',
   trigger: eventTrigger({
@@ -1584,7 +1582,7 @@ export const expiringSchedulerJob = client.defineJob({
   run: async (payload, io) => {
     const { connectionId, daysUntilExpiry, userId } = payload;
 
-    await io.logger.info(
+    await logger.info(
       `Checking expiring connection ${connectionId}, ${daysUntilExpiry} days until expiry`
     );
 
@@ -1601,7 +1599,7 @@ export const expiringSchedulerJob = client.defineJob({
         },
       });
 
-      await io.logger.info(
+      await logger.info(
         `Sent critical expiration notification for connection ${connectionId}`
       );
     } else if (daysUntilExpiry <= 14) {
@@ -1616,7 +1614,7 @@ export const expiringSchedulerJob = client.defineJob({
         },
       });
 
-      await io.logger.info(
+      await logger.info(
         `Sent warning expiration notification for connection ${connectionId}`
       );
     }

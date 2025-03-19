@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+
 import { ConnectTransactionsModal } from '../modals/connect-transactions-modal';
-import { useConnectParams } from '@/lib/hooks/use-connect-params';
+import { useConnectParams } from '@/hooks/use-connect-params';
 import { useConnectTransactions } from './connect-transactions-context';
 
 /**
@@ -13,16 +15,22 @@ export function ConnectTransactionsWrapper() {
   const { isOpen, countryCode, userId, closeModal } = useConnectTransactions();
 
   // Get the setParams function from useConnectParams to properly manage modal state
-  const { setParams } = useConnectParams(countryCode);
+  const { setParams, step } = useConnectParams(countryCode);
 
-  // When the modal is opened through our context, we need to set the 'step' parameter
-  // to 'connect' to ensure the internal modal logic works correctly
-  if (isOpen) {
-    // Use setTimeout to avoid React state update warnings
-    setTimeout(async () => {
-      await setParams({ step: 'connect', countryCode });
-    }, 0);
-  }
+  // Use a ref to track previous isOpen state to avoid unnecessary updates
+  const prevIsOpenRef = useRef(isOpen);
+
+  // Move the state update to useEffect to avoid render phase updates
+  useEffect(() => {
+    // Only update params when isOpen changes from false to true
+    if (isOpen && !prevIsOpenRef.current && step !== 'connect') {
+      // Update URL parameters when modal is opened through context
+      void setParams({ step: 'connect', countryCode });
+    }
+
+    // Update the ref to track the current value
+    prevIsOpenRef.current = isOpen;
+  }, [isOpen, countryCode, setParams, step]);
 
   // Custom handleClose to call the closeModal function from context
   // and also reset the URL parameters

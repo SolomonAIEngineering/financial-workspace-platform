@@ -257,6 +257,9 @@ export type BankAccount = {
   recurringMonthlyInflow: Generated<number | null>
   recurringMonthlyOutflow: Generated<number | null>
   nextScheduledTransaction: Timestamp | null
+  errorDetails: string | null
+  errorRetries: number | null
+  balance: number | null
 }
 export type BankAccountToTeam = {
   A: string
@@ -297,6 +300,11 @@ export type BankConnection = {
   lastExpiryNotifiedAt: Timestamp | null
   expiryNotificationCount: Generated<number>
   expiresAt: Timestamp | null
+  provider: string
+}
+export type BankConnectionToTeam = {
+  A: string
+  B: string
 }
 export type Comment = {
   id: string
@@ -435,6 +443,7 @@ export type Inbox = {
 export type Invoice = {
   id: string
   team_id: string
+  title: string | null
   status: Generated<InvoiceStatus>
   customer_id: string | null
   customer_name: string | null
@@ -450,7 +459,6 @@ export type Invoice = {
   paid_at: Timestamp | null
   viewed_at: Timestamp | null
   reminder_sent_at: Timestamp | null
-  line_items: unknown | null
   from_details: unknown | null
   customer_details: unknown | null
   payment_details: unknown | null
@@ -468,6 +476,14 @@ export type Invoice = {
   user_id: string | null
   created_at: Generated<Timestamp>
   updated_at: Timestamp | null
+}
+export type InvoiceLineItem = {
+  id: string
+  invoice_id: string
+  name: string
+  quantity: number
+  price: number
+  unit: string | null
 }
 export type InvoiceTemplate = {
   id: string
@@ -504,6 +520,10 @@ export type InvoiceTemplate = {
   include_units: boolean | null
   include_qr: boolean | null
   created_at: Generated<Timestamp>
+}
+export type InvoiceToInvoiceLineItem = {
+  A: string
+  B: string
 }
 export type Notification = {
   id: string
@@ -629,6 +649,7 @@ export type Tag = {
 export type Team = {
   id: string
   name: string | null
+  slug: string
   base_currency: string | null
   email: string | null
   logo_url: string | null
@@ -908,6 +929,8 @@ export type UsersOnTeam = {
 }
 export type DB = {
   _BankAccountToTeam: BankAccountToTeam
+  _BankConnectionToTeam: BankConnectionToTeam
+  _InvoiceToInvoiceLineItem: InvoiceToInvoiceLineItem
   apps: App
   Attachment: Attachment
   BankAccount: BankAccount
@@ -921,6 +944,7 @@ export type DB = {
   exchange_rates: ExchangeRate
   File: File
   inbox: Inbox
+  invoice_line_items: InvoiceLineItem
   invoice_templates: InvoiceTemplate
   invoices: Invoice
   Notification: Notification

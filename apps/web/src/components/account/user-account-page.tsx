@@ -13,6 +13,8 @@ import { Icons } from '@/components/ui/icons';
 import { PageHeader } from '@/components/ui/page-header';
 import { ProfileSection } from '@/components/account/profile-section';
 import { Spinner } from '@/registry/default/potion-ui/spinner';
+import { TeamSection } from '@/components/account/team-section/team-section';
+import { Users } from 'lucide-react';
 import { useCurrentUser } from '../auth/useCurrentUser';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -94,6 +96,13 @@ export function UserAccountPage() {
               </TabsTrigger>
               <TabsTrigger
                 className="flex min-w-32 items-center justify-center gap-2 rounded-full px-8 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-muted/20 data-[state=active]:scale-[1.02] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                value="teams"
+              >
+                <Users className="size-4 opacity-80" />
+                <span>Teams</span>
+              </TabsTrigger>
+              <TabsTrigger
+                className="flex min-w-32 items-center justify-center gap-2 rounded-full px-8 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-muted/20 data-[state=active]:scale-[1.02] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
                 value="financials"
               >
                 <Icons.creditCard className="size-4 opacity-80" />
@@ -123,6 +132,13 @@ export function UserAccountPage() {
                 user={combinedUserData as any}
                 userSettings={formattedSettings as any}
               />
+            </TabsContent>
+
+            <TabsContent
+              className="slide-in-from-right-1 animate-in space-y-8 duration-300"
+              value="teams"
+            >
+              <TeamSection userId={user.id ?? ''} />
             </TabsContent>
 
             <TabsContent

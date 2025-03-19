@@ -6,7 +6,7 @@ import { Button } from '@/registry/default/potion-ui/button';
 import React from 'react';
 import { RefreshCcw } from 'lucide-react';
 import { connectionStatus } from './bank-connection';
-import { useConnectParams } from '@/lib/hooks/use-connect-params';
+import { useConnectParams } from '@/hooks/use-connect-params';
 
 interface ReconnectProviderButtonProps {
   connection: BankConnection;

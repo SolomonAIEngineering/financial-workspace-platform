@@ -12,5 +12,87 @@ services:
     volumes:
       - potion_pg_data:/data/postgres
 
+  # ZooKeeper for ClickHouse cluster coordination
+  zookeeper:
+    image: zookeeper:3.7
+    container_name: zookeeper
+    restart: always
+    ports:
+      - '2181:2181'
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
+    volumes:
+      - zookeeper_data:/data
+      - zookeeper_datalog:/datalog
+
+  # ClickHouse coordinator node
+  clickhouse-coordinator:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-coordinator
+    restart: always
+    ports:
+      - '8123:8123' # HTTP interface
+      - '9000:9000' # Native client
+    volumes:
+      - clickhouse_coordinator_data:/var/lib/clickhouse
+    depends_on:
+      - zookeeper
+    environment:
+      CLICKHOUSE_USER: admin
+      CLICKHOUSE_PASSWORD: password
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  # ClickHouse data node 1
+  clickhouse-node1:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-node1
+    restart: always
+    ports:
+      - '8124:8123' # HTTP interface
+      - '9001:9000' # Native client
+    volumes:
+      - clickhouse_node1_data:/var/lib/clickhouse
+    depends_on:
+      - zookeeper
+      - clickhouse-coordinator
+    environment:
+      CLICKHOUSE_USER: admin
+      CLICKHOUSE_PASSWORD: password
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  # ClickHouse data node 2
+  clickhouse-node2:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-node2
+    restart: always
+    ports:
+      - '8125:8123' # HTTP interface
+      - '9002:9000' # Native client
+    volumes:
+      - clickhouse_node2_data:/var/lib/clickhouse
+    depends_on:
+      - zookeeper
+      - clickhouse-coordinator
+    environment:
+      CLICKHOUSE_USER: admin
+      CLICKHOUSE_PASSWORD: password
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
 volumes:
   potion_pg_data:
+  clickhouse_coordinator_data:
+  clickhouse_node1_data:
+  clickhouse_node2_data:
+  zookeeper_data:
+  zookeeper_datalog:

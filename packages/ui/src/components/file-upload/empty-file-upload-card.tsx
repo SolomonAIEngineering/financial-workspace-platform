@@ -1,7 +1,7 @@
 import { Card, CardDescription, CardTitle } from '../card'
 
-import { IconProps } from '@radix-ui/react-icons/dist/types'
 import { ImageIcon } from '@radix-ui/react-icons'
+import { IconProps } from '@radix-ui/react-icons/dist/types'
 import React from 'react'
 import { cn } from '../../utils/cn'
 

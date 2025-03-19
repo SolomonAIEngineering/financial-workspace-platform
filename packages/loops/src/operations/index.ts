@@ -1,3 +1,3 @@
-export * from './contacts';
-export * from './messages';
-export * from './properties'; 
+export * from './contacts'
+export * from './messages'
+export * from './properties'

@@ -1,24 +1,22 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import type { ReactNode } from 'react';
-
-import { cn } from '@udecode/cn';
+import { AudioLinesIcon, FileUpIcon, FilmIcon, ImageIcon } from 'lucide-react';
 import {
   AudioPlugin,
   FilePlugin,
   ImagePlugin,
   PlaceholderProvider,
-  usePlaceholderElementState,
   VideoPlugin,
+  usePlaceholderElementState,
 } from '@udecode/plate-media/react';
 import { PlateElement, withHOC } from '@udecode/plate/react';
-import { AudioLinesIcon, FileUpIcon, FilmIcon, ImageIcon } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { BlockActionButton } from '@/registry/default/potion-ui/block-context-menu';
-import { Spinner } from '@/registry/default/potion-ui/spinner';
-
 import { MediaPlaceholderPopover } from './media-placeholder-popover-app';
+import type { ReactNode } from 'react';
+import { Spinner } from '@/registry/default/potion-ui/spinner';
+import { cn } from '@udecode/cn';
 
 const CONTENT: Record<
   string,
@@ -73,7 +71,7 @@ export const MediaPlaceholderElement = withHOC(
         width,
       });
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [imageRef.current]);
+    }, []);
 
     return (
       <PlateElement className={cn('relative my-1', className)} {...props}>

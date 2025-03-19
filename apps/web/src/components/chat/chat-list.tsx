@@ -1,10 +1,9 @@
 'use client';
 
-import type { UIState } from '@/components/ai/utils/ai.types';
-
-import Link from 'next/link';
-
 import { Icons } from '@/components/ui/icons';
+import Link from 'next/link';
+import type { UIState } from '@/components/ai/utils/ai.types';
+import { routes } from '@/lib/navigation/routes';
 
 export interface ChatListProps {
   isShared: boolean;
@@ -23,11 +22,17 @@ export function ChatList({ isShared, messages }: ChatListProps) {
             <div className="ml-5 flex-1 space-y-2 overflow-hidden px-1">
               <p className="leading-normal text-muted-foreground">
                 Please{' '}
-                <Link className="underline underline-offset-4" href="/login">
+                <Link
+                  className="underline underline-offset-4"
+                  href={routes.login()}
+                >
                   log in
                 </Link>{' '}
                 or{' '}
-                <Link className="underline underline-offset-4" href="/signup">
+                <Link
+                  className="underline underline-offset-4"
+                  href={routes.signup()}
+                >
                   sign up
                 </Link>{' '}
                 to save and revisit your chat history!

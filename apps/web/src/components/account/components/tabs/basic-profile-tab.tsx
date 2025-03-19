@@ -92,6 +92,7 @@ export function BasicProfileTab({
           placeholder="Enter your first name"
           control={form.control}
           icon={<Icons.user className="size-4 text-primary/60" />}
+          tooltipDescription="Your legal first name as it appears on official documents"
         />
 
         <ProfileFormField
@@ -100,6 +101,7 @@ export function BasicProfileTab({
           placeholder="Enter your last name"
           control={form.control}
           icon={<Icons.user className="size-4 text-primary/60" />}
+          tooltipDescription="Your legal last name as it appears on official documents"
         />
       </div>
 
@@ -107,6 +109,7 @@ export function BasicProfileTab({
       <ProfileFormField
         name="name"
         description="This is your public display name seen by others."
+        tooltipDescription="Your display name will be shown in chat messages, comments, and team collaborations. It can be different from your legal name."
         label="Display Name"
         placeholder="Enter your full name"
         control={form.control}
@@ -117,6 +120,7 @@ export function BasicProfileTab({
       <ProfileFormField
         name="email"
         description="Your email address is used for notifications and account recovery."
+        tooltipDescription="This email is used for account notifications and security alerts. Changing it may require reverification."
         label="Email"
         placeholder="Enter your email"
         control={form.control}
@@ -159,6 +163,7 @@ export function BasicProfileTab({
       <ProfileFormField
         name="profileImageUrl"
         description="URL to your profile picture. Use a square image for best results."
+        tooltipDescription="Your profile picture will be displayed in comments, mentions, and your profile page. We recommend using a clear headshot with your face visible."
         label="Profile Picture URL"
         placeholder="https://example.com/your-avatar.jpg"
         control={form.control}

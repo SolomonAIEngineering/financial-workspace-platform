@@ -1,7 +1,6 @@
-import { BANK_JOBS } from '../../constants';
-import { client } from '../../../client';
-import { eventTrigger } from '@trigger.dev/sdk';
-import { prisma } from '@/server/db';
+import { resend } from '@/lib/resend';
+import { schemaTask } from '@trigger.dev/sdk/v3';
+import { z } from 'zod';
 
 /**
  * This job sends detailed notifications to users about bank connections that
@@ -42,122 +41,54 @@ import { prisma } from '@/server/db';
  *   status: "success"
  *   }
  */
-export const expiringNotificationsJob = client.defineJob({
-  id: BANK_JOBS.EXPIRING_NOTIFICATIONS,
-  name: 'Send Expiring Connection Notifications',
-  trigger: eventTrigger({
-    name: 'expiring-notification',
-  }),
-  version: '1.0.0',
-  /**
-   * Main job execution function that handles sending notifications for expiring
-   * connections
-   *
-   * @param payload - Information about the expiring connection
-   * @param payload.userId - The ID of the user who owns the connection
-   * @param payload.connectionId - The ID of the bank connection that's expiring
-   * @param payload.email - User's email address to send the notification to
-   * @param payload.name - User's name for personalized greeting
-   * @param payload.institutionName - Name of the financial institution
-   * @param payload.daysUntilExpiry - Number of days until the connection
-   *   expires
-   * @param payload.daysInactive - Number of days the connection has been
-   *   inactive
-   * @param payload.accountCount - Number of accounts linked through this
-   *   connection
-   * @param io - The I/O context provided by Trigger.dev for logging, running
-   *   tasks, etc.
-   * @returns An object containing the connection ID, email content, and status
-   */
-  run: async (payload, io) => {
-    const {
-      accountCount,
-      connectionId,
-      daysInactive,
-      daysUntilExpiry,
-      email,
-      institutionName,
-      name,
-      userId,
-    } = payload;
 
-    await io.logger.info(
-      `Sending expiring connection notification for ${connectionId}`
+export const expiringNotifications = schemaTask({
+  id: 'expiring-notifications',
+  maxDuration: 300,
+  queue: {
+    concurrencyLimit: 1,
+  },
+  schema: z.object({
+    users: z.array(
+      z.object({
+        bankName: z.string(),
+        teamName: z.string(),
+        expiresAt: z.string(),
+        user: z.object({
+          id: z.string(),
+          email: z.string(),
+          full_name: z.string(),
+          locale: z.string(),
+        }),
+      })
+    ),
+  }),
+  run: async ({ users }) => {
+    const emailPromises = users.map(
+      async ({ user, bankName, teamName, expiresAt }) => {
+        // const html = await render(
+        //   <ConnectionExpireEmail
+        //     fullName={ user.full_name }
+        //     bankName = { bankName }
+        //     teamName = { teamName }
+        //     expiresAt = { expiresAt }
+        //   />,
+        // );
+
+        const html = `<h1>Hello</h1>`;
+
+        return {
+          from: 'Solomon AI <hello@solomonai.com>',
+          to: [user.email],
+          subject: 'Bank Connection Expiring Soon',
+          html,
+        };
+      }
     );
 
-    try {
-      // Send email notification
-      await io.runTask('send-expiring-email', async () => {
-        await client.sendEvent({
-          name: 'send-email',
-          payload: {
-            subject: `Action Required: Your ${institutionName} Connection Will Expire Soon`,
-            template: 'connection-expiring',
-            templateData: {
-              accountCount,
-              daysInactive,
-              daysUntilExpiry,
-              institutionName,
-              name: name || 'there',
-              reconnectUrl: `https://yourdomain.com/app/accounts/reconnect/${connectionId}`,
-            },
-            to: email,
-          },
-        });
-      });
+    const emails = await Promise.all(emailPromises);
 
-      // Record this notification
-      await prisma.notification.create({
-        data: {
-          body: `Your connection to ${institutionName} will expire in ${daysUntilExpiry} days if not used. Please reconnect to maintain access.`,
-          metadata: {
-            connectionId,
-            daysUntilExpiry,
-          },
-          read: false,
-          title: `${institutionName} connection expiring soon`,
-          type: 'CONNECTION_EXPIRING',
-          userId,
-        },
-      });
-
-      // Generate the email content
-      const emailText = generateExpiringEmailText({
-        accountCount,
-        daysInactive,
-        daysUntilExpiry,
-        institutionName,
-        name: name || 'there',
-      });
-
-      const emailHtml = generateExpiringEmailHtml({
-        accountCount,
-        daysInactive,
-        daysUntilExpiry,
-        institutionName,
-        name: name || 'there',
-        reconnectUrl: `https://yourdomain.com/app/accounts/reconnect/${connectionId}`,
-      });
-
-      await io.logger.info(
-        `Expiring notification sent for ${institutionName} connection`
-      );
-
-      return {
-        connectionId,
-        emailHtml,
-        emailText,
-        status: 'success',
-      };
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      await io.logger.error(
-        `Failed to send expiring notification: ${errorMessage}`
-      );
-
-      throw error;
-    }
+    await resend?.batch.send(emails);
   },
 });
 

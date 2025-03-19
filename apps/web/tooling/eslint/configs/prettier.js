@@ -5,7 +5,7 @@ export default defineConfig({
     'arrow-body-style': 'off',
     'lines-around-directive': ['warn', 'always'],
     'padding-line-between-statements': [
-      'warn',
+      'off',
       { blankLine: 'never', next: 'case', prev: '*' },
       { blankLine: 'always', next: 'break', prev: '*' },
       { blankLine: 'always', next: 'class', prev: '*' },

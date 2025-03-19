@@ -1,9 +1,12 @@
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
+
 import { BANK_JOBS } from '../../constants';
-import { client } from '../../../client';
-import { eventTrigger } from '@trigger.dev/sdk';
+import { client } from '@/jobs/client';
 import { getItemDetails } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
 import { z } from 'zod';
+
+// TODO: rework this logic
 
 /**
  * This job implements an intelligent recovery mechanism for failed bank
@@ -63,19 +66,15 @@ import { z } from 'zod';
  *   error: "Error message details"
  *   }
  */
-export const connectionRecoveryJob = client.defineJob({
+export const connectionRecoveryJob = schemaTask({
   id: BANK_JOBS.CONNECTION_RECOVERY,
-  name: 'Bank Connection Recovery',
-  trigger: eventTrigger({
-    name: 'connection-recovery',
-    schema: z.object({
-      connectionId: z.string(),
-      provider: z.enum(['plaid', 'teller', 'gocardless']),
-      accessToken: z.string(),
-      retryCount: z.number().optional(),
-    }),
+  description: 'Bank Connection Recovery',
+  schema: z.object({
+    connectionId: z.string(),
+    provider: z.enum(['plaid', 'teller', 'gocardless']),
+    accessToken: z.string(),
+    retryCount: z.number().optional(),
   }),
-  version: '1.0.0',
   /**
    * Main job execution function that attempts to recover a failed connection
    *
@@ -93,7 +92,7 @@ export const connectionRecoveryJob = client.defineJob({
   run: async (payload, io) => {
     const { connectionId, provider, accessToken, retryCount = 0 } = payload;
 
-    await io.logger.info('Starting connection recovery job', {
+    logger.info('Starting connection recovery job', {
       connectionId,
       provider,
       retryCount,
@@ -105,12 +104,7 @@ export const connectionRecoveryJob = client.defineJob({
 
       switch (provider) {
         case 'plaid': {
-          const itemDetails = await io.runTask(
-            'check-plaid-connection',
-            async () => {
-              return await getItemDetails(accessToken);
-            }
-          );
+          const itemDetails = await getItemDetails(accessToken);
 
           status.valid = itemDetails.status === 'HEALTHY';
           status.error = itemDetails.status;
@@ -118,18 +112,12 @@ export const connectionRecoveryJob = client.defineJob({
         }
         case 'teller': {
           // Simulate Teller connection check
-          status = await io.runTask('check-teller-connection', async () => {
-            // For demo purposes, we'll simulate a valid connection
-            return { valid: true, error: null };
-          });
+          status = { valid: true, error: null };
           break;
         }
         case 'gocardless': {
           // Simulate GoCardless connection check
-          status = await io.runTask('check-gocardless-connection', async () => {
-            // For demo purposes, we'll simulate a valid connection
-            return { valid: true, error: null };
-          });
+          status = { valid: true, error: null };
           break;
         }
         default: {
@@ -139,24 +127,20 @@ export const connectionRecoveryJob = client.defineJob({
 
       if (status.valid) {
         // Connection is valid, update status
-        await io.runTask('update-connection-status-active', async () => {
-          await prisma.bankConnection.update({
-            data: {
-              status: 'ACTIVE',
-              errorMessage: null,
-            },
-            where: { id: connectionId },
-          });
+        const updatedConnection = await prisma.bankConnection.update({
+          data: {
+            status: 'ACTIVE',
+            errorMessage: null,
+          },
+          where: { id: connectionId },
         });
 
         // Get the user ID for this connection
-        const connection = await io.runTask('get-connection', async () => {
-          return await prisma.bankConnection.findUnique({
-            select: {
-              userId: true,
-            },
-            where: { id: connectionId },
-          });
+        const connection = await prisma.bankConnection.findUnique({
+          select: {
+            userId: true,
+          },
+          where: { id: connectionId },
         });
 
         // Trigger a sync to verify the connection works
@@ -176,14 +160,12 @@ export const connectionRecoveryJob = client.defineJob({
         // Connection is invalid, increment retry count
         const newRetryCount = retryCount + 1;
 
-        await io.runTask('update-connection-status-error', async () => {
-          await prisma.bankConnection.update({
-            data: {
-              status: 'ERROR',
-              errorMessage: status.error || 'Connection validation failed',
-            },
-            where: { id: connectionId },
-          });
+        await prisma.bankConnection.update({
+          data: {
+            status: 'ERROR',
+            errorMessage: status.error || 'Connection validation failed',
+          },
+          where: { id: connectionId },
         });
 
         // If we haven't exceeded max retries, schedule another attempt
@@ -204,7 +186,7 @@ export const connectionRecoveryJob = client.defineJob({
             },
           });
 
-          await io.logger.info('Scheduled next recovery attempt', {
+          logger.info('Scheduled next recovery attempt', {
             connectionId,
             nextAttempt: `in ${delayMinutes} minutes`,
             retryCount: newRetryCount,
@@ -219,13 +201,11 @@ export const connectionRecoveryJob = client.defineJob({
         }
 
         // Get the user ID for this connection
-        const connection = await io.runTask('get-connection-user', async () => {
-          return await prisma.bankConnection.findUnique({
-            select: {
-              userId: true,
-            },
-            where: { id: connectionId },
-          });
+        const connection = await prisma.bankConnection.findUnique({
+          select: {
+            userId: true,
+          },
+          where: { id: connectionId },
         });
 
         // Max retries exceeded, notify user
@@ -252,7 +232,7 @@ export const connectionRecoveryJob = client.defineJob({
         };
       }
     } catch (error) {
-      await io.logger.error('Connection recovery job failed', {
+      logger.error('Connection recovery job failed', {
         connectionId,
         provider,
         error: error.message,

@@ -1,5 +1,7 @@
 import { NodeApi } from '@udecode/plate';
+import { ResourceType } from '@/server/services/payment-tier';
 import { TRPCError } from '@trpc/server';
+import { createResourceValidationMiddleware } from '../middlewares/resourceValidationMiddleware';
 import { createRouter } from '../trpc';
 import { isTemplateDocument } from '@/components/editor/utils/useTemplateDocument';
 import { nid } from '@/lib/nid';
@@ -23,6 +25,11 @@ const DOCUMENT_STATUS = [
   'archived',
 ] as const;
 type DocumentStatus = (typeof DOCUMENT_STATUS)[number];
+
+// Create document-specific validation middleware
+const validateDocumentCreation = createResourceValidationMiddleware({
+  resourceType: ResourceType.DOCUMENT,
+});
 
 export const documentMutations = {
   archive: protectedProcedure
@@ -52,12 +59,14 @@ export const documentMutations = {
         title: z.string().max(MAX_TITLE_LENGTH, 'Title is too long').optional(),
       })
     )
+    // Apply the document validation middleware
+    .use(validateDocumentCreation)
     .mutation(async ({ ctx, input }) => {
       const content = input.contentRich
         ? NodeApi.string({
-          children: input.contentRich,
-          type: 'root',
-        })
+            children: input.contentRich,
+            type: 'root',
+          })
         : '';
 
       if (content.length > MAX_CONTENT_LENGTH) {
@@ -207,9 +216,9 @@ export const documentMutations = {
     .mutation(async ({ ctx, input }) => {
       const content = input.contentRich
         ? NodeApi.string({
-          children: input.contentRich,
-          type: 'root',
-        })
+            children: input.contentRich,
+            type: 'root',
+          })
         : undefined;
 
       if (content && content.length > MAX_CONTENT_LENGTH) {
@@ -322,9 +331,9 @@ export const documentRouter = createRouter({
           id: isTemplateDocument(input.id) ? undefined : input.id,
           userId_templateId: isTemplateDocument(input.id)
             ? {
-              templateId: input.id,
-              userId: ctx.userId,
-            }
+                templateId: input.id,
+                userId: ctx.userId,
+              }
             : undefined,
         },
       });

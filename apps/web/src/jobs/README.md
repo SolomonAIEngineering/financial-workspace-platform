@@ -36,7 +36,7 @@ This directory contains all the Trigger.dev jobs for the SMB Financial Managemen
 
 1. Create a new file in the appropriate directory (e.g., `src/jobs/financial/sync-transactions.ts`)
 2. Import the client from `../client`
-3. Define your job using `client.defineJob()`
+3. Define your job using `schemaTask()`
 4. Import your job file in `server.ts`
 
 Example:
@@ -44,7 +44,7 @@ Example:
 ```typescript
 import { client } from '../client';
 
-client.defineJob({
+schemaTask({
   id: 'sync-transactions',
   name: 'Sync Transactions',
   version: '0.0.1',

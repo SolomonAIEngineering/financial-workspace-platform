@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 import { Button } from '@/registry/default/potion-ui/button';
 import { Loader2 } from 'lucide-react';
-import { useConnectParams } from '@/lib/hooks/use-connect-params';
+import { useConnectParams } from '@/hooks/use-connect-params';
 
 interface ConnectBankProviderProps {
   id: string;

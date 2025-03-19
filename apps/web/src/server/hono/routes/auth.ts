@@ -1,20 +1,19 @@
-import { zValidator } from '@hono/zod-validator';
-import { Hono } from 'hono';
-import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
-import { z } from 'zod';
-
-import { env } from '@/env';
 import {
+  OAuth2RequestError,
   generateCodeVerifier,
   generateState,
-  OAuth2RequestError,
 } from '@/server/auth/lib';
 import { authProviders, lucia } from '@/server/auth/lucia';
-
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import {
   protectedMiddlewares,
   publicMiddlewares,
 } from '../middlewares/auth-middleware';
+
+import { Hono } from 'hono';
+import { env } from '@/env';
+import { z } from 'zod';
+import { zValidator } from '@hono/zod-validator';
 
 export const authRoutes = new Hono()
   .get(
@@ -129,6 +128,11 @@ export const authRoutes = new Hono()
         deleteCookie(c, 'oauth_state');
         deleteCookie(c, 'code_verifier');
         deleteCookie(c, 'callback_url');
+
+        // set the user id in the cookie
+        setCookie(c, 'user_id', userId, {
+          maxAge: 60 * 60 * 24 * 30,
+        });
 
         return c.redirect(callbackUrl ?? '/settings');
       } catch (error) {

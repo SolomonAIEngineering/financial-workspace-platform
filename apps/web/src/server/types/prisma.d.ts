@@ -169,6 +169,7 @@ export interface BankConnection {
   lastExpiryNotifiedAt: Date| null;
   expiryNotificationCount: number;
   expiresAt: Date| null;
+  provider: string;
 }
 
 export interface BankAccount {
@@ -217,6 +218,9 @@ export interface BankAccount {
   recurringMonthlyInflow: number| null;
   recurringMonthlyOutflow: number| null;
   nextScheduledTransaction: Date| null;
+  errorDetails: string| null;
+  errorRetries: number| null;
+  balance: number| null;
 }
 
 export interface Transaction {
@@ -458,6 +462,7 @@ export interface SpendingInsight {
 export interface Team {
   id: string;
   name: string| null;
+  slug: string;
   baseCurrency: string| null;
   email: string| null;
   logoUrl: string| null;
@@ -556,6 +561,7 @@ export interface TransactionEnrichment {
 export interface Invoice {
   id: string;
   teamId: string;
+  title: string| null;
   status: InvoiceStatus;
   customerId: string| null;
   customerName: string| null;
@@ -571,7 +577,6 @@ export interface Invoice {
   paidAt: Date| null;
   viewedAt: Date| null;
   reminderSentAt: Date| null;
-  lineItems: Record<string, unknown>| null;
   fromDetails: Record<string, unknown>| null;
   customerDetails: Record<string, unknown>| null;
   paymentDetails: Record<string, unknown>| null;
@@ -589,6 +594,15 @@ export interface Invoice {
   userId: string| null;
   createdAt: Date;
   updatedAt: Date| null;
+}
+
+export interface InvoiceLineItem {
+  id: string;
+  invoiceId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  unit: string| null;
 }
 
 export interface InvoiceTemplate {
@@ -990,6 +1004,7 @@ declare global {
   export type TCustomTransactionCategory = CustomTransactionCategory;
   export type TTransactionEnrichment = TransactionEnrichment;
   export type TInvoice = Invoice;
+  export type TInvoiceLineItem = InvoiceLineItem;
   export type TInvoiceTemplate = InvoiceTemplate;
   export type TTrackerProject = TrackerProject;
   export type TTrackerProjectTag = TrackerProjectTag;

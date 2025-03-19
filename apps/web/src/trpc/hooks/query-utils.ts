@@ -1,3 +1,4 @@
+import { QueryClient, useQueryClient } from '@tanstack/react-query';
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useCallback, useMemo } from 'react';
 
@@ -138,3 +139,71 @@ export const useInfiniteQueryUtils =
       utils,
     };
   };
+
+/**
+ * Gets the query client instance
+ *
+ * This function is used to get the query client instance from the global
+ * context when inside a component. Outside a component, it will return
+ * undefined.
+ */
+export function getQueryClient(): QueryClient | undefined {
+  try {
+    // Using try-catch because this will throw if called outside
+    // a component wrapped with QueryClientProvider
+    return useQueryClient();
+  } catch (e) {
+    console.warn('getQueryClient called outside QueryClientProvider', e);
+    return undefined;
+  }
+}
+
+/** Builds the query key for a route */
+export function buildQueryKey(
+  path: string[],
+  params: Record<string, any> = {}
+): unknown[] {
+  if (Object.keys(params).length === 0) {
+    return [path];
+  }
+  return [path, params];
+}
+
+/** Invalidates all queries with the given path */
+export function invalidateQueries(
+  queryClient: QueryClient,
+  path: string[]
+): Promise<void> {
+  return queryClient.invalidateQueries({
+    queryKey: [path],
+  });
+}
+
+/** Refetches all queries with the given path */
+export function refetchQueries(
+  queryClient: QueryClient,
+  path: string[]
+): Promise<void> {
+  return queryClient.refetchQueries({
+    queryKey: [path],
+  });
+}
+
+/** Cancels all queries with the given path */
+export function cancelQueries(
+  queryClient: QueryClient,
+  path: string[]
+): Promise<void> {
+  return queryClient.cancelQueries({
+    queryKey: [path],
+  });
+}
+
+/** Sets the data for all queries with the given path */
+export function setQueryData<TData>(
+  queryClient: QueryClient,
+  path: string[],
+  updater: TData | ((oldData: TData | undefined) => TData)
+): void {
+  queryClient.setQueryData([path], updater);
+}

@@ -4,13 +4,11 @@
  * @file Professional Profile Tab Component
  */
 
-import { Icons } from '@/components/ui/icons';
 import { Button } from '@/registry/default/potion-ui/button';
-import { TabsContent } from '@/registry/default/potion-ui/tabs';
-
-import type { TabComponentProps } from '../../types/profile-types';
-
+import { Icons } from '@/components/ui/icons';
 import { ProfileFormField } from '../profile-form-field';
+import type { TabComponentProps } from '../../types/profile-types';
+import { TabsContent } from '@/registry/default/potion-ui/tabs';
 
 /**
  * Professional profile tab component that displays and allows editing of
@@ -38,6 +36,7 @@ export function ProfessionalProfileTab({
       <ProfileFormField
         name="jobTitle"
         description="Your current job title or role."
+        tooltipDescription="Your official position or role in your organization. This helps with networking and connection recommendations."
         label="Job Title"
         placeholder="Senior Developer"
         control={form.control}
@@ -48,6 +47,7 @@ export function ProfessionalProfileTab({
       <ProfileFormField
         name="department"
         description="The department you work in."
+        tooltipDescription="The specific department or functional area you work in, which helps with team organization and reporting analytics."
         label="Department"
         placeholder="Engineering"
         control={form.control}

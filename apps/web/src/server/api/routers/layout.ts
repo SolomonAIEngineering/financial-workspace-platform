@@ -1,9 +1,8 @@
 import { CookieNames } from '@/lib/storage/cookies';
-import { prisma } from '@/server/db';
-
-import { devMiddleware } from '../middlewares/devMiddleware';
-import { protectedProcedure } from '../middlewares/procedures';
 import { createRouter } from '../trpc';
+import { devMiddleware } from '../middlewares/devMiddleware';
+import { prisma } from '@/server/db';
+import { protectedProcedure } from '../middlewares/procedures';
 
 export const layoutRouter = createRouter({
   app: protectedProcedure
@@ -17,6 +16,8 @@ export const layoutRouter = createRouter({
         select: {
           name: true,
           profileImageUrl: true,
+          teamId: true,
+          bankConnections: true,
         },
         where: {
           id: userId,
@@ -27,6 +28,7 @@ export const layoutRouter = createRouter({
         currentUser: {
           ...currentUser,
           firstName: currentUser.name?.split(' ')[0] ?? 'You',
+          lastName: currentUser.name?.split(' ')[1] ?? '',
           ...authUser,
         },
       };

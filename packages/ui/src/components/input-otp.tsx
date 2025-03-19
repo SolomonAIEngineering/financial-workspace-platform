@@ -6,7 +6,8 @@ import * as React from 'react'
 import { cn } from '../utils'
 
 const InputOTP: React.ForwardRefExoticComponent<
-  React.ComponentPropsWithoutRef<typeof OTPInput> & React.RefAttributes<React.ElementRef<typeof OTPInput>>
+  React.ComponentPropsWithoutRef<typeof OTPInput> &
+    React.RefAttributes<React.ElementRef<typeof OTPInput>>
 > = React.forwardRef<
   React.ElementRef<typeof OTPInput>,
   React.ComponentPropsWithoutRef<typeof OTPInput>

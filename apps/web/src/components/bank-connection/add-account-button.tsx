@@ -3,7 +3,7 @@
 import { Button } from '@/registry/default/potion-ui/button';
 import { PlusCircle } from 'lucide-react';
 import React from 'react';
-import { useConnectParams } from '@/lib/hooks/use-connect-params';
+import { useConnectParams } from '@/hooks/use-connect-params';
 
 /**
  * AddAccountButton Component

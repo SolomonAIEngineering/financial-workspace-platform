@@ -70,15 +70,15 @@ import { Inserter as MutationInserter } from './mutations/types'
  */
 export type ClickHouseConfig =
   | {
-      url?: string
-      insertUrl?: never
-      queryUrl?: never
-    }
+    url?: string
+    insertUrl?: never
+    queryUrl?: never
+  }
   | {
-      url?: never
-      insertUrl: string
-      queryUrl: string
-    }
+    url?: never
+    insertUrl: string
+    queryUrl: string
+  }
 
 /**
  * Main ClickHouse client class that provides access to all financial data operations

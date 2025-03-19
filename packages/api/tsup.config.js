@@ -8,4 +8,10 @@ export default defineConfig({
   clean: true,
   bundle: true,
   dts: true,
+  external: [
+    "react",
+    "react/jsx-runtime",
+    "react/jsx-dev-runtime",
+    "react-dom",
+  ],
 });

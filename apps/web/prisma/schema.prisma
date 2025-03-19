@@ -313,6 +313,8 @@ model BankConnection {
   lastExpiryNotifiedAt    DateTime?
   expiryNotificationCount Int       @default(0)
   expiresAt               DateTime?
+  provider String
+  team Team[]
 
   @@index([userId])
   @@index([itemId])
@@ -401,6 +403,10 @@ model BankAccount {
   recurringMonthlyOutflow Float? @default(0) // Sum of recurring monthly outflows
   nextScheduledTransaction DateTime? // Date of next scheduled transaction
 
+  errorDetails String?
+  errorRetries Int?
+
+  balance Float?
   @@unique([userId, plaidAccountId])
   @@index([userId])
   @@index([bankConnectionId])
@@ -843,7 +849,7 @@ model UserActivity {
   metadata  Json?
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Notification model for system and user notifications
@@ -857,7 +863,7 @@ model Notification {
   metadata  Json?
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([type])
@@ -918,6 +924,7 @@ enum SpendingTimeframe {
 model Team {
   id                     String    @id @default(cuid())
   name                   String?
+  slug                   String    @unique
   baseCurrency           String?   @map("base_currency")
   email                  String?
   logoUrl                String?   @map("logo_url")
@@ -943,8 +950,8 @@ model Team {
   reports               Report[]
   trackerProjects       TrackerProject[]
   trackerReports        TrackerReport[]
-  
-  
+  bankConnections       BankConnection[]
+
   @@map("teams")
   UserInvite UserInvite[]
   CustomerTag CustomerTag[]
@@ -962,8 +969,8 @@ model UsersOnTeam {
   createdAt DateTime? @default(now()) @map("created_at")
   
   // Relations
-  user User @relation(fields: [userId], references: [id])
-  team Team @relation(fields: [teamId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
   
   @@unique([userId, teamId])
   @@map("users_on_team")
@@ -979,8 +986,8 @@ model UserInvite {
   createdAt DateTime  @default(now()) @map("created_at")
   
   // Relations
-  team     Team? @relation(fields: [teamId], references: [id])
-  inviter  User? @relation("invites", fields: [invitedBy], references: [id])
+  team     Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  inviter  User? @relation("invites", fields: [invitedBy], references: [id], onDelete: SetNull)
   
   @@map("user_invites")
 }
@@ -1006,7 +1013,7 @@ model Customer {
   createdAt     DateTime  @default(now()) @map("created_at")
   
   // Relations
-  team          Team     @relation(fields: [teamId], references: [id])
+  team          Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   customerTags  CustomerTag[]
   invoices      Invoice[]
   trackerProjects TrackerProject[]
@@ -1021,7 +1028,7 @@ model Tag {
   createdAt DateTime  @default(now()) @map("created_at")
   
   // Relations
-  team            Team @relation(fields: [teamId], references: [id])
+  team            Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
   customerTags    CustomerTag[]
   transactionTags TransactionTag[]
   projectTags     TrackerProjectTag[]
@@ -1039,7 +1046,7 @@ model CustomerTag {
   // Relations
   customer   Customer @relation(fields: [customerId], references: [id])
   tag        Tag      @relation(fields: [tagId], references: [id])
-  team       Team     @relation(fields: [teamId], references: [id])
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   
   @@map("customer_tags")
 }
@@ -1054,7 +1061,7 @@ model TransactionTag {
   // Relations
   transaction   Transaction @relation(fields: [transactionId], references: [id])
   tag           Tag         @relation(fields: [tagId], references: [id])
-  team          Team        @relation(fields: [teamId], references: [id])
+  team          Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
   
   @@map("transaction_tags")
 }
@@ -1072,7 +1079,7 @@ model CustomTransactionCategory {
   createdAt   DateTime? @default(now()) @map("created_at")
   
   // Relations
-  team          Team @relation(fields: [teamId], references: [id])
+  team          Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
   transactions  Transaction[] @relation("customCategoryToTransaction")
   
   @@unique([slug, teamId])
@@ -1088,7 +1095,7 @@ model TransactionEnrichment {
   createdAt    DateTime @default(now()) @map("created_at")
   
   // Relations
-  team         Team? @relation(fields: [teamId], references: [id])
+  team         Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
   
   @@map("transaction_enrichments")
 }
@@ -1096,6 +1103,7 @@ model TransactionEnrichment {
 model Invoice {
   id              String         @id @default(cuid())
   teamId          String         @map("team_id")
+  title           String?        @map("title")
   status          InvoiceStatus  @default(DRAFT)
   customerId      String?        @map("customer_id")
   customerName    String?        @map("customer_name")
@@ -1111,7 +1119,7 @@ model Invoice {
   paidAt          DateTime?      @map("paid_at")
   viewedAt        DateTime?      @map("viewed_at")
   reminderSentAt  DateTime?      @map("reminder_sent_at")
-  lineItems       Json?          @map("line_items")
+  lineItems       InvoiceLineItem[]
   fromDetails     Json?          @map("from_details")
   customerDetails Json?          @map("customer_details")
   paymentDetails  Json?          @map("payment_details")
@@ -1131,11 +1139,23 @@ model Invoice {
   updatedAt       DateTime?      @map("updated_at")
   
   // Relations
-  team            Team      @relation(fields: [teamId], references: [id])
-  customer        Customer? @relation(fields: [customerId], references: [id])
-  user            User?     @relation(fields: [userId], references: [id])
+  team            Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  customer        Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user            User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@map("invoices")
+}
+
+model InvoiceLineItem {
+  id        String    @id @default(cuid())
+  invoiceId String    @map("invoice_id")
+  name      String
+  quantity  Float
+  price     Float
+  unit      String?
+
+  @@map("invoice_line_items")
+  Invoice Invoice[]
 }
 
 model InvoiceTemplate {
@@ -1175,7 +1195,7 @@ model InvoiceTemplate {
   createdAt          DateTime            @default(now()) @map("created_at")
   
   // Relations
-  team               Team @relation(fields: [teamId], references: [id])
+  team               Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
   
   @@map("invoice_templates")
 }
@@ -1213,7 +1233,7 @@ model TrackerProjectTag {
   // Relations
   trackerProject   TrackerProject @relation(fields: [trackerProjectId], references: [id])
   tag              Tag            @relation(fields: [tagId], references: [id])
-  team             Team           @relation(fields: [teamId], references: [id])
+  team             Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
   
   @@map("tracker_project_tags")
 }
@@ -1235,8 +1255,8 @@ model TrackerEntry {
   
   // Relations
   project     TrackerProject? @relation(fields: [projectId], references: [id])
-  assigned    User?           @relation(fields: [assignedId], references: [id])
-  team        Team?           @relation(fields: [teamId], references: [id])
+  assigned    User?           @relation(fields: [assignedId], references: [id], onDelete: SetNull)
+  team        Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
   
   @@map("tracker_entries")
 }
@@ -1252,8 +1272,8 @@ model TrackerReport {
   
   // Relations
   project     TrackerProject? @relation(fields: [projectId], references: [id])
-  creator     User?           @relation(fields: [createdBy], references: [id])
-  team        Team?           @relation(fields: [teamId], references: [id])
+  creator     User?           @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  team        Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
   
   @@map("tracker_reports")
 }
@@ -1272,8 +1292,8 @@ model Report {
   createdAt   DateTime    @default(now()) @map("created_at")
   
   // Relations
-  creator     User?       @relation(fields: [createdBy], references: [id])
-  team        Team?       @relation(fields: [teamId], references: [id])
+  creator     User?       @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  team        Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade)
   
   @@map("reports")
 }
@@ -1313,7 +1333,7 @@ model Inbox {
   createdAt       DateTime     @default(now()) @map("created_at")
   
   // Relations
-  team            Team?                  @relation(fields: [teamId], references: [id])
+  team            Team?                  @relation(fields: [teamId], references: [id], onDelete: Cascade)
   transaction     Transaction?           @relation(fields: [transactionId], references: [id])
   attachment      TransactionAttachment? @relation(fields: [attachmentId], references: [id])
   
@@ -1332,7 +1352,7 @@ model TransactionAttachment {
   
   // Relations
   transaction   Transaction? @relation(fields: [transactionId], references: [id])
-  team          Team?        @relation(fields: [teamId], references: [id])
+  team          Team?        @relation(fields: [teamId], references: [id], onDelete: Cascade)
   inboxItems    Inbox[]
   
   @@map("transaction_attachments")
@@ -1348,8 +1368,8 @@ model App {
   createdAt DateTime? @default(now()) @map("created_at")
   
   // Relations
-  team      Team?     @relation(fields: [teamId], references: [id])
-  creator   User?     @relation(fields: [createdBy], references: [id])
+  team      Team?     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator   User?     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   
   @@map("apps")
 }

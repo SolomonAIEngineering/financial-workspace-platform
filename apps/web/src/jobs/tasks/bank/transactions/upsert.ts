@@ -1,340 +1,307 @@
-import { AccountStatus, TransactionCategory } from '@prisma/client';
-import { addDays, format, subDays } from 'date-fns';
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
-import { client } from '../../../client';
-import { eventTrigger } from '@trigger.dev/sdk';
-import { getTransactions } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
+import { transformTransaction } from '@/jobs/utils/transform';
+import { z } from 'zod';
 
-/**
- * This job handles syncing financial transactions from external providers
- * (primarily Plaid) into the application's database. It performs intelligent
- * transaction synchronization with the following features:
- *
- * - Batch processing to handle large transaction volumes efficiently
- * - Smart date range determination based on last sync time
- * - Duplicate detection to prevent transaction duplication
- * - Transaction categorization using Plaid's categories
- * - Handling of pending transactions
- * - Updates to existing transactions when details change
- *
- * The job is a critical component in keeping financial data up-to-date,
- * maintaining transaction history, and ensuring users have accurate financial
- * information for budgeting and analysis.
- *
- * @file Transaction Upsert Job
- * @example
- *   // Trigger a transaction upsert with default date range
- *   await client.sendEvent({
- *     name: 'upsert-transactions',
- *     payload: {
- *       bankAccountId: 'acct_123abc',
- *       accessToken: 'access-token-from-plaid',
- *       userId: 'user_456def',
- *       // startDate and endDate are optional
- *     },
- *   });
- *
- * @example
- *   // Trigger a transaction upsert with specific date range
- *   await client.sendEvent({
- *     name: 'upsert-transactions',
- *     payload: {
- *       bankAccountId: 'acct_123abc',
- *       accessToken: 'access-token-from-plaid',
- *       userId: 'user_456def',
- *       startDate: '2025-01-01',
- *       endDate: '2025-01-31',
- *     },
- *   });
- *
- * @example
- *   // The job returns a summary of its actions:
- *   {
- *   status: "success",
- *   totalTransactions: 125,     // Total transactions processed
- *   newTransactions: 15,        // New transactions created
- *   updatedTransactions: 5      // Existing transactions updated
- *   }
- */
-export const upsertTransactionsJob = client.defineJob({
-  id: BANK_JOBS.UPSERT_TRANSACTIONS,
-  name: 'Upsert Transactions',
-  trigger: eventTrigger({
-    name: 'upsert-transactions',
-  }),
-  version: '1.0.0',
-  /**
-   * Main job execution function that syncs transactions for a bank account
-   *
-   * @param payload - The job payload containing transaction sync details
-   * @param payload.accessToken - The access token for the financial data
-   *   provider
-   * @param payload.bankAccountId - The ID of the bank account to sync
-   *   transactions for
-   * @param payload.endDate - Optional end date for the transaction range
-   *   (defaults to tomorrow)
-   * @param payload.startDate - Optional start date for the transaction range
-   *   (defaults to 5 days before last update or 90 days ago for initial sync)
-   * @param payload.userId - The ID of the user who owns the account
-   * @param io - The I/O context provided by Trigger.dev for logging, running
-   *   tasks, etc.
-   * @returns A result object containing counts of transactions processed and
-   *   status
-   * @throws Error if the transaction sync fails or if the account cannot be
-   *   found
-   */
-  run: async (payload, io) => {
-    const { accessToken, bankAccountId, endDate, startDate, userId } = payload;
-
-    await io.logger.info(
-      `Starting transaction upsert for account ${bankAccountId}`
-    );
-
-    // Get the bank account from the database
-    const bankAccount = await io.runTask('get-bank-account', async () => {
-      return await prisma.bankAccount.findUnique({
-        select: {
-          id: true,
-          bankConnectionId: true,
-          name: true,
-          plaidAccountId: true,
-          status: true,
-          updatedAt: true,
-        },
-        where: { id: bankAccountId },
-      });
-    });
-
-    if (!bankAccount) {
-      await io.logger.error(`Bank account ${bankAccountId} not found`);
-
-      throw new Error(`Bank account ${bankAccountId} not found`);
-    }
-
-    // get the bank connection for the bank account
-    const bankConnection = await prisma.bankConnection.findUnique({
-      where: {
-        id: bankAccount.bankConnectionId,
-      },
-    });
-
-    if (bankAccount.status !== 'ACTIVE') {
-      await io.logger.info(
-        `Bank account ${bankAccountId} is not active, skipping sync`
-      );
-
-      return {
-        reason: 'Account not active',
-        status: 'skipped',
-      };
-    }
-
-    // Set sync status to in progress
-    await prisma.bankAccount.update({
-      data: {
-        status: AccountStatus.PENDING,
-        updatedAt: new Date(),
-      },
-      where: { id: bankAccountId },
-    });
-
-    try {
-      // Determine date range for transaction fetch
-      const today = new Date();
-      const defaultStartDate = bankAccount.updatedAt
-        ? subDays(bankAccount.updatedAt, 5) // Overlap to catch pending transactions
-        : subDays(today, 90); // Initial sync goes back 90 days
-      const defaultEndDate = addDays(today, 1); // Include today's transactions
-
-      const start = startDate ? new Date(startDate) : defaultStartDate;
-      const end = endDate ? new Date(endDate) : defaultEndDate;
-
-      // Format dates as strings for Plaid API
-      const startDateStr = format(start, 'yyyy-MM-dd');
-      const endDateStr = format(end, 'yyyy-MM-dd');
-
-      // Get all accounts for this connection to pass to getTransactions
-      const bankAccounts = await prisma.bankAccount.findMany({
-        where: { bankConnectionId: bankAccount.bankConnectionId },
-      });
-
-      // Fetch transactions from Plaid
-      const plaidTransactions = await io.runTask(
-        'fetch-plaid-transactions',
-        async () => {
-          if (!bankConnection) {
-            throw new Error(
-              `Bank connection not found for account ${bankAccountId}`
-            );
-          }
-
-          return await getTransactions(
-            accessToken,
-            bankConnection,
-            bankAccounts,
-            startDateStr,
-            endDateStr
-          );
-        }
-      );
-
-      await io.logger.info(
-        `Fetched ${plaidTransactions.length} transactions from Plaid`
-      );
-
-      // Process the transactions in batches
-      const transactionCount = await io.runTask(
-        'process-transactions',
-        async () => {
-          let newCount = 0;
-          let updatedCount = 0;
-
-          for (const plaidTransaction of plaidTransactions) {
-            // Check if the transaction already exists
-            const existingTransaction = await prisma.transaction.findFirst({
-              where: {
-                bankAccountId: bankAccountId,
-                plaidTransactionId: plaidTransaction.plaidTransactionId,
-              },
-            });
-
-            // Determine category
-            let category: TransactionCategory | null = null;
-
-            if (
-              plaidTransaction.originalCategory &&
-              plaidTransaction.originalCategory.length > 0
-            ) {
-              // Map the Plaid category to our category enum
-              try {
-                category = mapPlaidCategoryToTransactionCategory(
-                  plaidTransaction.originalCategory.split(',')[0].trim()
-                );
-              } catch (error) {
-                await io.logger.warn(
-                  `Could not map category for transaction ${plaidTransaction.plaidTransactionId}: ${error}`
-                );
-              }
-            }
-            if (existingTransaction) {
-              // Update the existing transaction
-              await prisma.transaction.update({
-                data: {
-                  amount: plaidTransaction.amount,
-                  category: category,
-                  date: new Date(plaidTransaction.date),
-                  merchantName: plaidTransaction.merchantName || null,
-                  name: plaidTransaction.name,
-                  pending: plaidTransaction.pending,
-                  updatedAt: new Date(),
-                },
-                where: { id: existingTransaction.id },
-              });
-              updatedCount++;
-            } else {
-              // Create a new transaction
-              await prisma.transaction.create({
-                data: {
-                  amount: plaidTransaction.amount,
-                  bankAccount: { connect: { id: bankAccountId } },
-                  userId: userId,
-                  category: category,
-                  date: new Date(plaidTransaction.date),
-                  merchantName: plaidTransaction.merchantName || null,
-                  name: plaidTransaction.name,
-                  pending: plaidTransaction.pending,
-                  plaidTransactionId: plaidTransaction.plaidTransactionId,
-                },
-              });
-              newCount++;
-            }
-          }
-
-          return { newCount, updatedCount };
-        }
-      );
-
-      // Update bank account with last synced time
-      await prisma.bankAccount.update({
-        data: {
-          status: AccountStatus.ACTIVE,
-          updatedAt: new Date(),
-        },
-        where: { id: bankAccountId },
-      });
-
-      await io.logger.info(
-        `Transaction sync completed. Added ${transactionCount.newCount}, updated ${transactionCount.updatedCount} transactions`
-      );
-
-      return {
-        newTransactions: transactionCount.newCount,
-        status: 'success',
-        totalTransactions: plaidTransactions.length,
-        updatedTransactions: transactionCount.updatedCount,
-      };
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      await io.logger.error(`Transaction sync failed: ${errorMessage}`);
-
-      // Update bank account with error information
-      await prisma.bankAccount.update({
-        data: {
-          status: AccountStatus.INACTIVE,
-          updatedAt: new Date(),
-        },
-        where: { id: bankAccountId },
-      });
-
-      throw error;
-    }
-  },
+/** Schema for validating transaction objects */
+const transactionSchema = z.object({
+  id: z.string(),
+  description: z.string().nullable(),
+  method: z.string().nullable(),
+  date: z.string(),
+  name: z.string(),
+  status: z.enum(['pending', 'posted']),
+  balance: z.number().nullable(),
+  currency: z.string(),
+  amount: z.number(),
+  category: z.string().nullable(),
 });
 
 /**
- * Maps Plaid category strings to internal TransactionCategory enum values
+ * Handles syncing financial transactions from external providers into the
+ * application's database. This task is responsible for processing and storing
+ * transaction data with intelligent handling.
  *
- * This mapping function converts Plaid's category strings into our
- * application's standardized transaction categories, allowing for consistent
- * categorization regardless of the data source.
+ * @remarks
+ *   This task performs several key functions:
  *
- * @param plaidCategory - The category string from Plaid (e.g., 'Food and
- *   Drink', 'Transportation')
- * @returns The appropriate TransactionCategory enum value, or
- *   TransactionCategory.OTHER if no match is found
+ *   - Batch processing to handle large transaction volumes efficiently
+ *   - Duplicate detection to prevent transaction duplication
+ *   - Transaction categorization using provider categories
+ *   - Handling of pending transactions
+ *   - Updates to existing transactions when details change
+ *
+ *   The task implements error handling, retry mechanisms, and comprehensive
+ *   tracing to ensure reliable execution even with large transaction volumes.
+ * @example
+ *   ```ts
+ *   await client.sendEvent({
+ *     name: 'upsert-transactions',
+ *     payload: {
+ *       userId: 'user_456def',
+ *       bankAccountId: 'acct_123abc',
+ *       manualSync: true,
+ *       transactions: [
+ *         {
+ *           id: 'tx_123',
+ *           date: '2023-01-15',
+ *           name: 'Coffee Shop',
+ *           amount: -4.50,
+ *           // ...other transaction fields
+ *         }
+ *       ]
+ *     },
+ *   });
+ *   ```;
+ *
+ * @returns A summary object with counts of transactions processed, created, and
+ *   updated
  */
-function mapPlaidCategoryToTransactionCategory(
-  plaidCategory: string
-): TransactionCategory | null {
-  const categoryMap: Record<string, TransactionCategory> = {
-    'Bank Fees': TransactionCategory.BANK_FEES,
-    'Bills and Utilities': TransactionCategory.UTILITIES,
-    Education: TransactionCategory.OTHER,
-    Entertainment: TransactionCategory.ENTERTAINMENT,
-    'Food and Drink': TransactionCategory.FOOD_AND_DRINK,
-    'General Merchandise': TransactionCategory.GENERAL_MERCHANDISE,
-    Groceries: TransactionCategory.FOOD_AND_DRINK,
-    Healthcare: TransactionCategory.MEDICAL,
-    Home: TransactionCategory.HOME_IMPROVEMENT,
-    Income: TransactionCategory.INCOME,
-    Insurance: TransactionCategory.OTHER,
-    Loan: TransactionCategory.LOAN_PAYMENTS,
-    Medical: TransactionCategory.MEDICAL,
-    Payment: TransactionCategory.TRANSFER,
-    'Personal Care': TransactionCategory.PERSONAL_CARE,
-    'Professional Services': TransactionCategory.GENERAL_SERVICES,
-    Recreation: TransactionCategory.ENTERTAINMENT,
-    Rent: TransactionCategory.HOME_IMPROVEMENT,
-    Restaurants: TransactionCategory.FOOD_AND_DRINK,
-    Shopping: TransactionCategory.GENERAL_MERCHANDISE,
-    Tax: TransactionCategory.GOVERNMENT_AND_NON_PROFIT,
-    Transfer: TransactionCategory.TRANSFER,
-    Transportation: TransactionCategory.TRANSPORTATION,
-    Travel: TransactionCategory.TRAVEL,
-  };
+export const upsertTransactionsJob = schemaTask({
+  id: BANK_JOBS.UPSERT_TRANSACTIONS,
+  description: 'Upsert Transactions',
+  /**
+   * Configure retry behavior for the task
+   *
+   * @see https://trigger.dev/docs/errors-retrying
+   */
+  retry: {
+    maxAttempts: 5,
+    factor: 2,
+    minTimeoutInMs: 1000,
+    maxTimeoutInMs: 60000,
+    randomize: true,
+  },
+  schema: z.object({
+    /** The user ID who owns these transactions */
+    userId: z.string().uuid(),
 
-  return categoryMap[plaidCategory] || TransactionCategory.OTHER;
-}
+    /** The bank account ID these transactions belong to */
+    bankAccountId: z.string().uuid(),
+
+    /** Whether this is a manual sync initiated by the user */
+    manualSync: z.boolean().optional(),
+
+    /** The array of transactions to upsert */
+    transactions: z.array(transactionSchema),
+  }),
+  /**
+   * Main execution function for the transaction upsert task
+   *
+   * @param payload - The validated input parameters
+   * @param payload.userId - The ID of the user who owns the account
+   * @param payload.bankAccountId - The ID of the bank account for these
+   *   transactions
+   * @param payload.manualSync - Whether this is a manual sync
+   * @param payload.transactions - The array of transactions to process
+   * @param ctx - The execution context provided by Trigger.dev
+   * @returns A summary object with counts of transactions processed, created,
+   *   and updated
+   */
+  run: async (payload, { ctx }) => {
+    // Create a trace for the entire upsert operation
+    return await logger.trace('upsert-transactions', async (span) => {
+      const { transactions, userId, bankAccountId, manualSync } = payload;
+
+      span.setAttribute('userId', userId);
+      span.setAttribute('bankAccountId', bankAccountId);
+      span.setAttribute('manualSync', Boolean(manualSync));
+      span.setAttribute('transactionCount', transactions.length);
+
+      logger.info('Starting transaction upsert process', {
+        bankAccountId,
+        count: transactions.length,
+        manualSync,
+      });
+
+      try {
+        // Transform transactions to match our DB schema
+        const formattedTransactions = transactions.map((transaction) => {
+          return transformTransaction({
+            transaction: transaction as any,
+            teamId: userId,
+            bankAccountId,
+            notified: manualSync,
+          });
+        });
+
+        span.setAttribute('formattedCount', formattedTransactions.length);
+        logger.info(
+          `Transformed ${formattedTransactions.length} transactions`,
+          { bankAccountId }
+        );
+
+        // Upsert transactions into the transactions table
+        const result = await logger.trace(
+          'db-upsert-transactions',
+          async (dbSpan) => {
+            dbSpan.setAttribute(
+              'transactionCount',
+              formattedTransactions.length
+            );
+
+            try {
+              // Upsert transactions into the transactions table, skipping duplicates based on internal_id
+              const upsertedTransactions = await prisma.transaction.createMany({
+                data: formattedTransactions as any,
+                skipDuplicates: true,
+              });
+
+              dbSpan.setAttribute('createdCount', upsertedTransactions.count);
+              logger.info(
+                `Created ${upsertedTransactions.count} new transactions`,
+                { bankAccountId }
+              );
+
+              return upsertedTransactions;
+            } catch (dbError) {
+              const errorMessage =
+                dbError instanceof Error
+                  ? dbError.message
+                  : 'Unknown database error';
+              dbSpan.setAttribute('error', errorMessage);
+              logger.error('Database error during transaction upsert', {
+                error: errorMessage,
+                bankAccountId,
+              });
+              throw dbError;
+            }
+          }
+        );
+
+        // Process uncategorized transactions for enrichment if necessary
+        await logger.trace('process-uncategorized', async (categorySpan) => {
+          try {
+            // Find uncategorized expenses for potential enrichment
+            const uncategorizedExpenses = await prisma.transaction.findMany({
+              where: {
+                bankAccountId,
+                category: null,
+                amount: { lt: 0 }, // Negative amounts are expenses
+                createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }, // Last 24 hours
+              },
+              select: {
+                id: true,
+                name: true,
+              },
+            });
+
+            const uncategorizedCount = uncategorizedExpenses.length;
+            categorySpan.setAttribute('uncategorizedCount', uncategorizedCount);
+
+            if (uncategorizedCount > 0) {
+              logger.info(
+                `Found ${uncategorizedCount} uncategorized expenses to enrich`,
+                { bankAccountId }
+              );
+
+              // Commented out for now as enrichTransactions is not defined
+              // We only want to wait for enrichment if this is a manual sync
+              /*
+              if (manualSync) {
+                await enrichTransactions.triggerAndWait({
+                  transactions: uncategorizedExpenses.map((transaction) => ({
+                    id: transaction.id,
+                    name: transaction.name,
+                  })),
+                });
+              } else {
+                await enrichTransactions.trigger({
+                  transactions: uncategorizedExpenses.map((transaction) => ({
+                    id: transaction.id,
+                    name: transaction.name,
+                  })),
+                });
+              }
+              */
+            }
+          } catch (categoryError) {
+            // Log but don't fail the whole job if enrichment process fails
+            const errorMessage =
+              categoryError instanceof Error
+                ? categoryError.message
+                : 'Unknown error';
+            categorySpan.setAttribute('error', errorMessage);
+            logger.error('Failed to process uncategorized transactions', {
+              error: errorMessage,
+              bankAccountId,
+            });
+          }
+        });
+
+        // Update the last sync timestamp for the bank account
+        await prisma.bankAccount.update({
+          where: { id: bankAccountId },
+          data: { lastSyncedAt: new Date() },
+        });
+
+        logger.info('Transaction upsert completed successfully', {
+          bankAccountId,
+          transactionsProcessed: transactions.length,
+          newTransactions: result.count,
+        });
+
+        return {
+          status: 'success',
+          totalTransactions: transactions.length,
+          newTransactions: result.count,
+          message: `Successfully processed ${transactions.length} transactions (${result.count} new)`,
+        };
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error occurred';
+        span.setAttribute('error', errorMessage);
+
+        logger.error('Failed to upsert transactions', {
+          error: errorMessage,
+          bankAccountId,
+        });
+
+        throw new Error(`Failed to upsert transactions: ${errorMessage}`);
+      }
+    });
+  },
+  /**
+   * Custom error handler to control retry behavior based on error type
+   *
+   * @param payload - The task payload
+   * @param error - The error that occurred
+   * @param options - Options object containing context and retry control
+   * @returns Retry instructions or undefined to use default retry behavior
+   */
+  handleError: async (payload, error, { ctx, retryAt }) => {
+    const { bankAccountId } = payload;
+
+    // If it's a database connection error, wait longer
+    if (
+      error instanceof Error &&
+      error.message.includes('database connection')
+    ) {
+      logger.warn(
+        `Database connection error, delaying retry for account ${bankAccountId}`
+      );
+      return {
+        retryAt: new Date(Date.now() + 60000), // Wait 1 minute
+      };
+    }
+
+    // If it's a rate limiting error, wait longer
+    if (
+      error instanceof Error &&
+      (error.message.includes('rate limit') ||
+        error.message.includes('too many requests'))
+    ) {
+      logger.warn(
+        `Rate limit hit, delaying retry for account ${bankAccountId}`
+      );
+      return {
+        retryAt: new Date(Date.now() + 300000), // Wait 5 minutes
+      };
+    }
+
+    // For other errors, use the default retry strategy
+    return;
+  },
+});

@@ -1,9 +1,7 @@
 'use server';
 
 import { actionClient } from '@/actions/safe-action';
-import {
-    createContactPropertySchema,
-} from './schema';
+import { createContactPropertySchema } from './schema';
 import { loops } from '@/lib/loopsClient';
 import { z } from 'zod';
 
@@ -71,28 +69,28 @@ import { z } from 'zod';
  * @see {@link https://loops.so/docs/sdks/javascript#createcontactproperty}
  */
 export const createContactPropertyInLoopsAction = actionClient
-    .schema(createContactPropertySchema)
-    .action(async (input) => {
-        try {
-            const { name, type, description } = input.parsedInput;
+  .schema(createContactPropertySchema)
+  .action(async (input) => {
+    try {
+      const { name, type, description } = input.parsedInput;
 
-            // Create contact property in Loops using the SDK
-            const response = await loops.createContactProperty(name, type);
+      // Create contact property in Loops using the SDK
+      const response = await loops.createContactProperty(name, type);
 
-            return {
-                success: true,
-                data: response,
-                error: undefined,
-            };
-        } catch (error) {
-            console.error('Error in createContactPropertyInLoopsAction:', error);
-            return {
-                success: false,
-                error:
-                    error instanceof Error ? error.message : 'Unknown error occurred',
-            };
-        }
-    });
+      return {
+        success: true,
+        data: response,
+        error: undefined,
+      };
+    } catch (error) {
+      console.error('Error in createContactPropertyInLoopsAction:', error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  });
 
 /**
  * Server action to retrieve all mailing lists from the Loops email marketing
@@ -148,23 +146,23 @@ export const createContactPropertyInLoopsAction = actionClient
  * @see {@link https://loops.so/docs/sdks/javascript#getmailinglists}
  */
 export const getMailingListsInLoopsAction = actionClient
-    .schema(z.object({}))
-    .action(async () => {
-        try {
-            // Get mailing lists in Loops using the SDK
-            const response = await loops.getMailingLists();
+  .schema(z.object({}))
+  .action(async () => {
+    try {
+      // Get mailing lists in Loops using the SDK
+      const response = await loops.getMailingLists();
 
-            return {
-                success: true,
-                data: response,
-                error: undefined,
-            };
-        } catch (error) {
-            console.error('Error in getMailingListsInLoopsAction:', error);
-            return {
-                success: false,
-                error:
-                    error instanceof Error ? error.message : 'Unknown error occurred',
-            };
-        }
-    });
+      return {
+        success: true,
+        data: response,
+        error: undefined,
+      };
+    } catch (error) {
+      console.error('Error in getMailingListsInLoopsAction:', error);
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
+  });

@@ -1,4 +1,3 @@
-import { LucideProps } from 'lucide-react'
 import { SVGProps } from 'react'
 
 export const Icons = {

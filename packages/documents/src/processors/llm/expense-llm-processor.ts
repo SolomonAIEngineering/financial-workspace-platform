@@ -105,7 +105,7 @@ export class ExpenseLlmProcessor extends LlmProcessor {
    * @param content - Raw document content from the expense receipt/document
    * @returns Structured expense data or null if extraction fails
    */
-  public async getStructuredData(content: string) {
+  public override async getStructuredData(content: string) {
     try {
       const prompt = `
 You are a specialized assistant that parses structured expense information from documents.

@@ -1,61 +1,52 @@
+import { logger, schedules } from '@trigger.dev/sdk/v3';
+
 import { BankConnectionStatus } from '@prisma/client';
-import { cronTrigger } from '@trigger.dev/sdk';
-import { subDays } from 'date-fns';
-
-import { prisma } from '@/server/db';
-
 import { client } from '../../client';
+import { prisma } from '@/server/db';
+import { subDays } from 'date-fns';
 
 /**
  * This job identifies bank connections that need to be reconnected and sends
  * alerts to users prompting them to fix their connections.
  */
-export const sendReconnectAlertsJob = client.defineJob({
+export const sendReconnectAlertsJob = schedules.task({
   id: 'send-reconnect-alerts-job',
-  name: 'Send Reconnect Alerts',
-  trigger: cronTrigger({
-    cron: '0 10 * * *', // Every day at 10 AM
-  }),
-  version: '1.0.0',
-  run: async (payload, io) => {
-    await io.logger.info('Starting reconnect alerts job');
+  description: 'Send Reconnect Alerts',
+  cron: '0 10 * * *', // Every day at 10 AM
+  run: async () => {
+    await logger.info('Starting reconnect alerts job');
 
     // Find connections needing reconnection
-    const connectionsToReconnect = await io.runTask(
-      'get-connections-needing-reconnect',
-      async () => {
-        return await prisma.bankConnection.findMany({
-          include: {
-            accounts: {
-              select: {
-                id: true,
-                displayName: true,
-                name: true,
-              },
-              where: {
-                status: 'ACTIVE',
-              },
-            },
-            user: {
-              select: {
-                id: true,
-                email: true,
-                name: true,
-              },
-            },
+    const connectionsToReconnect = await prisma.bankConnection.findMany({
+      include: {
+        accounts: {
+          select: {
+            id: true,
+            displayName: true,
+            name: true,
           },
           where: {
-            // Only alert if they haven't been alerted in the last 3 days
-            lastAlertedAt: {
-              lt: subDays(new Date(), 3),
-            },
-            status: BankConnectionStatus.LOGIN_REQUIRED,
+            status: 'ACTIVE',
           },
-        });
-      }
-    );
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+      where: {
+        // Only alert if they haven't been alerted in the last 3 days
+        lastAlertedAt: {
+          lt: subDays(new Date(), 3),
+        },
+        status: BankConnectionStatus.LOGIN_REQUIRED,
+      },
+    });
 
-    await io.logger.info(
+    await logger.info(
       `Found ${connectionsToReconnect.length} connections needing reconnection`
     );
 
@@ -63,70 +54,68 @@ export const sendReconnectAlertsJob = client.defineJob({
 
     // Process each connection
     for (const connection of connectionsToReconnect) {
-      await io.runTask(`alert-connection-${connection.id}`, async () => {
-        try {
-          // Skip if no user email
-          if (!connection.user.email) {
-            await io.logger.warn(
-              `No email for user ${connection.user.id}, skipping alert`
-            );
-
-            return;
-          }
-          // Skip if no active accounts
-          if (connection.accounts.length === 0) {
-            await io.logger.warn(
-              `No active accounts for connection ${connection.id}, skipping alert`
-            );
-
-            return;
-          }
-
-          // Generate message for user
-          const message = {
-            html: generateReconnectEmailHtml(connection),
-            subject: 'Action Required: Reconnect Your Bank Account',
-            text: generateReconnectEmailText(connection),
-            to: connection.user.email,
-          };
-
-          // Send email (using event for email service to pick up)
-          await client.sendEvent({
-            name: 'send-email',
-            payload: message,
-          });
-
-          // Update last alerted timestamp
-          await prisma.bankConnection.update({
-            data: {
-              alertCount: { increment: 1 },
-              lastAlertedAt: new Date(),
-            },
-            where: { id: connection.id },
-          });
-
-          // Record notification in user activity
-          await prisma.userActivity.create({
-            data: {
-              detail: 'Bank reconnect alert sent',
-              metadata: {
-                connectionId: connection.id,
-                institutionName: connection.institutionName,
-              },
-              type: 'NOTIFICATION',
-              userId: connection.user.id,
-            },
-          });
-
-          alertsSent++;
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : String(error);
-          await io.logger.error(
-            `Error sending reconnect alert for connection ${connection.id}: ${errorMessage}`
+      try {
+        // Skip if no user email
+        if (!connection.user.email) {
+          await logger.warn(
+            `No email for user ${connection.user.id}, skipping alert`
           );
+
+          return;
         }
-      });
+        // Skip if no active accounts
+        if (connection.accounts.length === 0) {
+          await logger.warn(
+            `No active accounts for connection ${connection.id}, skipping alert`
+          );
+
+          return;
+        }
+
+        // Generate message for user
+        const message = {
+          html: generateReconnectEmailHtml(connection),
+          subject: 'Action Required: Reconnect Your Bank Account',
+          text: generateReconnectEmailText(connection),
+          to: connection.user.email,
+        };
+
+        // Send email (using event for email service to pick up)
+        await client.sendEvent({
+          name: 'send-email',
+          payload: message,
+        });
+
+        // Update last alerted timestamp
+        await prisma.bankConnection.update({
+          data: {
+            alertCount: { increment: 1 },
+            lastAlertedAt: new Date(),
+          },
+          where: { id: connection.id },
+        });
+
+        // Record notification in user activity
+        await prisma.userActivity.create({
+          data: {
+            detail: 'Bank reconnect alert sent',
+            metadata: {
+              connectionId: connection.id,
+              institutionName: connection.institutionName,
+            },
+            type: 'NOTIFICATION',
+            userId: connection.user.id,
+          },
+        });
+
+        alertsSent++;
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        await logger.error(
+          `Error sending reconnect alert for connection ${connection.id}: ${errorMessage}`
+        );
+      }
     }
 
     return {

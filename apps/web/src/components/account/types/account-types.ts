@@ -4,6 +4,8 @@
  * @file Account Types
  */
 
+import { TeamRole } from '@/server/types/prisma';
+
 /**
  * Props for the AccountInformation component
  *
@@ -42,6 +44,63 @@ export interface AccountSectionProps {
   user: User;
   /** User preferences/settings */
   userSettings?: UserSettings;
+}
+
+/**
+ * Props for the TeamSection component
+ *
+ * @interface TeamSectionProps
+ */
+export interface TeamSectionProps {
+  /** User ID */
+  userId: string;
+}
+
+/**
+ * Team object containing team information
+ *
+ * @interface Team
+ */
+export interface Team {
+  /** The team's ID */
+  id: string;
+  /** The team's name */
+  name?: string;
+  /** The team's email address */
+  email?: string;
+  /** The team's base currency */
+  baseCurrency?: string;
+  /** The team's logo URL */
+  logoUrl?: string;
+  /** The team's unique slug used in URLs */
+  slug?: string;
+  /** Whether inbox email forwarding is enabled for the team */
+  inboxForwarding?: boolean;
+  /** Array of feature flags enabled for the team */
+  flags?: string[];
+  /** Users that belong to the team */
+  usersOnTeam?: UsersOnTeam[];
+}
+
+/**
+ * User-Team relationship object
+ *
+ * @interface UsersOnTeam
+ */
+export interface UsersOnTeam {
+  /** User ID */
+  userId: string;
+  /** Team ID */
+  teamId: string;
+  /** User's role in the team */
+  role: TeamRole;
+  /** User information */
+  user?: {
+    id: string;
+    name?: string;
+    email?: string;
+    profileImageUrl?: string;
+  };
 }
 
 /**
@@ -134,6 +193,10 @@ export interface User {
   subscriptionPlan?: string;
   /** Unique username for the user */
   username?: string;
+  /** Teams the user belongs to */
+  teams?: Team[];
+  /** Primary team ID if applicable */
+  teamId?: string;
 }
 
 /**
@@ -148,4 +211,6 @@ export interface UserSettings {
   emailNotifications?: boolean;
   /** Whether two-factor authentication is enabled */
   twoFactorEnabled?: boolean;
+  /** Default team ID for the user */
+  defaultTeamId?: string;
 }

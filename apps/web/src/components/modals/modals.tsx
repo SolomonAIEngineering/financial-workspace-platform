@@ -1,23 +1,22 @@
 'use client';
 
-import { useEffect } from 'react';
-
-import { LoginModal } from '@/components/auth/login-modal';
-import { VersionHistoryModal } from '@/components/context-panel/version-history/version-history-modal';
-import { ConfirmModal } from '@/components/modals/confirm-modal';
-import { DiscardModal } from '@/components/modals/discard-modal';
-import { createPushModal } from '@/components/modals/push-modal';
 import {
   useAppSet,
   useAppState,
   useAppValue,
 } from '@/components/providers/app-provider';
-import { AlertDialog } from '@/components/ui/alert-dialog';
-import { useMounted } from '@/registry/default/hooks/use-mounted';
 
+import { AlertDialog } from '@/components/ui/alert-dialog';
+import { ConfirmModal } from '@/components/modals/confirm-modal';
+import { DiscardModal } from '@/components/modals/discard-modal';
 import { ExportDialog } from '../navbar/export-dialog';
 import { ImportDialog } from '../navbar/import-dialog';
-import { SettingsModal } from '../settings/settings-modal';
+import { LoginModal } from '@/components/auth/login-modal';
+import { SettingsModal } from './settings-modal';
+import { VersionHistoryModal } from '@/components/context-panel/version-history/version-history-modal';
+import { createPushModal } from '@/components/modals/push-modal';
+import { useEffect } from 'react';
+import { useMounted } from '@/registry/default/hooks/use-mounted';
 
 export const {
   ModalProvider,

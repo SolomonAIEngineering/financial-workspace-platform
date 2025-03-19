@@ -3,6 +3,11 @@
   "version": "2.0.0",
   "private": true,
   "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./mappings": "./src/mappings.ts",
+    "./transform": "./src/transform.ts"
+  },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "format": "biome format --write .",

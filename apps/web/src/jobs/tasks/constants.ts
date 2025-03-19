@@ -34,6 +34,12 @@ export const BANK_JOBS = {
   SYNC_CONNECTION: 'sync-connection-job',
   /** Job to upsert transactions */
   UPSERT_TRANSACTIONS: 'upsert-transactions-job',
+  /** Job to identify recurring transactions */
+  RECURRING_TRANSACTIONS: 'recurring-transactions-job',
+  /** Job to upsert recurring transactions */
+  UPSERT_RECURRING_TRANSACTIONS: 'upsert-recurring-transactions-job',
+  /** Job to delete a team and all its connections */
+  DELETE_TEAM: 'delete-team',
 } as const;
 
 /** Transaction-related job IDs */
@@ -46,6 +52,8 @@ export const TRANSACTION_JOBS = {
   ANALYZE_SPENDING: 'analyze-spending-patterns-job',
   /** Job to sync bank transactions */
   SYNC_BANK_TRANSACTIONS: 'sync-bank-transactions-job',
+  /** Job to process transaction data export */
+  PROCESS_EXPORT: 'process-export',
 } as const;
 
 /** Financial-related job IDs */

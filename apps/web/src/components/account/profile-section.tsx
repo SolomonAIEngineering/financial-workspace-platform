@@ -23,6 +23,7 @@ import { Form } from '@/components/ui/form';
 import { Icons } from '@/components/ui/icons';
 import { Button } from '@/registry/default/potion-ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/registry/default/potion-ui/tabs';
+import { InfoTooltip } from '@/components/ui/info-tooltip';
 
 import { BasicProfileTab } from './components/tabs/basic-profile-tab';
 import { ContactProfileTab } from './components/tabs/contact-profile-tab';
@@ -167,6 +168,10 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
         <div className="flex items-center gap-2">
           <Icons.user className="size-5 text-primary" />
           <CardTitle>Profile Information</CardTitle>
+          <InfoTooltip
+            description="Your profile information is visible to other team members and may be displayed in shared reports and documents."
+            size="sm"
+          />
         </div>
         <CardDescription className="text-muted-foreground/90">
           Update your profile information visible to other users.
@@ -191,6 +196,12 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
                 >
                   <Icons.user className="size-4 opacity-80" />
                   <span className="hidden md:inline">Basic</span>
+                  <InfoTooltip
+                    title="Basic Profile"
+                    description="Your name, profile image, bio, and language preferences"
+                    size="sm"
+                    side="bottom"
+                  />
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium transition-all duration-200 hover:bg-muted/20 data-[state=active]:scale-[1.02] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
@@ -198,6 +209,12 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
                 >
                   <Icons.file className="size-4 opacity-80" />
                   <span className="hidden md:inline">Professional</span>
+                  <InfoTooltip
+                    title="Professional Details"
+                    description="Your job title, department, skills, and professional experience"
+                    size="sm"
+                    side="bottom"
+                  />
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium transition-all duration-200 hover:bg-muted/20 data-[state=active]:scale-[1.02] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
@@ -205,6 +222,12 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
                 >
                   <Icons.settings className="size-4 opacity-80" />
                   <span className="hidden md:inline">Organization</span>
+                  <InfoTooltip
+                    title="Organization Info"
+                    description="Your organization name, team, manager, and reporting relationships"
+                    size="sm"
+                    side="bottom"
+                  />
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium transition-all duration-200 hover:bg-muted/20 data-[state=active]:scale-[1.02] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
@@ -212,6 +235,12 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
                 >
                   <Icons.message className="size-4 opacity-80" />
                   <span className="hidden md:inline">Contact</span>
+                  <InfoTooltip
+                    title="Contact Information"
+                    description="Your phone numbers, email addresses, and physical address details"
+                    size="sm"
+                    side="bottom"
+                  />
                 </TabsTrigger>
                 <TabsTrigger
                   className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium transition-all duration-200 hover:bg-muted/20 data-[state=active]:scale-[1.02] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
@@ -219,6 +248,12 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
                 >
                   <Icons.link className="size-4 opacity-80" />
                   <span className="hidden md:inline">Social</span>
+                  <InfoTooltip
+                    title="Social Profiles"
+                    description="Your LinkedIn, Twitter, and GitHub profile links"
+                    size="sm"
+                    side="bottom"
+                  />
                 </TabsTrigger>
               </TabsList>
 

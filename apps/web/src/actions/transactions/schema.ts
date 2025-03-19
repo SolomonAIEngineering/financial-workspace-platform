@@ -7,3 +7,8 @@ export const syncTransactionsSchema = z.object({
   institutionId: z.string().min(1, 'Institution ID is required'),
   userId: z.string().min(1, 'User ID is required'),
 });
+
+export const manualSyncTransactionsSchema = z.object({
+  connectionId: z.string().min(1, 'Connection ID is required'),
+  manualSync: z.boolean().optional(),
+});

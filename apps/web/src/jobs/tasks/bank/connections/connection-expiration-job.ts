@@ -1,7 +1,9 @@
+import { logger, schemaTask } from '@trigger.dev/sdk/v3';
+
 import { BANK_JOBS } from '../../constants';
-import { client } from '../../../client';
-import { cronTrigger } from '@trigger.dev/sdk';
-import { differenceInDays } from 'date-fns';
+import { BankConnectionStatus } from '@/server/types/index';
+import { addDays } from 'date-fns';
+import { client } from '@/jobs/client';
 import { prisma } from '@/server/db';
 
 /**
@@ -48,13 +50,13 @@ const CRITICAL_DAYS = 3;
  *   error: "Database connection failed"
  *   }
  */
-export const connectionExpirationJob = client.defineJob({
+export const connectionExpirationJob = schemaTask({
   id: BANK_JOBS.CONNECTION_EXPIRATION,
-  name: 'Connection Expiration Job',
-  trigger: cronTrigger({
-    cron: '0 9 * * *', // Run daily at 9 AM
-  }),
-  version: '1.0.0',
+  description: 'Connection Expiration Job',
+  maxDuration: 300,
+  queue: {
+    concurrencyLimit: 1,
+  },
   /**
    * Main job execution function that checks for expiring connections and sends
    * notifications
@@ -64,94 +66,124 @@ export const connectionExpirationJob = client.defineJob({
    *   tasks, etc.
    * @returns A result object containing success status and notification counts
    */
-  run: async (payload, io) => {
-    await io.logger.info('Starting connection expiration check');
+  run: async (payload) => {
+    logger.info('Starting connection expiration check');
 
     try {
-      // Get all active connections with expiration dates
-      const connections = await io.runTask(
-        'get-active-connections',
-        async () => {
-          return await prisma.bankConnection.findMany({
-            select: {
-              id: true,
-              expiresAt: true,
-              institutionName: true,
-              userId: true,
+      const now = new Date();
+      const criticalDate = addDays(now, CRITICAL_DAYS);
+      const warningDate = addDays(now, WARNING_DAYS);
+
+      // Run both queries concurrently for better performance
+      const [criticalConnections, warningConnections] = await Promise.all([
+        // Get connections that are in the critical period (0-3 days until expiration)
+        prisma.bankConnection.findMany({
+          select: {
+            id: true,
+            expiresAt: true,
+            institutionName: true,
+            userId: true,
+          },
+          where: {
+            expiresAt: {
+              not: null,
+              gt: now,
+              lte: criticalDate,
             },
-            where: {
-              expiresAt: { not: null },
-              status: 'ACTIVE',
+            status: BankConnectionStatus.ACTIVE,
+          },
+        }),
+
+        // Get connections that are in the warning period (4-14 days until expiration)
+        prisma.bankConnection.findMany({
+          select: {
+            id: true,
+            expiresAt: true,
+            institutionName: true,
+            userId: true,
+          },
+          where: {
+            expiresAt: {
+              not: null,
+              gt: criticalDate,
+              lte: warningDate,
             },
-          });
-        }
+            status: BankConnectionStatus.ACTIVE,
+          },
+        }),
+      ]);
+
+      logger.info(
+        `Found ${criticalConnections.length} critical and ${warningConnections.length} warning connections`
       );
 
-      await io.logger.info(
-        `Found ${connections.length} connections to check for expiration`
-      );
-
-      let warningCount = 0;
       let criticalCount = 0;
+      let warningCount = 0;
 
-      for (const connection of connections) {
+      // Process critical connections
+      for (const connection of criticalConnections) {
         if (!connection.expiresAt) continue;
 
-        const daysUntilExpiration = differenceInDays(
-          new Date(connection.expiresAt),
-          new Date()
+        const daysUntilExpiration = Math.max(
+          1,
+          Math.ceil(
+            (connection.expiresAt.getTime() - now.getTime()) /
+              (1000 * 60 * 60 * 24)
+          )
         );
 
-        // Handle critical expiration (3 days or less)
-        if (daysUntilExpiration <= CRITICAL_DAYS && daysUntilExpiration > 0) {
-          await client.sendEvent({
-            name: 'connection-notification',
-            payload: {
-              userId: connection.userId,
-              type: 'connection_critical',
-              title: 'Bank Connection Expiring Soon',
-              message: `Your connection to ${connection.institutionName} will expire in ${daysUntilExpiration} days. Please reconnect to avoid interruption.`,
-              data: {
-                connectionId: connection.id,
-                bankName: connection.institutionName,
-                daysRemaining: daysUntilExpiration,
-              },
+        await client.sendEvent({
+          name: 'connection-notification',
+          payload: {
+            userId: connection.userId,
+            type: 'connection_critical',
+            title: 'Bank Connection Expiring Soon',
+            message: `Your connection to ${connection.institutionName} will expire in ${daysUntilExpiration} days. Please reconnect to avoid interruption.`,
+            data: {
+              connectionId: connection.id,
+              bankName: connection.institutionName,
+              daysRemaining: daysUntilExpiration,
             },
-          });
-          criticalCount++;
+          },
+        });
+        criticalCount++;
 
-          await io.logger.info(
-            `Sent critical expiration notification for connection ${connection.id}`
-          );
-        }
-        // Handle warning expiration (14 days or less)
-        else if (
-          daysUntilExpiration <= WARNING_DAYS &&
-          daysUntilExpiration > CRITICAL_DAYS
-        ) {
-          await client.sendEvent({
-            name: 'connection-notification',
-            payload: {
-              userId: connection.userId,
-              type: 'connection_warning',
-              title: 'Bank Connection Update Needed',
-              message: `Your connection to ${connection.institutionName} will expire in ${daysUntilExpiration} days.`,
-              data: {
-                connectionId: connection.id,
-                bankName: connection.institutionName,
-                daysRemaining: daysUntilExpiration,
-              },
-            },
-          });
-          warningCount++;
-
-          await io.logger.info(
-            `Sent warning expiration notification for connection ${connection.id}`
-          );
-        }
+        logger.info(
+          `Sent critical expiration notification for connection ${connection.id}`
+        );
       }
 
-      await io.logger.info(
+      // Process warning connections
+      for (const connection of warningConnections) {
+        if (!connection.expiresAt) continue;
+
+        const daysUntilExpiration = Math.ceil(
+          (connection.expiresAt.getTime() - now.getTime()) /
+            (1000 * 60 * 60 * 24)
+        );
+
+        await client.sendEvent({
+          name: 'connection-notification',
+          payload: {
+            userId: connection.userId,
+            type: 'connection_warning',
+            title: 'Bank Connection Update Needed',
+            message: `Your connection to ${connection.institutionName} will expire in ${daysUntilExpiration} days.`,
+            data: {
+              connectionId: connection.id,
+              bankName: connection.institutionName,
+              daysRemaining: daysUntilExpiration,
+            },
+          },
+        });
+        warningCount++;
+
+        logger.info(
+          `Sent warning expiration notification for connection ${connection.id}`
+        );
+      }
+
+      logger.info(
         `Connection expiration check completed: ${warningCount} warnings, ${criticalCount} critical notifications sent`
       );
 
@@ -161,9 +193,7 @@ export const connectionExpirationJob = client.defineJob({
         criticalCount,
       };
     } catch (error) {
-      await io.logger.error(
-        `Connection expiration check failed: ${error.message}`
-      );
+      logger.error(`Connection expiration check failed: ${error.message}`);
 
       return {
         success: false,

@@ -9,9 +9,10 @@ export const createQueryClient = () =>
       mutations: {
         onError: (error) => {
           if (error.message.includes('limit')) {
-            toast.error('Rate limit exceeded. Please try again later.');
+            toast.error(error.message);
           } else {
             console.error(error);
+            toast.error(error.message);
           }
         },
       },

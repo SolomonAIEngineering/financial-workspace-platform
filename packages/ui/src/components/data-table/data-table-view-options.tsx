@@ -1,6 +1,12 @@
 'use client'
 
+import {
+  Sortable,
+  SortableDragHandle,
+  SortableItem,
+} from '@/components/custom/sortable'
 import { Check, GripVertical, Settings2 } from 'lucide-react'
+import { useMemo, useState } from 'react'
 import {
   Command,
   CommandEmpty,
@@ -10,16 +16,10 @@ import {
   CommandList,
 } from '../command'
 import { Popover, PopoverContent, PopoverTrigger } from '../popover'
-import {
-  Sortable,
-  SortableDragHandle,
-  SortableItem,
-} from '@/components/custom/sortable'
-import { useMemo, useState } from 'react'
 
-import { Button } from '../button'
-import { cn } from '@/lib/utils'
 import { useDataTable } from '@/components/data-table/data-table-provider'
+import { cn } from '@/lib/utils'
+import { Button } from '../button'
 
 export function DataTableViewOptions() {
   const { table, enableColumnOrdering } = useDataTable()

@@ -1,20 +1,5 @@
 'use client';
 
-import React from 'react';
-
-import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
-
-import { BlockquotePlugin } from '@udecode/plate-block-quote/react';
-import { CalloutPlugin } from '@udecode/plate-callout/react';
-import { CodeBlockPlugin } from '@udecode/plate-code-block/react';
-import { HEADING_KEYS } from '@udecode/plate-heading';
-import { INDENT_LIST_KEYS, ListStyleType } from '@udecode/plate-indent-list';
-import { TogglePlugin } from '@udecode/plate-toggle/react';
-import {
-  ParagraphPlugin,
-  useEditorRef,
-  useSelectionFragmentProp,
-} from '@udecode/plate/react';
 import {
   ChevronDownIcon,
   Code2Icon,
@@ -29,12 +14,6 @@ import {
   QuoteIcon,
   SquareIcon,
 } from 'lucide-react';
-
-import {
-  getBlockType,
-  setBlockType,
-} from '@/registry/default/components/editor/transforms';
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +25,24 @@ import {
   DropdownMenuTrigger,
   useOpenState,
 } from './dropdown-menu';
+import { INDENT_LIST_KEYS, ListStyleType } from '@udecode/plate-indent-list';
+import {
+  ParagraphPlugin,
+  useEditorRef,
+  useSelectionFragmentProp,
+} from '@udecode/plate/react';
+import {
+  getBlockType,
+  setBlockType,
+} from '@/registry/default/components/editor/transforms';
+
+import { BlockquotePlugin } from '@udecode/plate-block-quote/react';
+import { CalloutPlugin } from '@udecode/plate-callout/react';
+import { CodeBlockPlugin } from '@udecode/plate-code-block/react';
+import type { DropdownMenuProps } from '@radix-ui/react-dropdown-menu';
+import { HEADING_KEYS } from '@udecode/plate-heading';
+import React from 'react';
+import { TogglePlugin } from '@udecode/plate-toggle/react';
 import { ToolbarButton } from './toolbar';
 
 export const turnIntoItems = [

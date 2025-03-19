@@ -4,6 +4,7 @@
  * @file Profile Types
  */
 
+import { ReactNode } from 'react';
 import { z } from 'zod';
 
 /** Constants for form validation */
@@ -183,7 +184,7 @@ export interface ProfileFormFieldProps {
   /** The form control from react-hook-form */
   control: any;
   /** React node for the field icon */
-  icon: React.ReactNode;
+  icon: ReactNode;
   /** Label displayed above the field */
   label: string;
   /** The field name matching the schema */
@@ -192,6 +193,8 @@ export interface ProfileFormFieldProps {
   placeholder: string;
   /** Optional description displayed below the field */
   description?: string;
+  /** Optional detailed description for the tooltip */
+  tooltipDescription?: string;
   /** Input type (text, textarea, etc.) */
   type?: string;
 }

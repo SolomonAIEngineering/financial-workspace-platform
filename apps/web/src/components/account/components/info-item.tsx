@@ -7,8 +7,6 @@
 
 'use client';
 
-import { Icons } from '@/components/ui/icons';
-import { Label } from '@/components/ui/label';
 import {
   Tooltip,
   TooltipContent,
@@ -16,7 +14,9 @@ import {
   TooltipTrigger,
 } from '@/registry/default/potion-ui/tooltip';
 
+import { Icons } from '@/components/ui/icons';
 import type { InfoItemProps } from '../types/account-types';
+import { Label } from '@/components/ui/label';
 
 /**
  * Enhanced InfoItem component with verification badge option and modern styling

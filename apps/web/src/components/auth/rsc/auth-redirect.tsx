@@ -1,10 +1,9 @@
 import * as React from 'react';
 
+import { auth, isNotAuth } from './auth';
 import { notFound, redirect } from 'next/navigation';
 
 import { env } from '@/env';
-
-import { auth, isNotAuth } from './auth';
 
 export const authRedirect = async ({
   pathname,

@@ -154,7 +154,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             <NavItem
               className="text-sm transition-colors"
               label="Editor"
-              href="/editor"
+              href={routes.editor()}
               icon={Icons.editor}
             />
 
