@@ -40,7 +40,9 @@
     "trigger:dev": "pnpm dlx trigger.dev@3.3.12 dev --skip-update-check",
     "trigger:login": "pnpm dlx trigger.dev@3.3.12 login",
     "trigger:deploy": "pnpm dlx trigger.dev@3.3.12 deploy",
-    "trigger:whoami": "pnpm dlx trigger.dev@3.3.12 whoami"
+    "trigger:whoami": "pnpm dlx trigger.dev@3.3.12 whoami",
+    "deploy:trigger-prod": "pnpm dlx trigger.dev@3.3.12 deploy",
+    "deploy:trigger": "pnpm dlx trigger.dev@3.3.12 deploy --env staging"
   },
   "dependencies": {
     "@solomonai/clickhouse-financials": "workspace:*",
