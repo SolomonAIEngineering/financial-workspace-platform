@@ -24,6 +24,7 @@ export const generateInvoice = schemaTask({
       },
       include: {
         team: true,
+        lineItems: true, // Include related line items
       },
     });
 
@@ -32,15 +33,8 @@ export const generateInvoice = schemaTask({
       return;
     }
 
-    // Fetch line items separately since there appears to be a schema issue
-    const lineItemsData = await prisma.invoiceLineItem.findMany({
-      where: {
-        invoiceId: invoiceId,
-      },
-    });
-
-    // Map the line items into the format needed for the PDF
-    const lineItems = lineItemsData.map((item) => ({
+    // Use the line items from the invoice relation
+    const lineItems = invoice.lineItems.map((item) => ({
       name: item.name,
       quantity: item.quantity,
       price: item.price,
