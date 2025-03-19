@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "analyze": "ANALYZE=true pnpm build",
-    "build": "next build",
+    "build": "pnpm run db:generate && next build",
     "build:registry": "tsx --tsconfig ./scripts/tsconfig.scripts.json scripts/build-registry.mts",
     "build:tw": "pnpm tailwindcss -i ./src/styles/globals.css -o ./public/css/tailwind.css --minify",
     "db:deploy": "pnpm with-env prisma migrate deploy",
