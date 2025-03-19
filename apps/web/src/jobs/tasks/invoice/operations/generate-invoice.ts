@@ -95,15 +95,15 @@ export const generateInvoice = schemaTask({
         amount: invoice.amount || 0,
         vat: invoice.vat || 0,
         tax: invoice.tax || 0,
-        width: 595,
-        height: 842,
         token: invoice.token,
         size: 'a4',
+        width: 595,
+        height: 842,
         top_block: invoice.topBlock as any,
         bottom_block: invoice.bottomBlock as any,
         subtotal: invoice.subtotal || 0,
         discount: invoice.discount || 0,
-      })
+      } as any)
     );
 
     const filename = `${invoice.invoiceNumber || 'invoice'}.pdf`;

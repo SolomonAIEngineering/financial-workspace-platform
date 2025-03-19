@@ -181,9 +181,9 @@ export const syncAccount = schemaTask({
             await prisma.bankAccount.update({
               where: { id },
               data: {
-                balance: balance as number,
-                errorDetails: null,
-                errorRetries: null,
+                currentBalance: balance as number,
+                errorMessage: null,
+                errorCount: 0,
               },
             });
 
@@ -193,8 +193,8 @@ export const syncAccount = schemaTask({
             await prisma.bankAccount.update({
               where: { id },
               data: {
-                errorDetails: null,
-                errorRetries: null,
+                errorMessage: null,
+                errorCount: 0,
               },
             });
 
@@ -220,8 +220,8 @@ export const syncAccount = schemaTask({
             await prisma.bankAccount.update({
               where: { id },
               data: {
-                errorDetails: parsedError.message,
-                errorRetries: retries,
+                errorMessage: parsedError.message,
+                errorCount: retries,
               },
             });
 
@@ -269,8 +269,8 @@ export const syncAccount = schemaTask({
             await prisma.bankAccount.update({
               where: { id },
               data: {
-                errorDetails: null,
-                errorRetries: null,
+                errorMessage: null,
+                errorCount: 0,
               },
             });
 

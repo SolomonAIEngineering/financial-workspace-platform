@@ -63,12 +63,12 @@ export const sendInvoiceEmail = schemaTask({
           paymentMethods={
             Array.isArray(invoice?.paymentDetails)
               ? invoice.paymentDetails
-                  .filter(
-                    (payment): payment is Record<string, any> =>
-                      payment !== null && typeof payment === 'object'
-                  )
-                  .map((payment) => payment.method)
-                  .filter(Boolean)
+                .filter(
+                  (payment): payment is Record<string, any> =>
+                    payment !== null && typeof payment === 'object'
+                )
+                .map((payment) => payment.method)
+                .filter(Boolean)
               : []
           }
         />

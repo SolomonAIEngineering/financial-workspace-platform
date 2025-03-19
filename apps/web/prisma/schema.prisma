@@ -314,12 +314,12 @@ model BankConnection {
   expiryNotificationCount Int       @default(0)
   expiresAt               DateTime?
   provider String
+  team Team[]
 
   @@index([userId])
   @@index([itemId])
   @@index([status])
   @@index([institutionId])
-  Team Team[]
 }
 
 // Enhanced BankAccount model
@@ -924,7 +924,7 @@ enum SpendingTimeframe {
 model Team {
   id                     String    @id @default(cuid())
   name                   String?
-  slug                   String    @unique @map("slug")
+  slug                   String    @unique
   baseCurrency           String?   @map("base_currency")
   email                  String?
   logoUrl                String?   @map("logo_url")

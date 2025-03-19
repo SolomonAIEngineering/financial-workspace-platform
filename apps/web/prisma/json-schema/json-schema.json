@@ -1043,7 +1043,7 @@
         "provider": {
           "type": "string"
         },
-        "Team": {
+        "team": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Team"

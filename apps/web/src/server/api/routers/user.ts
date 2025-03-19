@@ -426,7 +426,7 @@ export const userRouter = createRouter({
     ];
     const professionalInfoCompleteness = Math.round(
       (professionalInfo.filter((f) => !!f).length / professionalInfo.length) *
-        100
+      100
     );
 
     const contactInfo = [

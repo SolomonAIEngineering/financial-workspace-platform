@@ -80,10 +80,13 @@ export const bankSyncScheduler = schedules.task({
         // Get all bank connections for the team
         const bankConnections = await prisma.bankConnection.findMany({
           where: {
-            Team: {
-              some: {
-                id: teamId,
-              },
+            userId: {
+              in: await prisma.usersOnTeam
+                .findMany({
+                  where: { teamId },
+                  select: { userId: true },
+                })
+                .then(users => users.map(u => u.userId))
             },
           },
         });
