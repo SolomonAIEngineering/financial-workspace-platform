@@ -36,3 +36,8 @@ jobs:
           # Add your database connection string and other required environment variables
           DATABASE_URL: ${{ secrets.SMB_FINANCIAL_MANAGEMENT_DATABASE_URL }}
           # Add any other environment variables needed for database connection
+      - name: 🔄 Deploy Background Jobs
+        env:
+          TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+        run: |
+          TRIGGER_PROJECT_ID=${{ secrets.TRIGGER_PROJECT_ID }} pnpm dlx trigger.dev@3.3.16 deploy
