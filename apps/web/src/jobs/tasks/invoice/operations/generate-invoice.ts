@@ -17,12 +17,12 @@ export const generateInvoice = schemaTask({
   run: async (payload) => {
     const { invoiceId } = payload;
 
+    // Fetch invoice with related data
     const invoice = await prisma.invoice.findUnique({
       where: {
         id: invoiceId,
       },
       include: {
-        lineItems: true,
         team: true,
       },
     });
@@ -32,13 +32,15 @@ export const generateInvoice = schemaTask({
       return;
     }
 
-    // Default line items
-    const lineItems: {
-      name: string;
-      quantity: number;
-      price: number;
-      unit?: string;
-    }[] = invoice.lineItems.map((item) => ({
+    // Fetch line items separately since there appears to be a schema issue
+    const lineItemsData = await prisma.invoiceLineItem.findMany({
+      where: {
+        invoiceId: invoiceId,
+      },
+    });
+
+    // Map the line items into the format needed for the PDF
+    const lineItems = lineItemsData.map((item) => ({
       name: item.name,
       quantity: item.quantity,
       price: item.price,
