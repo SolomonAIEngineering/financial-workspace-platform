@@ -1,28 +1,24 @@
 {
   "name": "@solomonai/invoice",
   "private": true,
-  "main": "src/index.tsx",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
+    "clean": "rm -rf .turbo node_modules dist",
     "lint": "biome check .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "build": "vite build"
+    "build": "tsup"
   },
   "exports": {
-    ".": "./src/index.tsx",
-    "./token": "./src/token/index.ts",
-    "./number": "./src/utils/number.ts",
-    "./templates/html": "./src/templates/html/index.tsx",
-    "./templates/pdf": "./src/templates/pdf/index.tsx",
-    "./templates/og": "./src/templates/og/index.tsx",
-    "./editor": "./src/editor/index.tsx",
-    "./calculate": "./src/utils/calculate.ts",
-    "./format-to-html": "./src/templates/html/format.tsx",
-    "./default": "./src/utils/default.ts",
-    "./content": "./src/utils/content.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
   },
   "peerDependencies": {
     "react": "^19.0.0",
@@ -53,7 +49,8 @@
     "crypto-browserify": "^3.12.1",
     "playwright": "^1.51.1",
     "storybook": "^8.6.7",
-    "vite": "^6.2.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3",
     "vitest": "^3.0.9"
   }
 }

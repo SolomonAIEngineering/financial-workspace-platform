@@ -1,5 +1,5 @@
-import { TZDate } from '@date-fns/tz'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
+
 import type { Template } from '../../types'
 
 type Props = {
@@ -43,7 +43,7 @@ export function Meta({
                 </span>
                 <span className="flex-shrink-0 font-mono text-[11px]">
                   {format(
-                    new TZDate(issueDate, timezone),
+                    parseISO(issueDate),
                     template.date_format,
                   )}
                 </span>
@@ -59,7 +59,7 @@ export function Meta({
                   {template.due_date_label}:
                 </span>
                 <span className="flex-shrink-0 font-mono text-[11px]">
-                  {format(new TZDate(dueDate, timezone), template.date_format)}
+                  {format(parseISO(dueDate), template.date_format)}
                 </span>
               </div>
             </div>
