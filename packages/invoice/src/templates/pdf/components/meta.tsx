@@ -1,7 +1,5 @@
 import { Text, View } from '@react-pdf/renderer'
-
-import { TZDate } from '@date-fns/tz'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 
 interface MetaProps {
   invoiceNo: string
@@ -43,7 +41,7 @@ export function Meta({
             {issueDateLabel}:
           </Text>
           <Text style={{ fontSize: 9 }}>
-            {format(new TZDate(issueDate, timezone), dateFormat)}
+            {format(parseISO(dueDate), dateFormat)}
           </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -51,7 +49,7 @@ export function Meta({
             {dueDateLabel}:
           </Text>
           <Text style={{ fontSize: 9 }}>
-            {format(new TZDate(dueDate, timezone), dateFormat)}
+            {format(parseISO(dueDate), dateFormat)}
           </Text>
         </View>
       </View>
