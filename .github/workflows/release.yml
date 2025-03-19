@@ -14,23 +14,16 @@ jobs:
       pull-requests: write
       packages: write
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
         with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+          version: 8
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "pnpm"
-
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.15.0
-          run_install: false
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
