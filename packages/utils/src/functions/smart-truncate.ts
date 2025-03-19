@@ -4,37 +4,37 @@
     at minimum the domain should still show 8 characters though
 */
 
-import { truncate } from "./truncate";
+import { truncate } from './truncate'
 
 // Function to truncate domain while preserving TLD
 const truncateDomain = (domain: string, maxLength: number): string => {
-  const parts = domain.split(".");
-  const tld = parts.pop() || "";
-  const rest = parts.join(".");
+  const parts = domain.split('.')
+  const tld = parts.pop() || ''
+  const rest = parts.join('.')
 
-  return `${rest.slice(0, maxLength)}...${tld}`;
-};
+  return `${rest.slice(0, maxLength)}...${tld}`
+}
 
 export const smartTruncate = (link: string, maxLength: number): string => {
   if (link.length <= maxLength) {
-    return link;
+    return link
   }
 
-  const [domain, ...pathParts] = link.split("/");
-  const path = pathParts.join("/");
-  const minDomainLength = 8;
+  const [domain, ...pathParts] = link.split('/')
+  const path = pathParts.join('/')
+  const minDomainLength = 8
 
   // calculate max path length
-  const maxPathLength = maxLength - minDomainLength;
+  const maxPathLength = maxLength - minDomainLength
 
   // Truncate path
-  const truncatedPath = truncate(path, maxPathLength)!;
+  const truncatedPath = truncate(path, maxPathLength)!
 
   // Truncate domain if necessary, preserving TLD
   const truncatedDomain = truncateDomain(
     domain,
     maxLength - truncatedPath.length,
-  );
+  )
 
-  return `${truncatedDomain}/${truncatedPath}`;
-};
+  return `${truncatedDomain}/${truncatedPath}`
+}

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { useHotKey } from "@/hooks/use-hot-key";
 import { cn } from "@/lib/utils";
 import { FetchPreviousPageOptions } from "@tanstack/react-query";
-import { CirclePause, CirclePlay } from "lucide-react";
 import { useQueryStates } from "nuqs";
 import * as React from "react";
 import { searchParamsParser } from "../search-params";
@@ -68,11 +67,7 @@ export function LiveButton({ fetchPreviousPage }: LiveButtonProps) {
       variant="outline"
       size="sm"
     >
-      {live ? (
-        <CirclePause className="mr-2 h-4 w-4" />
-      ) : (
-        <CirclePlay className="mr-2 h-4 w-4" />
-      )}
+      <span className="mr-2 inline-block">{live ? "⏸" : "▶"}</span>
       Live
     </Button>
   );

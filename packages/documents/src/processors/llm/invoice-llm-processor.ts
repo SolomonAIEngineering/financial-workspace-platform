@@ -172,7 +172,7 @@ export class InvoiceLlmProcessor extends LlmProcessor {
    * @param content - Raw invoice document content
    * @returns Structured invoice data or null if extraction fails
    */
-  public async getStructuredData(content: string) {
+  public override async getStructuredData(content: string) {
     try {
       const prompt = `
 You are a highly specialized assistant tasked with extracting invoice-related information from the provided document content. 

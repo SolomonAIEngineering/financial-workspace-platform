@@ -21,19 +21,19 @@ import {
   Text,
 } from '@react-email/components'
 import {
+  BusinessConfig,
+  BusinessConfig as platform,
+} from '@solomonai/platform-config'
+import {
   Building,
   Calendar,
   CreditCard,
   DollarSign,
   FileText,
 } from 'lucide-react'
-import {
-  BusinessConfig,
-  BusinessConfig as platform,
-} from '@solomonai/platform-config'
 
-import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
+import Footer from '../components/footer'
 
 /**
  * Interface defining the properties for the InvoiceEmail component.

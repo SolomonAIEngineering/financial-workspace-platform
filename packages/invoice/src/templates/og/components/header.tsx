@@ -1,16 +1,16 @@
-import { Avatar } from "./avatar";
-import { Status } from "./status";
+import { Avatar } from './avatar'
+import { Status } from './status'
 
 type Props = {
-  customerName: string;
-  status: "draft" | "overdue" | "paid" | "unpaid" | "canceled";
-  logoUrl?: string;
-  isValidLogo: boolean;
-};
+  customerName: string
+  status: 'draft' | 'overdue' | 'paid' | 'unpaid' | 'canceled'
+  logoUrl?: string
+  isValidLogo: boolean
+}
 
 export function Header({ customerName, status, logoUrl, isValidLogo }: Props) {
   return (
-    <div className="flex mb-12 items-center justify-between w-full">
+    <div className="mb-12 flex w-full items-center justify-between">
       <Avatar
         logoUrl={logoUrl}
         isValidLogo={isValidLogo}
@@ -18,5 +18,5 @@ export function Header({ customerName, status, logoUrl, isValidLogo }: Props) {
       />
       <Status status={status} />
     </div>
-  );
+  )
 }

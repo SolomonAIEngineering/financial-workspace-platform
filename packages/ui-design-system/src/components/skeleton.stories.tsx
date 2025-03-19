@@ -1,44 +1,44 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react'
 
-import { Skeleton } from "./skeleton";
+import { Skeleton } from './skeleton'
 
 const meta: Meta<typeof Skeleton> = {
-    component: Skeleton,
-    tags: ["autodocs"],
-};
+  component: Skeleton,
+  tags: ['autodocs'],
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof Skeleton>;
+type Story = StoryObj<typeof Skeleton>
 
 export const Default: Story = {
-    render: () => <Skeleton className="h-4 w-full" />,
-};
+  render: () => <Skeleton className="h-4 w-full" />,
+}
 
 export const Circle: Story = {
-    render: () => <Skeleton className="h-12 w-12 rounded-full" />,
-};
+  render: () => <Skeleton className="h-12 w-12 rounded-full" />,
+}
 
 export const CardLoading: Story = {
-    render: () => (
-        <div className="flex flex-col space-y-3">
-            <Skeleton className="h-[125px] w-full rounded-xl" />
-            <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
-            </div>
-        </div>
-    ),
-};
+  render: () => (
+    <div className="flex flex-col space-y-3">
+      <Skeleton className="h-[125px] w-full rounded-xl" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+  ),
+}
 
 export const ProfileLoading: Story = {
-    render: () => (
-        <div className="flex items-center space-x-4">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <div className="space-y-2">
-                <Skeleton className="h-4 w-[250px]" />
-                <Skeleton className="h-4 w-[200px]" />
-            </div>
-        </div>
-    ),
-}; 
+  render: () => (
+    <div className="flex items-center space-x-4">
+      <Skeleton className="h-12 w-12 rounded-full" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-[250px]" />
+        <Skeleton className="h-4 w-[200px]" />
+      </div>
+    </div>
+  ),
+}

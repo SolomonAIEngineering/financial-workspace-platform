@@ -2,13 +2,13 @@ export const pluralize = (
   word: string,
   count: number,
   options: {
-    plural?: string;
+    plural?: string
   } = {},
 ) => {
   if (count === 1) {
-    return word;
+    return word
   }
 
   // Use custom plural form if provided, otherwise add 's'
-  return options.plural || `${word}s`;
-};
+  return options.plural || `${word}s`
+}

@@ -1,6 +1,6 @@
-import { ArchiveIcon } from "@radix-ui/react-icons";
-import { FaXTwitter } from "react-icons/fa6";
-import { FiGithub } from "react-icons/fi";
+import { ArchiveIcon } from '@radix-ui/react-icons'
+import { FaXTwitter } from 'react-icons/fa6'
+import { FiGithub } from 'react-icons/fi'
 import {
   MdAdd,
   MdAddLink,
@@ -11,7 +11,6 @@ import {
   MdArrowUpward,
   MdAttachMoney,
   MdAutoAwesome,
-  MdBarChart,
   MdChangeHistory,
   MdChevronLeft,
   MdChevronRight,
@@ -43,7 +42,6 @@ import {
   MdOutlineAccountBalance,
   MdOutlineAccountCircle,
   MdOutlineApps,
-  MdOutlineArchive,
   MdOutlineArrowDownward,
   MdOutlineArrowForward,
   MdOutlineArrowOutward,
@@ -130,8 +128,8 @@ import {
   MdTopic,
   MdTrendingDown,
   MdTrendingUp,
-} from "react-icons/md";
-import { PiDiscordLogo } from "react-icons/pi";
+} from 'react-icons/md'
+import { PiDiscordLogo } from 'react-icons/pi'
 
 export const Icons = {
   LogoSmall: (props: any) => (
@@ -622,7 +620,7 @@ export const Icons = {
         y={0}
         maskUnits="userSpaceOnUse"
         style={{
-          maskType: "alpha",
+          maskType: 'alpha',
         }}
       >
         <circle cx={4} cy={4} r={4} fill="#D9D9D9" />
@@ -770,4 +768,4 @@ export const Icons = {
   ArrowOutward: MdOutlineArrowOutward,
   Straighten: MdOutlineSquareFoot,
   Files: MdOutlineInventory2,
-};
+}

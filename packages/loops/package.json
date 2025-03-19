@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
-    "build": "tsup",
+    "build": "tsup ./src/index.ts",
     "dev": "tsup --watch",
     "lint": "biome check .",
     "format": "biome format --write .",

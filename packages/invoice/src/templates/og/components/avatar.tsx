@@ -1,8 +1,8 @@
 type Props = {
-  customerName?: string;
-  logoUrl?: string;
-  isValidLogo: boolean;
-};
+  customerName?: string
+  logoUrl?: string
+  isValidLogo: boolean
+}
 
 export function Avatar({ logoUrl, isValidLogo, customerName }: Props) {
   if (isValidLogo) {
@@ -10,14 +10,14 @@ export function Avatar({ logoUrl, isValidLogo, customerName }: Props) {
       <img
         src={logoUrl}
         alt="Avatar"
-        className="w-10 h-10 border-[0.5px] border-[#2D2D2D] rounded-full overflow-hidden"
+        className="h-10 w-10 overflow-hidden rounded-full border-[0.5px] border-[#2D2D2D]"
       />
-    );
+    )
   }
 
   return (
-    <div className="w-10 h-10 rounded-full border-[0.5px] border-[#2D2D2D] bg-[#1C1C1C] text-[#F2F2F2] flex items-center justify-center">
+    <div className="flex h-10 w-10 items-center justify-center rounded-full border-[0.5px] border-[#2D2D2D] bg-[#1C1C1C] text-[#F2F2F2]">
       {customerName?.[0]}
     </div>
-  );
+  )
 }

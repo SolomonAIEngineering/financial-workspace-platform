@@ -25,7 +25,7 @@ import { z } from 'zod';
 
 // Create bank account specific validation middlewares
 const validateBankAccountCreation = createResourceValidationMiddleware({
-  resourceType: ResourceType.BANK_ACCOUNT
+  resourceType: ResourceType.BANK_ACCOUNT,
 });
 
 const validateFileUpload = createResourceValidationMiddleware({
@@ -755,7 +755,7 @@ export const bankAccountsRouter = createRouter({
         });
 
         // Process the accounts into the expected format for the frontend
-        const processedAccounts = allAccounts.map(account => {
+        const processedAccounts = allAccounts.map((account) => {
           const isManual = !account.bankConnectionId || !account.bankConnection;
 
           return {
@@ -766,14 +766,17 @@ export const bankAccountsRouter = createRouter({
             currency: account.isoCurrencyCode || 'USD',
             enabled: account.enabled,
             manual: isManual,
-            bank: isManual ? null : {
-              id: account.bankConnectionId,
-              name: account.bankConnection?.institutionName || 'Unknown Bank',
-              logo: account.bankConnection?.logo || null,
-              provider: 'plaid', // Could be extended to support other providers
-              status: account.bankConnection?.status || 'ACTIVE',
-              expires_at: account.bankConnection?.consentExpiresAt || null,
-            },
+            bank: isManual
+              ? null
+              : {
+                id: account.bankConnectionId,
+                name:
+                  account.bankConnection?.institutionName || 'Unknown Bank',
+                logo: account.bankConnection?.logo || null,
+                provider: 'plaid', // Could be extended to support other providers
+                status: account.bankConnection?.status || 'ACTIVE',
+                expires_at: account.bankConnection?.consentExpiresAt || null,
+              },
           };
         });
 

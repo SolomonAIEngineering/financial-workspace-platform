@@ -18,17 +18,17 @@ import {
   Preview,
   Section,
   Text,
-} from '@react-email/components';
+} from '@react-email/components'
 
-import Footer from './components/footer';
-import { BusinessConfig as PlatformConfig } from '@solomonai/platform-config';
-import { Tailwind } from '@react-email/tailwind';
+import { Tailwind } from '@react-email/tailwind'
+import { BusinessConfig as PlatformConfig } from '@solomonai/platform-config'
+import Footer from './components/footer'
 
 /**
  * Welcome email React component for new user onboarding.
  * This email introduces the platform to new users, highlights key features,
  * provides next steps, and offers support options.
- * 
+ *
  * @param props - Component properties
  * @param props.email - Recipient's email address (defaults to 'user@example.com' if not provided)
  * @param props.name - Recipient's name for personalization (defaults to 'there' if not provided)
@@ -38,11 +38,11 @@ export default function WelcomeEmail({
   email = 'user@example.com',
   name = 'there',
 }: {
-  email: string;
-  name?: string;
+  email: string
+  name?: string
 }) {
-  const previewText = `Welcome to ${PlatformConfig.company}!`;
-  const calLink = 'https://cal.com/solomonai/15min';
+  const previewText = `Welcome to ${PlatformConfig.company}!`
+  const calLink = 'https://cal.com/solomonai/15min'
 
   return (
     <Html>
@@ -68,19 +68,19 @@ export default function WelcomeEmail({
               </Heading>
 
               {/* Personalized greeting */}
-              <Text className="mt-0 mb-3 text-sm leading-5 text-gray-800">
+              <Text className="mb-3 mt-0 text-sm leading-5 text-gray-800">
                 Hi <span className="font-semibold">{name}</span>,
               </Text>
-              <Text className="mt-0 mb-4 text-sm leading-5 text-gray-800">
+              <Text className="mb-4 mt-0 text-sm leading-5 text-gray-800">
                 Thanks for signing up for {PlatformConfig.company}. We're
                 thrilled to have you on board!
               </Text>
 
               {/* About section */}
-              <Text className="mt-5 mb-2 text-sm font-bold text-gray-900">
+              <Text className="mb-2 mt-5 text-sm font-bold text-gray-900">
                 About Solomon AI
               </Text>
-              <Text className="mt-0 mb-4 text-sm leading-5 text-gray-700">
+              <Text className="mb-4 mt-0 text-sm leading-5 text-gray-700">
                 Solomon AI is a comprehensive financial management platform
                 designed specifically for small and medium-sized businesses. We
                 empower organizations to gain complete visibility into their
@@ -93,7 +93,7 @@ export default function WelcomeEmail({
               </Text>
 
               {/* Features section */}
-              <Text className="mt-5 mb-2 text-sm font-bold text-gray-900">
+              <Text className="mb-2 mt-5 text-sm font-bold text-gray-900">
                 Here's what you can do now:
               </Text>
               <Section className="my-3 rounded border border-gray-100 bg-gray-50 p-3">
@@ -128,23 +128,23 @@ export default function WelcomeEmail({
               <Hr className="my-5 border border-solid border-gray-100" />
 
               {/* Feedback section */}
-              <Text className="mt-5 mb-2 text-sm font-bold text-gray-900">
+              <Text className="mb-2 mt-5 text-sm font-bold text-gray-900">
                 We Value Your Feedback
               </Text>
-              <Text className="mt-0 mb-3 text-sm leading-5 text-gray-700">
+              <Text className="mb-3 mt-0 text-sm leading-5 text-gray-700">
                 Your experience with {PlatformConfig.company} matters to us. If
                 you have any feedback, suggestions, or if you encounter any
                 issues while using our platform, we'd love to hear from you.
               </Text>
 
               <Section className="my-3 rounded border border-gray-100 bg-gray-50 p-3">
-                <Text className="m-0 text-sm leading-5 font-medium text-gray-800">
+                <Text className="m-0 text-sm font-medium leading-5 text-gray-800">
                   Contact options:
                 </Text>
-                <Text className="mt-2 mb-0 text-sm leading-5 text-gray-700">
+                <Text className="mb-0 mt-2 text-sm leading-5 text-gray-700">
                   • Reply directly to this email
                 </Text>
-                <Text className="mt-1 mb-0 text-sm leading-5 text-gray-700">
+                <Text className="mb-0 mt-1 text-sm leading-5 text-gray-700">
                   • Email us at{' '}
                   <Link
                     className="text-black underline"
@@ -155,7 +155,7 @@ export default function WelcomeEmail({
                 </Text>
               </Section>
 
-              <Text className="mt-4 mb-2 text-sm leading-5 text-gray-700">
+              <Text className="mb-2 mt-4 text-sm leading-5 text-gray-700">
                 Prefer to talk directly with our team? Schedule a quick
                 15-minute call:
               </Text>
@@ -169,7 +169,7 @@ export default function WelcomeEmail({
               </Section>
 
               {/* Closing message */}
-              <Text className="my-5 border-l-2 border-black pl-3 text-sm leading-5 text-gray-700 italic">
+              <Text className="my-5 border-l-2 border-black pl-3 text-sm italic leading-5 text-gray-700">
                 We're committed to helping small and medium-sized businesses
                 achieve financial clarity and growth through intelligent data
                 analysis and actionable insights.
@@ -188,5 +188,5 @@ export default function WelcomeEmail({
         </Body>
       </Tailwind>
     </Html>
-  );
+  )
 }

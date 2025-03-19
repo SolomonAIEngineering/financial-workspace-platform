@@ -1,30 +1,31 @@
-import React from 'react';
-import { TZDate } from "@date-fns/tz";
-import type { Template } from "../../types";
-import { format } from "date-fns";
+import { TZDate } from '@date-fns/tz'
+import { format } from 'date-fns'
+import type { Template } from '../../types'
 
 type Props = {
-  template: Template;
-  invoiceNumber: string;
-  issueDate: string;
-  dueDate: string;
-};
+  template: Template
+  invoiceNumber: string
+  issueDate: string
+  dueDate: string
+}
 
 export function Meta({ template, invoiceNumber, issueDate, dueDate }: Props) {
   return (
-    <div className="flex justify-between items-center mt-14 mb-2">
+    <div className="mb-2 mt-14 flex items-center justify-between">
       <div className="flex items-center">
-        <span className="text-[22px] text-[#878787] font-mono mr-2">
+        <span className="mr-2 font-mono text-[22px] text-[#878787]">
           {template.invoice_no_label}:
         </span>
-        <span className="text-[22px] text-white font-mono">{invoiceNumber}</span>
+        <span className="font-mono text-[22px] text-white">
+          {invoiceNumber}
+        </span>
       </div>
 
       <div className="flex items-center">
-        <span className="text-[22px] text-[#878787] font-mono mr-2">
+        <span className="mr-2 font-mono text-[22px] text-[#878787]">
           {template.issue_date_label}:
         </span>
-        <span className="text-[22px] text-white font-mono">
+        <span className="font-mono text-[22px] text-white">
           {format(
             new TZDate(issueDate, template.timezone),
             template.date_format,
@@ -33,13 +34,13 @@ export function Meta({ template, invoiceNumber, issueDate, dueDate }: Props) {
       </div>
 
       <div className="flex items-center">
-        <span className="text-[22px] text-[#878787] font-mono mr-2">
+        <span className="mr-2 font-mono text-[22px] text-[#878787]">
           {template.due_date_label}:
         </span>
-        <span className="text-[22px] text-white font-mono">
+        <span className="font-mono text-[22px] text-white">
           {format(new TZDate(dueDate, template.timezone), template.date_format)}
         </span>
       </div>
     </div>
-  );
+  )
 }

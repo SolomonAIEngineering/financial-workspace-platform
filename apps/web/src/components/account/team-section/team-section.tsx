@@ -62,7 +62,6 @@ export function TeamSection({ userId }: TeamSectionProps) {
       email: team.email || undefined,
       baseCurrency: team.baseCurrency || undefined,
       logoUrl: team.logoUrl || undefined,
-      slug: team.slug || undefined,
       inboxForwarding: team.inboxForwarding || false,
       flags: team.flags || [],
       // Map each team member's role to correct UserRole enum

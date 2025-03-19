@@ -1,21 +1,19 @@
 "use client";
 
-import * as React from "react";
-
-import { filterFields as defaultFilterFields, sheetFields } from "./constants";
-import { useQueryState, useQueryStates } from "nuqs";
-
-import { DataTableInfinite } from "./data-table-infinite";
-import type { FacetMetadataSchema } from "./schema";
-import { LiveRow } from "./_components/live-row";
-import type { Table as TTable } from "@tanstack/react-table";
-import { cn } from "@/lib/utils";
-import { columns } from "./columns";
-import { dataOptions } from "./query-options";
-import { getLevelRowClassName } from "@/lib/request/level";
-import { searchParamsParser } from "./search-params";
 import { useHotKey } from "@/hooks/use-hot-key";
+import { getLevelRowClassName } from "@/lib/request/level";
+import { cn } from "@/lib/utils";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import type { Table as TTable } from "@tanstack/react-table";
+import { useQueryState, useQueryStates } from "nuqs";
+import * as React from "react";
+import { LiveRow } from "./_components/live-row";
+import { columns } from "./columns";
+import { filterFields as defaultFilterFields, sheetFields } from "./constants";
+import { DataTableInfinite } from "./data-table-infinite";
+import { dataOptions } from "./query-options";
+import type { FacetMetadataSchema } from "./schema";
+import { searchParamsParser } from "./search-params";
 
 export function Client() {
   const [search] = useQueryStates(searchParamsParser);

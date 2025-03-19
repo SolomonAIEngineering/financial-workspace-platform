@@ -1,10 +1,11 @@
 import { ConnectTransactionsProvider } from '@/components/bank-connection/connect-transactions-context';
+import { ReactNode } from 'react';
 import { trpc } from '@/trpc/server';
 
 export default async function BankConnectionLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const currentUser = (await trpc.layout.app()).currentUser;
 

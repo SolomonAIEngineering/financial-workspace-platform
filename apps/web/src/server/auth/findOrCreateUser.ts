@@ -18,7 +18,6 @@ const loops = new LoopsClient(process.env.LOOPS_API_KEY || '');
 const USER_BASE_MAILING_LIST = process.env.USER_BASE_MAILING_LIST;
 const FEATURE_LAUNCH_MAIN_LIST = process.env.FEATURE_LAUNCH_MAIN_LIST;
 
-
 export const findOrCreateUser = async ({
   // bio,
   email,
@@ -142,12 +141,16 @@ export const findOrCreateUser = async ({
 
     // First, check if the contact already exists in Loops
     const existingContact = await loops.findContact({
-      email
+      email,
     });
 
     const contactProperties = {
       firstName: firstName || (name ? name.split(' ')[0] : ''),
-      lastName: lastName || (name && name.split(' ').length > 1 ? name.split(' ').slice(1).join(' ') : ''),
+      lastName:
+        lastName ||
+        (name && name.split(' ').length > 1
+          ? name.split(' ').slice(1).join(' ')
+          : ''),
       userId: user.id, // Store the user ID for future reference
       source: `${providerId} OAuth`,
       userGroup: 'creator',
@@ -168,19 +171,11 @@ export const findOrCreateUser = async ({
 
     // If contact exists, update it instead of creating a new one
     if (existingContact && existingContact.length > 0) {
-      await loops.updateContact(
-        email,
-        contactProperties,
-        mailingList
-      );
+      await loops.updateContact(email, contactProperties, mailingList);
       console.info(`Successfully updated user in Loops: ${email}`);
     } else {
       // Create contact if it doesn't exist
-      await loops.createContact(
-        email,
-        contactProperties,
-        mailingList
-      );
+      await loops.createContact(email, contactProperties, mailingList);
       console.info(`Successfully added user to Loops: ${email}`);
     }
   } catch (error) {
@@ -206,7 +201,9 @@ export const findOrCreateUser = async ({
       });
       console.info(`Welcome email sent to ${email} in production environment`);
     } else {
-      console.info(`Skipping welcome email to ${email} in ${env.NEXT_PUBLIC_ENVIRONMENT} environment`);
+      console.info(
+        `Skipping welcome email to ${email} in ${env.NEXT_PUBLIC_ENVIRONMENT} environment`
+      );
     }
   } catch (error) {
     console.error('Failed to send welcome email:', error);

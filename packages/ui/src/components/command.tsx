@@ -4,12 +4,13 @@ import * as React from 'react'
 
 import { Dialog, DialogContent } from './dialog'
 
-import { Command as CommandPrimitive } from 'cmdk'
 import type { DialogProps } from '@radix-ui/react-dialog'
+import { Command as CommandPrimitive } from 'cmdk'
 import { cn } from '../utils'
 
 const Command: React.ForwardRefExoticComponent<
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive> & React.RefAttributes<React.ElementRef<typeof CommandPrimitive>>
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive> &
+    React.RefAttributes<React.ElementRef<typeof CommandPrimitive>>
 > = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive>
@@ -25,7 +26,7 @@ const Command: React.ForwardRefExoticComponent<
 ))
 Command.displayName = CommandPrimitive.displayName
 
-interface CommandDialogProps extends DialogProps { }
+interface CommandDialogProps extends DialogProps {}
 
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
@@ -40,7 +41,8 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
 }
 
 const CommandInput: React.ForwardRefExoticComponent<
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> & React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Input>>
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> &
+    React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Input>>
 > = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
@@ -60,7 +62,8 @@ const CommandInput: React.ForwardRefExoticComponent<
 CommandInput.displayName = CommandPrimitive.Input.displayName
 
 const CommandList: React.ForwardRefExoticComponent<
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.List> & React.RefAttributes<React.ElementRef<typeof CommandPrimitive.List>>
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.List> &
+    React.RefAttributes<React.ElementRef<typeof CommandPrimitive.List>>
 > = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
@@ -78,7 +81,8 @@ const CommandList: React.ForwardRefExoticComponent<
 CommandList.displayName = CommandPrimitive.List.displayName
 
 const CommandEmpty: React.ForwardRefExoticComponent<
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty> & React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Empty>>
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty> &
+    React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Empty>>
 > = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Empty>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>
@@ -93,7 +97,8 @@ const CommandEmpty: React.ForwardRefExoticComponent<
 CommandEmpty.displayName = CommandPrimitive.Empty.displayName
 
 const CommandGroup: React.ForwardRefExoticComponent<
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group> & React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Group>>
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group> &
+    React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Group>>
 > = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Group>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group>
@@ -111,7 +116,8 @@ const CommandGroup: React.ForwardRefExoticComponent<
 CommandGroup.displayName = CommandPrimitive.Group.displayName
 
 const CommandSeparator: React.ForwardRefExoticComponent<
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator> & React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Separator>>
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator> &
+    React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Separator>>
 > = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Separator>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>
@@ -125,7 +131,8 @@ const CommandSeparator: React.ForwardRefExoticComponent<
 CommandSeparator.displayName = CommandPrimitive.Separator.displayName
 
 const CommandItem: React.ForwardRefExoticComponent<
-  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item> & React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Item>>
+  React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item> &
+    React.RefAttributes<React.ElementRef<typeof CommandPrimitive.Item>>
 > = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>

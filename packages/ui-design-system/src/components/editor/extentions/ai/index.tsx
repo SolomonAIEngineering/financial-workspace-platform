@@ -1,104 +1,112 @@
-"use client";
+'use client'
 
 import {
   MdOutlineAutoAwesome,
   MdOutlineCloseFullscreen,
   MdOutlineSpellcheck,
   MdOutlineWrapText,
-} from "react-icons/md";
+} from 'react-icons/md'
 
-import { BubbleMenuButton } from "../bubble-menu/bubble-menu-button";
-import type { Editor } from "@tiptap/react";
-import { generateEditorContent } from "./example-action";
-import { motion } from "framer-motion";
-import { useClickAway } from "@uidotdev/usehooks";
-import { useState } from "react";
+import type { Editor } from '@tiptap/react'
+import { useClickAway } from '@uidotdev/usehooks'
+import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { BubbleMenuButton } from '../bubble-menu/bubble-menu-button'
+import { generateEditorContent } from './example-action'
 
 // Check if we're in a browser environment (like Storybook)
-const isStorybook = typeof window !== 'undefined' && (window as any)?.__STORYBOOK_PREVIEW__ !== undefined;
+const isStorybook =
+  typeof window !== 'undefined' &&
+  (window as any)?.__STORYBOOK_PREVIEW__ !== undefined
 
 const selectors = [
   {
-    name: "Grammar",
+    name: 'Grammar',
     icon: MdOutlineSpellcheck,
     instructions:
-      "Fix grammar: Rectify any grammatical errors while preserving the original meaning.",
+      'Fix grammar: Rectify any grammatical errors while preserving the original meaning.',
   },
   {
-    name: "Improve",
+    name: 'Improve',
     icon: MdOutlineWrapText,
     instructions:
-      "Improve text: Refine the text to improve clarity and professionalism.",
+      'Improve text: Refine the text to improve clarity and professionalism.',
   },
   {
-    name: "Condense",
+    name: 'Condense',
     icon: MdOutlineCloseFullscreen,
     instructions:
-      "Condense text: Remove any unnecessary text and only keep the invoice-related content and make it more concise.",
+      'Condense text: Remove any unnecessary text and only keep the invoice-related content and make it more concise.',
   },
-];
+]
 
 interface AIMenuProps {
-  editor: Editor;
-  onOpenChange: (open: boolean) => void;
+  editor: Editor
+  onOpenChange: (open: boolean) => void
 }
 
 function formatEditorContent(content: string): string {
-  return content.replace(/\n/g, "<br />");
+  return content.replace(/\n/g, '<br />')
 }
 
 export function AIMenu({ onOpenChange, editor }: AIMenuProps) {
-  const [isTypingPrompt, setIsTypingPrompt] = useState(false);
-  const [isDisabled] = useState(isStorybook);
+  const [isTypingPrompt, setIsTypingPrompt] = useState(false)
+  const [isDisabled] = useState(isStorybook)
 
   const ref = useClickAway<HTMLDivElement>(() => {
-    onOpenChange(false);
-    setIsTypingPrompt(false);
-  });
+    onOpenChange(false)
+    setIsTypingPrompt(false)
+  })
 
   const handleGenerate = async (instructions: string) => {
     const selectedText = editor?.state.doc.textBetween(
       editor?.state.selection?.from,
       editor?.state.selection?.to,
-      "",
-    );
+      '',
+    )
 
     if (!selectedText) {
-      return;
+      return
     }
 
     // In Storybook, just insert a mock response
     if (isStorybook) {
-      editor?.commands.insertContent("This is a mock AI response - actual AI functionality is disabled in Storybook");
-      onOpenChange(false);
-      return;
+      editor?.commands.insertContent(
+        'This is a mock AI response - actual AI functionality is disabled in Storybook',
+      )
+      onOpenChange(false)
+      return
     }
 
     try {
       const { output } = await generateEditorContent({
         input: selectedText,
         context: instructions,
-      });
+      })
 
       // This part will not run in Storybook due to our earlier check
-      if (typeof output === 'object' && output !== null && Symbol.asyncIterator in output) {
-        let generatedContent = "";
+      if (
+        typeof output === 'object' &&
+        output !== null &&
+        Symbol.asyncIterator in output
+      ) {
+        let generatedContent = ''
         for await (const delta of output as AsyncIterable<string>) {
-          generatedContent += delta;
-          editor?.commands.insertContent(formatEditorContent(delta ?? ""));
+          generatedContent += delta
+          editor?.commands.insertContent(formatEditorContent(delta ?? ''))
         }
       } else if (typeof output === 'string') {
-        editor?.commands.insertContent(formatEditorContent(output));
+        editor?.commands.insertContent(formatEditorContent(output))
       }
     } catch (error) {
-      console.error("Error generating content:", error);
+      console.error('Error generating content:', error)
     } finally {
-      onOpenChange(false);
+      onOpenChange(false)
     }
-  };
+  }
 
   return (
-    <div ref={ref} className="flex whitespace-nowrap divide-x">
+    <div ref={ref} className="flex divide-x whitespace-nowrap">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -110,16 +118,16 @@ export function AIMenu({ onOpenChange, editor }: AIMenuProps) {
               autoFocus
               placeholder="Type your prompt…"
               onBlur={() => setIsTypingPrompt(false)}
-              className="w-[280px] text-[11px] border-none px-4 h-8 bg-background focus:outline-none"
+              className="bg-background h-8 w-[280px] border-none px-4 text-[11px] focus:outline-none"
               onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  onOpenChange(false);
-                  handleGenerate(`Custom prompt: ${e.currentTarget.value}`);
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  onOpenChange(false)
+                  handleGenerate(`Custom prompt: ${e.currentTarget.value}`)
                 }
               }}
             />
-            <kbd className="pointer-events-none h-5 select-none items-center gap-1 px-1.5 font-mono text-[13px] font-medium absolute right-2 top-1/2 -translate-y-1/2">
+            <kbd className="pointer-events-none absolute right-2 top-1/2 h-5 -translate-y-1/2 select-none items-center gap-1 px-1.5 font-mono text-[13px] font-medium">
               <span>↵</span>
             </kbd>
           </div>
@@ -130,7 +138,7 @@ export function AIMenu({ onOpenChange, editor }: AIMenuProps) {
           >
             <div className="flex items-center space-x-1">
               <MdOutlineAutoAwesome className="size-3" />
-              <span className="text-[11px] font-mono">Ask AI</span>
+              <span className="font-mono text-[11px]">Ask AI</span>
             </div>
           </BubbleMenuButton>
         )}
@@ -156,5 +164,5 @@ export function AIMenu({ onOpenChange, editor }: AIMenuProps) {
           </motion.div>
         ))}
     </div>
-  );
+  )
 }

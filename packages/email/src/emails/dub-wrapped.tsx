@@ -14,10 +14,10 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
-import { nFormatter } from '../utils/nformatter'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
+import Footer from '../components/footer'
+import { nFormatter } from '../utils/nformatter'
 
 export default function WrappedEmail({
   email = 'panic@thedis.co',

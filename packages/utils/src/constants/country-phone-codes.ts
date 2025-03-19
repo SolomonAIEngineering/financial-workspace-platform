@@ -249,4 +249,4 @@ export const COUNTRY_PHONE_CODES: { [key: string]: number } = {
   // GS: null,
   // SJ: null,
   // UM: null,
-};
+}

@@ -1,16 +1,15 @@
-import { EditorContent } from "./components/editor-content";
-import { Header } from "./components/header";
-import { Logo } from "./components/logo";
-import { Meta } from "./components/meta";
-import React from 'react';
-import type { TemplateProps } from "../types";
+import type { TemplateProps } from '../types'
+import { EditorContent } from './components/editor-content'
+import { Header } from './components/header'
+import { Logo } from './components/logo'
+import { Meta } from './components/meta'
 
 type Props = TemplateProps & {
-  isValidLogo: boolean;
-  name: string;
-  logoUrl: string;
-  status: "draft" | "overdue" | "paid" | "unpaid" | "canceled";
-};
+  isValidLogo: boolean
+  name: string
+  logoUrl: string
+  status: 'draft' | 'overdue' | 'paid' | 'unpaid' | 'canceled'
+}
 
 export function OgTemplate({
   invoice_number,
@@ -25,7 +24,7 @@ export function OgTemplate({
   isValidLogo,
 }: Props) {
   return (
-    <div className="h-full w-full flex flex-col bg-[#0C0C0C] font-[GeistMono] p-16 py-8">
+    <div className="flex h-full w-full flex-col bg-[#0C0C0C] p-16 py-8 font-[GeistMono]">
       <Header
         customerName={name}
         status={status}
@@ -34,7 +33,7 @@ export function OgTemplate({
       />
 
       <div className="flex flex-col">
-        <Logo src={template.logo_url ?? ""} customerName={name} />
+        <Logo src={template.logo_url ?? ''} customerName={name} />
       </div>
 
       <Meta
@@ -44,9 +43,9 @@ export function OgTemplate({
         dueDate={due_date}
       />
 
-      <div className="flex justify-between mt-10">
-        <div className="flex flex-col flex-1 max-w-[50%]">
-          <span className="text-[#858585] text-[22px] font-[GeistMono] mb-1">
+      <div className="mt-10 flex justify-between">
+        <div className="flex max-w-[50%] flex-1 flex-col">
+          <span className="mb-1 font-[GeistMono] text-[22px] text-[#858585]">
             {template.from_label}
           </span>
           <EditorContent content={from_details} />
@@ -54,13 +53,13 @@ export function OgTemplate({
 
         <div className="w-12" />
 
-        <div className="flex flex-col flex-1 max-w-[50%]">
-          <span className="text-[#858585] text-[22px] font-[GeistMono] mb-1">
+        <div className="flex max-w-[50%] flex-1 flex-col">
+          <span className="mb-1 font-[GeistMono] text-[22px] text-[#858585]">
             {template.customer_label}
           </span>
           <EditorContent content={customer_details} />
         </div>
       </div>
     </div>
-  );
+  )
 }

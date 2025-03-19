@@ -15,7 +15,7 @@ import {
   SheetContent,
   SheetDescription,
   SheetHeader,
-  SheetTitle
+  SheetTitle,
 } from '@/registry/default/potion-ui/sheet';
 
 import { Badge } from '@/components/ui/badge';

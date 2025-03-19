@@ -51,7 +51,9 @@ export const useStreamableText = (
           }
         }
       }
-    })();
+    })().catch((error) => {
+      console.error('Error streaming content:', error);
+    });
   }, [content]);
 
   return rawContent;

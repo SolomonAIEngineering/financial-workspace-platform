@@ -1,46 +1,44 @@
-import { getCountryCode, getLocale, getTimezone } from "@solomonai/location";
+import { getCountryCode, getLocale, getTimezone } from '@solomonai/location'
 
-import { currencies } from "@solomonai/location/currencies";
+import { currencies } from '@solomonai/location/currencies'
 
 export type Settings = {
-  currency: string;
-  size: string;
-  include_tax: boolean;
-  include_vat: boolean;
-  include_discount: boolean;
-  include_decimals: boolean;
-  include_units: boolean;
-  include_qr: boolean;
-  timezone: string;
-  locale: string;
-};
+  currency: string
+  size: string
+  include_tax: boolean
+  include_vat: boolean
+  include_discount: boolean
+  include_decimals: boolean
+  include_units: boolean
+  include_qr: boolean
+  timezone: string
+  locale: string
+}
 
-export async function getDefaultSettings(
-  user: {
-    team: {
-      base_currency: string;
-    };
-    timezone: string;
-    locale: string;
-  },
-): Promise<Settings> {
-  const countryCode = await getCountryCode();
+export async function getDefaultSettings(user: {
+  team: {
+    base_currency: string
+  }
+  timezone: string
+  locale: string
+}): Promise<Settings> {
+  const countryCode = await getCountryCode()
 
   const currency =
     user.team?.base_currency ??
     currencies[countryCode as keyof typeof currencies] ??
-    "USD";
+    'USD'
 
-  const timezone = user.timezone ?? getTimezone();
-  const locale = user.locale ?? getLocale();
+  const timezone = user.timezone ?? getTimezone()
+  const locale = user.locale ?? getLocale()
 
   // Default to letter size for US/CA, A4 for rest of world
-  const size = ["US", "CA"].includes(countryCode) ? "letter" : "a4";
+  const size = ['US', 'CA'].includes(countryCode) ? 'letter' : 'a4'
 
   // Default to include sales tax for countries where it's common
-  const include_tax = ["US", "CA", "AU", "NZ", "SG", "MY", "IN"].includes(
+  const include_tax = ['US', 'CA', 'AU', 'NZ', 'SG', 'MY', 'IN'].includes(
     countryCode,
-  );
+  )
 
   return {
     currency: currency.toUpperCase(),
@@ -53,5 +51,5 @@ export async function getDefaultSettings(
     include_qr: true,
     timezone,
     locale,
-  };
+  }
 }

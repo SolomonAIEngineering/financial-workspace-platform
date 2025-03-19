@@ -32,8 +32,8 @@ import {
   FileText,
 } from 'lucide-react'
 
-import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
+import Footer from '../components/footer'
 
 /**
  * Interface defining the properties for the InvoicePaidEmail component.

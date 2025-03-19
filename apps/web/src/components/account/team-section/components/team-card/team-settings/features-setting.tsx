@@ -58,7 +58,7 @@ export function TeamFeaturesSetting({
   const [flagsOpen, setFlagsOpen] = useState(false);
 
   /** Handles feature flag toggling */
-  const handleFlagToggle = (flagId: string) => {
+  const handleFlagToggle = async (flagId: string) => {
     if (isUpdating) return;
 
     const isSelected = flags.includes(flagId);
@@ -66,7 +66,7 @@ export function TeamFeaturesSetting({
       ? flags.filter((f) => f !== flagId)
       : [...flags, flagId];
 
-    onFlagsUpdate(newFlags);
+    await onFlagsUpdate(newFlags);
   };
 
   return (

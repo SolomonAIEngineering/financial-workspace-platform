@@ -274,11 +274,10 @@ export const userRouter = createRouter({
   }),
 
   deleteAccount: protectedProcedure.mutation(async ({ ctx }) => {
-
     // First, check if user has a Stripe customer ID
     const user = await prisma.user.findUnique({
       where: { id: ctx.userId },
-      select: { stripeCustomerId: true, email: true }
+      select: { stripeCustomerId: true, email: true },
     });
 
     // If user has a Stripe customer ID, delete the customer
@@ -291,7 +290,10 @@ export const userRouter = createRouter({
 
         // Cancel all active subscriptions
         for (const subscription of subscriptions.data) {
-          if (subscription.status === 'active' || subscription.status === 'trialing') {
+          if (
+            subscription.status === 'active' ||
+            subscription.status === 'trialing'
+          ) {
             await stripe.subscriptions.cancel(subscription.id, {
               invoice_now: false,
               prorate: true,
@@ -302,22 +304,24 @@ export const userRouter = createRouter({
         // Optional: Delete the customer (or mark as deleted - depends on stripe retention policy)
         await stripe.customers.del(user.stripeCustomerId);
 
-        console.log(`Stripe customer ${user.stripeCustomerId} deleted successfully`);
+        console.log(
+          `Stripe customer ${user.stripeCustomerId} deleted successfully`
+        );
       } catch (error) {
         console.error('Failed to delete Stripe customer:', error);
         // Continue with account deletion even if Stripe deletion fails
       }
     }
 
-    // delete the user from loops 
+    // delete the user from loops
     try {
       await deleteContactInLoopsAction({
         email: ctx.user?.email ?? '',
         // Only include userId if we have it to avoid "Only one parameter is permitted" error
-        ...(ctx.userId ? { userId: ctx.userId } : {})
+        ...(ctx.userId ? { userId: ctx.userId } : {}),
       });
     } catch (error) {
-      console.error("Error deleting contact from Loops:", error);
+      console.error('Error deleting contact from Loops:', error);
       // Continue with account deletion even if Loops deletion fails
     }
 
@@ -336,20 +340,21 @@ export const userRouter = createRouter({
 
   /**
    * Check if the user has at least one team
-   * 
-   * This procedure checks if the authenticated user is a member of at least one team.
-   * It can be used to determine if a user needs to create or join a team.
-   * 
-   * @returns A boolean indicating whether the user has at least one team
-   * 
+   *
+   * This procedure checks if the authenticated user is a member of at least one
+   * team. It can be used to determine if a user needs to create or join a
+   * team.
+   *
    * @example
-   * ```tsx
-   * const { hasTeam } = api.user.hasTeam.useQuery();
-   * 
-   * if (!hasTeam) {
-   *   // Show team creation or join UI
-   * }
-   * ```
+   *   ```tsx
+   *   const { hasTeam } = api.user.hasTeam.useQuery();
+   *
+   *   if (!hasTeam) {
+   *     // Show team creation or join UI
+   *   }
+   *   ```;
+   *
+   * @returns A boolean indicating whether the user has at least one team
    */
   hasTeam: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx;
@@ -421,7 +426,7 @@ export const userRouter = createRouter({
     ];
     const professionalInfoCompleteness = Math.round(
       (professionalInfo.filter((f) => !!f).length / professionalInfo.length) *
-      100
+        100
     );
 
     const contactInfo = [

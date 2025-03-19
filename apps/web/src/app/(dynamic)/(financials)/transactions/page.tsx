@@ -2,10 +2,10 @@
 
 import {
   ArrowsRightLeftIcon,
-  BanknotesIcon,
   MagnifyingGlassIcon,
   TagIcon,
 } from '@heroicons/react/24/outline';
+import { ForwardRefExoticComponent, SVGProps } from 'react';
 
 import { FeatureDevelopment } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
@@ -23,9 +23,7 @@ export default function TransactionsPage() {
         { href: routes.dashboard(), label: 'Dashboard' },
         { href: routes.transactions(), label: 'Transaction Management' },
       ]}
-      actions={
-        <WaitlistFeature featureName={featureName} buttonIcon={BanknotesIcon} />
-      }
+      actions={<WaitlistFeature featureName={featureName} />}
     >
       <FeatureDevelopment
         description="We're building a powerful transaction management system with automatic categorization, custom tagging, and detailed analytics. Search, filter, and gain valuable insights from your transaction history to optimize your financial operations."
@@ -35,18 +33,22 @@ export default function TransactionsPage() {
           {
             description:
               'Automatically categorize transactions for easy tracking',
-            icon: TagIcon,
+            icon: TagIcon as ForwardRefExoticComponent<SVGProps<SVGSVGElement>>,
             title: 'Smart Categorization',
           },
           {
             description: 'Advanced search and filtering capabilities',
-            icon: MagnifyingGlassIcon,
+            icon: MagnifyingGlassIcon as ForwardRefExoticComponent<
+              SVGProps<SVGSVGElement>
+            >,
             title: 'Powerful Search',
           },
           {
             description:
               'Track money flow between accounts and external parties',
-            icon: ArrowsRightLeftIcon,
+            icon: ArrowsRightLeftIcon as ForwardRefExoticComponent<
+              SVGProps<SVGSVGElement>
+            >,
             title: 'Flow Tracking',
           },
         ]}

@@ -283,16 +283,16 @@ async function formatTransactionRows(
           // Format currency based on locale
           transaction.currency && transaction.amount !== undefined
             ? Intl.NumberFormat(locale, {
-              style: 'currency',
-              currency: transaction.currency,
-            }).format(transaction.amount)
+                style: 'currency',
+                currency: transaction.currency,
+              }).format(transaction.amount)
             : '',
           // Format VAT if available
           transaction.vatAmount
             ? Intl.NumberFormat(locale, {
-              style: 'currency',
-              currency: transaction.currency || 'USD',
-            }).format(transaction.vatAmount)
+                style: 'currency',
+                currency: transaction.currency || 'USD',
+              }).format(transaction.vatAmount)
             : '',
           transaction?.transactionCategory?.name ?? '',
           transaction?.transactionCategory?.description ?? '',

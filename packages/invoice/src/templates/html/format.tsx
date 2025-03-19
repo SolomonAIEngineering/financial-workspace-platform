@@ -1,42 +1,42 @@
-import type { EditorDoc } from "../types";
+import type { EditorDoc } from '../types'
 
 export function formatEditorContent(doc?: EditorDoc): JSX.Element | null {
   if (!doc || !doc.content) {
-    return null;
+    return null
   }
 
   return (
     <>
       {doc.content.map((node, nodeIndex) => {
-        if (node.type === "paragraph") {
+        if (node.type === 'paragraph') {
           return (
             <p key={`paragraph-${nodeIndex.toString()}`}>
               {node.content?.map((inlineContent, inlineIndex) => {
-                if (inlineContent.type === "text") {
-                  let style = "text-[11px]";
-                  let href: string | undefined;
+                if (inlineContent.type === 'text') {
+                  let style = 'text-[11px]'
+                  let href: string | undefined
 
                   if (inlineContent.marks) {
                     for (const mark of inlineContent.marks) {
-                      if (mark.type === "bold") {
-                        style += " font-semibold";
-                      } else if (mark.type === "italic") {
-                        style += " italic";
-                      } else if (mark.type === "link") {
-                        href = mark.attrs?.href;
-                        style += " underline";
-                      } else if (mark.type === "strike") {
-                        style += " line-through";
+                      if (mark.type === 'bold') {
+                        style += ' font-semibold'
+                      } else if (mark.type === 'italic') {
+                        style += ' italic'
+                      } else if (mark.type === 'link') {
+                        href = mark.attrs?.href
+                        style += ' underline'
+                      } else if (mark.type === 'strike') {
+                        style += ' line-through'
                       }
                     }
                   }
 
-                  const content = inlineContent.text || "";
-                  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(content);
+                  const content = inlineContent.text || ''
+                  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(content)
 
                   if (href || isEmail) {
                     const linkHref =
-                      href || (isEmail ? `mailto:${content}` : content);
+                      href || (isEmail ? `mailto:${content}` : content)
                     return (
                       <a
                         key={`link-${nodeIndex}-${inlineIndex.toString()}`}
@@ -45,7 +45,7 @@ export function formatEditorContent(doc?: EditorDoc): JSX.Element | null {
                       >
                         {content}
                       </a>
-                    );
+                    )
                   }
 
                   return (
@@ -55,22 +55,22 @@ export function formatEditorContent(doc?: EditorDoc): JSX.Element | null {
                     >
                       {content}
                     </span>
-                  );
+                  )
                 }
 
-                if (inlineContent.type === "hardBreak") {
+                if (inlineContent.type === 'hardBreak') {
                   return (
                     <br key={`break-${nodeIndex}-${inlineIndex.toString()}`} />
-                  );
+                  )
                 }
-                return null;
+                return null
               })}
             </p>
-          );
+          )
         }
 
-        return null;
+        return null
       })}
     </>
-  );
+  )
 }

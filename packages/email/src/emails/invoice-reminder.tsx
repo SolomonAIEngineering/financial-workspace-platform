@@ -20,14 +20,14 @@ import {
   Section,
   Text,
 } from '@react-email/components'
-import { Building, Calendar, Clock, CreditCard, DollarSign } from 'lucide-react'
 import {
   BusinessConfig,
   BusinessConfig as platform,
 } from '@solomonai/platform-config'
+import { Building, Calendar, Clock, CreditCard, DollarSign } from 'lucide-react'
 
-import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
+import Footer from '../components/footer'
 
 /**
  * Interface defining the properties for the InvoiceReminderEmail component.
@@ -125,12 +125,14 @@ export default function InvoiceReminderEmail({
               <Row className="mx-auto py-[5%]">
                 <Column align="center">
                   <div
-                    className={`mx-auto flex h-12 w-12 items-center justify-center rounded-full ${isOverdue ? 'bg-orange-100' : 'bg-blue-100'
-                      }`}
+                    className={`mx-auto flex h-12 w-12 items-center justify-center rounded-full ${
+                      isOverdue ? 'bg-orange-100' : 'bg-blue-100'
+                    }`}
                   >
                     <Clock
-                      className={`h-6 w-6 ${isOverdue ? 'text-orange-600' : 'text-blue-600'
-                        }`}
+                      className={`h-6 w-6 ${
+                        isOverdue ? 'text-orange-600' : 'text-blue-600'
+                      }`}
                     />
                   </div>
                 </Column>
@@ -145,10 +147,11 @@ export default function InvoiceReminderEmail({
               <Row>
                 <Column className="px-4">
                   <div
-                    className={`rounded-lg border p-4 ${isOverdue
+                    className={`rounded-lg border p-4 ${
+                      isOverdue
                         ? 'border-orange-200 bg-orange-50'
                         : 'border-blue-200 bg-blue-50'
-                      }`}
+                    }`}
                   >
                     <Text className="m-0 text-sm text-gray-900">
                       <strong>Dear {companyName},</strong>

@@ -4,8 +4,8 @@ import {
   BellIcon,
   ChartBarIcon,
   CreditCardIcon,
-  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
+import { ForwardRefExoticComponent, SVGProps } from 'react';
 
 import { FeatureDevelopment } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
@@ -23,12 +23,7 @@ export default function InvoicesPage() {
         { href: routes.dashboard(), label: 'Dashboard' },
         { href: routes.invoices(), label: 'Invoice Management' },
       ]}
-      actions={
-        <WaitlistFeature
-          featureName={featureName}
-          buttonIcon={DocumentDuplicateIcon}
-        />
-      }
+      actions={<WaitlistFeature featureName={featureName} />}
     >
       <FeatureDevelopment
         description="Our invoice management system streamlines your billing process with automated payment reminders, customizable templates, and real-time payment tracking. Create professional invoices in seconds and get paid faster with integrated payment processing."
@@ -38,17 +33,23 @@ export default function InvoicesPage() {
           {
             description:
               'Automated reminders for upcoming and overdue payments',
-            icon: BellIcon,
+            icon: BellIcon as ForwardRefExoticComponent<
+              SVGProps<SVGSVGElement>
+            >,
             title: 'Payment Reminders',
           },
           {
             description: 'Accept payments directly through invoice links',
-            icon: CreditCardIcon,
+            icon: CreditCardIcon as ForwardRefExoticComponent<
+              SVGProps<SVGSVGElement>
+            >,
             title: 'Integrated Payments',
           },
           {
             description: 'Track revenue trends and payment analytics',
-            icon: ChartBarIcon,
+            icon: ChartBarIcon as ForwardRefExoticComponent<
+              SVGProps<SVGSVGElement>
+            >,
             title: 'Invoice Analytics',
           },
         ]}

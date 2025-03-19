@@ -3,8 +3,9 @@
 import {
   ChartBarIcon,
   FunnelIcon,
-  UserCircleIcon
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
+import type { ForwardRefExoticComponent, SVGProps } from 'react';
 
 import { FeatureDevelopment } from '@/components/document-sending/feature-development';
 import { PageSkeleton } from '@/components/ui/page-skeleton';
@@ -22,9 +23,7 @@ export default function CustomersPage() {
         { href: routes.dashboard(), label: 'Dashboard' },
         { href: routes.customers(), label: 'Merchant Management' },
       ]}
-      actions={
-        <WaitlistFeature featureName={featureName} />
-      }
+      actions={<WaitlistFeature featureName={featureName} />}
     >
       <FeatureDevelopment
         description="Our merchant management platform helps you build stronger relationships with comprehensive customer profiles, advanced segmentation, and behavior analytics. Understand your customers better and create targeted strategies to improve retention and growth."
@@ -34,19 +33,25 @@ export default function CustomersPage() {
           {
             description:
               'Comprehensive customer profiles with interaction history',
-            icon: UserCircleIcon,
+            icon: UserCircleIcon as ForwardRefExoticComponent<
+              SVGProps<SVGSVGElement>
+            >,
             title: 'Customer 360°',
           },
           {
             description:
               'Create custom segments based on behavior and preferences',
-            icon: FunnelIcon,
+            icon: FunnelIcon as ForwardRefExoticComponent<
+              SVGProps<SVGSVGElement>
+            >,
             title: 'Smart Segmentation',
           },
           {
             description:
               'Track key customer metrics and identify growth opportunities',
-            icon: ChartBarIcon,
+            icon: ChartBarIcon as ForwardRefExoticComponent<
+              SVGProps<SVGSVGElement>
+            >,
             title: 'Behavioral Analytics',
           },
         ]}

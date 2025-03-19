@@ -1,4 +1,4 @@
-const bars = Array(12).fill(0);
+const bars = Array(12).fill(0)
 
 export const Spinner = ({ size = 16 }) => {
   return (
@@ -7,7 +7,7 @@ export const Spinner = ({ size = 16 }) => {
         className="loading-wrapper"
         data-visible
         // @ts-ignore
-        style={{ "--spinner-size": `${size}px` }}
+        style={{ '--spinner-size': `${size}px` }}
       >
         <div className="spinner">
           {bars.map((_, i) => (
@@ -16,5 +16,5 @@ export const Spinner = ({ size = 16 }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

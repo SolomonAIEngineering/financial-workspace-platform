@@ -4,8 +4,8 @@
  * @module email
  */
 
-import { Resend } from 'resend'
 import { env } from '@solomonai/env'
+import { Resend } from 'resend'
 
 /**
  * Initialized Resend client instance configured with the API token from environment.

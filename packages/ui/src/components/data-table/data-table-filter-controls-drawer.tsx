@@ -15,14 +15,14 @@ import {
   TooltipTrigger,
 } from '../tooltip'
 
-import { Button } from '../button'
-import { DataTableFilterControls } from './data-table-filter-controls'
-import { FilterIcon } from 'lucide-react'
 import { Kbd } from '@/components/custom/kbd'
-import React from 'react'
-import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { useHotKey } from '@/hooks/use-hot-key'
 import { useMediaQuery } from '@/hooks/use-media-query'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { FilterIcon } from 'lucide-react'
+import React from 'react'
+import { Button } from '../button'
+import { DataTableFilterControls } from './data-table-filter-controls'
 
 export function DataTableFilterControlsDrawer() {
   const triggerButtonRef = React.useRef<HTMLButtonElement>(null)

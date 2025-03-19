@@ -42,9 +42,9 @@ export function TeamCreationSheet({
 
         <div className="py-4">
           <TeamCreationForm
-            onSuccess={(team) => {
-              onSuccess(team);
-              onOpenChange(false);
+            onSuccess={async (team) => {
+              await onSuccess(team);
+              await onOpenChange(false);
             }}
             isDialog={true}
           />

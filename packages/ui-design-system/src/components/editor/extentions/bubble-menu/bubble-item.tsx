@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import type { Editor } from "@tiptap/react";
-import { BubbleMenuButton } from "./bubble-menu-button";
+import type { Editor } from '@tiptap/react'
+import { BubbleMenuButton } from './bubble-menu-button'
 
 interface BubbleItemProps {
-  editor: Editor;
-  action: () => void;
-  isActive: boolean;
-  children: React.ReactNode;
+  editor: Editor
+  action: () => void
+  isActive: boolean
+  children: React.ReactNode
 }
 
 export function BubbleMenuItem({
@@ -19,12 +19,12 @@ export function BubbleMenuItem({
   return (
     <BubbleMenuButton
       action={() => {
-        editor.chain().focus();
-        action();
+        editor.chain().focus()
+        action()
       }}
       isActive={isActive}
     >
       {children}
     </BubbleMenuButton>
-  );
+  )
 }

@@ -1,24 +1,23 @@
-import type { LineItem } from "../../types";
-import React from 'react';
-import { calculateTotal } from "../../../utils/calculate";
+import { calculateTotal } from '../../../utils/calculate'
+import type { LineItem } from '../../types'
 
 type Props = {
-  includeVAT: boolean;
-  includeTax: boolean;
-  includeDiscount: boolean;
-  discount?: number;
-  discountLabel: string;
-  taxRate: number;
-  vatRate: number;
-  locale: string;
-  currency: string;
-  vatLabel: string;
-  taxLabel: string;
-  totalLabel: string;
-  lineItems: LineItem[];
-  includeDecimals?: boolean;
-  subtotalLabel: string;
-};
+  includeVAT: boolean
+  includeTax: boolean
+  includeDiscount: boolean
+  discount?: number
+  discountLabel: string
+  taxRate: number
+  vatRate: number
+  locale: string
+  currency: string
+  vatLabel: string
+  taxLabel: string
+  totalLabel: string
+  lineItems: LineItem[]
+  includeDecimals?: boolean
+  subtotalLabel: string
+}
 
 export function Summary({
   includeVAT,
@@ -37,7 +36,7 @@ export function Summary({
   includeDecimals,
   subtotalLabel,
 }: Props) {
-  const maximumFractionDigits = includeDecimals ? 2 : 0;
+  const maximumFractionDigits = includeDecimals ? 2 : 0
 
   const {
     subTotal,
@@ -51,17 +50,17 @@ export function Summary({
     discount: discount ?? 0,
     includeVAT,
     includeTax,
-  });
+  })
 
   return (
-    <div className="w-[320px] flex flex-col">
-      <div className="flex justify-between items-center py-1">
-        <span className="text-[11px] text-[#878787] font-mono">
+    <div className="flex w-[320px] flex-col">
+      <div className="flex items-center justify-between py-1">
+        <span className="font-mono text-[11px] text-[#878787]">
           {subtotalLabel}
         </span>
         <span className="text-right font-mono text-[11px] text-[#878787]">
           {new Intl.NumberFormat(locale, {
-            style: "currency",
+            style: 'currency',
             currency: currency,
             maximumFractionDigits,
           }).format(subTotal)}
@@ -69,13 +68,13 @@ export function Summary({
       </div>
 
       {includeDiscount && (
-        <div className="flex justify-between items-center py-1">
-          <span className="text-[11px] text-[#878787] font-mono">
+        <div className="flex items-center justify-between py-1">
+          <span className="font-mono text-[11px] text-[#878787]">
             {discountLabel}
           </span>
           <span className="text-right font-mono text-[11px] text-[#878787]">
             {new Intl.NumberFormat(locale, {
-              style: "currency",
+              style: 'currency',
               currency: currency,
               maximumFractionDigits,
             }).format(discount ?? 0)}
@@ -84,13 +83,13 @@ export function Summary({
       )}
 
       {includeVAT && (
-        <div className="flex justify-between items-center py-1">
-          <span className="text-[11px] text-[#878787] font-mono">
+        <div className="flex items-center justify-between py-1">
+          <span className="font-mono text-[11px] text-[#878787]">
             {vatLabel} ({vatRate}%)
           </span>
           <span className="text-right font-mono text-[11px] text-[#878787]">
             {new Intl.NumberFormat(locale, {
-              style: "currency",
+              style: 'currency',
               currency: currency,
               maximumFractionDigits,
             }).format(totalVAT)}
@@ -99,13 +98,13 @@ export function Summary({
       )}
 
       {includeTax && (
-        <div className="flex justify-between items-center py-1">
-          <span className="text-[11px] text-[#878787] font-mono">
+        <div className="flex items-center justify-between py-1">
+          <span className="font-mono text-[11px] text-[#878787]">
             {taxLabel} ({taxRate}%)
           </span>
           <span className="text-right font-mono text-[11px] text-[#878787]">
             {new Intl.NumberFormat(locale, {
-              style: "currency",
+              style: 'currency',
               currency: currency,
               maximumFractionDigits,
             }).format(totalTax)}
@@ -113,18 +112,18 @@ export function Summary({
         </div>
       )}
 
-      <div className="flex justify-between items-center py-4 mt-2 border-t border-border">
-        <span className="text-[11px] text-[#878787] font-mono">
+      <div className="border-border mt-2 flex items-center justify-between border-t py-4">
+        <span className="font-mono text-[11px] text-[#878787]">
           {totalLabel}
         </span>
         <span className="text-right font-mono text-[21px]">
           {new Intl.NumberFormat(locale, {
-            style: "currency",
+            style: 'currency',
             currency: currency,
             maximumFractionDigits,
           }).format(total)}
         </span>
       </div>
     </div>
-  );
+  )
 }

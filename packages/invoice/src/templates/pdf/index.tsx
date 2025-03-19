@@ -1,14 +1,14 @@
-import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
+import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 
-import { EditorContent } from "./components/editor-content";
-import { LineItems } from "./components/line-items";
-import { Meta } from "./components/meta";
-import { Note } from "./components/note";
-import { PaymentDetails } from "./components/payment-details";
-import { QRCode } from "./components/qr-code";
-import QRCodeUtil from "qrcode";
-import { Summary } from "./components/summary";
-import type { TemplateProps } from "../types";
+import QRCodeUtil from 'qrcode'
+import type { TemplateProps } from '../types'
+import { EditorContent } from './components/editor-content'
+import { LineItems } from './components/line-items'
+import { Meta } from './components/meta'
+import { Note } from './components/note'
+import { PaymentDetails } from './components/payment-details'
+import { QRCode } from './components/qr-code'
+import { Summary } from './components/summary'
 
 export async function PdfTemplate({
   invoice_number,
@@ -28,36 +28,36 @@ export async function PdfTemplate({
   subtotal,
   top_block,
   bottom_block,
-  size = "a4",
+  size = 'a4',
   token,
 }: TemplateProps) {
-  let qrCode = null;
+  let qrCode = null
 
   if (template.include_qr) {
     qrCode = await QRCodeUtil.toDataURL(`https://app.midday.ai/i/${token}`, {
       width: 40 * 3,
       height: 40 * 3,
       margin: 0,
-    });
+    })
   }
 
   return (
     <Document>
       <Page
         wrap
-        size={size.toUpperCase() as "LETTER" | "A4"}
+        size={size.toUpperCase() as 'LETTER' | 'A4'}
         style={{
           padding: 20,
-          backgroundColor: "#fff",
-          color: "#000",
-          fontFamily: "Helvetica",
+          backgroundColor: '#fff',
+          color: '#000',
+          fontFamily: 'Helvetica',
         }}
       >
         <View
           style={{
             marginBottom: 20,
-            flexDirection: "row",
-            justifyContent: "space-between",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
           }}
         >
           <Meta
@@ -77,13 +77,13 @@ export async function PdfTemplate({
               src={template.logo_url}
               style={{
                 height: 75,
-                objectFit: "contain",
+                objectFit: 'contain',
               }}
             />
           )}
         </View>
 
-        <View style={{ flexDirection: "row", marginTop: 20 }}>
+        <View style={{ flexDirection: 'row', marginTop: 20 }}>
           <View style={{ flex: 1, marginRight: 10 }}>
             <View style={{ marginBottom: 20 }}>
               <Text style={{ fontSize: 9, fontWeight: 500 }}>
@@ -120,8 +120,8 @@ export async function PdfTemplate({
         <View
           style={{
             flex: 1,
-            flexDirection: "column",
-            justifyContent: "flex-end",
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
           }}
         >
           <Summary
@@ -145,7 +145,7 @@ export async function PdfTemplate({
             subtotal={subtotal ?? 0}
           />
 
-          <View style={{ flexDirection: "row", marginTop: 20 }}>
+          <View style={{ flexDirection: 'row', marginTop: 20 }}>
             <View style={{ flex: 1, marginRight: 10 }}>
               <PaymentDetails
                 content={payment_details}
@@ -164,5 +164,5 @@ export async function PdfTemplate({
         </View>
       </Page>
     </Document>
-  );
+  )
 }

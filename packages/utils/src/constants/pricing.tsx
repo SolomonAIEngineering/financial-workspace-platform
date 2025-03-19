@@ -1,18 +1,18 @@
-import { INFINITY_NUMBER } from "./misc";
-import { BusinessConfig as platform } from "@solomonai/platform-config";
+import { BusinessConfig as platform } from '@solomonai/platform-config'
+import { INFINITY_NUMBER } from './misc'
 
 export type PlanFeature = {
-  id?: string;
-  text: string;
+  id?: string
+  text: string
   footnote?: {
-    title: string;
-    cta: string;
-    href: string;
-  };
-};
+    title: string
+    cta: string
+    href: string
+  }
+}
 
 const BUSINESS_PLAN_MODIFIER = ({
-  name = "Business",
+  name = 'Business',
   monthly = 299,
   yearly = 249,
   analyticsRetention = 36,
@@ -40,37 +40,37 @@ const BUSINESS_PLAN_MODIFIER = ({
   domains = 1000,
   ids = [],
 }: {
-  name: string;
-  monthly: number;
-  yearly: number;
-  analyticsRetention: number;
-  users: number;
-  dashboards: number;
-  customMetrics: number;
-  realtimeAlerts: number;
-  workflowRules: number;
-  aiCredits: number;
-  storageGB: number;
-  reconciliationRules: number;
-  apis: number;
-  virtualCards: number;
-  physicalCards: number;
-  spendControls: number;
-  merchantCategories: number;
-  reimbursements: number;
-  customCategories: number;
-  exportFormats: number;
-  customReports: number;
-  tags: number;
-  clicks: number;
-  links: number;
-  domains: number;
-  ai: number;
-  ids: string[];
+  name: string
+  monthly: number
+  yearly: number
+  analyticsRetention: number
+  users: number
+  dashboards: number
+  customMetrics: number
+  realtimeAlerts: number
+  workflowRules: number
+  aiCredits: number
+  storageGB: number
+  reconciliationRules: number
+  apis: number
+  virtualCards: number
+  physicalCards: number
+  spendControls: number
+  merchantCategories: number
+  reimbursements: number
+  customCategories: number
+  exportFormats: number
+  customReports: number
+  tags: number
+  clicks: number
+  links: number
+  domains: number
+  ai: number
+  ids: string[]
 }) => ({
   name,
   tagline:
-    "For growing companies needing advanced spend management and financial analytics",
+    'For growing companies needing advanced spend management and financial analytics',
   link: `${platform.webUrl}/help/article/business-plan`,
   price: {
     monthly,
@@ -103,132 +103,132 @@ const BUSINESS_PLAN_MODIFIER = ({
     domains,
   },
   colors: {
-    bg: "bg-sky-900",
-    text: "text-sky-900",
+    bg: 'bg-sky-900',
+    text: 'text-sky-900',
   },
   cta: {
     text: `Get started with ${name}`,
     shortText: `Get ${name}`,
     href: `${platform.platformUrl}/register`,
-    color: "bg-sky-900 hover:bg-sky-800 hover:ring-sky-100",
+    color: 'bg-sky-900 hover:bg-sky-800 hover:ring-sky-100',
   },
-  featureTitle: "Everything in Pro, plus:",
+  featureTitle: 'Everything in Pro, plus:',
   features: [
     {
-      id: "cards",
+      id: 'cards',
       text: `${virtualCards} virtual + ${physicalCards} physical cards`,
       footnote: {
         title:
-          "Issue virtual and physical cards to employees with custom spend limits",
-        cta: "Learn about card management",
+          'Issue virtual and physical cards to employees with custom spend limits',
+        cta: 'Learn about card management',
         href: `${platform.webUrl}/help/article/card-management`,
       },
     },
     {
-      id: "spend-controls",
+      id: 'spend-controls',
       text: `${spendControls} spend control rules`,
       footnote: {
         title:
-          "Set merchant category restrictions, spending limits, and approval workflows",
-        cta: "Learn about spend controls",
+          'Set merchant category restrictions, spending limits, and approval workflows',
+        cta: 'Learn about spend controls',
         href: `${platform.webUrl}/help/article/spend-controls`,
       },
     },
     {
-      id: "retention",
+      id: 'retention',
       text: `${analyticsRetention}-month data retention`,
     },
     {
-      id: "users",
+      id: 'users',
       text: `${users} team members`,
     },
     {
-      id: "dashboards",
+      id: 'dashboards',
       text: `${dashboards} custom dashboards`,
     },
     {
-      id: "workflows",
+      id: 'workflows',
       text: `${workflowRules} approval workflows`,
       footnote: {
         title:
-          "Create automated workflows for expenses, reimbursements, and card requests",
-        cta: "Learn more",
+          'Create automated workflows for expenses, reimbursements, and card requests',
+        cta: 'Learn more',
         href: `${platform.webUrl}/help/article/workflow-automation`,
       },
     },
     {
-      id: "ai-features",
+      id: 'ai-features',
       text: `${aiCredits} AI credits/month`,
       footnote: {
         title:
-          "Use AI for spend analysis, fraud detection, and smart categorization",
-        cta: "Learn more",
+          'Use AI for spend analysis, fraud detection, and smart categorization',
+        cta: 'Learn more',
         href: `${platform.webUrl}/help/article/ai-features`,
       },
     },
     {
-      id: "reimbursements",
+      id: 'reimbursements',
       text: `${reimbursements} reimbursements/month`,
       footnote: {
         title:
-          "Process employee reimbursements with automated approval workflows",
-        cta: "Learn about reimbursements",
+          'Process employee reimbursements with automated approval workflows',
+        cta: 'Learn about reimbursements',
         href: `${platform.webUrl}/help/article/reimbursements`,
       },
     },
     {
-      id: "categories",
+      id: 'categories',
       text: `${customCategories} custom expense categories`,
       footnote: {
-        title: "Create and manage custom expense categories and rules",
-        cta: "Learn about categorization",
+        title: 'Create and manage custom expense categories and rules',
+        cta: 'Learn about categorization',
         href: `${platform.webUrl}/help/article/expense-categories`,
       },
     },
     {
-      id: "reporting",
+      id: 'reporting',
       text: `${customReports} custom report templates`,
       footnote: {
-        title: "Create custom expense reports with automated generation",
-        cta: "Learn about reporting",
+        title: 'Create custom expense reports with automated generation',
+        cta: 'Learn about reporting',
         href: `${platform.webUrl}/help/article/custom-reports`,
       },
     },
     {
-      id: "workspace",
+      id: 'workspace',
       text: `${storageGB}GB workspace storage`,
       footnote: {
-        title: "Store receipts, invoices, and supporting documents",
-        cta: "Learn more",
+        title: 'Store receipts, invoices, and supporting documents',
+        cta: 'Learn more',
         href: `${platform.webUrl}/help/article/workspace-storage`,
       },
     },
     {
-      id: "reconciliation",
+      id: 'reconciliation',
       text: `${reconciliationRules} reconciliation rules`,
       footnote: {
-        title: "Automate bank reconciliation and transaction matching",
-        cta: "Learn more",
+        title: 'Automate bank reconciliation and transaction matching',
+        cta: 'Learn more',
         href: `${platform.webUrl}/help/article/reconciliation`,
       },
     },
     {
-      id: "integrations",
-      text: "Advanced accounting integrations",
+      id: 'integrations',
+      text: 'Advanced accounting integrations',
       footnote: {
         title:
-          "Connect with QuickBooks, Xero, NetSuite, and other accounting systems",
-        cta: "View integrations",
+          'Connect with QuickBooks, Xero, NetSuite, and other accounting systems',
+        cta: 'View integrations',
         href: `${platform.webUrl}/integrations`,
       },
     },
   ] as PlanFeature[],
-});
+})
 
 export const PLANS = [
   {
-    name: "Free",
-    tagline: "For small businesses getting started with spend management",
+    name: 'Free',
+    tagline: 'For small businesses getting started with spend management',
     price: {
       monthly: 0,
       yearly: 0,
@@ -259,85 +259,85 @@ export const PLANS = [
       domains: 1000,
     },
     colors: {
-      bg: "bg-black",
-      text: "text-black",
+      bg: 'bg-black',
+      text: 'text-black',
     },
     cta: {
-      text: "Start for free",
+      text: 'Start for free',
       href: `${platform.platformUrl}/register`,
       color:
-        "bg-white hover:bg-gray-50 border border-gray-200 hover:ring-gray-100 text-neutral-800",
+        'bg-white hover:bg-gray-50 border border-gray-200 hover:ring-gray-100 text-neutral-800',
     },
     featureTitle: "What's included:",
     features: [
       {
-        id: "cards",
-        text: "2 virtual + 1 physical card",
+        id: 'cards',
+        text: '2 virtual + 1 physical card',
         footnote: {
-          title: "Basic card management with simple spend limits",
-          cta: "Learn more",
+          title: 'Basic card management with simple spend limits',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/basic-cards`,
         },
       },
       {
-        id: "spend-controls",
-        text: "Basic spend controls",
+        id: 'spend-controls',
+        text: 'Basic spend controls',
         footnote: {
-          title: "Set simple spending limits and category restrictions",
-          cta: "Learn more",
+          title: 'Set simple spending limits and category restrictions',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/basic-controls`,
         },
       },
       {
-        id: "retention",
-        text: "3-month data retention",
+        id: 'retention',
+        text: '3-month data retention',
       },
       {
-        id: "users",
-        text: "2 team members",
+        id: 'users',
+        text: '2 team members',
       },
       {
-        id: "basic-workflows",
-        text: "Basic approval workflows",
+        id: 'basic-workflows',
+        text: 'Basic approval workflows',
         footnote: {
-          title: "Simple approval flows for expenses and cards",
-          cta: "Learn more",
+          title: 'Simple approval flows for expenses and cards',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/basic-workflows`,
         },
       },
       {
-        id: "ai-basic",
-        text: "Basic AI features",
+        id: 'ai-basic',
+        text: 'Basic AI features',
         footnote: {
-          title: "Basic expense categorization and insights",
-          cta: "Learn more",
+          title: 'Basic expense categorization and insights',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/ai-basics`,
         },
       },
       {
-        id: "storage",
-        text: "5GB receipt storage",
+        id: 'storage',
+        text: '5GB receipt storage',
       },
       {
-        id: "reconciliation-basic",
-        text: "Basic reconciliation tools",
+        id: 'reconciliation-basic',
+        text: 'Basic reconciliation tools',
       },
     ] as PlanFeature[],
   },
   {
-    name: "Pro",
-    tagline: "For businesses needing advanced spend controls and analytics",
+    name: 'Pro',
+    tagline: 'For businesses needing advanced spend controls and analytics',
     link: `${platform.webUrl}/help/article/pro-plan`,
     price: {
       monthly: 99,
       yearly: 79,
       ids: [
-        "price_1LodNLAlJJEpqkPVQSrt33Lc", // old monthly
-        "price_1LodNLAlJJEpqkPVRxUyCQgZ", // old yearly
-        "price_1OTcQBAlJJEpqkPViGtGEsbb", // new monthly (test)
-        "price_1OYJeBAlJJEpqkPVLjTsjX0E", // new monthly (prod)
-        "price_1OTcQBAlJJEpqkPVYlCMqdLL", // new yearly (test)
-        "price_1OYJeBAlJJEpqkPVnPGEZeb0", // new yearly (prod)
+        'price_1LodNLAlJJEpqkPVQSrt33Lc', // old monthly
+        'price_1LodNLAlJJEpqkPVRxUyCQgZ', // old yearly
+        'price_1OTcQBAlJJEpqkPViGtGEsbb', // new monthly (test)
+        'price_1OYJeBAlJJEpqkPVLjTsjX0E', // new monthly (prod)
+        'price_1OTcQBAlJJEpqkPVYlCMqdLL', // new yearly (test)
+        'price_1OYJeBAlJJEpqkPVnPGEZeb0', // new yearly (prod)
       ],
     },
     limits: {
@@ -366,83 +366,83 @@ export const PLANS = [
       domains: 1000,
     },
     colors: {
-      bg: "bg-blue-500",
-      text: "text-blue-500",
+      bg: 'bg-blue-500',
+      text: 'text-blue-500',
     },
     cta: {
-      text: "Get started with Pro",
-      shortText: "Get Pro",
+      text: 'Get started with Pro',
+      shortText: 'Get Pro',
       href: `${platform.platformUrl}/register`,
-      color: "bg-black hover:bg-neutral-800 hover:ring-gray-200",
+      color: 'bg-black hover:bg-neutral-800 hover:ring-gray-200',
     },
-    featureTitle: "Everything in Free, plus:",
+    featureTitle: 'Everything in Free, plus:',
     features: [
       {
-        id: "cards",
-        text: "20 virtual + 10 physical cards",
+        id: 'cards',
+        text: '20 virtual + 10 physical cards',
         footnote: {
-          title: "Advanced card management with department budgets",
-          cta: "Learn more",
+          title: 'Advanced card management with department budgets',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/pro-cards`,
         },
       },
       {
-        id: "spend-controls",
-        text: "25 spend control rules",
+        id: 'spend-controls',
+        text: '25 spend control rules',
         footnote: {
-          title: "Advanced spend policies and approval workflows",
-          cta: "Learn more",
+          title: 'Advanced spend policies and approval workflows',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/pro-controls`,
         },
       },
       {
-        id: "retention",
-        text: "12-month data retention",
+        id: 'retention',
+        text: '12-month data retention',
       },
       {
-        id: "users",
-        text: "10 team members",
+        id: 'users',
+        text: '10 team members',
       },
       {
-        id: "workflows",
-        text: "20 approval workflows",
+        id: 'workflows',
+        text: '20 approval workflows',
         footnote: {
-          title: "Advanced approval flows with multi-level rules",
-          cta: "Learn more",
+          title: 'Advanced approval flows with multi-level rules',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/pro-workflows`,
         },
       },
       {
-        id: "ai-pro",
-        text: "Advanced AI features",
+        id: 'ai-pro',
+        text: 'Advanced AI features',
         footnote: {
-          title: "Smart categorization and spend analytics",
-          cta: "Learn more",
+          title: 'Smart categorization and spend analytics',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/ai-pro`,
         },
       },
       {
-        id: "reimbursements",
-        text: "100 reimbursements/month",
+        id: 'reimbursements',
+        text: '100 reimbursements/month',
         footnote: {
-          title: "Streamlined employee reimbursements",
-          cta: "Learn more",
+          title: 'Streamlined employee reimbursements',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/reimbursements-pro`,
         },
       },
       {
-        id: "reporting",
-        text: "10 custom report templates",
+        id: 'reporting',
+        text: '10 custom report templates',
         footnote: {
-          title: "Create and schedule custom expense reports",
-          cta: "Learn more",
+          title: 'Create and schedule custom expense reports',
+          cta: 'Learn more',
           href: `${platform.webUrl}/help/article/reporting-pro`,
         },
       },
     ] as PlanFeature[],
   },
   BUSINESS_PLAN_MODIFIER({
-    name: "Business",
+    name: 'Business',
     monthly: 299,
     yearly: 249,
     analyticsRetention: 36,
@@ -469,17 +469,17 @@ export const PLANS = [
     links: 1000,
     domains: 1000,
     ids: [
-      "price_1LodLoAlJJEpqkPV9rD0rlNL", // old monthly
-      "price_1LodLoAlJJEpqkPVJdwv5zrG", // oldest yearly
-      "price_1OZgmnAlJJEpqkPVOj4kV64R", // old yearly
-      "price_1OzNlmAlJJEpqkPV7s9HXNAC", // new monthly (test)
-      "price_1OzNmXAlJJEpqkPVYO89lTdx", // new yearly (test)
-      "price_1OzOFIAlJJEpqkPVJxzc9irl", // new monthly (prod)
-      "price_1OzOXMAlJJEpqkPV9ERrjjbw", // new yearly (prod)
+      'price_1LodLoAlJJEpqkPV9rD0rlNL', // old monthly
+      'price_1LodLoAlJJEpqkPVJdwv5zrG', // oldest yearly
+      'price_1OZgmnAlJJEpqkPVOj4kV64R', // old yearly
+      'price_1OzNlmAlJJEpqkPV7s9HXNAC', // new monthly (test)
+      'price_1OzNmXAlJJEpqkPVYO89lTdx', // new yearly (test)
+      'price_1OzOFIAlJJEpqkPVJxzc9irl', // new monthly (prod)
+      'price_1OzOXMAlJJEpqkPV9ERrjjbw', // new yearly (prod)
     ],
   }),
   BUSINESS_PLAN_MODIFIER({
-    name: "Business Plus",
+    name: 'Business Plus',
     monthly: 599,
     yearly: 499,
     analyticsRetention: 48,
@@ -506,14 +506,14 @@ export const PLANS = [
     links: 1000,
     domains: 1000,
     ids: [
-      "price_1OnWu0AlJJEpqkPVWk4144ZG", // monthly (test)
-      "price_1OnWu0AlJJEpqkPVkDWVriAB", // yearly (test)
-      "price_1OnaK3AlJJEpqkPVaCfCPdHi", // monthly (prod)
-      "price_1OzObrAlJJEpqkPVh6D9HWGO", // yearly (prod)
+      'price_1OnWu0AlJJEpqkPVWk4144ZG', // monthly (test)
+      'price_1OnWu0AlJJEpqkPVkDWVriAB', // yearly (test)
+      'price_1OnaK3AlJJEpqkPVaCfCPdHi', // monthly (prod)
+      'price_1OzObrAlJJEpqkPVh6D9HWGO', // yearly (prod)
     ],
   }),
   BUSINESS_PLAN_MODIFIER({
-    name: "Business Extra",
+    name: 'Business Extra',
     monthly: 999,
     yearly: 899,
     analyticsRetention: 60,
@@ -540,15 +540,15 @@ export const PLANS = [
     links: 1000,
     domains: 1000,
     ids: [
-      "price_1OnWvCAlJJEpqkPVLzLHx5QD", // monthly (test)
-      "price_1OnWvCAlJJEpqkPVHhCCvIOq", // yearly (test)
-      "price_1OnaKJAlJJEpqkPVeJSvPfJb", // monthly (prod)
-      "price_1OzOg1AlJJEpqkPVPlsrxoWm", // yearly (prod)
+      'price_1OnWvCAlJJEpqkPVLzLHx5QD', // monthly (test)
+      'price_1OnWvCAlJJEpqkPVHhCCvIOq', // yearly (test)
+      'price_1OnaKJAlJJEpqkPVeJSvPfJb', // monthly (prod)
+      'price_1OzOg1AlJJEpqkPVPlsrxoWm', // yearly (prod)
     ],
   }),
   {
-    name: "Enterprise",
-    tagline: "For large organizations with complex spend management needs",
+    name: 'Enterprise',
+    tagline: 'For large organizations with complex spend management needs',
     link: `${platform.webUrl}/enterprise`,
     price: {
       monthly: null,
@@ -580,104 +580,104 @@ export const PLANS = [
       domains: INFINITY_NUMBER,
     },
     colors: {
-      bg: "bg-violet-600",
-      text: "text-violet-600",
+      bg: 'bg-violet-600',
+      text: 'text-violet-600',
     },
     cta: {
-      text: "Contact us",
-      href: "/enterprise",
+      text: 'Contact us',
+      href: '/enterprise',
       color:
-        "bg-white hover:bg-gray-50 border border-gray-200 hover:ring-gray-100 text-neutral-800",
+        'bg-white hover:bg-gray-50 border border-gray-200 hover:ring-gray-100 text-neutral-800',
     },
-    featureTitle: "Everything in Business Extra, plus:",
+    featureTitle: 'Everything in Business Extra, plus:',
     features: [
       {
-        id: "unlimited",
-        text: "Unlimited cards and spend controls",
+        id: 'unlimited',
+        text: 'Unlimited cards and spend controls',
       },
       {
-        id: "custom-cards",
-        text: "Custom card program",
+        id: 'custom-cards',
+        text: 'Custom card program',
         footnote: {
-          title: "Create branded cards with custom rewards and benefits",
-          cta: "Learn more",
+          title: 'Create branded cards with custom rewards and benefits',
+          cta: 'Learn more',
           href: `${platform.webUrl}/enterprise/custom-cards`,
         },
       },
       {
-        id: "custom-workflows",
-        text: "Custom approval engine",
+        id: 'custom-workflows',
+        text: 'Custom approval engine',
         footnote: {
           title:
-            "Build complex approval workflows with custom rules and integrations",
-          cta: "Learn more",
+            'Build complex approval workflows with custom rules and integrations',
+          cta: 'Learn more',
           href: `${platform.webUrl}/enterprise/custom-workflows`,
         },
       },
       {
-        id: "advanced-controls",
-        text: "Advanced spend controls",
+        id: 'advanced-controls',
+        text: 'Advanced spend controls',
         footnote: {
-          title: "Custom spend policies with AI-powered fraud prevention",
-          cta: "Learn more",
+          title: 'Custom spend policies with AI-powered fraud prevention',
+          cta: 'Learn more',
           href: `${platform.webUrl}/enterprise/advanced-controls`,
         },
       },
       {
-        id: "dedicated",
-        text: "Dedicated success team",
+        id: 'dedicated',
+        text: 'Dedicated success team',
       },
       {
-        id: "compliance",
-        text: "Custom compliance & security",
+        id: 'compliance',
+        text: 'Custom compliance & security',
       },
     ] as PlanFeature[],
   },
-];
+]
 
-export const FREE_PLAN = PLANS.find((plan) => plan.name === "Free") ?? PLANS[0];
-export const PRO_PLAN = PLANS.find((plan) => plan.name === "Pro") ?? PLANS[1];
+export const FREE_PLAN = PLANS.find((plan) => plan.name === 'Free') ?? PLANS[0]
+export const PRO_PLAN = PLANS.find((plan) => plan.name === 'Pro') ?? PLANS[1]
 export const BUSINESS_PLAN =
-  PLANS.find((plan) => plan.name === "Business") ?? PLANS[2];
+  PLANS.find((plan) => plan.name === 'Business') ?? PLANS[2]
 export const ENTERPRISE_PLAN =
-  PLANS.find((plan) => plan.name === "Enterprise") ?? PLANS[5];
+  PLANS.find((plan) => plan.name === 'Enterprise') ?? PLANS[5]
 
 export const PUBLIC_PLANS = [
   FREE_PLAN,
   PRO_PLAN,
   BUSINESS_PLAN,
   ENTERPRISE_PLAN,
-];
+]
 
 export const SELF_SERVE_PAID_PLANS = PLANS.filter(
-  (p) => p.name !== "Free" && p.name !== "Enterprise",
-);
+  (p) => p.name !== 'Free' && p.name !== 'Enterprise',
+)
 
-export const FREE_WORKSPACES_LIMIT = 2;
+export const FREE_WORKSPACES_LIMIT = 2
 
 export const getPlanFromPriceId = (priceId: string) => {
-  return PLANS.find((plan) => plan.price.ids?.includes(priceId)) || null;
-};
+  return PLANS.find((plan) => plan.price.ids?.includes(priceId)) || null
+}
 
 export const getPlanDetails = (plan: string) => {
   const foundPlan = SELF_SERVE_PAID_PLANS.find(
     (p) => p.name.toLowerCase() === plan.toLowerCase(),
-  );
+  )
   if (!foundPlan) {
-    throw new Error(`Plan ${plan} not found`);
+    throw new Error(`Plan ${plan} not found`)
   }
-  return foundPlan;
-};
+  return foundPlan
+}
 
 export const getCurrentPlan = (plan: string) => {
   return (
     PLANS.find((p) => p.name.toLowerCase() === plan.toLowerCase()) || FREE_PLAN
-  );
-};
+  )
+}
 
 export const getNextPlan = (plan?: string | null) => {
-  if (!plan) return PRO_PLAN;
+  if (!plan) return PRO_PLAN
   return PLANS[
     PLANS.findIndex((p) => p.name.toLowerCase() === plan.toLowerCase()) + 1
-  ];
-};
+  ]
+}

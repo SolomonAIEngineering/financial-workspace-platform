@@ -20,9 +20,9 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '../components/footer'
-import { BusinessConfig as PlatformConfig } from '@solomonai/platform-config'
 import { Tailwind } from '@react-email/tailwind'
+import { BusinessConfig as PlatformConfig } from '@solomonai/platform-config'
+import Footer from '../components/footer'
 
 /**
  * Welcome email React component for new user onboarding.

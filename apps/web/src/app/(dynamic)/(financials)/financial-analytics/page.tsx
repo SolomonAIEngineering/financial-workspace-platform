@@ -9,6 +9,7 @@ import {
   MagnifyingGlassIcon,
   PresentationChartBarIcon,
 } from '@heroicons/react/24/outline';
+import type { ForwardRefExoticComponent, SVGProps } from 'react';
 
 import { DocumentCard } from '@/components/document-sending/document-card';
 import { DocumentSendingActions } from '@/components/document-sending/action-buttons';
@@ -112,7 +113,11 @@ export default function FinancialAnalyticsPage() {
         actions={
           <WaitlistFeature
             featureName={featureName}
-            buttonIcon={PresentationChartBarIcon}
+            buttonIcon={
+              PresentationChartBarIcon as ForwardRefExoticComponent<
+                SVGProps<SVGSVGElement>
+              >
+            }
             buttonText="Early Access"
           />
         }
@@ -125,18 +130,24 @@ export default function FinancialAnalyticsPage() {
             {
               description:
                 'Interactive data visualizations to explore financial patterns',
-              icon: ChartPieIcon,
+              icon: ChartPieIcon as ForwardRefExoticComponent<
+                SVGProps<SVGSVGElement>
+              >,
               title: 'Visual Insights',
             },
             {
               description: 'Real-time analytics with automatic data refreshing',
-              icon: ArrowPathIcon,
+              icon: ArrowPathIcon as ForwardRefExoticComponent<
+                SVGProps<SVGSVGElement>
+              >,
               title: 'Live Updates',
             },
             {
               description:
                 'AI-powered recommendations for financial decision making',
-              icon: LightBulbIcon,
+              icon: LightBulbIcon as ForwardRefExoticComponent<
+                SVGProps<SVGSVGElement>
+              >,
               title: 'Smart Suggestions',
             },
           ]}

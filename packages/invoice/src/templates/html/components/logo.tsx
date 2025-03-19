@@ -1,9 +1,7 @@
-import React from 'react';
-
 type Props = {
-  logo: string;
-  customerName: string;
-};
+  logo: string
+  customerName: string
+}
 
 export function Logo({ logo, customerName }: Props) {
   return (
@@ -12,8 +10,8 @@ export function Logo({ logo, customerName }: Props) {
       alt={customerName}
       style={{
         height: 80,
-        objectFit: "contain",
+        objectFit: 'contain',
       }}
     />
-  );
+  )
 }

@@ -16,6 +16,7 @@ import {
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { Input } from '@/registry/default/potion-ui/input';
 import type { ProfileFormFieldProps } from '../types/profile-types';
+import { ReactNode } from 'react';
 import { Textarea } from '@/registry/default/potion-ui/textarea';
 
 /**
@@ -53,7 +54,7 @@ export function ProfileFormField({
       render={({ field }) => (
         <FormItem className="space-y-3">
           <FormLabel className="flex items-center gap-2 text-sm font-medium">
-            {icon}
+            {icon as ReactNode}
             {label}
             {tooltipDescription && (
               <InfoTooltip

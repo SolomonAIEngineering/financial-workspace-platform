@@ -1,45 +1,45 @@
-"use client";
+'use client'
 
+import { useRef, useState } from 'react'
 import {
   MdOutlineAddLink,
   MdOutlineCheck,
   MdOutlineDelete,
   MdOutlineLinkOff,
-} from "react-icons/md";
-import { Popover, PopoverContent, PopoverTrigger } from "../../../popover";
-import { useRef, useState } from "react";
+} from 'react-icons/md'
+import { Popover, PopoverContent, PopoverTrigger } from '../../../popover'
 
-import { BubbleMenuButton } from "./bubble-menu-button";
-import { Button } from "../../../button";
-import type { Editor } from "@tiptap/react";
-import { formatUrlWithProtocol } from "../../utils";
+import type { Editor } from '@tiptap/react'
+import { Button } from '../../../button'
+import { formatUrlWithProtocol } from '../../utils'
+import { BubbleMenuButton } from './bubble-menu-button'
 
 interface LinkItemProps {
-  editor: Editor;
-  open: boolean;
-  setOpen: (open: boolean) => void;
+  editor: Editor
+  open: boolean
+  setOpen: (open: boolean) => void
 }
 
 export function LinkItem({ editor, open, setOpen }: LinkItemProps) {
-  const [value, setValue] = useState("");
-  const isActive = editor.isActive("link");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const linkValue = editor.getAttributes("link").href;
+  const [value, setValue] = useState('')
+  const isActive = editor.isActive('link')
+  const inputRef = useRef<HTMLInputElement>(null)
+  const linkValue = editor.getAttributes('link').href
 
   const handleSubmit = () => {
-    const url = formatUrlWithProtocol(value);
+    const url = formatUrlWithProtocol(value)
 
     if (url) {
       editor
         .chain()
         .focus()
-        .extendMarkRange("link")
+        .extendMarkRange('link')
         .setLink({ href: url })
-        .run();
+        .run()
 
-      setOpen(false);
+      setOpen(false)
     }
-  };
+  }
 
   return (
     <Popover modal={false} open={open} onOpenChange={setOpen}>
@@ -60,12 +60,12 @@ export function LinkItem({ editor, open, setOpen }: LinkItemProps) {
             ref={inputRef}
             type="text"
             placeholder="Paste a link"
-            className="flex-1 bg-background p-0.5 h-7 text-xs outline-none placeholder:text-[#878787]"
-            defaultValue={linkValue || ""}
+            className="bg-background h-7 flex-1 p-0.5 text-xs outline-none placeholder:text-[#878787]"
+            defaultValue={linkValue || ''}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleSubmit();
+              if (e.key === 'Enter') {
+                handleSubmit()
               }
             }}
           />
@@ -75,13 +75,13 @@ export function LinkItem({ editor, open, setOpen }: LinkItemProps) {
               size="icon"
               variant="outline"
               type="button"
-              className="flex size-7 items-center p-1 text-red-600 transition-all hover:bg-red-100 dark:hover:bg-red-800 hover:border-none"
+              className="flex size-7 items-center p-1 text-red-600 transition-all hover:border-none hover:bg-red-100 dark:hover:bg-red-800"
               onClick={() => {
-                editor.chain().focus().unsetLink().run();
+                editor.chain().focus().unsetLink().run()
                 if (inputRef.current) {
-                  inputRef.current.value = "";
+                  inputRef.current.value = ''
                 }
-                setOpen(false);
+                setOpen(false)
               }}
             >
               <MdOutlineDelete className="size-4" />
@@ -99,5 +99,5 @@ export function LinkItem({ editor, open, setOpen }: LinkItemProps) {
         </div>
       </PopoverContent>
     </Popover>
-  );
+  )
 }

@@ -10,10 +10,10 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
-import { getPlanDetails } from '../utils/pricing'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
+import Footer from '../components/footer'
+import { getPlanDetails } from '../utils/pricing'
 
 export default function UpgradeEmail({
   name = 'Brendon Urie',

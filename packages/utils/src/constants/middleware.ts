@@ -1,4 +1,4 @@
-import { BusinessConfig as platform } from "@solomonai/platform-config";
+import { BusinessConfig as platform } from '@solomonai/platform-config'
 export const DEFAULT_REDIRECTS = {
   home: platform.webUrl,
   dub: platform.webUrl,
@@ -11,11 +11,11 @@ export const DEFAULT_REDIRECTS = {
   links: `${platform.platformUrl}/links`,
   settings: `${platform.platformUrl}/settings`,
   welcome: `${platform.platformUrl}/onboarding/welcome`,
-  discord: "https://twitter.com/dubdotco", // placeholder for now
-};
+  discord: 'https://twitter.com/dubdotco', // placeholder for now
+}
 
 export const DUB_HEADERS = {
-  "x-powered-by": platform.title,
-};
+  'x-powered-by': platform.title,
+}
 
-export const REDIRECTION_QUERY_PARAM = "redir_url";
+export const REDIRECTION_QUERY_PARAM = 'redir_url'

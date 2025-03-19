@@ -72,9 +72,9 @@ export function DeleteTeamDialog({
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={(e) => {
+            onClick={async (e) => {
               e.preventDefault();
-              onConfirmDelete();
+              await onConfirmDelete();
             }}
             disabled={isConfirmDisabled || isDeleting}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"

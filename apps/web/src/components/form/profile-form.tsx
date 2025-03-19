@@ -109,13 +109,14 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
     }
   }
 
-  const isSubmitting = updateSettingsMutation.isPending || updateContactInfoMutation.isPending;
+  const isSubmitting =
+    updateSettingsMutation.isPending || updateContactInfoMutation.isPending;
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {error && (
-          <div className="p-3 text-sm font-medium text-white bg-red-500 rounded-md">
+          <div className="rounded-md bg-red-500 p-3 text-sm font-medium text-white">
             {error}
           </div>
         )}

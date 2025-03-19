@@ -1,11 +1,10 @@
-import type { EditorDoc, TemplateProps } from "../types";
+import type { EditorDoc, TemplateProps } from '../types'
 
-import { EditorContent } from "./components/editor-content";
-import { LineItems } from "./components/line-items";
-import { Logo } from "./components/logo";
-import { Meta } from "./components/meta";
-import { ScrollArea } from "@solomonai/ui-design-system/scroll-area";
-import { Summary } from "./components/summary";
+import { EditorContent } from './components/editor-content'
+import { LineItems } from './components/line-items'
+import { Logo } from './components/logo'
+import { Meta } from './components/meta'
+import { Summary } from './components/summary'
 
 export function HtmlTemplate({
   invoice_number,
@@ -26,17 +25,16 @@ export function HtmlTemplate({
   bottom_block,
 }: TemplateProps) {
   return (
-    <ScrollArea
-      className="bg-background border border-border w-full md:w-auto h-full [&>div]:h-full"
+    <div
+      className="bg-background border-border h-full w-full border md:w-auto [&>div]:h-full"
       style={{
-        width: "100%",
+        width: '100%',
         maxWidth: width,
         height,
       }}
-      hideScrollbar
     >
       <div
-        className="p-4 sm:p-6 md:p-8 h-full flex flex-col"
+        className="flex h-full flex-col p-4 sm:p-6 md:p-8"
         style={{ minHeight: height - 5 }}
       >
         <div className="flex justify-between">
@@ -49,19 +47,19 @@ export function HtmlTemplate({
           />
 
           {template.logo_url && (
-            <Logo logo={template.logo_url} customerName={customer_name || ""} />
+            <Logo logo={template.logo_url} customerName={customer_name || ''} />
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6 mb-4">
+        <div className="mb-4 mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
           <div>
-            <p className="text-[11px] text-[#878787] font-mono mb-2 block">
+            <p className="mb-2 block font-mono text-[11px] text-[#878787]">
               {template.from_label}
             </p>
             <EditorContent content={from_details as unknown as EditorDoc} />
           </div>
           <div className="mt-4 md:mt-0">
-            <p className="text-[11px] text-[#878787] font-mono mb-2 block">
+            <p className="mb-2 block font-mono text-[11px] text-[#878787]">
               {template.customer_label}
             </p>
             <EditorContent content={customer_details as unknown as EditorDoc} />
@@ -82,7 +80,7 @@ export function HtmlTemplate({
           includeUnits={template.include_units}
         />
 
-        <div className="mt-10 md:mt-12 flex justify-end mb-6 md:mb-8">
+        <div className="mb-6 mt-10 flex justify-end md:mb-8 md:mt-12">
           <Summary
             includeVAT={template.include_vat}
             includeTax={template.include_tax}
@@ -102,17 +100,19 @@ export function HtmlTemplate({
           />
         </div>
 
-        <div className="flex flex-col space-y-6 md:space-y-8 mt-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="mt-auto flex flex-col space-y-6 md:space-y-8">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
             <div>
-              <p className="text-[11px] text-[#878787] font-mono mb-2 block">
+              <p className="mb-2 block font-mono text-[11px] text-[#878787]">
                 {template.payment_label}
               </p>
-              <EditorContent content={payment_details as unknown as EditorDoc} />
+              <EditorContent
+                content={payment_details as unknown as EditorDoc}
+              />
             </div>
             {note_details && (
               <div className="mt-4 md:mt-0">
-                <p className="text-[11px] text-[#878787] font-mono mb-2 block">
+                <p className="mb-2 block font-mono text-[11px] text-[#878787]">
                   {template.note_label}
                 </p>
                 <EditorContent content={note_details as unknown as EditorDoc} />
@@ -123,6 +123,6 @@ export function HtmlTemplate({
           <EditorContent content={bottom_block as unknown as EditorDoc} />
         </div>
       </div>
-    </ScrollArea>
-  );
+    </div>
+  )
 }

@@ -11,10 +11,10 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
-import { currencyFormatter } from '../utils/currency-formatter'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
+import Footer from '../components/footer'
+import { currencyFormatter } from '../utils/currency-formatter'
 
 export default function PartnerPayoutSent({
   email = 'panic@thedis.co',

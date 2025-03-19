@@ -1,37 +1,32 @@
-"use client";
+'use client'
 
-import {
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "./command";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState } from 'react'
+import { CommandGroup, CommandInput, CommandItem, CommandList } from './command'
 
-import { Command as CommandPrimitive } from "cmdk";
-import { Icons } from "./icons";
-import { Loader2 } from "lucide-react";
-import { cn } from "../utils";
+import { Command as CommandPrimitive } from 'cmdk'
+import { Loader2 } from 'lucide-react'
+import { cn } from '../utils'
+import { Icons } from './icons'
 
-export type Option = Record<"id" | "name", string> & Record<string, string>;
+export type Option = Record<'id' | 'name', string> & Record<string, string>
 
 type ComboboxProps = {
-  options: Option[];
-  emptyMessage: string;
-  value?: Option;
-  onSelect?: (value?: Option) => void;
-  onCreate?: (value?: string) => void;
-  onRemove?: () => void;
-  onValueChange?: (value: string) => void;
-  isLoading?: boolean;
-  disabled?: boolean;
-  placeholder?: string;
-  className?: string;
-  classNameList?: string;
-  autoFocus?: boolean;
-  showIcon?: boolean;
-  CreateComponent?: React.ComponentType<{ value: string }>;
-};
+  options: Option[]
+  emptyMessage: string
+  value?: Option
+  onSelect?: (value?: Option) => void
+  onCreate?: (value?: string) => void
+  onRemove?: () => void
+  onValueChange?: (value: string) => void
+  isLoading?: boolean
+  disabled?: boolean
+  placeholder?: string
+  className?: string
+  classNameList?: string
+  autoFocus?: boolean
+  showIcon?: boolean
+  CreateComponent?: React.ComponentType<{ value: string }>
+}
 
 export const Combobox = ({
   options,
@@ -49,65 +44,65 @@ export const Combobox = ({
   onValueChange,
   CreateComponent,
 }: ComboboxProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [isOpen, setOpen] = useState(false);
-  const [selected, setSelected] = useState<Option | undefined>(value as Option);
-  const [inputValue, setInputValue] = useState<string>(value?.name || "");
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [isOpen, setOpen] = useState(false)
+  const [selected, setSelected] = useState<Option | undefined>(value as Option)
+  const [inputValue, setInputValue] = useState<string>(value?.name || '')
 
   const handleOnValueChange = (value: string) => {
-    setInputValue(value);
-    onValueChange?.(value);
+    setInputValue(value)
+    onValueChange?.(value)
 
     if (value) {
-      setOpen(true);
+      setOpen(true)
     } else {
-      setOpen(false);
+      setOpen(false)
     }
-  };
+  }
 
   const handleOnRemove = () => {
-    setSelected(undefined);
-    setInputValue("");
-    onRemove?.();
-  };
+    setSelected(undefined)
+    setInputValue('')
+    onRemove?.()
+  }
 
   const handleBlur = useCallback(() => {
-    setOpen(false);
-    setInputValue(selected?.name || "");
-  }, [selected]);
+    setOpen(false)
+    setInputValue(selected?.name || '')
+  }, [selected])
 
   const handleOnFocus = () => {
     if (inputValue !== value?.name) {
-      setOpen(true);
+      setOpen(true)
     }
-  };
+  }
 
   const handleSelectOption = useCallback(
     (selectedOption: Option) => {
-      setInputValue(selectedOption.name);
+      setInputValue(selectedOption.name)
 
-      setSelected(selectedOption);
-      onSelect?.(selectedOption);
+      setSelected(selectedOption)
+      onSelect?.(selectedOption)
 
       // This is a hack to prevent the input from being focused after the user selects an option
       // We can call this hack: "The next tick"
       setTimeout(() => {
-        inputRef?.current?.blur();
-      }, 0);
+        inputRef?.current?.blur()
+      }, 0)
     },
     [onSelect],
-  );
+  )
 
   return (
     <CommandPrimitive className="w-full">
-      <div className="flex items-center w-full relative">
+      <div className="relative flex w-full items-center">
         {showIcon && (
-          <Icons.Search className="w-[18px] h-[18px] absolute left-4 pointer-events-none" />
+          <Icons.Search className="pointer-events-none absolute left-4 h-[18px] w-[18px]" />
         )}
 
         <CommandInput
           ref={(node) => {
-            if (node) inputRef.current = node;
+            if (node) inputRef.current = node
           }}
           value={inputValue}
           onValueChange={handleOnValueChange}
@@ -120,12 +115,12 @@ export const Combobox = ({
         />
 
         {isLoading && (
-          <Loader2 className="w-[16px] h-[16px] absolute right-2 animate-spin text-dark-gray" />
+          <Loader2 className="text-dark-gray absolute right-2 h-[16px] w-[16px] animate-spin" />
         )}
 
         {!isLoading && selected && onRemove && (
           <Icons.Close
-            className="w-[18px] h-[18px] absolute right-2"
+            className="absolute right-2 h-[18px] w-[18px]"
             onClick={handleOnRemove}
           />
         )}
@@ -133,13 +128,13 @@ export const Combobox = ({
 
       <div className="relative w-full">
         <CommandList
-          className="w-full outline-none animate-in fade-in-0 zoom-in-95"
+          className="animate-in fade-in-0 zoom-in-95 w-full outline-none"
           hidden={!isOpen}
         >
           {inputValue?.length > 0 && (
             <CommandGroup
               className={cn(
-                "bg-background absolute z-10 w-full max-h-[250px] overflow-auto py-2 border px-2",
+                'bg-background absolute z-10 max-h-[250px] w-full overflow-auto border px-2 py-2',
                 classNameList,
               )}
             >
@@ -149,15 +144,15 @@ export const Combobox = ({
                     key={option.id}
                     value={`${option.name}_${option.id}`}
                     onMouseDown={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
+                      event.preventDefault()
+                      event.stopPropagation()
                     }}
                     onSelect={() => handleSelectOption(option)}
-                    className="flex items-center gap-2 w-full px-2"
+                    className="flex w-full items-center gap-2 px-2"
                   >
                     {Component ? <Component /> : option.name}
                   </CommandItem>
-                );
+                )
               })}
 
               {onCreate &&
@@ -169,8 +164,8 @@ export const Combobox = ({
                     value={inputValue}
                     onSelect={() => onCreate(inputValue)}
                     onMouseDown={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
+                      event.preventDefault()
+                      event.stopPropagation()
                     }}
                   >
                     {CreateComponent ? (
@@ -185,5 +180,5 @@ export const Combobox = ({
         </CommandList>
       </div>
     </CommandPrimitive>
-  );
-};
+  )
+}

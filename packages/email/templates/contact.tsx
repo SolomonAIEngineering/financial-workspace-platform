@@ -18,7 +18,7 @@ import {
 
 /**
  * Properties for the ContactTemplate component.
- * 
+ *
  * @interface ContactTemplateProps
  * @property {string} name - The name of the person who submitted the contact form
  * @property {string} email - The email address of the person who submitted the contact form
@@ -34,7 +34,7 @@ type ContactTemplateProps = {
  * Email template for contact form submissions.
  * This component renders a professionally formatted email with the
  * contact form details including the sender's name, email, and message.
- * 
+ *
  * @param props - Component properties
  * @param props.name - The name of the person who submitted the contact form
  * @param props.email - The email address of the person who submitted the contact form
@@ -73,7 +73,7 @@ export const ContactTemplate = ({
 /**
  * Example implementation of the ContactTemplate with sample data.
  * This serves as both documentation and a preview of how the template renders.
- * 
+ *
  * @returns JSX component with sample contact form data
  */
 const ExampleContactEmail = () => (

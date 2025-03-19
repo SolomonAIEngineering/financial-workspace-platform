@@ -1,27 +1,26 @@
-import { Text, View } from "@react-pdf/renderer";
+import { Text, View } from '@react-pdf/renderer'
 
-import React from 'react';
-import { formatAmount } from "@solomonai/utils";
+import { formatAmount } from '@solomonai/utils'
 
 interface SummaryProps {
-  amount: number;
-  tax?: number;
-  taxRate?: number;
-  vat?: number;
-  vatRate?: number;
-  currency: string;
-  totalLabel: string;
-  taxLabel: string;
-  vatLabel: string;
-  locale: string;
-  discount?: number;
-  discountLabel: string;
-  includeDiscount: boolean;
-  includeVAT: boolean;
-  includeTax: boolean;
-  includeDecimals: boolean;
-  subtotalLabel: string;
-  subtotal: number;
+  amount: number
+  tax?: number
+  taxRate?: number
+  vat?: number
+  vatRate?: number
+  currency: string
+  totalLabel: string
+  taxLabel: string
+  vatLabel: string
+  locale: string
+  discount?: number
+  discountLabel: string
+  includeDiscount: boolean
+  includeVAT: boolean
+  includeTax: boolean
+  includeDecimals: boolean
+  subtotalLabel: string
+  subtotal: number
 }
 
 export function Summary({
@@ -44,21 +43,21 @@ export function Summary({
   subtotalLabel,
   subtotal,
 }: SummaryProps) {
-  const maximumFractionDigits = includeDecimals ? 2 : 0;
+  const maximumFractionDigits = includeDecimals ? 2 : 0
 
   return (
     <View
       style={{
         marginTop: 60,
         marginBottom: 40,
-        alignItems: "flex-end",
-        marginLeft: "auto",
+        alignItems: 'flex-end',
+        marginLeft: 'auto',
         width: 250,
       }}
     >
-      <View style={{ flexDirection: "row", marginBottom: 5, width: "100%" }}>
+      <View style={{ flexDirection: 'row', marginBottom: 5, width: '100%' }}>
         <Text style={{ fontSize: 9, flex: 1 }}>{subtotalLabel}</Text>
-        <Text style={{ fontSize: 9, textAlign: "right" }}>
+        <Text style={{ fontSize: 9, textAlign: 'right' }}>
           {formatAmount({
             currency,
             amount: subtotal,
@@ -69,9 +68,9 @@ export function Summary({
       </View>
 
       {includeDiscount && discount && (
-        <View style={{ flexDirection: "row", marginBottom: 5, width: "100%" }}>
+        <View style={{ flexDirection: 'row', marginBottom: 5, width: '100%' }}>
           <Text style={{ fontSize: 9, flex: 1 }}>{discountLabel}</Text>
-          <Text style={{ fontSize: 9, textAlign: "right" }}>
+          <Text style={{ fontSize: 9, textAlign: 'right' }}>
             {formatAmount({
               currency,
               amount: discount,
@@ -83,11 +82,11 @@ export function Summary({
       )}
 
       {includeVAT && (
-        <View style={{ flexDirection: "row", marginBottom: 5, width: "100%" }}>
+        <View style={{ flexDirection: 'row', marginBottom: 5, width: '100%' }}>
           <Text style={{ fontSize: 9, flex: 1 }}>
             {vatLabel} ({vatRate}%)
           </Text>
-          <Text style={{ fontSize: 9, textAlign: "right" }}>
+          <Text style={{ fontSize: 9, textAlign: 'right' }}>
             {formatAmount({
               currency,
               amount: vat ?? 0,
@@ -99,11 +98,11 @@ export function Summary({
       )}
 
       {includeTax && (
-        <View style={{ flexDirection: "row", marginBottom: 5, width: "100%" }}>
+        <View style={{ flexDirection: 'row', marginBottom: 5, width: '100%' }}>
           <Text style={{ fontSize: 9, flex: 1 }}>
             {taxLabel} ({taxRate}%)
           </Text>
-          <Text style={{ fontSize: 9, textAlign: "right" }}>
+          <Text style={{ fontSize: 9, textAlign: 'right' }}>
             {formatAmount({
               currency,
               amount: tax ?? 0,
@@ -116,14 +115,14 @@ export function Summary({
 
       <View
         style={{
-          flexDirection: "row",
+          flexDirection: 'row',
           marginTop: 5,
           borderTopWidth: 0.5,
-          borderTopColor: "#000",
-          justifyContent: "space-between",
-          alignItems: "center",
+          borderTopColor: '#000',
+          justifyContent: 'space-between',
+          alignItems: 'center',
           paddingTop: 5,
-          width: "100%",
+          width: '100%',
         }}
       >
         <Text style={{ fontSize: 9, marginRight: 10 }}>{totalLabel}</Text>
@@ -132,5 +131,5 @@ export function Summary({
         </Text>
       </View>
     </View>
-  );
+  )
 }

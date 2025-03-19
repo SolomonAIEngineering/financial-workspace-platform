@@ -1,21 +1,21 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react'
 
-import { Calendar } from "./calendar";
-import { addDays } from "date-fns";
-import { useState } from "react";
+import { addDays } from 'date-fns'
+import { useState } from 'react'
+import { Calendar } from './calendar'
 
 const meta: Meta<typeof Calendar> = {
   component: Calendar,
-  tags: ["autodocs"],
-};
+  tags: ['autodocs'],
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof Calendar>;
+type Story = StoryObj<typeof Calendar>
 
 export const Default: Story = {
   render: () => {
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date>(new Date())
     return (
       <div className="w-[300px]">
         <Calendar
@@ -24,17 +24,17 @@ export const Default: Story = {
           onSelect={(day) => setDate(day as Date)}
         />
       </div>
-    );
+    )
   },
-};
+}
 
 export const MultiSelection: Story = {
   render: () => {
     const [dates, setDates] = useState<Date[]>([
       new Date(),
       addDays(new Date(), 2),
-      addDays(new Date(), 5)
-    ]);
+      addDays(new Date(), 5),
+    ])
     return (
       <div className="w-[300px]">
         <Calendar
@@ -43,19 +43,19 @@ export const MultiSelection: Story = {
           onSelect={(days) => setDates(days as Date[])}
         />
       </div>
-    );
+    )
   },
-};
+}
 
 export const RangeSelection: Story = {
   render: () => {
     const [dateRange, setDateRange] = useState<{
-      from: Date;
-      to?: Date;
+      from: Date
+      to?: Date
     }>({
       from: new Date(),
       to: addDays(new Date(), 7),
-    });
+    })
     return (
       <div className="w-[300px]">
         <Calendar
@@ -64,13 +64,13 @@ export const RangeSelection: Story = {
           onSelect={(range) => setDateRange(range as { from: Date; to?: Date })}
         />
       </div>
-    );
+    )
   },
-};
+}
 
 export const WithDisabledDates: Story = {
   render: () => {
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date>(new Date())
     return (
       <div className="w-[300px]">
         <Calendar
@@ -83,13 +83,13 @@ export const WithDisabledDates: Story = {
           ]}
         />
       </div>
-    );
+    )
   },
-};
+}
 
 export const WithFooter: Story = {
   render: () => {
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date>(new Date())
     return (
       <div className="w-[300px]">
         <Calendar
@@ -97,12 +97,12 @@ export const WithFooter: Story = {
           selected={date}
           onSelect={(day) => setDate(day as Date)}
           footer={
-            <div className="mt-2 text-center text-sm text-muted-foreground">
+            <div className="text-muted-foreground mt-2 text-center text-sm">
               Today: {new Date().toLocaleDateString()}
             </div>
           }
         />
       </div>
-    );
+    )
   },
-};
+}

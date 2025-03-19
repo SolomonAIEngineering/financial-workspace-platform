@@ -1,8 +1,14 @@
 'use client'
 
-import { CalendarIcon, Goal, GoalIcon, RocketIcon } from 'lucide-react'
-import { Card, CardContent } from '../../card'
 import { CaretSortIcon, FaceIcon } from '@radix-ui/react-icons'
+import {
+  SmartGoal as ISmartGoal,
+  Milestone,
+  SmartGoal,
+} from 'client-typescript-sdk'
+import { CalendarIcon, Goal, GoalIcon, RocketIcon } from 'lucide-react'
+import React, { useContext } from 'react'
+import { Card, CardContent } from '../../card'
 import {
   Collapsible,
   CollapsibleContent,
@@ -17,21 +23,14 @@ import {
   CommandList,
   CommandSeparator,
 } from '../../command'
-import {
-  SmartGoal as ISmartGoal,
-  Milestone,
-  SmartGoal,
-} from 'client-typescript-sdk'
-import React, { useContext } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../tabs'
 
-import { Badge } from '../../badge'
-import { BankAccountContext } from './BankAccountCard'
-import { Button } from '../../button'
-import { Command as CommandPrimitive } from 'cmdk'
 import { FinancialDataProcessor } from '../../../lib/financial-data-processor'
-import { Label } from '../../label'
 import { cn } from '../../../utils/cn'
+import { Badge } from '../../badge'
+import { Button } from '../../button'
+import { Label } from '../../label'
+import { BankAccountContext } from './BankAccountCard'
 
 interface BankAccountCardContentProps {
   className?: string
@@ -116,7 +115,8 @@ const BankAccountCardContent: React.FC<BankAccountCardContentProps> = (
 }
 
 const AccountGoalsCommandSearch: React.FC = () => {
-  const [commandElement, setCommandElement] = React.useState<HTMLElement | null>(null)
+  const [commandElement, setCommandElement] =
+    React.useState<HTMLElement | null>(null)
   const [inputValue, setInputValue] = React.useState('')
 
   const [pages, setPages] = React.useState<string[]>(['home'])

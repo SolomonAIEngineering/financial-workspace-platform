@@ -28,7 +28,7 @@ type DocumentStatus = (typeof DOCUMENT_STATUS)[number];
 
 // Create document-specific validation middleware
 const validateDocumentCreation = createResourceValidationMiddleware({
-  resourceType: ResourceType.DOCUMENT
+  resourceType: ResourceType.DOCUMENT,
 });
 
 export const documentMutations = {
@@ -64,9 +64,9 @@ export const documentMutations = {
     .mutation(async ({ ctx, input }) => {
       const content = input.contentRich
         ? NodeApi.string({
-          children: input.contentRich,
-          type: 'root',
-        })
+            children: input.contentRich,
+            type: 'root',
+          })
         : '';
 
       if (content.length > MAX_CONTENT_LENGTH) {
@@ -216,9 +216,9 @@ export const documentMutations = {
     .mutation(async ({ ctx, input }) => {
       const content = input.contentRich
         ? NodeApi.string({
-          children: input.contentRich,
-          type: 'root',
-        })
+            children: input.contentRich,
+            type: 'root',
+          })
         : undefined;
 
       if (content && content.length > MAX_CONTENT_LENGTH) {
@@ -331,9 +331,9 @@ export const documentRouter = createRouter({
           id: isTemplateDocument(input.id) ? undefined : input.id,
           userId_templateId: isTemplateDocument(input.id)
             ? {
-              templateId: input.id,
-              userId: ctx.userId,
-            }
+                templateId: input.id,
+                userId: ctx.userId,
+              }
             : undefined,
         },
       });

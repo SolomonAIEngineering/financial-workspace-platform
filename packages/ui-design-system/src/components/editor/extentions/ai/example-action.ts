@@ -1,35 +1,38 @@
-"use server";
+'use server'
 
 // In a browser environment like Storybook, we want to completely disable this function
 // This is a simplified version that doesn't try to import server-only modules
 
 type Params = {
-  input: string;
-  context?: string;
-};
+  input: string
+  context?: string
+}
 
 export async function generateEditorContent({ input, context }: Params) {
   // Check if we're running in a browser (like Storybook)
   if (typeof window !== 'undefined') {
-    console.log('AI features are disabled in browser environments like Storybook');
+    console.log(
+      'AI features are disabled in browser environments like Storybook',
+    )
     // Return a mock object that has a similar structure but doesn't use any server-only code
     return {
-      output: "This is a mock AI response - AI features are disabled in Storybook"
-    };
+      output:
+        'This is a mock AI response - AI features are disabled in Storybook',
+    }
   }
 
   // The code below will only run in a server environment
   try {
     // Dynamically import the necessary modules only on the server
-    const { createStreamableValue } = await import('ai/rsc');
-    const { openai } = await import('@ai-sdk/openai');
-    const { streamText } = await import('ai');
+    const { createStreamableValue } = await import('ai/rsc')
+    const { openai } = await import('@ai-sdk/openai')
+    const { streamText } = await import('ai')
 
-    const stream = createStreamableValue("");
+    const stream = createStreamableValue('')
 
-    (async () => {
+    ;(async () => {
       const { textStream } = await streamText({
-        model: openai("gpt-4o-mini"),
+        model: openai('gpt-4o-mini'),
         prompt: input,
         temperature: 0.8,
         system: `
@@ -43,18 +46,18 @@ export async function generateEditorContent({ input, context }: Params) {
           Begin your response directly with the relevant text or information.
         ${context}
   `,
-      });
+      })
 
       for await (const delta of textStream) {
-        stream.update(delta);
+        stream.update(delta)
       }
 
-      stream.done();
-    })();
+      stream.done()
+    })()
 
-    return { output: stream.value };
+    return { output: stream.value }
   } catch (error) {
-    console.error('Error in AI generation:', error);
-    return { output: "Error generating AI content" };
+    console.error('Error in AI generation:', error)
+    return { output: 'Error generating AI content' }
   }
 }

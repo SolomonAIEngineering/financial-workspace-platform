@@ -1,20 +1,20 @@
-import { Text, View } from "@react-pdf/renderer";
+import { Text, View } from '@react-pdf/renderer'
 
-import { Description } from "./description";
-import type { LineItem } from "../../types";
-import { formatAmount } from "@solomonai/utils";
+import { formatAmount } from '@solomonai/utils'
+import type { LineItem } from '../../types'
+import { Description } from './description'
 
 type Props = {
-  lineItems: LineItem[];
-  currency: string;
-  descriptionLabel: string;
-  quantityLabel: string;
-  priceLabel: string;
-  totalLabel: string;
-  locale: string;
-  includeDecimals?: boolean;
-  includeUnits?: boolean;
-};
+  lineItems: LineItem[]
+  currency: string
+  descriptionLabel: string
+  quantityLabel: string
+  priceLabel: string
+  totalLabel: string
+  locale: string
+  includeDecimals?: boolean
+  includeUnits?: boolean
+}
 
 export function LineItems({
   lineItems,
@@ -27,14 +27,14 @@ export function LineItems({
   includeDecimals,
   includeUnits,
 }: Props) {
-  const maximumFractionDigits = includeDecimals ? 2 : 0;
+  const maximumFractionDigits = includeDecimals ? 2 : 0
   return (
     <View style={{ marginTop: 20 }}>
       <View
         style={{
-          flexDirection: "row",
+          flexDirection: 'row',
           borderBottomWidth: 0.5,
-          borderBottomColor: "#000",
+          borderBottomColor: '#000',
           paddingBottom: 5,
           marginBottom: 5,
         }}
@@ -53,7 +53,7 @@ export function LineItems({
             flex: 1,
             fontSize: 9,
             fontWeight: 500,
-            textAlign: "right",
+            textAlign: 'right',
           }}
         >
           {totalLabel}
@@ -63,9 +63,9 @@ export function LineItems({
         <View
           key={`line-item-${index.toString()}`}
           style={{
-            flexDirection: "row",
+            flexDirection: 'row',
             paddingVertical: 5,
-            alignItems: "flex-start",
+            alignItems: 'flex-start',
           }}
         >
           <View style={{ flex: 3 }}>
@@ -84,7 +84,7 @@ export function LineItems({
             {includeUnits && item.unit ? ` / ${item.unit}` : null}
           </Text>
 
-          <Text style={{ flex: 1, fontSize: 9, textAlign: "right" }}>
+          <Text style={{ flex: 1, fontSize: 9, textAlign: 'right' }}>
             {formatAmount({
               currency,
               amount: item.quantity * item.price,
@@ -95,5 +95,5 @@ export function LineItems({
         </View>
       ))}
     </View>
-  );
+  )
 }

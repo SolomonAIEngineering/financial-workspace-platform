@@ -3,12 +3,12 @@
  * This module allows sending notifications via various channels and managing subscriber preferences.
  * @module notification
  */
-import { Novu } from "@novu/node";
-import { nanoid } from "nanoid";
+import { Novu } from '@novu/node'
+import { nanoid } from 'nanoid'
 
-const novu = new Novu(process.env.NOVU_API_KEY!);
+const novu = new Novu(process.env.NOVU_API_KEY!)
 
-const API_ENDPOINT = "https://api.novu.co/v1";
+const API_ENDPOINT = 'https://api.novu.co/v1'
 
 /**
  * Enumeration of notification trigger event types used throughout the application.
@@ -16,23 +16,23 @@ const API_ENDPOINT = "https://api.novu.co/v1";
  */
 export enum TriggerEvents {
   /** Notification for a single new transaction (in-app) */
-  TransactionNewInApp = "transaction_new_in_app",
+  TransactionNewInApp = 'transaction_new_in_app',
   /** Notification for multiple new transactions (in-app) */
-  TransactionsNewInApp = "transactions_new_in_app",
+  TransactionsNewInApp = 'transactions_new_in_app',
   /** Notification for a new transaction (email) */
-  TransactionNewEmail = "transaction_new_email",
+  TransactionNewEmail = 'transaction_new_email',
   /** Notification for a new inbox message (in-app) */
-  InboxNewInApp = "inbox_new_in_app",
+  InboxNewInApp = 'inbox_new_in_app',
   /** Notification for a new match (in-app) */
-  MatchNewInApp = "match_in_app",
+  MatchNewInApp = 'match_in_app',
   /** Notification for a paid invoice (in-app) */
-  InvoicePaidInApp = "invoice_paid_in_app",
+  InvoicePaidInApp = 'invoice_paid_in_app',
   /** Notification for a paid invoice (email) */
-  InvoicePaidEmail = "invoice_paid_email",
+  InvoicePaidEmail = 'invoice_paid_email',
   /** Notification for an overdue invoice (in-app) */
-  InvoiceOverdueInApp = "invoice_overdue_in_app",
+  InvoiceOverdueInApp = 'invoice_overdue_in_app',
   /** Notification for an overdue invoice (email) */
-  InvoiceOverdueEmail = "invoice_overdue_email",
+  InvoiceOverdueEmail = 'invoice_overdue_email',
 }
 
 /**
@@ -41,15 +41,15 @@ export enum TriggerEvents {
  */
 export enum NotificationTypes {
   /** Transaction-related notifications */
-  Transaction = "transaction",
+  Transaction = 'transaction',
   /** Notifications related to multiple transactions */
-  Transactions = "transactions",
+  Transactions = 'transactions',
   /** Inbox message notifications */
-  Inbox = "inbox",
+  Inbox = 'inbox',
   /** Match-related notifications */
-  Match = "match",
+  Match = 'match',
   /** Invoice-related notifications */
-  Invoice = "invoice",
+  Invoice = 'invoice',
 }
 
 /**
@@ -58,16 +58,16 @@ export enum NotificationTypes {
  */
 type TriggerUser = {
   /** Unique identifier for the subscriber */
-  subscriberId: string;
+  subscriberId: string
   /** Email address of the user */
-  email: string;
+  email: string
   /** User's full name */
-  fullName: string;
+  fullName: string
   /** Optional URL for the user's avatar */
-  avatarUrl?: string;
+  avatarUrl?: string
   /** Team ID the user belongs to */
-  teamId: string;
-};
+  teamId: string
+}
 
 /**
  * Payload for triggering a notification.
@@ -75,23 +75,23 @@ type TriggerUser = {
  */
 type TriggerPayload = {
   /** The notification event name */
-  name: TriggerEvents;
+  name: TriggerEvents
   /** Custom data to be included in the notification */
-  payload: any;
+  payload: any
   /** Recipient information */
-  user: TriggerUser;
+  user: TriggerUser
   /** Optional email address to set as reply-to */
-  replyTo?: string;
+  replyTo?: string
   /** Optional tenant identifier for multi-tenant applications */
-  tenant?: string; // NOTE: Currently no way to listen for messages with tenant, we use team_id + user_id for unique
-};
+  tenant?: string // NOTE: Currently no way to listen for messages with tenant, we use team_id + user_id for unique
+}
 
 /**
  * Triggers a notification to a single user.
- * 
+ *
  * @param data - The notification data including event name, payload, and user information
  * @returns A promise that resolves when the notification has been triggered
- * 
+ *
  * @example
  * ```typescript
  * await trigger({
@@ -121,22 +121,22 @@ export async function trigger(data: TriggerPayload) {
           replyTo: data.replyTo,
           // @ts-ignore
           headers: {
-            "X-Entity-Ref-ID": nanoid(),
+            'X-Entity-Ref-ID': nanoid(),
           },
         },
       },
-    });
+    })
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
 }
 
 /**
  * Triggers multiple notifications in bulk to optimize API calls.
- * 
+ *
  * @param events - Array of notification payloads to be sent
  * @returns A promise that resolves when all notifications have been triggered
- * 
+ *
  * @example
  * ```typescript
  * await triggerBulk([
@@ -179,14 +179,14 @@ export async function triggerBulk(events: TriggerPayload[]) {
           email: {
             replyTo: data.replyTo,
             headers: {
-              "X-Entity-Ref-ID": nanoid(),
+              'X-Entity-Ref-ID': nanoid(),
             },
           },
         },
       })),
-    );
+    )
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
 }
 
@@ -196,17 +196,17 @@ export async function triggerBulk(events: TriggerPayload[]) {
  */
 type GetSubscriberPreferencesParams = {
   /** Team ID the subscriber belongs to */
-  teamId: string;
+  teamId: string
   /** Unique identifier for the subscriber */
-  subscriberId: string;
-};
+  subscriberId: string
+}
 
 /**
  * Retrieves notification preferences for a subscriber.
- * 
+ *
  * @param params - Object containing teamId and subscriberId
  * @returns A promise resolving to the subscriber's notification preferences
- * 
+ *
  * @example
  * ```typescript
  * const preferences = await getSubscriberPreferences({
@@ -222,14 +222,14 @@ export async function getSubscriberPreferences({
   const response = await fetch(
     `${API_ENDPOINT}/subscribers/${teamId}_${subscriberId}/preferences?includeInactiveChannels=false`,
     {
-      method: "GET",
+      method: 'GET',
       headers: {
         Authorization: `ApiKey ${process.env.NOVU_API_KEY!}`,
       },
     },
-  );
+  )
 
-  return response.json();
+  return response.json()
 }
 
 /**
@@ -238,23 +238,23 @@ export async function getSubscriberPreferences({
  */
 type UpdateSubscriberPreferenceParams = {
   /** Unique identifier for the subscriber */
-  subscriberId: string;
+  subscriberId: string
   /** Team ID the subscriber belongs to */
-  teamId: string;
+  teamId: string
   /** Notification template ID to update preferences for */
-  templateId: string;
+  templateId: string
   /** Channel type (e.g., 'email', 'in_app') */
-  type: string;
+  type: string
   /** Whether notifications for this channel should be enabled */
-  enabled: boolean;
-};
+  enabled: boolean
+}
 
 /**
  * Updates notification preferences for a specific subscriber and channel.
- * 
+ *
  * @param params - Object containing subscriberId, teamId, templateId, type, and enabled flag
  * @returns A promise resolving to the updated preference data
- * 
+ *
  * @example
  * ```typescript
  * await updateSubscriberPreference({
@@ -276,10 +276,10 @@ export async function updateSubscriberPreference({
   const response = await fetch(
     `${API_ENDPOINT}/subscribers/${teamId}_${subscriberId}/preferences/${templateId}`,
     {
-      method: "PATCH",
+      method: 'PATCH',
       headers: {
         Authorization: `ApiKey ${process.env.NOVU_API_KEY!}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         channel: {
@@ -288,7 +288,7 @@ export async function updateSubscriberPreference({
         },
       }),
     },
-  );
+  )
 
-  return response.json();
+  return response.json()
 }

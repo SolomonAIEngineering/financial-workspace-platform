@@ -4,7 +4,7 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardTitle
+  CardTitle,
 } from '@/components/ui/card';
 
 import { Button } from '@/registry/default/potion-ui/button';

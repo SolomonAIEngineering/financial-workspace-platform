@@ -153,10 +153,10 @@ export function DataTable<TData, TValue>({
                         <TableHead key={header.id}>
                           {header.isPlaceholder
                             ? null
-                            : flexRender(
+                            : (flexRender(
                                 header.column.columnDef.header,
                                 header.getContext(),
-                              )}
+                              ) as React.ReactNode)}
                         </TableHead>
                       );
                     })}
@@ -172,10 +172,12 @@ export function DataTable<TData, TValue>({
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
+                          {
+                            flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            ) as React.ReactNode
+                          }
                         </TableCell>
                       ))}
                     </TableRow>

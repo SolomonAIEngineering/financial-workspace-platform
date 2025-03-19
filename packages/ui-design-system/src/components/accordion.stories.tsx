@@ -1,10 +1,10 @@
+import type { Meta, StoryObj } from '@storybook/react'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./accordion";
-import type { Meta, StoryObj } from "@storybook/react";
+} from './accordion'
 
 const meta: Meta<typeof Accordion> = {
   component: () => (
@@ -31,10 +31,10 @@ const meta: Meta<typeof Accordion> = {
       </AccordionItem>
     </Accordion>
   ),
-};
+}
 
-export default meta;
+export default meta
 
-type Story = StoryObj<typeof Accordion>;
+type Story = StoryObj<typeof Accordion>
 
-export const Default: Story = {};
+export const Default: Story = {}

@@ -5,14 +5,14 @@
  * @returns A formatted invoice number string
  */
 export function generateInvoiceNumber(count: number): string {
-    // Add 1 to count to start from 1 instead of 0
-    const nextNumber = count + 1;
+  // Add 1 to count to start from 1 instead of 0
+  const nextNumber = count + 1
 
-    // For numbers less than 100, pad to 3 digits
-    if (nextNumber < 1000) {
-        return `INV-${nextNumber.toString().padStart(3, '0')}`;
-    }
+  // For numbers less than 100, pad to 3 digits
+  if (nextNumber < 1000) {
+    return `INV-${nextNumber.toString().padStart(3, '0')}`
+  }
 
-    // For larger numbers, no padding is needed
-    return `INV-${nextNumber}`;
-} 
+  // For larger numbers, no padding is needed
+  return `INV-${nextNumber}`
+}

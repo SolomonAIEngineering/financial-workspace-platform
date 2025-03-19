@@ -6,34 +6,34 @@
 
 // Authentication related emails
 export { default as LoginLink } from './login-link'
-export { default as ResetPasswordLink } from './reset-password-link'
 export { default as PasswordUpdated } from './password-updated'
+export { default as ResetPasswordLink } from './reset-password-link'
 export { default as VerifyEmail } from './verify-email'
-export { default as WorkspaceInvite } from './workspace-invite'
 export { default as WelcomeEmail } from './welcome-email'
+export { default as WorkspaceInvite } from './workspace-invite'
 
 // Invoice related emails
 export { default as Invoice } from './invoice'
-export { default as InvoicePaid } from './invoice-paid'
-export { default as InvoiceOverdue } from './invoice-overdue'
-export { default as InvoiceReminder } from './invoice-reminder'
 export { default as InvoiceComment } from './invoice-comment'
+export { default as InvoiceOverdue } from './invoice-overdue'
+export { default as InvoicePaid } from './invoice-paid'
+export { default as InvoiceReminder } from './invoice-reminder'
 
 // Lead management emails
+export { default as LeadActivitySummary } from './lead-activity-summary'
 export { default as LeadAssignment } from './lead-assignment'
 export { default as LeadScoringUpdate } from './lead-scoring-update'
-export { default as LeadActivitySummary } from './lead-activity-summary'
 export { default as NewLeadAcquired } from './new-lead-acquired'
 export { default as WorkspaceLeadsSummary } from './workspace-leads-summary'
 
 // Sales related emails
-export { default as SalesPerformanceSummary } from './sales-performance-summary'
-export { default as SalesInsightReport } from './sales-insight-report'
-export { default as SalesTargetAchievement } from './sales-target-achievement'
-export { default as NewSaleCreated } from './new-sale-created'
 export { default as DealClosed } from './deal-closed'
-export { default as PipelineStageUpdate } from './pipeline-stage-update'
 export { default as MeetingScheduled } from './meeting-scheduled'
+export { default as NewSaleCreated } from './new-sale-created'
+export { default as PipelineStageUpdate } from './pipeline-stage-update'
+export { default as SalesInsightReport } from './sales-insight-report'
+export { default as SalesPerformanceSummary } from './sales-performance-summary'
+export { default as SalesTargetAchievement } from './sales-target-achievement'
 
 // Transaction related emails
 export { default as Transactions } from './transactions'
@@ -56,19 +56,19 @@ export { default as WebhookAdded } from './webhook-added'
 export { default as WebhookDisabled } from './webhook-disabled'
 
 // Analytics and usage emails
-export { default as ClicksSummary } from './clicks-summary'
 export { default as ClicksExceeded } from './clicks-exceeded'
+export { default as ClicksSummary } from './clicks-summary'
 export { default as LinksLimit } from './links-limit'
 
 // System and account emails
-export { default as ConnectionIssue } from './connection-issue'
 export { default as ConnectionExpire } from './connection-expire'
-export { default as FailedPayment } from './failed-payment'
-export { default as UpgradeEmail } from './upgrade-email'
+export { default as ConnectionIssue } from './connection-issue'
 export { default as CustomerFeedbackAlert } from './customer-feedback-alert'
+export { default as DubWrapped } from './dub-wrapped'
+export { default as FailedPayment } from './failed-payment'
 export { default as FeedbackEmail } from './feedback-email'
 export { default as RebrandEmail } from './rebrand-email'
-export { default as DubWrapped } from './dub-wrapped'
+export { default as UpgradeEmail } from './upgrade-email'
 
 // Utility function for sending emails
-export { sendEmailViaResend } from './send-via-resend' 
+export { sendEmailViaResend } from './send-via-resend'

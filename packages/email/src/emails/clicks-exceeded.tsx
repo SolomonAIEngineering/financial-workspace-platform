@@ -11,12 +11,12 @@ import {
   Text,
 } from '@react-email/components'
 
-import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
-import { capitalize } from '../utils/capitalize'
-import { getNextPlan } from '../utils/pricing'
-import { nFormatter } from '../utils/nformatter'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
+import Footer from '../components/footer'
+import { capitalize } from '../utils/capitalize'
+import { nFormatter } from '../utils/nformatter'
+import { getNextPlan } from '../utils/pricing'
 
 export default function ClicksExceeded({
   email = 'panic@thedis.co',

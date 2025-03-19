@@ -1,10 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import {
+  SVGProps,
+  ForwardRefExoticComponent,
+  useEffect,
+  useState,
+} from 'react';
 import { AnimatePresence } from 'framer-motion';
 import {
   ArrowTrendingUpIcon,
-  ChartBarSquareIcon,
   ChartPieIcon,
   PresentationChartLineIcon,
 } from '@heroicons/react/24/outline';
@@ -81,12 +85,7 @@ export default function FinancialOverviewPage() {
           { href: routes.dashboard(), label: 'Dashboard' },
           { href: routes.financialOverview(), label: 'Financial Overview' },
         ]}
-        actions={
-          <WaitlistFeature
-            featureName={featureName}
-            buttonIcon={ChartBarSquareIcon}
-          />
-        }
+        actions={<WaitlistFeature featureName={featureName} />}
       >
         <FeatureDevelopment
           description="We're building a comprehensive financial overview dashboard that combines real-time analytics, cash flow visualization, and predictive insights. Get a complete picture of your business's financial health in one unified interface."
@@ -96,18 +95,24 @@ export default function FinancialOverviewPage() {
             {
               description:
                 'See all key financial metrics in one unified dashboard',
-              icon: ChartPieIcon,
+              icon: ChartPieIcon as ForwardRefExoticComponent<
+                SVGProps<SVGSVGElement>
+              >,
               title: 'Complete Picture',
             },
             {
               description:
                 "Monitor cash flow and understand your company's financial trends",
-              icon: PresentationChartLineIcon,
+              icon: PresentationChartLineIcon as ForwardRefExoticComponent<
+                SVGProps<SVGSVGElement>
+              >,
               title: 'Trend Analysis',
             },
             {
               description: 'Measure business performance against defined KPIs',
-              icon: ArrowTrendingUpIcon,
+              icon: ArrowTrendingUpIcon as ForwardRefExoticComponent<
+                SVGProps<SVGSVGElement>
+              >,
               title: 'Performance Tracking',
             },
           ]}
