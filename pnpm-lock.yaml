@@ -28,7 +28,7 @@ importers:
     dependencies:
       '@ai-sdk/openai':
         specifier: ^1.1.9
-        version: 1.2.6(zod@3.24.2)
+        version: 1.2.7(zod@3.24.2)
       '@ariakit/react':
         specifier: 0.4.15
         version: 0.4.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -64,7 +64,7 @@ importers:
         version: 2.2.0(react@19.0.0)
       '@hono/zod-validator':
         specifier: ^0.4.1
-        version: 0.4.3(hono@4.7.4)(zod@3.24.2)
+        version: 0.4.3(hono@4.7.5)(zod@3.24.2)
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.54.2(react@19.0.0))
@@ -237,8 +237,8 @@ importers:
         specifier: ^5.8.0
         version: 5.8.0
       '@trigger.dev/build':
-        specifier: ^3.3.17
-        version: 3.3.17(typescript@5.7.3)
+        specifier: 3.3.12
+        version: 3.3.12(typescript@5.7.3)
       '@trigger.dev/express':
         specifier: 3.3.12
         version: 3.3.12(@trigger.dev/sdk@3.3.12(zod@3.24.2))
@@ -409,7 +409,7 @@ importers:
         version: 2.7.57
       ai:
         specifier: ^4.1.25
-        version: 4.1.63(react@19.0.0)(zod@3.24.2)
+        version: 4.1.65(react@19.0.0)(zod@3.24.2)
       arctic:
         specifier: ^3.2.4
         version: 3.5.0
@@ -442,7 +442,7 @@ importers:
         version: 1.3.1(next@15.1.3(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
       hono:
         specifier: ^4.7.0
-        version: 4.7.4
+        version: 4.7.5
       immer:
         specifier: ^10.0.4
         version: 10.1.1
@@ -885,10 +885,10 @@ importers:
         version: 1.0.0-rc.2
       '@hono/zod-openapi':
         specifier: ^0.17.0
-        version: 0.17.1(hono@4.7.4)(zod@3.24.2)
+        version: 0.17.1(hono@4.7.5)(zod@3.24.2)
       '@hono/zod-validator':
         specifier: ^0.2.2
-        version: 0.2.2(hono@4.7.4)(zod@3.24.2)
+        version: 0.2.2(hono@4.7.5)(zod@3.24.2)
       '@planetscale/database':
         specifier: ^1.16.0
         version: 1.19.0
@@ -936,7 +936,7 @@ importers:
         version: link:../../internal/worker-logging
       hono:
         specifier: ^4.2.7
-        version: 4.7.4
+        version: 4.7.5
       superjson:
         specifier: ^2.2.1
         version: 2.2.2
@@ -979,13 +979,13 @@ importers:
         version: 0.4.31(@cloudflare/workers-types@4.20250319.0)(@vitest/runner@3.0.9)(@vitest/snapshot@3.0.9)(vitest@1.6.1(@types/node@22.10.1)(@vitest/ui@1.6.1)(jsdom@20.0.3)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0))
       '@hono/swagger-ui':
         specifier: ^0.4.1
-        version: 0.4.1(hono@4.7.4)
+        version: 0.4.1(hono@4.7.5)
       '@hono/zod-openapi':
         specifier: ^0.17.0
-        version: 0.17.1(hono@4.7.4)(zod@3.24.2)
+        version: 0.17.1(hono@4.7.5)(zod@3.24.2)
       '@hono/zod-validator':
         specifier: ^0.2.2
-        version: 0.2.2(hono@4.7.4)(zod@3.24.2)
+        version: 0.2.2(hono@4.7.5)(zod@3.24.2)
       '@solomonai/keys':
         specifier: workspace:*
         version: link:../../internal/keys
@@ -1012,7 +1012,7 @@ importers:
         version: 0.34.1(@cloudflare/workers-types@4.20250319.0)(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@prisma/client@6.3.1(prisma@6.3.1(typescript@5.8.2))(typescript@5.8.2))(@types/pg@8.11.11)(@types/react@19.0.12)(better-sqlite3@11.9.1)(bun-types@1.2.5)(kysely@0.27.6)(mysql2@3.14.0)(pg@8.14.1)(postgres@3.4.5)(prisma@6.3.1(typescript@5.8.2))(react@19.0.0)
       hono:
         specifier: ^4.2.7
-        version: 4.7.4
+        version: 4.7.5
       install:
         specifier: ^0.13.0
         version: 0.13.0
@@ -1110,7 +1110,7 @@ importers:
         version: 0.8.2
       hono:
         specifier: ^4.2.7
-        version: 4.7.4
+        version: 4.7.5
       zod:
         specifier: ^3.23.5
         version: 3.24.2
@@ -1156,13 +1156,13 @@ importers:
         version: link:../../internal/worker-logging
       ai:
         specifier: ^4.0.13
-        version: 4.1.63(react@19.0.0)(zod@3.24.2)
+        version: 4.1.65(react@19.0.0)(zod@3.24.2)
       drizzle-orm:
         specifier: generated
         version: 0.32.0-aaf764c(@cloudflare/workers-types@4.20250319.0)(@libsql/client@0.7.0)(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@prisma/client@6.3.1(prisma@6.3.1(typescript@5.8.2))(typescript@5.8.2))(@types/pg@8.11.11)(@types/react@19.0.12)(better-sqlite3@11.9.1)(bun-types@1.2.5)(kysely@0.27.6)(mysql2@3.14.0)(pg@8.14.1)(postgres@3.4.5)(prisma@6.3.1(typescript@5.8.2))(react@19.0.0)
       hono:
         specifier: ^4.2.7
-        version: 4.7.4
+        version: 4.7.5
       openai:
         specifier: ^4.52.1
         version: 4.88.0(encoding@0.1.13)(ws@8.18.1)(zod@3.24.2)
@@ -1208,7 +1208,7 @@ importers:
         version: 0.38.4(@cloudflare/workers-types@4.20250319.0)(@opentelemetry/api@1.9.0)(@planetscale/database@1.19.0)(@prisma/client@6.3.1(prisma@6.3.1(typescript@5.8.2))(typescript@5.8.2))(@types/pg@8.11.11)(@types/react@19.0.12)(better-sqlite3@11.9.1)(bun-types@1.2.5)(kysely@0.27.6)(mysql2@3.14.0)(pg@8.14.1)(postgres@3.4.5)(prisma@6.3.1(typescript@5.8.2))(react@19.0.0)
       hono:
         specifier: ^4.6.18
-        version: 4.7.4
+        version: 4.7.5
     devDependencies:
       '@biomejs/biome':
         specifier: 1.9.4
@@ -1500,7 +1500,7 @@ importers:
         version: link:../../packages/error
       ai:
         specifier: ^4.0.13
-        version: 4.1.63(react@19.0.0)(zod@3.24.2)
+        version: 4.1.65(react@19.0.0)(zod@3.24.2)
       zod:
         specifier: ^3.23.5
         version: 3.24.2
@@ -1861,7 +1861,7 @@ importers:
     dependencies:
       '@ai-sdk/openai':
         specifier: ^1.0.7
-        version: 1.2.6(zod@3.24.2)
+        version: 1.2.7(zod@3.24.2)
       '@nanostores/react':
         specifier: 0.8.4
         version: 0.8.4(nanostores@0.11.4)(react@19.0.0)
@@ -1879,7 +1879,7 @@ importers:
         version: 4.3.4(vite@6.2.2(@types/node@22.10.1)(jiti@2.4.2)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       ai:
         specifier: ^4.0.13
-        version: 4.1.63(react@19.0.0)(zod@3.24.2)
+        version: 4.1.65(react@19.0.0)(zod@3.24.2)
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -2057,7 +2057,7 @@ importers:
         version: 1.5.0(next@15.2.3(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       posthog-js:
         specifier: ^1.194.5
-        version: 1.231.3
+        version: 1.232.0
       posthog-node:
         specifier: ^4.3.1
         version: 4.10.1
@@ -2566,7 +2566,7 @@ importers:
     dependencies:
       '@ai-sdk/openai':
         specifier: ^1.0.7
-        version: 1.2.6(zod@3.24.2)
+        version: 1.2.7(zod@3.24.2)
       '@azure-rest/ai-document-intelligence':
         specifier: ^1.0.0
         version: 1.0.0
@@ -2575,7 +2575,7 @@ importers:
         version: 3.1.0
       ai:
         specifier: ^4.0.13
-        version: 4.1.63(react@19.0.0)(zod@3.24.2)
+        version: 4.1.65(react@19.0.0)(zod@3.24.2)
       base64-arraybuffer:
         specifier: ^1.0.2
         version: 1.0.2
@@ -3253,7 +3253,7 @@ importers:
         version: link:../environment
       '@stripe/agent-toolkit':
         specifier: ^0.2.0
-        version: 0.2.2(@langchain/core@0.3.42(openai@4.88.0(encoding@0.1.13)(ws@8.18.1)(zod@3.24.2)))(ai@4.1.63(react@19.0.0)(zod@3.24.2))
+        version: 0.2.2(@langchain/core@0.3.42(openai@4.88.0(encoding@0.1.13)(ws@8.18.1)(zod@3.24.2)))(ai@4.1.65(react@19.0.0)(zod@3.24.2))
       stripe:
         specifier: ^17.4.0
         version: 17.7.0
@@ -3318,7 +3318,7 @@ importers:
     dependencies:
       '@ai-sdk/openai':
         specifier: ^1.1.9
-        version: 1.2.6(zod@3.24.2)
+        version: 1.2.7(zod@3.24.2)
       '@ariakit/react':
         specifier: 0.4.15
         version: 0.4.15(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -3333,7 +3333,7 @@ importers:
         version: 2.2.0(react@19.0.0)
       '@hono/zod-validator':
         specifier: ^0.4.1
-        version: 0.4.3(hono@4.7.4)(zod@3.24.2)
+        version: 0.4.3(hono@4.7.5)(zod@3.24.2)
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.54.2(react@19.0.0))
@@ -3615,7 +3615,7 @@ importers:
         version: link:../openpanel
       ai:
         specifier: ^4.1.25
-        version: 4.1.63(react@19.0.0)(zod@3.24.2)
+        version: 4.1.65(react@19.0.0)(zod@3.24.2)
       arctic:
         specifier: ^3.2.4
         version: 3.5.0
@@ -3648,7 +3648,7 @@ importers:
         version: 12.5.0(@emotion/is-prop-valid@1.3.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       hono:
         specifier: ^4.7.0
-        version: 4.7.4
+        version: 4.7.5
       immer:
         specifier: ^10.0.4
         version: 10.1.1
@@ -4139,10 +4139,10 @@ importers:
     dependencies:
       '@ai-sdk/openai':
         specifier: ^1.2.1
-        version: 1.2.6(zod@3.24.2)
+        version: 1.2.7(zod@3.24.2)
       '@ai-sdk/react':
         specifier: ^1.1.21
-        version: 1.1.24(react@18.3.1)(zod@3.24.2)
+        version: 1.1.25(react@18.3.1)(zod@3.24.2)
       '@assistant-ui/react':
         specifier: ^0.8.4
         version: 0.8.6(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
@@ -4482,7 +4482,7 @@ importers:
     dependencies:
       '@ai-sdk/openai':
         specifier: ^1.2.5
-        version: 1.2.6(zod@3.24.2)
+        version: 1.2.7(zod@3.24.2)
       '@mui/icons-material':
         specifier: ^6.1.6
         version: 6.4.8(@mui/material@6.4.8(@emotion/react@11.14.0(@types/react@19.0.12)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@19.0.12)(react@19.0.0))(@types/react@19.0.12)(react@19.0.0))(@types/react@19.0.12)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(@types/react@19.0.12)(react@19.0.0)
@@ -4590,7 +4590,7 @@ importers:
         version: 2.4.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       ai:
         specifier: ^4.1.62
-        version: 4.1.63(react@19.0.0)(zod@3.24.2)
+        version: 4.1.65(react@19.0.0)(zod@3.24.2)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.1
@@ -4802,14 +4802,14 @@ packages:
   '@adobe/css-tools@4.4.2':
     resolution: {integrity: sha512-baYZExFpsdkBNuvGKTKWCwKH57HRZLVtycZS05WTQNVOiXVSeAki3nU35zlRbToeMW8aHlJfyS+1C4BOv27q0A==}
 
-  '@ai-sdk/openai@1.2.6':
-    resolution: {integrity: sha512-0HxWjE3NDABAxu6u33Q253a4N+xxOCD/M2HeZuALC1O2gjmzLeytxjSbDA6QU0PnVN0uaYLOc2YT/keFF5eGrg==}
+  '@ai-sdk/openai@1.2.7':
+    resolution: {integrity: sha512-0yYAr7wFrRAoP4BnZ5g4kL6BpsLzDN4m4cmw8C273FZn3Sqz7LsJ3h2YJv2EVB12GZDsgzmsRlMkLeKZI5JCPw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
 
-  '@ai-sdk/provider-utils@2.1.14':
-    resolution: {integrity: sha512-0fNQwstwqHP+cE9bP9nQXeEhY/qJRGW5Y+AQrvwzd0EI2+gH1GmwI1IC/gIOksmz/gRy4G+kXXD+Fbq4T/jCbA==}
+  '@ai-sdk/provider-utils@2.1.15':
+    resolution: {integrity: sha512-ndMVtDm2xS86t45CJZSfyl7UblZFewRB8gZkXQHeNi7BhjCYkhE+XQMwfDl6UOAO7kaV60IC1R4JLDWxWiiHug==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
@@ -4821,8 +4821,8 @@ packages:
     resolution: {integrity: sha512-88Uu1zJIE1UUOVJWfE2ybJXgiH8JJ97QY9fbmplErEbfa/k/1kF+tWMVAAJolF2aOGmazQGyQLhv4I9CCuVACw==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/react@1.1.24':
-    resolution: {integrity: sha512-20rVK34QCaEl/4u87/Y+JXt7eCzF60UwoJOjHJhlCdmFrbk6AfRsijv0ludA9ELArE+ulxkSf21L3FokkZ2Gmg==}
+  '@ai-sdk/react@1.1.25':
+    resolution: {integrity: sha512-uKrnxvJmiixAhndquDtac/q/wOnG9EFBkAsL6mpDRDflHQv34+xtkOKswDxyEzt1FaQFoqig0J44Lx0F3vGSkg==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19 || ^19.0.0-rc
@@ -4833,8 +4833,8 @@ packages:
       zod:
         optional: true
 
-  '@ai-sdk/ui-utils@1.1.20':
-    resolution: {integrity: sha512-k+qQh1YA8/kH12d8KQFWjr0UxyS9nLibzbLr2OY6fzpfZg8xIAKlZeH952JIp2XwAp72tesgbsAmA15cDldtyw==}
+  '@ai-sdk/ui-utils@1.1.21':
+    resolution: {integrity: sha512-z88UBEioQvJM6JsBoLmG6MOholc5pDkq1BBeb53NZ7JmMeWX4btCbrGmM4qs+gYLDnZokV/HB8C6zpS1jaJbAw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
@@ -8806,6 +8806,7 @@ packages:
   '@novu/node@2.6.6':
     resolution: {integrity: sha512-WMGzHOG1has1/FsMveE/Sak02vv6jAz1RLlw99tLARr3wQyQBdpMwtG8lNcZzi/hBogLJ07R6wFcZtgoXx/i4Q==}
     engines: {node: '>=10'}
+    deprecated: March 20, 2025 marks the end of support for @novu/node. Users can migrate to the new @novu/api package for most popular JS runtimes. For more information, visit https://docs.novu.co/platform/sdks/server/typescript
 
   '@novu/shared@2.6.6':
     resolution: {integrity: sha512-Y4YrvvJHX8yopkkvb4MnS+u59JBjUsrJBYqcn/STKkbbdzmSPccVwA0GUTiCZivUKSBtrTvllIHtP7Bi5ATQ4A==}
@@ -12346,8 +12347,8 @@ packages:
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
 
-  '@trigger.dev/build@3.3.17':
-    resolution: {integrity: sha512-dfreMuVeLAcZypS3kkUA9nWNviiuOPIQ3ldy2ywPCmwmbHyd0BE8tI5D3A4kmVq/f53TdRMls4c+cYafxlwubQ==}
+  '@trigger.dev/build@3.3.12':
+    resolution: {integrity: sha512-nMj153C9Ly/5PAVuSBj/fsQ7HNF2V2UA9bGSarOmDC3xsjdq2a5/6woUgQ8F8XEU22b3n7mqrJb1Vk0mMBtm9A==}
     engines: {node: '>=18.20.0'}
 
   '@trigger.dev/cli@3.3.12':
@@ -14115,8 +14116,8 @@ packages:
     resolution: {integrity: sha512-gOsf2YwSlleG6IjRYG2A7k0HmBMEo6qVNk9Bp/EaLgAJT5ngH6PXbqa4ItvnEwCm/velL5jAnQgsHsWnjhGmvw==}
     engines: {node: '>=18'}
 
-  ai@4.1.63:
-    resolution: {integrity: sha512-XXAU/jbtNZOHkTh9ZO4+ttXFXRjcs/62jJHbpO2M8UiH2FVIDia4fy4D5l8jGKlYVzKeE7rx/qB2GtrMjcc07w==}
+  ai@4.1.65:
+    resolution: {integrity: sha512-JLZgYkg05If0bCjAHvHk5G9xz5wSo0h4aKi/L5EKU3NZX2v6EM+EgKGMQcMKeCGxjRbR3fyYyek6CjZn+1GkQA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19 || ^19.0.0-rc
@@ -16395,8 +16396,8 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  electron-to-chromium@1.5.120:
-    resolution: {integrity: sha512-oTUp3gfX1gZI+xfD2djr2rzQdHCwHzPQrrK0CD7WpTdF0nPdQ/INcRVjWgLdCT4a9W3jFObR9DAfsuyFQnI8CQ==}
+  electron-to-chromium@1.5.122:
+    resolution: {integrity: sha512-EML1wnwkY5MFh/xUnCvY8FrhUuKzdYhowuZExZOfwJo+Zu9OsNCI23Cgl5y7awy7HrUHSwB1Z8pZX5TI34lsUg==}
 
   elliptic@6.6.1:
     resolution: {integrity: sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==}
@@ -17834,8 +17835,8 @@ packages:
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
 
-  hono@4.7.4:
-    resolution: {integrity: sha512-Pst8FuGqz3L7tFF+u9Pu70eI0xa5S3LPUmrNd5Jm8nTHze9FxLTK9Kaj5g/k4UcwuJSXTP65SyHOPLrffpcAJg==}
+  hono@4.7.5:
+    resolution: {integrity: sha512-fDOK5W2C1vZACsgLONigdZTRZxuBqFtcKh7bUQ5cVSbwI2RWjloJDcgFOVzbQrlI6pCmhlTsVYZ7zpLj4m4qMQ==}
     engines: {node: '>=16.9.0'}
 
   hook-std@3.0.0:
@@ -19052,7 +19053,6 @@ packages:
 
   libsql@0.3.19:
     resolution: {integrity: sha512-Aj5cQ5uk/6fHdmeW0TiXK42FqUlwx7ytmMLPSaUQPin5HKKKuUPD62MAbN4OEweGBBI7q1BekoEN4gPUEL6MZA==}
-    cpu: [x64, arm64, wasm32]
     os: [darwin, linux, win32]
 
   lightningcss-darwin-arm64@1.29.2:
@@ -21383,8 +21383,8 @@ packages:
     resolution: {integrity: sha512-cDWgoah1Gez9rN3H4165peY9qfpEo+SA61oQv65O3cRUE1pOEoJWwddwcqKE8XZYjbblOJlYDlLV4h67HrEVDg==}
     engines: {node: '>=12'}
 
-  posthog-js@1.231.3:
-    resolution: {integrity: sha512-IHbdMpI9btpgn7xIlq+cFH47227NTxD6so9jWYLdVD7Qt5rLTm0Ho61iUFHj1gwd+pFXP3H2TCBJ9+dBgZ0zFw==}
+  posthog-js@1.232.0:
+    resolution: {integrity: sha512-+flinmOGBz/YGpFbCcd/L1GCKleEkrkNRA8xTFJtaX8A/ZNEoUTdR8MYfFYj6qb9f5aSbexTLNzeglbYcgHXwA==}
     peerDependencies:
       '@rrweb/types': 2.0.0-alpha.17
       rrweb-snapshot: 2.0.0-alpha.17
@@ -23820,8 +23820,8 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
-  ts-api-utils@2.0.1:
-    resolution: {integrity: sha512-dnlgjFSVetynI8nzgJ+qF62efpglpWRk8isUEWZGWlJYySCTD6aKvbUDu+zbPeDakk3bg5H4XpitHukgfL1m9w==}
+  ts-api-utils@2.1.0:
+    resolution: {integrity: sha512-CUgTZL1irw8u29bzrOD/nH85jqyc74D6SshFgujOIA7osm2Rz7dYH77agkx7H4FBNxDq7Cjf+IjaX/8zwFW+ZQ==}
     engines: {node: '>=18.12'}
     peerDependencies:
       typescript: '>=4.8.4'
@@ -25240,13 +25240,13 @@ snapshots:
 
   '@adobe/css-tools@4.4.2': {}
 
-  '@ai-sdk/openai@1.2.6(zod@3.24.2)':
+  '@ai-sdk/openai@1.2.7(zod@3.24.2)':
     dependencies:
       '@ai-sdk/provider': 1.0.12
-      '@ai-sdk/provider-utils': 2.1.14(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.1.15(zod@3.24.2)
       zod: 3.24.2
 
-  '@ai-sdk/provider-utils@2.1.14(zod@3.24.2)':
+  '@ai-sdk/provider-utils@2.1.15(zod@3.24.2)':
     dependencies:
       '@ai-sdk/provider': 1.0.12
       eventsource-parser: 3.0.0
@@ -25259,30 +25259,30 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@1.1.24(react@18.3.1)(zod@3.24.2)':
+  '@ai-sdk/react@1.1.25(react@18.3.1)(zod@3.24.2)':
     dependencies:
-      '@ai-sdk/provider-utils': 2.1.14(zod@3.24.2)
-      '@ai-sdk/ui-utils': 1.1.20(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.1.15(zod@3.24.2)
+      '@ai-sdk/ui-utils': 1.1.21(zod@3.24.2)
       swr: 2.3.3(react@18.3.1)
       throttleit: 2.1.0
     optionalDependencies:
       react: 18.3.1
       zod: 3.24.2
 
-  '@ai-sdk/react@1.1.24(react@19.0.0)(zod@3.24.2)':
+  '@ai-sdk/react@1.1.25(react@19.0.0)(zod@3.24.2)':
     dependencies:
-      '@ai-sdk/provider-utils': 2.1.14(zod@3.24.2)
-      '@ai-sdk/ui-utils': 1.1.20(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.1.15(zod@3.24.2)
+      '@ai-sdk/ui-utils': 1.1.21(zod@3.24.2)
       swr: 2.3.3(react@19.0.0)
       throttleit: 2.1.0
     optionalDependencies:
       react: 19.0.0
       zod: 3.24.2
 
-  '@ai-sdk/ui-utils@1.1.20(zod@3.24.2)':
+  '@ai-sdk/ui-utils@1.1.21(zod@3.24.2)':
     dependencies:
       '@ai-sdk/provider': 1.0.12
-      '@ai-sdk/provider-utils': 2.1.14(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.1.15(zod@3.24.2)
       zod-to-json-schema: 3.24.4(zod@3.24.2)
     optionalDependencies:
       zod: 3.24.2
@@ -25419,8 +25419,8 @@ snapshots:
 
   '@assistant-ui/react-ai-sdk@0.6.19(@assistant-ui/react@0.8.6(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1)))(@types/react@19.0.12)(immer@10.1.1)(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))':
     dependencies:
-      '@ai-sdk/react': 1.1.24(react@18.3.1)(zod@3.24.2)
-      '@ai-sdk/ui-utils': 1.1.20(zod@3.24.2)
+      '@ai-sdk/react': 1.1.25(react@18.3.1)(zod@3.24.2)
+      '@ai-sdk/ui-utils': 1.1.21(zod@3.24.2)
       '@assistant-ui/react': 0.8.6(@types/react-dom@19.0.4(@types/react@19.0.12))(@types/react@19.0.12)(immer@10.1.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(use-sync-external-store@1.4.0(react@18.3.1))
       '@radix-ui/react-use-callback-ref': 1.1.0(@types/react@19.0.12)(react@18.3.1)
       react: 18.3.1
@@ -28081,30 +28081,30 @@ snapshots:
 
   '@hexagon/base64@1.1.28': {}
 
-  '@hono/swagger-ui@0.4.1(hono@4.7.4)':
+  '@hono/swagger-ui@0.4.1(hono@4.7.5)':
     dependencies:
-      hono: 4.7.4
+      hono: 4.7.5
 
-  '@hono/zod-openapi@0.17.1(hono@4.7.4)(zod@3.24.2)':
+  '@hono/zod-openapi@0.17.1(hono@4.7.5)(zod@3.24.2)':
     dependencies:
       '@asteasolutions/zod-to-openapi': 7.3.0(zod@3.24.2)
-      '@hono/zod-validator': 0.3.0(hono@4.7.4)(zod@3.24.2)
-      hono: 4.7.4
+      '@hono/zod-validator': 0.3.0(hono@4.7.5)(zod@3.24.2)
+      hono: 4.7.5
       zod: 3.24.2
 
-  '@hono/zod-validator@0.2.2(hono@4.7.4)(zod@3.24.2)':
+  '@hono/zod-validator@0.2.2(hono@4.7.5)(zod@3.24.2)':
     dependencies:
-      hono: 4.7.4
+      hono: 4.7.5
       zod: 3.24.2
 
-  '@hono/zod-validator@0.3.0(hono@4.7.4)(zod@3.24.2)':
+  '@hono/zod-validator@0.3.0(hono@4.7.5)(zod@3.24.2)':
     dependencies:
-      hono: 4.7.4
+      hono: 4.7.5
       zod: 3.24.2
 
-  '@hono/zod-validator@0.4.3(hono@4.7.4)(zod@3.24.2)':
+  '@hono/zod-validator@0.4.3(hono@4.7.5)(zod@3.24.2)':
     dependencies:
-      hono: 4.7.4
+      hono: 4.7.5
       zod: 3.24.2
 
   '@hookform/resolvers@3.10.0(react-hook-form@7.54.2(react@19.0.0))':
@@ -30355,7 +30355,7 @@ snapshots:
       source-map: 0.7.4
       webpack: 5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15))
     optionalDependencies:
-      '@types/webpack': 5.28.5(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)
+      '@types/webpack': 5.28.5(@swc/core@1.3.101(@swc/helpers@0.5.15))
       type-fest: 4.37.0
       webpack-hot-middleware: 2.26.1
 
@@ -36307,7 +36307,7 @@ snapshots:
       semver: 7.7.1
       storybook: 8.6.7(prettier@3.5.3)
       style-loader: 3.3.4(webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15)))
-      terser-webpack-plugin: 5.3.14(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)(webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11))
+      terser-webpack-plugin: 5.3.14(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)(webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15)))
       ts-dedent: 2.2.0
       url: 0.11.4
       util: 0.12.5
@@ -36998,10 +36998,10 @@ snapshots:
       '@types/express': 4.17.21
       file-system-cache: 2.3.0
 
-  '@stripe/agent-toolkit@0.2.2(@langchain/core@0.3.42(openai@4.88.0(encoding@0.1.13)(ws@8.18.1)(zod@3.24.2)))(ai@4.1.63(react@19.0.0)(zod@3.24.2))':
+  '@stripe/agent-toolkit@0.2.2(@langchain/core@0.3.42(openai@4.88.0(encoding@0.1.13)(ws@8.18.1)(zod@3.24.2)))(ai@4.1.65(react@19.0.0)(zod@3.24.2))':
     dependencies:
       '@langchain/core': 0.3.42(openai@4.88.0(encoding@0.1.13)(ws@8.18.1)(zod@3.24.2))
-      ai: 4.1.63(react@19.0.0)(zod@3.24.2)
+      ai: 4.1.65(react@19.0.0)(zod@3.24.2)
       stripe: 17.7.0
       zod: 3.24.2
 
@@ -37588,9 +37588,9 @@ snapshots:
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
-  '@trigger.dev/build@3.3.17(typescript@5.7.3)':
+  '@trigger.dev/build@3.3.12(typescript@5.7.3)':
     dependencies:
-      '@trigger.dev/core': 3.3.17
+      '@trigger.dev/core': 3.3.12
       pkg-types: 1.3.1
       tinyglobby: 0.2.12
       tsconfck: 3.1.3(typescript@5.7.3)
@@ -38434,11 +38434,23 @@ snapshots:
 
   '@types/web@0.0.183': {}
 
-  '@types/webpack@5.28.5(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)':
+  '@types/webpack@5.28.5(@swc/core@1.3.101(@swc/helpers@0.5.15))':
     dependencies:
       '@types/node': 22.13.10
       tapable: 2.2.1
       webpack: 5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15))
+    transitivePeerDependencies:
+      - '@swc/core'
+      - esbuild
+      - uglify-js
+      - webpack-cli
+    optional: true
+
+  '@types/webpack@5.28.5(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)':
+    dependencies:
+      '@types/node': 22.13.10
+      tapable: 2.2.1
+      webpack: 5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild
@@ -38518,7 +38530,7 @@ snapshots:
       graphemer: 1.4.0
       ignore: 5.3.2
       natural-compare: 1.4.0
-      ts-api-utils: 2.0.1(typescript@5.7.3)
+      ts-api-utils: 2.1.0(typescript@5.7.3)
       typescript: 5.7.3
     transitivePeerDependencies:
       - supports-color
@@ -38601,7 +38613,7 @@ snapshots:
       '@typescript-eslint/utils': 8.27.0(eslint@9.22.0(jiti@1.21.7))(typescript@5.7.3)
       debug: 4.4.0
       eslint: 9.22.0(jiti@1.21.7)
-      ts-api-utils: 2.0.1(typescript@5.7.3)
+      ts-api-utils: 2.1.0(typescript@5.7.3)
       typescript: 5.7.3
     transitivePeerDependencies:
       - supports-color
@@ -38649,7 +38661,7 @@ snapshots:
       is-glob: 4.0.3
       minimatch: 9.0.5
       semver: 7.7.1
-      ts-api-utils: 2.0.1(typescript@5.7.3)
+      ts-api-utils: 2.1.0(typescript@5.7.3)
       typescript: 5.7.3
     transitivePeerDependencies:
       - supports-color
@@ -39700,17 +39712,39 @@ snapshots:
       - utf-8-validate
       - vite
 
-  '@vitest/browser@3.0.9(@types/node@22.10.1)(playwright@1.51.1)(typescript@5.8.2)(vite@5.4.14(@types/node@22.10.1)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0))(vitest@3.0.9)':
+  '@vitest/browser@3.0.9(@types/node@22.10.1)(playwright@1.51.1)(typescript@5.8.2)(vite@6.2.2(@types/node@22.10.1)(jiti@2.4.2)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))(vitest@3.0.9)':
     dependencies:
       '@testing-library/dom': 10.4.0
       '@testing-library/user-event': 14.6.1(@testing-library/dom@10.4.0)
-      '@vitest/mocker': 3.0.9(msw@2.7.3(@types/node@22.10.1)(typescript@5.8.2))(vite@5.4.14(@types/node@22.10.1)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0))
+      '@vitest/mocker': 3.0.9(msw@2.7.3(@types/node@22.10.1)(typescript@5.8.2))(vite@6.2.2(@types/node@22.10.1)(jiti@2.4.2)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))
       '@vitest/utils': 3.0.9
       magic-string: 0.30.17
       msw: 2.7.3(@types/node@22.10.1)(typescript@5.8.2)
       sirv: 3.0.1
       tinyrainbow: 2.0.0
       vitest: 3.0.9(@types/debug@4.1.12)(@types/node@22.10.1)(@vitest/browser@3.0.9)(jsdom@20.0.3)(less@4.2.2)(lightningcss@1.29.2)(msw@2.7.3(@types/node@22.10.1)(typescript@5.8.2))(terser@5.39.0)
+      ws: 8.18.1
+    optionalDependencies:
+      playwright: 1.51.1
+    transitivePeerDependencies:
+      - '@types/node'
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - vite
+    optional: true
+
+  '@vitest/browser@3.0.9(@types/node@22.13.10)(playwright@1.51.1)(typescript@5.8.2)(vite@5.4.14(@types/node@22.13.10)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0))(vitest@3.0.9)':
+    dependencies:
+      '@testing-library/dom': 10.4.0
+      '@testing-library/user-event': 14.6.1(@testing-library/dom@10.4.0)
+      '@vitest/mocker': 3.0.9(msw@2.7.3(@types/node@22.13.10)(typescript@5.8.2))(vite@5.4.14(@types/node@22.13.10)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0))
+      '@vitest/utils': 3.0.9
+      magic-string: 0.30.17
+      msw: 2.7.3(@types/node@22.13.10)(typescript@5.8.2)
+      sirv: 3.0.1
+      tinyrainbow: 2.0.0
+      vitest: 3.0.9(@types/debug@4.1.12)(@types/node@22.13.10)(@vitest/browser@3.0.9)(jsdom@20.0.3)(less@4.2.2)(lightningcss@1.29.2)(msw@2.7.3(@types/node@22.13.10)(typescript@5.8.2))(terser@5.39.0)
       ws: 8.18.1
     optionalDependencies:
       playwright: 1.51.1
@@ -39863,6 +39897,16 @@ snapshots:
     optionalDependencies:
       msw: 2.7.3(@types/node@22.10.1)(typescript@5.8.2)
       vite: 5.4.14(@types/node@22.10.1)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0)
+
+  '@vitest/mocker@3.0.9(msw@2.7.3(@types/node@22.10.1)(typescript@5.8.2))(vite@6.2.2(@types/node@22.10.1)(jiti@2.4.2)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))':
+    dependencies:
+      '@vitest/spy': 3.0.9
+      estree-walker: 3.0.3
+      magic-string: 0.30.17
+    optionalDependencies:
+      msw: 2.7.3(@types/node@22.10.1)(typescript@5.8.2)
+      vite: 6.2.2(@types/node@22.10.1)(jiti@2.4.2)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0)
+    optional: true
 
   '@vitest/mocker@3.0.9(msw@2.7.3(@types/node@22.13.10)(typescript@5.8.2))(vite@5.4.14(@types/node@22.13.10)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0))':
     dependencies:
@@ -40620,12 +40664,12 @@ snapshots:
       clean-stack: 5.2.0
       indent-string: 5.0.0
 
-  ai@4.1.63(react@19.0.0)(zod@3.24.2):
+  ai@4.1.65(react@19.0.0)(zod@3.24.2):
     dependencies:
       '@ai-sdk/provider': 1.0.12
-      '@ai-sdk/provider-utils': 2.1.14(zod@3.24.2)
-      '@ai-sdk/react': 1.1.24(react@19.0.0)(zod@3.24.2)
-      '@ai-sdk/ui-utils': 1.1.20(zod@3.24.2)
+      '@ai-sdk/provider-utils': 2.1.15(zod@3.24.2)
+      '@ai-sdk/react': 1.1.25(react@19.0.0)(zod@3.24.2)
+      '@ai-sdk/ui-utils': 1.1.21(zod@3.24.2)
       '@opentelemetry/api': 1.9.0
       eventsource-parser: 3.0.0
       jsondiffpatch: 0.6.0
@@ -41385,7 +41429,7 @@ snapshots:
   browserslist@4.24.4:
     dependencies:
       caniuse-lite: 1.0.30001706
-      electron-to-chromium: 1.5.120
+      electron-to-chromium: 1.5.122
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.24.4)
 
@@ -43002,7 +43046,7 @@ snapshots:
     dependencies:
       jake: 10.9.2
 
-  electron-to-chromium@1.5.120: {}
+  electron-to-chromium@1.5.122: {}
 
   elliptic@6.6.1:
     dependencies:
@@ -45361,7 +45405,7 @@ snapshots:
     dependencies:
       react-is: 16.13.1
 
-  hono@4.7.4: {}
+  hono@4.7.5: {}
 
   hook-std@3.0.0: {}
 
@@ -49883,7 +49927,7 @@ snapshots:
 
   postgres@3.4.5: {}
 
-  posthog-js@1.231.3:
+  posthog-js@1.232.0:
     dependencies:
       core-js: 3.41.0
       fflate: 0.4.8
@@ -53195,7 +53239,7 @@ snapshots:
       '@swc/core': 1.3.101(@swc/helpers@0.5.15)
       esbuild: 0.18.20
 
-  terser-webpack-plugin@5.3.14(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)(webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)):
+  terser-webpack-plugin@5.3.14(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)(webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15))):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
@@ -53401,7 +53445,7 @@ snapshots:
     dependencies:
       typescript: 5.8.2
 
-  ts-api-utils@2.0.1(typescript@5.7.3):
+  ts-api-utils@2.1.0(typescript@5.7.3):
     dependencies:
       typescript: 5.7.3
 
@@ -54763,7 +54807,7 @@ snapshots:
     optionalDependencies:
       '@types/debug': 4.1.12
       '@types/node': 22.10.1
-      '@vitest/browser': 3.0.9(@types/node@22.10.1)(playwright@1.51.1)(typescript@5.8.2)(vite@5.4.14(@types/node@22.10.1)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0))(vitest@3.0.9)
+      '@vitest/browser': 3.0.9(@types/node@22.10.1)(playwright@1.51.1)(typescript@5.8.2)(vite@6.2.2(@types/node@22.10.1)(jiti@2.4.2)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))(vitest@3.0.9)
       jsdom: 20.0.3
     transitivePeerDependencies:
       - less
@@ -54801,7 +54845,7 @@ snapshots:
     optionalDependencies:
       '@types/debug': 4.1.12
       '@types/node': 22.13.10
-      '@vitest/browser': 3.0.9(@types/node@22.13.10)(playwright@1.51.1)(typescript@5.8.2)(vite@6.2.2(@types/node@22.13.10)(jiti@2.4.2)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))(vitest@3.0.9)
+      '@vitest/browser': 3.0.9(@types/node@22.13.10)(playwright@1.51.1)(typescript@5.8.2)(vite@5.4.14(@types/node@22.13.10)(less@4.2.2)(lightningcss@1.29.2)(terser@5.39.0))(vitest@3.0.9)
       jsdom: 20.0.3
     transitivePeerDependencies:
       - less
@@ -54952,7 +54996,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.14(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)(webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11))
+      terser-webpack-plugin: 5.3.14(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)(webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15)))
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     transitivePeerDependencies:
@@ -54983,6 +55027,36 @@ snapshots:
       schema-utils: 4.3.0
       tapable: 2.2.1
       terser-webpack-plugin: 5.3.14(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.18.20)(webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.18.20))
+      watchpack: 2.4.2
+      webpack-sources: 3.2.3
+    transitivePeerDependencies:
+      - '@swc/core'
+      - esbuild
+      - uglify-js
+
+  webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11):
+    dependencies:
+      '@types/eslint-scope': 3.7.7
+      '@types/estree': 1.0.6
+      '@webassemblyjs/ast': 1.14.1
+      '@webassemblyjs/wasm-edit': 1.14.1
+      '@webassemblyjs/wasm-parser': 1.14.1
+      acorn: 8.14.1
+      browserslist: 4.24.4
+      chrome-trace-event: 1.0.4
+      enhanced-resolve: 5.18.1
+      es-module-lexer: 1.6.0
+      eslint-scope: 5.1.1
+      events: 3.3.0
+      glob-to-regexp: 0.4.1
+      graceful-fs: 4.2.11
+      json-parse-even-better-errors: 2.3.1
+      loader-runner: 4.3.0
+      mime-types: 2.1.35
+      neo-async: 2.6.2
+      schema-utils: 4.3.0
+      tapable: 2.2.1
+      terser-webpack-plugin: 5.3.14(@swc/core@1.3.101(@swc/helpers@0.5.15))(esbuild@0.19.11)(webpack@5.98.0(@swc/core@1.3.101(@swc/helpers@0.5.15)))
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     transitivePeerDependencies:
