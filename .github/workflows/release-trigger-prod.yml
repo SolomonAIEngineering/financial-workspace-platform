@@ -40,8 +40,8 @@ jobs:
         timeout-minutes: 5
         env:
           DATABASE_URL: ${{ secrets.SMB_FINANCIAL_MANAGEMENT_DATABASE_URL }}
-          TRIGGER_API_KEY: ${{ secrets.TRIGGER_API_KEY_PROD }}
-          TRIGGER_SECRET_KEY: ${{ secrets.TRIGGER_SECRET_KEY_PROD }}
+          TRIGGER_API_KEY: tr_prod_ZnNTBz1vcqnKcYldTCzH
+          TRIGGER_SECRET_KEY: tr_prod_ZnNTBz1vcqnKcYldTCzH
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
           PLAID_CLIENT_ID: ${{ secrets.PLAID_CLIENT_ID }}
           PLAID_SECRET: ${{ secrets.PLAID_SECRET }}
