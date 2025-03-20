@@ -18,9 +18,22 @@ export const layoutRouter = createRouter({
           profileImageUrl: true,
           teamId: true,
           bankConnections: true,
+          organizationName: true,
+          organizationUnit: true,
+          username: true,
         },
         where: {
           id: userId,
+        },
+      });
+
+      // Get all teams the user is a member of
+      const userTeams = await prisma.usersOnTeam.findMany({
+        where: {
+          userId,
+        },
+        include: {
+          team: true,
         },
       });
 
@@ -30,6 +43,13 @@ export const layoutRouter = createRouter({
           firstName: currentUser.name?.split(' ')[0] ?? 'You',
           lastName: currentUser.name?.split(' ')[1] ?? '',
           ...authUser,
+          teams: userTeams.map(({ team, role }) => ({
+            id: team.id,
+            name: team.name,
+            slug: team.slug,
+            logoUrl: team.logoUrl,
+            role,
+          })),
         },
       };
     }),

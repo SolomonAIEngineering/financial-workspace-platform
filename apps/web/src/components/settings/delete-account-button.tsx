@@ -89,7 +89,7 @@ export function DeleteAccountButton() {
       // First invalidate the session to clear cookies and auth data
       try {
         await invalidateSession.mutateAsync();
-        console.log('Session invalidated successfully');
+        console.info('Session invalidated successfully');
       } catch (error) {
         console.error('Failed to invalidate session:', error);
       }
@@ -177,10 +177,10 @@ export function DeleteAccountButton() {
                 scale: isPulsing ? [1, 1.05, 1] : 1,
                 boxShadow: isPulsing
                   ? [
-                      '0 0 0 0 rgba(239, 68, 68, 0)',
-                      '0 0 0 10px rgba(239, 68, 68, 0.1)',
-                      '0 0 0 0 rgba(239, 68, 68, 0)',
-                    ]
+                    '0 0 0 0 rgba(239, 68, 68, 0)',
+                    '0 0 0 10px rgba(239, 68, 68, 0.1)',
+                    '0 0 0 0 rgba(239, 68, 68, 0)',
+                  ]
                   : '0 0 0 0 rgba(239, 68, 68, 0)',
               }}
               transition={{
@@ -312,10 +312,10 @@ export function DeleteAccountButton() {
                       className={cn(
                         'border-none border-input bg-muted/5 pr-9 transition-all duration-300 focus-visible:ring-1 focus-visible:ring-offset-0',
                         isConfirmEnabled &&
-                          'border-green-500/50 focus-visible:ring-green-500/30',
+                        'border-green-500/50 focus-visible:ring-green-500/30',
                         confirmEmail &&
-                          !isConfirmEnabled &&
-                          'border-destructive/50 focus-visible:ring-destructive/30'
+                        !isConfirmEnabled &&
+                        'border-destructive/50 focus-visible:ring-destructive/30'
                       )}
                     />
                     <AnimatePresence>

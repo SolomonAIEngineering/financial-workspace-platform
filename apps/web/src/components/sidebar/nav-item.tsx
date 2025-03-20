@@ -237,7 +237,9 @@ export function NavItem({
     mounted && href ? (
       <Link
         href={href}
-        {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        {...(href.startsWith('http')
+          ? { target: '_blank', rel: 'noopener noreferrer' }
+          : {})}
       >
         {content}
       </Link>

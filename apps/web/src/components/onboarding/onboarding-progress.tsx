@@ -9,9 +9,9 @@ interface OnboardingProgressProps {
 
 const steps = [
   { id: 1, name: 'Create Team', description: 'Set up your organization' },
-  { id: 2, name: 'Complete Profile', description: 'Add your personal details' },
-  { id: 3, name: 'Connect Bank', description: 'Link your financial accounts' },
-  { id: 4, name: 'Complete', description: 'Start using the platform' },
+  // { id: 2, name: 'Complete Profile', description: 'Add your personal details' },
+  { id: 2, name: 'Connect Bank', description: 'Link your financial accounts' },
+  { id: 3, name: 'Complete', description: 'Start using the platform' },
 ];
 
 export function OnboardingProgress({
@@ -20,55 +20,59 @@ export function OnboardingProgress({
 }: OnboardingProgressProps) {
   return (
     <div className="w-full">
-      {/* Step indicators */}
-      <div className="mb-1 flex justify-between">
+      {/* Step indicators - minimalist design */}
+      <div className="flex justify-between">
         {steps.map((step) => {
           const isCompleted = step.id < currentStep;
           const isCurrent = step.id === currentStep;
+          const isPending = step.id > currentStep;
 
           return (
-            <div key={step.id} className="flex flex-col items-center">
+            <div
+              key={step.id}
+              className={cn(
+                'flex flex-col items-center',
+                isPending && 'opacity-50'
+              )}
+            >
               <div
                 className={cn(
-                  'flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300',
+                  'flex h-8 w-8 items-center justify-center rounded-full border transition-all',
                   isCompleted
-                    ? 'border-primary bg-primary text-primary-foreground'
+                    ? 'border-primary bg-primary text-white'
                     : isCurrent
                       ? 'border-primary bg-white text-primary'
-                      : 'border-gray-300 bg-white text-gray-500'
+                      : 'border-gray-200 bg-white text-gray-400'
                 )}
               >
                 {isCompleted ? (
                   <CheckIcon className="h-4 w-4" />
                 ) : (
-                  <span className="text-sm font-medium">{step.id}</span>
+                  <span className="text-xs font-medium">{step.id}</span>
                 )}
               </div>
-              <span
-                className={cn(
-                  'mt-2 text-sm font-medium',
-                  isCompleted
-                    ? 'text-primary'
-                    : isCurrent
-                      ? 'text-primary'
-                      : 'text-gray-500'
-                )}
-              >
-                {step.name}
-              </span>
-              <span className="mt-1 text-xs text-gray-500">
-                {step.description}
-              </span>
+
+              {/* Only show name for current and completed steps */}
+              {(isCurrent || isCompleted) && (
+                <span
+                  className={cn(
+                    'mt-2 text-xs font-medium',
+                    isCompleted || isCurrent ? 'text-primary' : 'text-gray-400'
+                  )}
+                >
+                  {step.name}
+                </span>
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* Connecting lines between steps - improved with active step progress */}
+      {/* Connecting lines - minimalist version */}
       <div className="relative mt-4">
         {/* Background track */}
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
-          <div className="h-0.5 w-full rounded-full bg-gray-200"></div>
+          <div className="h-0.5 w-full bg-gray-100"></div>
         </div>
 
         {/* Progress overlay */}
@@ -77,19 +81,19 @@ export function OnboardingProgress({
             // Skip rendering for the last step since there's no line after it
             if (index === steps.length - 1) return null;
 
-            const nextStep = steps[index + 1];
-
-            // This line connects current step to next step
-            const isCompletedLine = step.id < currentStep;
-            const isActiveLine = step.id === currentStep;
+            // Calculate segment width
             const lineWidth = `${100 / (steps.length - 1)}%`;
+
+            // Determine if this line segment is completed or active
+            const isCompletedLine = currentStep > step.id;
+            const isActiveLine = currentStep === step.id;
 
             if (isCompletedLine) {
               // Completed line segment
               return (
                 <div
                   key={`line-${step.id}`}
-                  className="rounded-full bg-primary transition-all duration-500"
+                  className="h-full bg-primary transition-all"
                   style={{ width: lineWidth }}
                 />
               );
@@ -98,11 +102,11 @@ export function OnboardingProgress({
               return (
                 <div
                   key={`line-${step.id}`}
-                  className="relative rounded-full transition-all duration-500"
+                  className="relative h-full transition-all"
                   style={{ width: lineWidth }}
                 >
                   <div
-                    className="absolute h-full rounded-full bg-primary transition-all duration-500"
+                    className="absolute h-full bg-primary transition-all"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -112,7 +116,7 @@ export function OnboardingProgress({
               return (
                 <div
                   key={`line-${step.id}`}
-                  className="rounded-full"
+                  className="h-full bg-transparent"
                   style={{ width: lineWidth }}
                 />
               );

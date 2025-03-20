@@ -30,6 +30,15 @@ const profileFormSchema = z.object({
   email: z.string().email({
     message: 'Please enter a valid email address.',
   }),
+  username: z.string().min(2, {
+    message: 'Username must be at least 2 characters.',
+  }),
+  organizationName: z.string().min(2, {
+    message: 'Organization name must be at least 2 characters.',
+  }),
+  organizationUnit: z.string().min(2, {
+    message: 'Organization unit must be at least 2 characters.',
+  }),
   profileImageUrl: z.string().url().optional(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
@@ -43,6 +52,9 @@ interface ProfileFormProps {
   initialData: {
     name: string;
     email: string;
+    username?: string;
+    organizationName?: string;
+    organizationUnit?: string;
     profileImageUrl?: string;
     firstName?: string;
     lastName?: string;
@@ -59,6 +71,9 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
     defaultValues: {
       name: initialData.name || '',
       email: initialData.email || '',
+      username: initialData.username || '',
+      organizationName: initialData.organizationName || '',
+      organizationUnit: initialData.organizationUnit || '',
       profileImageUrl: initialData.profileImageUrl || '',
       firstName: initialData.firstName || '',
       lastName: initialData.lastName || '',
@@ -92,6 +107,9 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
         firstName: data.firstName,
         lastName: data.lastName,
         name: data.name,
+        username: data.username,
+        organizationName: data.organizationName,
+        organizationUnit: data.organizationUnit,
         profileImageUrl: data.profileImageUrl,
       });
 
@@ -102,10 +120,12 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
         });
       }
 
-      // Refresh the page to show updated data
+      // Refresh the page to show updated data and progress to next step
       router.refresh();
+      window.location.reload(); // Force reload to ensure middleware checks are re-evaluated
     } catch (err) {
       // Error handling already done in mutation callbacks
+      console.error('Profile update failed', err);
     }
   }
 
@@ -216,6 +236,48 @@ export function ProfileForm({ userId, initialData }: ProfileFormProps) {
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
                 <Input placeholder="+1 (555) 123-4567" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="johndoe" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="organizationName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Organization Name</FormLabel>
+              <FormControl>
+                <Input placeholder="Acme Inc." {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="organizationUnit"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Organization Unit</FormLabel>
+              <FormControl>
+                <Input placeholder="Finance Department" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

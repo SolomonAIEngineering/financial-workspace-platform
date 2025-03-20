@@ -386,7 +386,7 @@ export class ResourceValidator {
         },
       });
 
-      console.log(
+      console.info(
         `User ${userId} has created ${userTeamsCount} teams. Max allowed: ${maxTeams} on tier ${tier}`
       );
 
@@ -954,7 +954,7 @@ export class ResourceValidator {
           });
         }
       } catch (e) {
-        console.log('App model not available yet, using default count of 0');
+        console.info('App model not available yet, using default count of 0');
       }
 
       if (appCount >= maxApps) {

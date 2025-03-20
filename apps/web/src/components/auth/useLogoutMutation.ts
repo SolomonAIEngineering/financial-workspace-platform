@@ -35,7 +35,7 @@ export const useInvalidateSessionMutation = () => {
       };
 
       logCookieDebug('Before logout');
-      console.log('Starting session invalidation');
+      console.info('Starting session invalidation');
 
       // For HTTP-only cookies, we need to rely on the server to clear them
       // The $post() call should hit the server endpoint that clears cookies
@@ -101,7 +101,7 @@ export const useInvalidateSessionMutation = () => {
       console.error('Logout error:', error);
     },
     onSuccess: () => {
-      console.log('Session invalidated successfully');
+      console.info('Session invalidated successfully');
     },
   });
 };

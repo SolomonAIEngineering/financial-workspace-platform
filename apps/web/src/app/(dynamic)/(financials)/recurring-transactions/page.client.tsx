@@ -67,7 +67,7 @@ export function ClientTransactionsTable({
 
   // Add debugging info in development
   if (process.env.NODE_ENV === 'development') {
-    console.log('Recurring Transactions:', {
+    console.info('Recurring Transactions:', {
       usingInitialData: page === 1 && initialData !== undefined,
       initialDataPresent: !!initialData,
       initialTransactions: initialData?.recurringTransactions?.length,

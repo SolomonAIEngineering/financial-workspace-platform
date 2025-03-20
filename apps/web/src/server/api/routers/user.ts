@@ -14,6 +14,9 @@ const MAX_PROFILE_IMAGE_URL_LENGTH = 500;
 const MAX_URL_LENGTH = 500;
 const MAX_TEXT_LENGTH = 1000;
 const MAX_SHORT_TEXT_LENGTH = 255;
+const MAX_USERNAME_LENGTH = 255;
+const MAX_ORGANIZATION_NAME_LENGTH = 255;
+const MAX_ORGANIZATION_UNIT_LENGTH = 255;
 
 // Define AccountStatus enum if it doesn't exist in types
 const AccountStatus = {
@@ -304,7 +307,7 @@ export const userRouter = createRouter({
         // Optional: Delete the customer (or mark as deleted - depends on stripe retention policy)
         await stripe.customers.del(user.stripeCustomerId);
 
-        console.log(
+        console.info(
           `Stripe customer ${user.stripeCustomerId} deleted successfully`
         );
       } catch (error) {
@@ -941,6 +944,24 @@ export const userRouter = createRouter({
           .string()
           .url('Invalid URL')
           .max(MAX_PROFILE_IMAGE_URL_LENGTH, 'Profile image URL is too long')
+          .optional(),
+        username: z
+          .string()
+          .min(1, 'Username is required')
+          .max(MAX_USERNAME_LENGTH, 'Username is too long')
+          .trim()
+          .optional(),
+        organizationName: z
+          .string()
+          .min(1, 'Organization name is required')
+          .max(MAX_ORGANIZATION_NAME_LENGTH, 'Organization name is too long')
+          .trim()
+          .optional(),
+        organizationUnit: z
+          .string()
+          .min(1, 'Organization unit is required')
+          .max(MAX_ORGANIZATION_UNIT_LENGTH, 'Organization unit is too long')
+          .trim()
           .optional(),
       })
     )

@@ -92,7 +92,7 @@ export function ClientTransactionsTable({
 
   // Log data in development to help with debugging
   if (process.env.NODE_ENV === 'development') {
-    console.log('Regular Transactions:', {
+    console.info('Regular Transactions:', {
       usingInitialData: page === 1 && initialData !== undefined,
       initialDataPresent: !!initialData,
       initialTransactions: initialData?.transactions?.length,
@@ -170,11 +170,11 @@ export function ClientTransactionsTable({
           pagination={
             pagination
               ? {
-                  page: pagination.page,
-                  limit: pagination.limit,
-                  total: pagination.total,
-                  pages: pagination.pages,
-                }
+                page: pagination.page,
+                limit: pagination.limit,
+                total: pagination.total,
+                pages: pagination.pages,
+              }
               : undefined
           }
           onPaginationChange={{
