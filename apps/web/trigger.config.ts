@@ -1,4 +1,5 @@
 import { defineConfig } from '@trigger.dev/sdk/v3';
+import { prismaExtension } from '@trigger.dev/build/extensions/prisma';
 
 export default defineConfig({
   project: 'proj_ytxnlllaekcwwlbxxqya',
@@ -23,6 +24,7 @@ export default defineConfig({
   // Build configuration
   build: {
     external: ['sharp'],
+    extensions: [prismaExtension({ schema: 'prisma/schema.prisma' })],
   },
 
   // Directory configuration

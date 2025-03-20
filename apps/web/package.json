@@ -45,7 +45,6 @@
     "deploy:trigger": "pnpm dlx trigger.dev@3.3.12 deploy --env staging"
   },
   "dependencies": {
-    "@solomonai/clickhouse-financials": "workspace:*",
     "@ai-sdk/openai": "^1.1.9",
     "@ariakit/react": "0.4.15",
     "@date-fns/tz": "^1.2.0",
@@ -100,6 +99,7 @@
     "@react-email/render": "^0.0.12",
     "@react-email/tailwind": "^1.0.4",
     "@solomon-ai/workspace-financial-backend-sdk": "0.0.1-alpha.2",
+    "@solomonai/clickhouse-financials": "workspace:*",
     "@solomonai/documents": "workspace:*",
     "@solomonai/email": "workspace:*",
     "@solomonai/import": "workspace:*",
@@ -115,6 +115,7 @@
     "@tanstack/react-table": "^8.20.6",
     "@tanstack/react-virtual": "^3.11.2",
     "@team-plain/typescript-sdk": "^5.8.0",
+    "@trigger.dev/build": "^3.3.17",
     "@trigger.dev/express": "3.3.12",
     "@trigger.dev/nextjs": "3.3.12",
     "@trigger.dev/react": "3.3.12",
