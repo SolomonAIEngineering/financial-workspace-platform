@@ -24,10 +24,11 @@ export default defineConfig({
   // Build configuration
   build: {
     external: ['sharp'],
-    extensions: [prismaExtension({
-      schema: 'prisma/schema.prisma',
-      clientGenerator: 'client',
-    }),
+    extensions: [
+      prismaExtension({
+        schema: '../../packages/prisma/prisma/schema.prisma',
+        clientGenerator: 'client',
+      }),
     ],
   },
 
