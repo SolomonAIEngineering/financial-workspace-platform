@@ -1,6 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearchPostgres", "driverAdapters"]
+  binaryTargets = ["native", "debian-openssl-3.0.x"] //  "debian-openssl-3.0.x" for google functions
 }
 
 generator jsonSchema {
