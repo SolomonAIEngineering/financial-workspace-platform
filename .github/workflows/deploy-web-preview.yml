@@ -1,4 +1,4 @@
-name: Production Deployment - Web
+name: Preview Deployment - Web
 env:
   VERCEL_ORG_ID: team_x84egOHMvGonH5dGuyfwtCQU
   VERCEL_PROJECT_ID: prj_OFiBLOvwehSAZh7USt6Fr8Lr0ztO
@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-production:
+  deploy-preview:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
