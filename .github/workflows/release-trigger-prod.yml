@@ -33,4 +33,4 @@ jobs:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
         working-directory: apps/web
         run: |
-          pnpm dlx trigger.dev@latest deploy
+          pnpm dlx trigger.dev@3.3.12 deploy

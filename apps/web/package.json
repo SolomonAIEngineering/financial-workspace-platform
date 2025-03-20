@@ -37,12 +37,12 @@
     "vendor": "sh tooling/scripts/vendor.sh",
     "with-env": "dotenv -e .env.local --",
     "format": "prettier --write .",
-    "trigger:dev": "pnpm dlx trigger.dev@3.3.17 dev --skip-update-check",
-    "trigger:login": "pnpm dlx trigger.dev@3.3.17 login",
-    "trigger:deploy": "pnpm dlx trigger.dev@3.3.17 deploy",
-    "trigger:whoami": "pnpm dlx trigger.dev@3.3.17 whoami",
-    "deploy:trigger-prod": "pnpm dlx trigger.dev@3.3.17 deploy",
-    "deploy:trigger": "pnpm dlx trigger.dev@3.3.17 deploy --env staging"
+    "trigger:dev": "pnpm dlx trigger.dev@3.3.12 dev --skip-update-check",
+    "trigger:login": "pnpm dlx trigger.dev@3.3.12 login",
+    "trigger:deploy": "pnpm dlx trigger.dev@3.3.12 deploy",
+    "trigger:whoami": "pnpm dlx trigger.dev@3.3.12 whoami",
+    "deploy:trigger-prod": "pnpm dlx trigger.dev@3.3.12 deploy",
+    "deploy:trigger": "pnpm dlx trigger.dev@3.3.12 deploy --env staging"
   },
   "dependencies": {
     "@solomonai/clickhouse-financials": "workspace:*",
