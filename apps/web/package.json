@@ -8,7 +8,7 @@
     "build": "pnpm run db:generate && next build",
     "build:registry": "tsx --tsconfig ./scripts/tsconfig.scripts.json scripts/build-registry.mts",
     "build:tw": "pnpm tailwindcss -i ./src/styles/globals.css -o ./public/css/tailwind.css --minify",
-    "db:deploy": "dotenv-flow -e .env -- pnpm --filter=@solomonai/prisma migrate deploy",
+    "db:deploy": "dotenv-flow -e .env -- pnpm --filter=@solomonai/prisma prisma:migrate-deploy",
     "db:generate": "dotenv-flow -e .env -- pnpm --filter=@solomonai/prisma generate",
     "db:push": "dotenv-flow -e .env -- pnpm --filter=@solomonai/prisma db:push --skip-generate",
     "db:reset": "dotenv-flow -e .env -- pnpm --filter=@solomonai/prisma migrate reset --force && dotenv-flow -e .env -- pnpm --filter=@solomonai/prisma db push --accept-data-loss",
