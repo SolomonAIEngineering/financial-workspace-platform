@@ -48,6 +48,7 @@
     "deploy:trigger": "pnpm dlx trigger.dev@3.3.12 deploy --env staging"
   },
   "dependencies": {
+    "@solomonai/ui-design-system": "workspace:*",
     "@ai-sdk/openai": "^1.1.9",
     "@ariakit/react": "0.4.15",
     "@date-fns/tz": "^1.2.0",
