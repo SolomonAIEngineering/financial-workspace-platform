@@ -246,8 +246,8 @@ importers:
         specifier: 3.3.12
         version: 3.3.12(react-dom@19.0.0)(react@19.0.0)
       '@trigger.dev/react-hooks':
-        specifier: ^3.3.12
-        version: 3.3.17(react-dom@19.0.0)(react@19.0.0)
+        specifier: 3.3.12
+        version: 3.3.12(react-dom@19.0.0)(react@19.0.0)
       '@trigger.dev/sdk':
         specifier: 3.3.12
         version: 3.3.12(zod@3.24.2)
@@ -25758,8 +25758,8 @@ packages:
       - supports-color
     dev: false
 
-  /@trigger.dev/react-hooks@3.3.17(react-dom@19.0.0)(react@19.0.0):
-    resolution: {integrity: sha512-1icVcYE7fuoB912KjeUxeTBiKygW82sy1XIWsYhEr6qyj7LcmfNzkNuL4qUdbqgcwJD0z91eKskRmd7MkjQrDg==}
+  /@trigger.dev/react-hooks@3.3.12(react-dom@19.0.0)(react@19.0.0):
+    resolution: {integrity: sha512-ObLbJt/c7Y19Tv3W/CBdW3CxpfSr0xYjdat4sMBVnrmL8uSkbuBTjr3j/QIEhrTSeGrnbZoyLfLbaR+3b/h9rQ==}
     engines: {node: '>=18.20.0'}
     peerDependencies:
       react: ^18.0 || ^19.0 || ^19.0.0-rc
