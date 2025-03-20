@@ -26,7 +26,7 @@ export default defineConfig({
     external: ['sharp'],
     extensions: [
       prismaExtension({
-        schema: '../../packages/prisma/prisma/schema.prisma',
+        schema: '../../packages/prisma/schema.prisma',
         clientGenerator: 'client',
       }),
     ],
