@@ -26,7 +26,6 @@
     "dev:trigger": "pnpm with-env pnpm dlx trigger.dev@3.3.12 dev --skip-update-check",
     "docker": "docker-compose -f docker-compose.web.yml --env-file .env.local up --build",
     "email:dev": "pnpm with-env email dev --port 3333 --dir src/components/email",
-    "postinstall": "pnpm db:generate",
     "lint": "eslint . && prettier --check . --log-level warn",
     "lint:ci": "eslint . --max-warnings=9999 --quiet && prettier --check . --log-level error",
     "lint:fix": "eslint . --fix && prettier --write . --log-level warn",
