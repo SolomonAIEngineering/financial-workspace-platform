@@ -40,6 +40,12 @@ jobs:
         run: pnpm dlx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build workspace packages
         run: pnpm build-packages
+      - name: Run database migrations
+        run: pnpm db:deploy
+        env:
+          # Add your database connection string and other required environment variables
+          DATABASE_URL: ${{ secrets.SMB_FINANCIAL_MANAGEMENT_DATABASE_URL }}
+          # Add any other environment variables needed for database connection
       - name: Generate Prisma Client
         working-directory: apps/web
         run: pnpm run db:generate
