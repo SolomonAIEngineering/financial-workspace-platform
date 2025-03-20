@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
   workflow_dispatch:
 
 
@@ -30,7 +34,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-
+      - name: Build workspace packages
+        run: pnpm build-packages
       - name: 🚀 Deploy Trigger.dev
         timeout-minutes: 5
         env:
