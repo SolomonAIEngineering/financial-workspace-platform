@@ -2,7 +2,7 @@ import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { EnrichmentService } from '@/jobs/utils/transaction-enrichment';
 import Papa from 'papaparse';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@solomonai/prisma/client';
 import { getFileContent } from '@/lib/uploadthing';
 import { mapTransactions } from '@solomonai/import/mappings';
 import { prisma } from '@/server/db';

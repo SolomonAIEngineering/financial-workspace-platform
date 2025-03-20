@@ -1,8 +1,7 @@
 import { Kysely, ParseJSONResultsPlugin, PostgresDialect } from 'kysely';
 
+import type { DB } from '@solomonai/prisma/kysely/types';
 import { pgPool } from '@/server/pg';
-
-import type { DB } from '../../prisma/kysely/types';
 
 export const db = new Kysely<DB>({
   dialect: new PostgresDialect({

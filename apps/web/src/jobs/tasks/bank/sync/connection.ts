@@ -1,7 +1,7 @@
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
-import { BankConnectionStatus } from '@prisma/client';
+import { BankConnectionStatus } from '@solomonai/prisma/client';
 import { client } from '../../../client';
 import { getItemDetails } from '@/server/services/plaid';
 import { prisma } from '@/server/db';
@@ -331,10 +331,9 @@ export const syncConnectionJob = schemaTask({
         } catch (updateError) {
           // Log but don't throw - we want to propagate the original error
           logger.error(
-            `Failed to update connection status: ${
-              updateError instanceof Error
-                ? updateError.message
-                : String(updateError)
+            `Failed to update connection status: ${updateError instanceof Error
+              ? updateError.message
+              : String(updateError)
             }`
           );
         }

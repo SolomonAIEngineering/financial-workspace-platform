@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server';
-import { TransactionCategory } from '@prisma/client';
+import { TransactionCategory } from '@solomonai/prisma/client';
 import { createRouter } from '../trpc';
 import { prisma } from '@/server/db';
 import { protectedProcedure } from '../middlewares/procedures';

@@ -26,6 +26,7 @@ export const seedDatabase = async () => {
         OR: [
           { email: 'john.doe@example.com' },
           { email: 'jane.smith@example.com' },
+          { email: 'yoanyomba@solomon-ai.co' },
         ],
       },
     })
@@ -46,6 +47,7 @@ export const seedDatabase = async () => {
         },
         update: {},
         create: {
+          provider: 'plaid',
           id: uuidv4(),
           userId: user.id,
           institutionId: `inst_${user.username}`,
@@ -662,6 +664,7 @@ export const seedDatabase = async () => {
               id: uuidv4(),
               name: `${user.username}'s Team`,
               email: user.email,
+              slug: `${user.username}-team`,
               createdAt: new Date(),
               usersOnTeam: {
                 create: {
@@ -674,8 +677,12 @@ export const seedDatabase = async () => {
         }
 
         // Create a custom transaction category
-        await prisma.customTransactionCategory.create({
-          data: {
+        await prisma.customTransactionCategory.upsert({
+          where: {
+            id: 'groceries'
+          },
+          update: {},
+          create: {
             id: 'groceries',
             name: 'Groceries',
             slug: 'groceries',

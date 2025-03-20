@@ -2,7 +2,7 @@ import {
   type BankConnection,
   BankConnectionStatus,
   SyncStatus,
-} from '@prisma/client';
+} from '@solomonai/prisma/client';
 import { prisma } from '@/server/db';
 
 /**

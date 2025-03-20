@@ -1,5 +1,5 @@
 import type { RatelimitKey } from '@/server/ratelimit';
-import type { UserRole } from '@prisma/client';
+import type { UserRole } from '@solomonai/prisma/client';
 
 import { getCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';

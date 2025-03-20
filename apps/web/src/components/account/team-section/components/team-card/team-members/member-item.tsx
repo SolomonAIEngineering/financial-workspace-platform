@@ -28,7 +28,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/registry/default/potion-ui/button';
 import { Icons } from '@/components/ui/icons';
 import { TeamMemberItemProps } from '../../../types';
-import { TeamRole } from '@prisma/client';
+import { TeamRole } from '@solomonai/prisma/client';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useState } from 'react';

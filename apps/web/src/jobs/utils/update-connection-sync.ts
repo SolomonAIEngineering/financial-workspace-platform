@@ -1,4 +1,4 @@
-import { BankConnectionStatus, SyncStatus } from '@prisma/client';
+import { BankConnectionStatus, SyncStatus } from '@solomonai/prisma/client';
 
 import { prisma } from '@/server/db';
 

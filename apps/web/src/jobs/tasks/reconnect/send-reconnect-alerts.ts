@@ -1,6 +1,6 @@
 import { logger, schedules } from '@trigger.dev/sdk/v3';
 
-import { BankConnectionStatus } from '@prisma/client';
+import { BankConnectionStatus } from '@solomonai/prisma/client';
 import { client } from '../../client';
 import { prisma } from '@/server/db';
 import { subDays } from 'date-fns';

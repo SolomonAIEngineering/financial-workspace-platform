@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@solomonai/prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { env } from '@/env';
 import { pgPool } from './pg';
@@ -12,10 +12,10 @@ export const prisma =
     log:
       env.NODE_ENV === 'development'
         ? [
-            // 'query', 'info',
-            'error',
-            'warn',
-          ]
+          // 'query', 'info',
+          'error',
+          'warn',
+        ]
         : ['error'],
   });
 

@@ -8,7 +8,6 @@
 import { logger, wait } from '@trigger.dev/sdk/v3';
 
 import { DocumentClient } from '@solomonai/documents';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { prisma } from '@/server/db';
 import { schemaTask } from '@trigger.dev/sdk/v3';
 import { utapi } from '@/lib/uploadthing';
@@ -133,7 +132,7 @@ export const inboxUpload = schemaTask({
           });
         })
         .catch((error) => {
-          if (error instanceof PrismaClientKnownRequestError) {
+          if (error) {
             if (error.code === 'P2002') {
               throw new Error(`Duplicate inbox record: ${error.meta?.target}`);
             } else if (error.code === 'P2003') {

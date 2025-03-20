@@ -1,4 +1,4 @@
-import { TeamRole } from '@prisma/client';
+import { TeamRole } from '@solomonai/prisma/client';
 import { authActionClient } from '../safe-action';
 import { revalidatePath } from 'next/cache';
 import { trpc } from '@/trpc/server';

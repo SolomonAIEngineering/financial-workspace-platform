@@ -20,9 +20,11 @@ import {
 import type { DB } from './kysely/types'
 /// <reference types="@solomonai/prisma/server/prisma.d.ts" />
 import { PrismaClient } from '@prisma/client'
-import kyselyExtension from 'prisma-extension-kysely'
 import { getDatabaseUrl } from './helper'
+import kyselyExtension from 'prisma-extension-kysely'
 import { remember } from './utils/remember'
+
+export const jsonSchema = require('../prisma/json-schema/json-schema.json')
 
 /**
  * Singleton instance of the Prisma client

@@ -15,7 +15,7 @@ import {
 import { BankAccount } from '@/server/types/prisma';
 import { ResourceType } from '@/server/services/payment-tier';
 import { TRPCError } from '@trpc/server';
-import { TransactionCategory } from '@prisma/client';
+import { TransactionCategory } from '@solomonai/prisma/client';
 import { createResourceValidationMiddleware } from '../middlewares/resourceValidationMiddleware';
 import { createRouter } from '../trpc';
 import { prisma } from '@/server/db';
@@ -567,9 +567,9 @@ export const bankAccountsRouter = createRouter({
         const monthlyAvgSpending =
           monthlySpendings.length > 0
             ? monthlySpendings.reduce(
-                (acc, curr) => acc + Number.parseFloat(curr.total_amount),
-                0
-              ) / monthlySpendings.length
+              (acc, curr) => acc + Number.parseFloat(curr.total_amount),
+              0
+            ) / monthlySpendings.length
             : 0;
 
         return {
@@ -769,14 +769,14 @@ export const bankAccountsRouter = createRouter({
             bank: isManual
               ? null
               : {
-                  id: account.bankConnectionId,
-                  name:
-                    account.bankConnection?.institutionName || 'Unknown Bank',
-                  logo: account.bankConnection?.logo || null,
-                  provider: 'plaid', // Could be extended to support other providers
-                  status: account.bankConnection?.status || 'ACTIVE',
-                  expires_at: account.bankConnection?.consentExpiresAt || null,
-                },
+                id: account.bankConnectionId,
+                name:
+                  account.bankConnection?.institutionName || 'Unknown Bank',
+                logo: account.bankConnection?.logo || null,
+                provider: 'plaid', // Could be extended to support other providers
+                status: account.bankConnection?.status || 'ACTIVE',
+                expires_at: account.bankConnection?.consentExpiresAt || null,
+              },
           };
         });
 

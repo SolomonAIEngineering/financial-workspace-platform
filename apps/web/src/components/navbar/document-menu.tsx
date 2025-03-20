@@ -1,20 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo } from 'react';
-
-import { TextStyle } from '@prisma/client';
-import { useQuery } from '@tanstack/react-query';
-import { cn } from '@udecode/cn';
-import { useEditorRef } from '@udecode/plate/react';
-import { format } from 'date-fns';
 import { ArrowDownToLineIcon, ArrowUpToLineIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-
-import { useCurrentUser } from '@/components/auth/useCurrentUser';
-import { pushModal } from '@/components/modals';
-import { routes, useDocumentId } from '@/lib/navigation/routes';
-import { Button } from '@/registry/default/potion-ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,17 +9,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/registry/default/potion-ui/dropdown-menu';
+import React, { useCallback, useMemo } from 'react';
+import { routes, useDocumentId } from '@/lib/navigation/routes';
 import {
   useArchiveDocumentMutation,
   useUpdateDocumentMutation,
 } from '@/trpc/hooks/document-hooks';
-import { useDocumentQueryOptions } from '@/trpc/hooks/query-options';
 
-import { useAuthGuard } from '../auth/useAuthGuard';
-import { getEditorWordCount } from '../editor/utils';
+import { Button } from '@/registry/default/potion-ui/button';
 import { Icons } from '../ui/icons';
 import { Skeleton } from '../ui/skeleton';
 import { Switch } from '../ui/switch';
+import { TextStyle } from '@solomonai/prisma/client';
+import { cn } from '@udecode/cn';
+import { format } from 'date-fns';
+import { getEditorWordCount } from '../editor/utils';
+import { pushModal } from '@/components/modals';
+import { toast } from 'sonner';
+import { useAuthGuard } from '../auth/useAuthGuard';
+import { useCurrentUser } from '@/components/auth/useCurrentUser';
+import { useDocumentQueryOptions } from '@/trpc/hooks/query-options';
+import { useEditorRef } from '@udecode/plate/react';
+import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 export const TEXT_STYLE_ITEMS: {
   key: TextStyle;
@@ -41,47 +39,47 @@ export const TEXT_STYLE_ITEMS: {
   label: string;
   tooltip: string;
 }[] = [
-  {
-    key: TextStyle.DEFAULT,
-    fontFamily: 'inherit',
-    label: 'Default',
-    tooltip: 'Standard sans-serif',
-  },
-  {
-    key: TextStyle.SERIF,
-    fontFamily: 'Lyon-Text, Georgia, ui-serif, serif',
-    label: 'Serif',
-    tooltip: 'Elegant style for formal writing',
-  },
-  {
-    key: TextStyle.MONO,
-    fontFamily: 'iawriter-mono, Nitti, Menlo, Courier, monospace',
-    label: 'Mono',
-    tooltip: 'Fixed-width font for code',
-  },
-];
+    {
+      key: TextStyle.DEFAULT,
+      fontFamily: 'inherit',
+      label: 'Default',
+      tooltip: 'Standard sans-serif',
+    },
+    {
+      key: TextStyle.SERIF,
+      fontFamily: 'Lyon-Text, Georgia, ui-serif, serif',
+      label: 'Serif',
+      tooltip: 'Elegant style for formal writing',
+    },
+    {
+      key: TextStyle.MONO,
+      fontFamily: 'iawriter-mono, Nitti, Menlo, Courier, monospace',
+      label: 'Mono',
+      tooltip: 'Fixed-width font for code',
+    },
+  ];
 
 const SWITCH_ITEMS: {
   key: 'fullWidth' | 'lockPage' | 'smallText' | 'toc';
   label: string;
 }[] = [
-  {
-    key: 'smallText',
-    label: 'Small text',
-  },
-  {
-    key: 'fullWidth',
-    label: 'Full width',
-  },
-  {
-    key: 'lockPage',
-    label: 'Lock page',
-  },
-  {
-    key: 'toc',
-    label: 'Table of contents',
-  },
-];
+    {
+      key: 'smallText',
+      label: 'Small text',
+    },
+    {
+      key: 'fullWidth',
+      label: 'Full width',
+    },
+    {
+      key: 'lockPage',
+      label: 'Lock page',
+    },
+    {
+      key: 'toc',
+      label: 'Table of contents',
+    },
+  ];
 
 export const DocumentMenu = React.memo(() => {
   return (

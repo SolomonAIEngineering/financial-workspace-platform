@@ -381,7 +381,7 @@ export const seedDatabase = async () => {
           lastLoginAt: userData.lastLoginAt,
           uploadLimit:
             userData.department === 'Marketing' ||
-            userData.department === 'Product'
+              userData.department === 'Product'
               ? 1000000000
               : 100000000, // 1GB or 100MB
 
@@ -441,13 +441,106 @@ export const seedDatabase = async () => {
       },
     })
 
-    // Create OAuth accounts for some users
-    await prisma.oauthAccount.create({
+    // Create Yoan user with specific ID
+    const yoanPassword = await hash('password123', 10)
+    const yoanUser = await prisma.user.upsert({
+      where: { email: 'yoanyomba@solomon-ai.co' },
+      update: {},
+      create: {
+        id: 'nkzx80c5ct8cgcq',
+        username: 'yoanyomba',
+        email: 'yoanyomba@solomon-ai.co',
+        password_hash: yoanPassword,
+        role: UserRole.ADMIN,
+
+        // User profile information
+        name: 'D Yoan L Mekontchou Yomba',
+        firstName: 'Yoan',
+        lastName: 'Yomba',
+        profileImageUrl: 'https://lh3.googleusercontent.com/a/ACg8ocLPD-nkYF58AaJVyLbwgInGrV_TgmDZIVEXsRJoWm_1JuyrTg=s96-c',
+        bio: 'Software Engineer and AI Enthusiast',
+        timezone: 'America/New_York',
+        language: 'en',
+
+        // Professional details
+        jobTitle: 'Software Engineer',
+        department: 'Engineering',
+        employeeId: 'EMP099',
+        hireDate: new Date('2022-01-01'),
+        yearsOfExperience: 8,
+        skills: [
+          'Software Development',
+          'AI Engineering',
+          'Cloud Infrastructure',
+          'System Design',
+        ],
+
+        // Contact information
+        phoneNumber: '+1234567899',
+        businessEmail: 'yoanyomba@solomon-ai.co',
+        businessPhone: '+1234567899',
+        officeLocation: 'Remote',
+
+        // Organization data
+        organizationName: 'Solomon AI',
+        organizationUnit: 'Engineering Department',
+        teamName: 'Core Engineering Team',
+
+        // System information
+        version: 1,
+        stripeCustomerId: 'cus_yoan_yomba',
+        accountStatus: AccountStatus.ACTIVE,
+        lastLoginAt: new Date(),
+        uploadLimit: 500000000, // 500MB
+
+        // Timestamps
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    })
+
+    // Create active session for Yoan
+    await prisma.session.create({
       data: {
+        id: uuidv4(),
+        user_id: yoanUser.id,
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        ip_address: '192.168.1.5',
+        user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
+      },
+    })
+
+    // Create OAuth accounts for some users
+    await prisma.oauthAccount.upsert({
+      where: {
+        providerId_providerUserId: {
+          providerId: 'google',
+          providerUserId: 'google_123456',
+        },
+      },
+      update: {},
+      create: {
         id: uuidv4(),
         providerId: 'google',
         providerUserId: 'google_123456',
         userId: admin.id,
+      },
+    })
+
+    // Create OAuth account for Yoan
+    await prisma.oauthAccount.upsert({
+      where: {
+        providerId_providerUserId: {
+          providerId: 'google',
+          providerUserId: '118004433121100280688',
+        },
+      },
+      update: {},
+      create: {
+        id: uuidv4(),
+        providerId: 'google',
+        providerUserId: '118004433121100280688',
+        userId: yoanUser.id,
       },
     })
 
@@ -456,8 +549,15 @@ export const seedDatabase = async () => {
     })
 
     if (janeUser) {
-      await prisma.oauthAccount.create({
-        data: {
+      await prisma.oauthAccount.upsert({
+        where: {
+          providerId_providerUserId: {
+            providerId: 'github',
+            providerUserId: 'github_123456',
+          },
+        },
+        update: {},
+        create: {
           id: uuidv4(),
           providerId: 'github',
           providerUserId: 'github_123456',

@@ -101,7 +101,7 @@ export function LoginForm({
         <p className="text-center text-xs leading-relaxed text-muted-foreground">
           By continuing, you agree to our{' '}
           <Link
-            className="underline underline-offset-4 hover:text-foreground"
+            className="underline unpderline-offset-4 hover:text-foreground"
             href={routes.terms()}
             prefetch={true}
           >

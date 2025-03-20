@@ -8,7 +8,7 @@ import { Currency, currencies } from '@/types/status';
 import { FeatureFlag, TeamRoleDefinition } from './types';
 import { Shield, Users } from 'lucide-react';
 
-import { TeamRole } from '@prisma/client';
+import { TeamRole } from '@solomonai/prisma/client';
 
 /**
  * Common team feature flags with their display information

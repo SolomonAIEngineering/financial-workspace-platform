@@ -1,14 +1,11 @@
-import type { PageProps } from '@/lib/navigation/next-types';
-
-import { NextAdmin } from '@premieroctet/next-admin';
-import { getNextAdminProps } from '@premieroctet/next-admin/appRouter';
-
 import { AdminGuard } from '@/components/auth/rsc/auth-redirect';
-import { prisma } from '@/server/db';
-import { trpc } from '@/trpc/server';
-
-import schema from '../../../../../../prisma/json-schema/json-schema.json';
+import { NextAdmin } from '@premieroctet/next-admin';
+import type { PageProps } from '@/lib/navigation/next-types';
 import { adminOptions } from './admin-options';
+import { getNextAdminProps } from '@premieroctet/next-admin/appRouter';
+import { prisma } from '@/server/db';
+import schema from '@solomonai/prisma/json-schema/json-schema.json';
+import { trpc } from '@/trpc/server';
 
 export default function Page(props: PageProps) {
   return (

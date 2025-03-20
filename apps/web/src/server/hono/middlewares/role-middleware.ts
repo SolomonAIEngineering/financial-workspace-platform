@@ -1,8 +1,6 @@
-import type { UserRole } from '@prisma/client';
-
-import { createMiddleware } from 'hono/factory';
-
 import type { ProtectedContext } from './auth-middleware';
+import type { UserRole } from '@solomonai/prisma/client';
+import { createMiddleware } from 'hono/factory';
 
 export function roleMiddleware(role?: UserRole) {
   return createMiddleware<ProtectedContext>(async (c, next) => {

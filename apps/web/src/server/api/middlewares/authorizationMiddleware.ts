@@ -1,7 +1,5 @@
-import type { UserRole } from '@prisma/client';
-
 import { TRPCError } from '@trpc/server';
-
+import type { UserRole } from '@solomonai/prisma/client';
 import { t } from '../trpc';
 
 export const authorizationMiddleware = ({ role }: { role: UserRole }) =>

@@ -1,1 +1,1 @@
-export type { Prisma } from '@prisma/client';
+export type { Prisma } from '@solomonai/prisma/client';
