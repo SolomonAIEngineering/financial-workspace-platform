@@ -1,37 +1,32 @@
 name: Deploy to Trigger.dev (staging)
 
-# Requires manually calling the workflow from a branch / commit to deploy to staging
+env:
+  VERCEL_ORG_ID: team_x84egOHMvGonH5dGuyfwtCQU
+  VERCEL_PROJECT_ID: prj_OFiBLOvwehSAZh7USt6Fr8Lr0ztO
+  TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  TURBO_TEAM: team_x84egOHMvGonH5dGuyfwtCQU
+  SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING: true
 on:
   push:
     branches:
       - main
     paths:
-      - 'apps/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
+      - apps/web/**
+      - packages/**
   workflow_dispatch:
 
-
 jobs:
-  deploy:
+  deploy-production:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
         with:
-          version: '9.9.0'
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+          version: 8
+      - uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 18
           cache: 'pnpm'
-
       - name: Install dependencies
         run: pnpm install
       - name: Build workspace packages
