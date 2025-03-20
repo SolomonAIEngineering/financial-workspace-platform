@@ -326,6 +326,10 @@ export const userRouter = createRouter({
     }
 
     try {
+      // First delete team associations to avoid foreign key constraint violation
+      await prisma.usersOnTeam.deleteMany({
+        where: { userId: ctx.userId },
+      });
       // With onDelete: Cascade set in the Prisma schema,
       // we don't need to manually delete related records first
       // Just delete the user and all related records will be deleted automatically
