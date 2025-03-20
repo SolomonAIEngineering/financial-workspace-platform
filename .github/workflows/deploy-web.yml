@@ -40,6 +40,8 @@ jobs:
         run: pnpm dlx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build workspace packages
         run: pnpm build-packages
+      - name: Install dotenv-flow
+        run: pnpm install -g dotenv-flow
       - name: Run database migrations
         run: pnpm db:deploy
         env:
