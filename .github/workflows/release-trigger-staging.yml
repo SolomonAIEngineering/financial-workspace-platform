@@ -39,7 +39,11 @@ jobs:
       - name: 🚀 Deploy Trigger.dev
         timeout-minutes: 5
         env:
+          DATABASE_URL: ${{ secrets.SMB_FINANCIAL_MANAGEMENT_DATABASE_URL }}
+          TRIGGER_API_KEY: ${{ secrets.TRIGGER_API_KEY_STAGING }}
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+          PLAID_CLIENT_ID: ${{ secrets.PLAID_CLIENT_ID }}
+          PLAID_SECRET: ${{ secrets.PLAID_SECRET }} 
         working-directory: apps/web
         run: |
           pnpm run db:generate && pnpm dlx trigger.dev@3.3.12 deploy --env staging
