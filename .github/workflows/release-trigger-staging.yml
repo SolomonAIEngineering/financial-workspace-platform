@@ -6,6 +6,7 @@ env:
   TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
   TURBO_TEAM: team_x84egOHMvGonH5dGuyfwtCQU
   SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING: true
+  PRISMA_CLI_BINARY_TARGETS: 'debian-openssl-3.0.x'
 on:
   push:
     branches:
@@ -42,4 +43,4 @@ jobs:
           PLAID_SECRET: ${{ secrets.PLAID_SECRET }} 
         working-directory: apps/web
         run: |
-          pnpm run db:generate && pnpm dlx trigger.dev@3.3.12 deploy --env staging
+          pnpm dlx prisma generate && pnpm run db:generate && pnpm dlx trigger.dev@3.3.12 deploy --env staging

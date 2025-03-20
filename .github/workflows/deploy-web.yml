@@ -5,6 +5,7 @@ env:
   TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
   TURBO_TEAM: team_x84egOHMvGonH5dGuyfwtCQU
   SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING: true
+  PRISMA_CLI_BINARY_TARGETS: 'debian-openssl-3.0.x'
 on:
   push:
     branches:
