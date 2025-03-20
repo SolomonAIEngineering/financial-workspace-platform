@@ -48,24 +48,38 @@ export const expiringNotifications = schemaTask({
   queue: {
     concurrencyLimit: 1,
   },
+  // TODO: Add retry configuration for handling transient email delivery failures
+  // TODO: Add deadletter queue for persistently failing notifications
   schema: z.object({
     users: z.array(
       z.object({
         bankName: z.string(),
         teamName: z.string(),
         expiresAt: z.string(),
+        // TODO: Add validation for expiresAt format and ensure it's a future date
+        // TODO: Add the number of days until expiration for simpler message customization
         user: z.object({
           id: z.string(),
           email: z.string(),
           full_name: z.string(),
           locale: z.string(),
         }),
+        // TODO: Add account count to show impact of expiration
+        // TODO: Add connection ID for tracking and direct reconnection links
       })
     ),
+    // TODO: Add notification urgency level based on days until expiration
+    // TODO: Add option to control notification channels (email, in-app, SMS)
   }),
   run: async ({ users }) => {
+    // TODO: Add logging for job start and completion with metrics
+    // TODO: Add deduplication to avoid sending multiple notifications in short period
+
     const emailPromises = users.map(
       async ({ user, bankName, teamName, expiresAt }) => {
+        // TODO: Calculate days until expiration from expiresAt for message customization
+
+        // TODO: Implement proper email template with reconnection instructions
         // const html = await render(
         //   <ConnectionExpireEmail
         //     fullName={ user.full_name }
@@ -77,18 +91,39 @@ export const expiringNotifications = schemaTask({
 
         const html = `<h1>Hello</h1>`;
 
+        // TODO: Create different email templates based on urgency (warning vs critical)
+        // TODO: Add localization support based on user.locale
+        // TODO: Add plain text email version for better deliverability
+
         return {
           from: 'Solomon AI <hello@solomonai.com>',
           to: [user.email],
           subject: 'Bank Connection Expiring Soon',
+          // TODO: Add dynamic subject line based on urgency and days until expiration
           html,
+          // TODO: Add tracking parameters for email opens and link clicks
         };
       }
     );
 
     const emails = await Promise.all(emailPromises);
 
+    // TODO: Add error handling for failed email generation
+    // TODO: Add validation that all emails have proper content and recipients
+
     await resend?.batch.send(emails);
+    // TODO: Add error handling for batch email sending failures
+    // TODO: Add retry logic for failed emails
+
+    // TODO: Record notification history to prevent duplicate notifications
+    // TODO: Schedule follow-up notifications if user doesn't take action
+    // TODO: Send alternative notifications (in-app, SMS) for critical expirations
+
+    return {
+      success: true,
+      emailsSent: emails.length,
+      // TODO: Return detailed results with success/failure per user
+    };
   },
 });
 
@@ -117,6 +152,10 @@ function generateExpiringEmailText({
   institutionName: string;
   name: string;
 }): string {
+  // TODO: Add support for multiple languages/locales
+  // TODO: Add handling for very urgent cases (1 day or less)
+  // TODO: Add custom messaging for different financial institutions
+
   return `
 Hello ${name},
 
@@ -161,6 +200,11 @@ function generateExpiringEmailHtml({
   name: string;
   reconnectUrl: string;
 }): string {
+  // TODO: Add color coding based on urgency (yellow for warning, red for critical)
+  // TODO: Add mobile-responsive email design
+  // TODO: Add bank logo/branding if available
+  // TODO: Add tracking parameters to reconnect URL for conversion analysis
+
   return `
 <!DOCTYPE html>
 <html>

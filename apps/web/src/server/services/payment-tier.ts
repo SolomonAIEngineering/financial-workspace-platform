@@ -364,9 +364,9 @@ export function getMaxTrackerProjectsAllowed(tier: PaymentTier): number {
  */
 export class ResourceValidator {
   /**
-   * Validates whether a user can create more teams based on their
-   * subscription tier. This method throws a TRPCError if the user has reached
-   * their team creation limit.
+   * Validates whether a user can create more teams based on their subscription
+   * tier. This method throws a TRPCError if the user has reached their team
+   * creation limit.
    *
    * @param {string} userId - The user's unique identifier
    * @throws {TRPCError} If the user has reached their team limit or if
@@ -411,13 +411,13 @@ export class ResourceValidator {
   /**
    * Validates whether a team can add more members based on the owner's
    * subscription tier. This method verifies that adding new members would not
-   * exceed the plan's limitations for team size, and throws a TRPCError if
-   * the limit would be exceeded.
+   * exceed the plan's limitations for team size, and throws a TRPCError if the
+   * limit would be exceeded.
    *
    * @param {string} userId - The team owner's unique identifier
    * @param {string} teamId - The unique identifier of the team
-   * @param {number} [newMemberCount=1] - The number of new members to be
-   *   added. Default is `1`
+   * @param {number} [newMemberCount=1] - The number of new members to be added.
+   *   Default is `1`
    * @throws {TRPCError} If adding members would exceed the plan limit or if
    *   validation fails
    */
@@ -520,8 +520,8 @@ export class ResourceValidator {
    * their bank account limit.
    *
    * @param {string} userId - The user's unique identifier
-   * @throws {TRPCError} If the user has reached their bank account limit or
-   *   if validation fails
+   * @throws {TRPCError} If the user has reached their bank account limit or if
+   *   validation fails
    */
   public async validateBankAccountCreation(userId: string): Promise<void> {
     try {
@@ -758,10 +758,10 @@ export class ResourceValidator {
    * their storage limit.
    *
    * @param {string} userId - The user's unique identifier
-   * @param {number} additionalStorageNeededInBytes - Additional storage
-   *   needed in bytes
-   * @throws {TRPCError} If the storage limit would be exceeded or if
-   *   validation fails
+   * @param {number} additionalStorageNeededInBytes - Additional storage needed
+   *   in bytes
+   * @throws {TRPCError} If the storage limit would be exceeded or if validation
+   *   fails
    */
   public async validateStorageUsage(
     userId: string,
@@ -909,9 +909,9 @@ export class ResourceValidator {
   }
 
   /**
-   * Validates whether a user can install more apps based on their
-   * subscription tier. This method throws a TRPCError if the user has reached
-   * their app installation limit.
+   * Validates whether a user can install more apps based on their subscription
+   * tier. This method throws a TRPCError if the user has reached their app
+   * installation limit.
    *
    * @param {string} userId - The user's unique identifier
    * @throws {TRPCError} If the app installation limit is reached or if
@@ -977,13 +977,13 @@ export class ResourceValidator {
 
   /**
    * Validates whether a user can create or access data based on transaction
-   * history retention limits. This method throws a TRPCError if the
-   * transaction date is outside the allowed retention period.
+   * history retention limits. This method throws a TRPCError if the transaction
+   * date is outside the allowed retention period.
    *
    * @param {string} userId - The user's unique identifier
    * @param {Date} transactionDate - The date of the transaction to validate
-   * @throws {TRPCError} If the transaction date is outside the retention
-   *   period or if validation fails
+   * @throws {TRPCError} If the transaction date is outside the retention period
+   *   or if validation fails
    */
   public async validateTransactionHistoryAccess(
     userId: string,

@@ -49,10 +49,15 @@ export const refreshConnectionJob = schemaTask({
   retry: {
     maxAttempts: 2,
   },
+  // TODO: Expand schema validation to include provider-specific tokens and refresh requirements
   schema: z.object({
     connectionId: z.string().uuid(),
+    // TODO: Add validation for provider type with proper enum values
+    // TODO: Add validation for accessToken and refreshToken formats based on provider
   }),
   run: async ({ connectionId }, { ctx }) => {
+    // TODO: Implement actual token refresh functionality
+
     //   try {
     //     logger.info("Starting connection refresh job", { connectionId });
 
@@ -82,6 +87,10 @@ export const refreshConnectionJob = schemaTask({
     //       throw new Error("Connection not found");
     //     }
 
+    //     // TODO: Add handling for provider-specific token refresh flows
+    //     // TODO: Add validation for token refresh rate limits to prevent API throttling
+    //     // TODO: Implement secure token handling with proper encryption
+
     //     // Call the API to refresh the tokens
     //     const refreshResponse = await client.connections.refresh.$post({
     //       body: {
@@ -108,6 +117,9 @@ export const refreshConnectionJob = schemaTask({
     //         })
     //         .eq("id", connectionId);
 
+    //       // TODO: Implement provider-specific error handling for different error codes
+    //       // TODO: Add smart recovery strategies for different types of refresh failures
+
     //       // If token is expired, mark as disconnected to prompt user reconnection
     //       if (errorData.code === "INVALID_REFRESH_TOKEN" ||
     //         errorData.code === "refresh_token_expired") {
@@ -118,6 +130,7 @@ export const refreshConnectionJob = schemaTask({
 
     //         // Notify user through the platform UI (implementation depends on your notification system)
     //         // This would typically be handled by a separate notification job
+    //         // TODO: Add fallback notification methods (email/SMS) for critical refresh failures
     //       }
 
     //       return {
@@ -128,6 +141,9 @@ export const refreshConnectionJob = schemaTask({
 
     //     // Successful token refresh
     //     const { data: refreshData } = await refreshResponse.json();
+
+    //     // TODO: Validate the new tokens by making a simple API call before saving them
+    //     // TODO: Implement token rotation tracking to detect unusual refresh patterns
 
     //     // Update connection with new tokens
     //     await supabase
@@ -159,6 +175,9 @@ export const refreshConnectionJob = schemaTask({
     //       },
     //     });
 
+    //     // TODO: Add verification that the sync request succeeded with the new tokens
+    //     // TODO: Implement proactive refresh scheduling based on token expiration dates
+
     //     // Revalidate the bank cache
     //     await revalidateCache({ tag: "bank", id: connection.team_id });
 
@@ -173,6 +192,10 @@ export const refreshConnectionJob = schemaTask({
     //       connectionId,
     //       error,
     //     });
+
+    //     // TODO: Add categorization of errors (network, auth, permission, etc.)
+    //     // TODO: Add handling for transient vs. permanent failures
+    //     // TODO: Implement circuit breaker pattern for repeated failures with same API
 
     //     // Update connection status to failed
     //     try {
@@ -191,6 +214,8 @@ export const refreshConnectionJob = schemaTask({
     //     throw error;
     //   }
     // },
+
+    // TODO: Remove placeholder return and implement actual refresh logic
     return {
       success: true,
     };

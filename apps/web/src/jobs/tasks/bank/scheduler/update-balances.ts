@@ -13,6 +13,8 @@ export const updateBalancesJob = schedules.task({
   id: BANK_JOBS.UPDATE_BALANCES,
   description: 'Update Bank Balances',
   cron: '0 */2 * * *', // Every 2 hours
+  // TODO: Add configurable update frequency based on account type (checking vs savings)
+  // TODO: Add staggered execution to prevent updating all balances at once
   run: async () => {
     await logger.info('Starting balance update job');
 
@@ -23,6 +25,8 @@ export const updateBalancesJob = schedules.task({
       accessToken: string;
       [key: string]: any;
     }[] = [];
+
+    // TODO: Add stricter typing for connections to avoid any[] types
 
     const result = await prisma.bankConnection.findMany({
       include: {
@@ -41,6 +45,9 @@ export const updateBalancesJob = schedules.task({
       },
     });
 
+    // TODO: Add prioritization for high-velocity accounts (frequent transactions)
+    // TODO: Add prioritization for accounts with large balances or critical importance
+
     connections = result;
 
     await logger.info(
@@ -51,17 +58,27 @@ export const updateBalancesJob = schedules.task({
     let errorCount = 0;
     let accountsUpdated = 0;
 
+    // TODO: Add tracking for balance change magnitudes to detect unusual activity
+    // TODO: Add tracking for balance update latency by provider
+
     // Process each connection
     for (const connection of connections) {
       try {
         // Get fresh account data from Plaid
         const plaidAccounts = await getAccounts(connection.accessToken);
 
+        // TODO: Add support for other providers (Teller, GoCardless, etc.)
+        // TODO: Add validation of the returned account data
+        // TODO: Add proper error handling for provider-specific error codes
+
         // Update each account's balance
         for (const plaidAccount of plaidAccounts) {
           const bankAccount = connection.accounts.find(
             (acc) => acc.plaidAccountId === plaidAccount.plaidAccountId
           );
+
+          // TODO: Add change detection to only update when balances actually change
+          // TODO: Add validation for suspicious balance changes (large unexpected changes)
 
           if (bankAccount) {
             await prisma.bankAccount.update({
@@ -74,6 +91,9 @@ export const updateBalancesJob = schedules.task({
               where: { id: bankAccount.id },
             });
             accountsUpdated++;
+
+            // TODO: Add historical balance tracking for trend analysis
+            // TODO: Add balance alerts for accounts reaching low balance thresholds
           }
         }
 
@@ -85,6 +105,8 @@ export const updateBalancesJob = schedules.task({
           where: { id: connection.id },
         });
 
+        // TODO: Track the time taken to update each connection for performance monitoring
+
         successCount++;
       } catch (error) {
         const errorMessage =
@@ -94,6 +116,9 @@ export const updateBalancesJob = schedules.task({
         );
 
         errorCount++;
+
+        // TODO: Add retry mechanism for transient errors before marking as failed
+        // TODO: Add detailed error categorization by provider and error type
 
         // If the error seems to be authentication-related, mark for reconnection
         if (
@@ -108,15 +133,26 @@ export const updateBalancesJob = schedules.task({
             },
             where: { id: connection.id },
           });
+
+          // TODO: Add user notification for required reauth to reduce service interruption
+          // TODO: Add automatic reauth attempt for supported providers/integration methods
         }
+
+        // TODO: Add escalation for critical accounts that fail balance updates repeatedly
       }
     }
+
+    // TODO: Add alerting when error rates exceed normal thresholds
+    // TODO: Add trend analysis to detect declining provider reliability
+    // TODO: Add metrics for balance update accuracy compared to transaction activity
 
     return {
       accountsUpdated,
       connectionsProcessed: connections.length,
       errorCount,
       successCount,
+      // TODO: Add detailed breakdown of update timing and performance metrics
+      // TODO: Add error categorization by provider and error type
     };
   },
 });

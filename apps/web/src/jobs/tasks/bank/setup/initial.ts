@@ -52,6 +52,8 @@ export const initialSetupJob = schemaTask({
   schema: z.object({
     teamId: z.string(),
     connectionId: z.string(),
+    // TODO: Add validation for expected connection types
+    // TODO: Add optional parameters for custom sync preferences
   }),
   maxDuration: 300,
   queue: {
@@ -73,7 +75,10 @@ export const initialSetupJob = schemaTask({
     const { teamId, connectionId } = payload;
     logger.info(`Starting initial setup for institution ${connectionId}`);
 
-    // S  chedule the bank sync task to run daily at a random time to distribute load
+    // TODO: Add validation that the team and connection exist before proceeding
+    // TODO: Add handling for retries if this job is re-run
+
+    // Schedule the bank sync task to run daily at a random time to distribute load
     // Use a deduplication key to prevent duplicate schedules for the same team
     // Add teamId as externalId to use it in the bankSyncScheduler task
     await schedules.create({
@@ -84,11 +89,18 @@ export const initialSetupJob = schemaTask({
       deduplicationKey: `${teamId}-${bankSyncScheduler.id}`,
     });
 
+    // TODO: Add validation that the schedule was created successfully
+    // TODO: Add flexibility for custom schedule frequencies based on user tier or preferences
+
     // Run initial sync for transactions and balance for the connection
     await syncConnection.triggerAndWait({
       connectionId,
       manualSync: true,
     });
+
+    // TODO: Add error handling for the initial sync failure
+    // TODO: Add progress tracking and status updates during initial sync
+    // TODO: Add validation of synced data quality and completeness
 
     // And run once more to ensure all transactions are fetched on the providers side
     // GoCardLess, Teller and Plaid can take up to 3 minutes to fetch all transactions
@@ -102,5 +114,12 @@ export const initialSetupJob = schemaTask({
         delay: '5m',
       }
     );
+
+    // TODO: Add verification that the delayed sync was successfully scheduled
+    // TODO: Add webhook registration and validation for providers that support it
+    // TODO: Add monitoring for initial sync completion with alerts for failures
+
+    // TODO: Return synchronization status and statistics to the caller
+    // TODO: Add user notification upon successful setup completion
   },
 });

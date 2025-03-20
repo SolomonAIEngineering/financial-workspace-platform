@@ -164,7 +164,7 @@ export function TeamSection({ userId }: TeamSectionProps) {
                     key={selectedTeam.id}
                     team={selectedTeam}
                     userRole={getUserRoleInTeam(selectedTeam.id)}
-                    onManageTeam={() => { }}
+                    onManageTeam={() => {}}
                     router={router}
                   />
                 )}
@@ -176,7 +176,7 @@ export function TeamSection({ userId }: TeamSectionProps) {
         </CardContent>
 
         <TeamActions
-          onViewAllTeams={() => { }}
+          onViewAllTeams={() => {}}
           onCreateTeam={handleOpenCreateTeamSheet}
           teams={teams}
           selectedTeamId={selectedTeamId}
