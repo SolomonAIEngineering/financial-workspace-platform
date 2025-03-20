@@ -589,7 +589,7 @@ model Transaction {
 
   // Add this field for recurring transaction reference
   recurringTransactionId String?
-  recurringTransaction   RecurringTransaction? @relation("TransactionToRecurringTransaction", fields: [recurringTransactionId], references: [id])
+  recurringTransaction   RecurringTransaction? @relation("TransactionToRecurringTransaction", fields: [recurringTransactionId], references: [id], onDelete: SetNull)
 
   // Indexes for fast querying
   @@index([userId])
@@ -614,7 +614,7 @@ model RecurringTransaction {
   
   // Make bank account required
   bankAccountId String            // Required bank account ID
-  bankAccount   BankAccount       @relation(fields: [bankAccountId], references: [id])
+  bankAccount   BankAccount       @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
   
   // Basic information
   title         String    // E.g., "Netflix Subscription", "Rent Payment"
@@ -651,7 +651,7 @@ model RecurringTransaction {
   
   // Add bank account specific details
   targetAccountId     String?                  // For transfers: destination account
-  targetAccount       BankAccount? @relation("RecurringTransferDestination", fields: [targetAccountId], references: [id])
+  targetAccount       BankAccount? @relation("RecurringTransferDestination", fields: [targetAccountId], references: [id], onDelete: SetNull)
   affectAvailableBalance Boolean @default(true) // Whether this affects available balance calculations
   
   // Execution tracking

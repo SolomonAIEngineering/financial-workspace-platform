@@ -11,7 +11,7 @@ import { prisma } from '@/server/db';
  * @returns User data including profile, team, and bank connections
  */
 export async function GET(request: Request) {
-  console.log('📡 /api/auth/me endpoint called');
+  console.info('📡 /api/auth/me endpoint called');
 
   try {
     // Get userId from query parameters or headers
@@ -20,10 +20,10 @@ export async function GET(request: Request) {
     const userIdFromHeader = request.headers.get('X-User-ID');
     const userId = userIdFromQuery || userIdFromHeader;
 
-    console.log('🔍 Extracted userId from request:', userId);
+    console.info('🔍 Extracted userId from request:', userId);
 
     if (!userId) {
-      console.log('❌ No userId provided, returning 400');
+      console.info('❌ No userId provided, returning 400');
       return NextResponse.json(
         { error: 'UserId is required' },
         {
@@ -35,7 +35,7 @@ export async function GET(request: Request) {
       );
     }
 
-    console.log(
+    console.info(
       '🔍 Fetching detailed user data from database for userId:',
       userId
     );
@@ -50,6 +50,10 @@ export async function GET(request: Request) {
         firstName: true,
         lastName: true,
         teamId: true,
+        username: true,
+        organizationName: true,
+        organizationUnit: true,
+        department: true,
         team: {
           select: {
             id: true,
@@ -71,7 +75,7 @@ export async function GET(request: Request) {
     });
 
     if (!userData) {
-      console.log('❌ User data not found in database, returning 404');
+      console.info('❌ User data not found in database, returning 404');
       return NextResponse.json(
         { error: 'User not found' },
         {
@@ -83,7 +87,7 @@ export async function GET(request: Request) {
       );
     }
 
-    console.log(
+    console.info(
       '✅ User data retrieved successfully:',
       JSON.stringify({
         id: userData.id,
@@ -98,7 +102,7 @@ export async function GET(request: Request) {
 
     // Check request headers for debugging
     const headers = Object.fromEntries(request.headers.entries());
-    console.log(
+    console.info(
       '📋 Request headers:',
       JSON.stringify({
         cookie: headers.cookie
@@ -109,6 +113,11 @@ export async function GET(request: Request) {
         'x-user-id': headers['x-user-id'] || 'Not present',
       })
     );
+
+    // if no department name make it an empty string
+    if (userData.department === null) userData.department = '';
+    if (userData.organizationName === null) userData.organizationName = '';
+    if (userData.organizationUnit === null) userData.organizationUnit = '';
 
     // Return the data with caching headers
     // private: only cache in browser, not in shared caches

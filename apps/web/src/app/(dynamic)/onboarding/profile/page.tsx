@@ -33,6 +33,9 @@ export default async function ProfilePage() {
           profileImageUrl: currentUser?.profileImageUrl || '',
           firstName: currentUser?.firstName || '',
           lastName: currentUser?.lastName || '',
+          username: currentUser?.username || '',
+          organizationName: currentUser?.organizationName || '',
+          organizationUnit: currentUser?.organizationUnit || '',
         }}
       />
     </div>

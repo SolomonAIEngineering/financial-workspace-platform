@@ -235,7 +235,12 @@ export function NavItem({
 
   const wrappedElement =
     mounted && href ? (
-      <Link href={href} target={href.startsWith('http') ? '_blank' : ''}>
+      <Link
+        href={href}
+        {...(href.startsWith('http')
+          ? { target: '_blank', rel: 'noopener noreferrer' }
+          : {})}
+      >
         {content}
       </Link>
     ) : (
