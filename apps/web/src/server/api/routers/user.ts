@@ -325,17 +325,22 @@ export const userRouter = createRouter({
       // Continue with account deletion even if Loops deletion fails
     }
 
-    // First delete team associations to avoid foreign key constraint violation
-    await prisma.usersOnTeam.deleteMany({
-      where: { userId: ctx.userId },
-    });
+    try {
+      // With onDelete: Cascade set in the Prisma schema,
+      // we don't need to manually delete related records first
+      // Just delete the user and all related records will be deleted automatically
+      await prisma.user.delete({
+        where: { id: ctx.userId },
+      });
 
-    // Now we can safely delete the user
-    await prisma.user.delete({
-      where: { id: ctx.userId },
-    });
-
-    return { success: true };
+      return { success: true };
+    } catch (error) {
+      console.error('Error during account deletion:', error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: `Failed to delete account: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      });
+    }
   }),
 
   /**
@@ -426,7 +431,7 @@ export const userRouter = createRouter({
     ];
     const professionalInfoCompleteness = Math.round(
       (professionalInfo.filter((f) => !!f).length / professionalInfo.length) *
-        100
+      100
     );
 
     const contactInfo = [
