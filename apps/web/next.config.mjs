@@ -18,10 +18,7 @@ let nextConfig = {
     ignoreDuringBuilds: debug,
   },
   // Enable transpilation of our local packages
-  transpilePackages: [
-    '@solomonai/platform-config',
-    '@solomonai/email'
-  ],
+  transpilePackages: ['@solomonai/platform-config', '@solomonai/email'],
   // https://nextjs.org/docs/basic-features/image-optimization#domains
   images: {
     remotePatterns: [

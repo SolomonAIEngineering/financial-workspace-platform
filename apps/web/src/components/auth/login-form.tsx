@@ -6,7 +6,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { Button } from '@/registry/default/potion-ui/button';
 import { CardTitle } from '../ui/card';
 import { Icons } from '@/components/ui/icons';
-import Link from 'next/link';
+import { Link } from '@/components/ui/link';
 import { cn } from '@udecode/cn';
 import { encodeURL } from '@/lib/url/encodeURL';
 import { useQueryState } from 'nuqs';
@@ -49,8 +49,8 @@ export function LoginForm({
             provider: 'github',
             search: callbackUrl
               ? {
-                callbackUrl,
-              }
+                  callbackUrl,
+                }
               : undefined,
           })}
           target="_self"
@@ -70,8 +70,8 @@ export function LoginForm({
             provider: 'google',
             search: callbackUrl
               ? {
-                callbackUrl,
-              }
+                  callbackUrl,
+                }
               : undefined,
           })}
           target="_self"
@@ -101,7 +101,7 @@ export function LoginForm({
         <p className="text-center text-xs leading-relaxed text-muted-foreground">
           By continuing, you agree to our{' '}
           <Link
-            className="underline unpderline-offset-4 hover:text-foreground"
+            className="unpderline-offset-4 underline hover:text-foreground"
             href={routes.terms()}
             prefetch={true}
           >

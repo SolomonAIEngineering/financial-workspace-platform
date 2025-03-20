@@ -1,11 +1,10 @@
 import * as React from 'react';
 
-import { cn } from '@udecode/cn';
-import Link from 'next/link';
-
-import { SidebarList } from '@/components/chat/sidebar/sidebar-list';
 import { Icons } from '@/components/ui/icons';
+import { Link } from '@/components/ui/link';
+import { SidebarList } from '@/components/chat/sidebar/sidebar-list';
 import { buttonVariants } from '@/registry/default/potion-ui/button';
+import { cn } from '@udecode/cn';
 
 export function ChatHistory() {
   return (

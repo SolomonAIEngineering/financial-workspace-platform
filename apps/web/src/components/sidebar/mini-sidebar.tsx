@@ -24,7 +24,7 @@ import {
 import React, { useState } from 'react';
 
 import { Icons } from '../ui/icons';
-import Link from 'next/link';
+import { Link } from '@/components/ui/link';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
 import { cn } from '@udecode/cn';

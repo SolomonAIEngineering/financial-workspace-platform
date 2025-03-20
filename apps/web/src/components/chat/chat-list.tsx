@@ -1,7 +1,7 @@
 'use client';
 
 import { Icons } from '@/components/ui/icons';
-import Link from 'next/link';
+import { Link } from '@/components/ui/link';
 import type { UIState } from '@/components/ai/utils/ai.types';
 import { routes } from '@/lib/navigation/routes';
 

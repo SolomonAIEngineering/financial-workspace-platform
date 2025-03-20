@@ -1,6 +1,6 @@
 import { Button } from '@/registry/default/potion-ui/button';
 import { CheckCircle } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/components/ui/link';
 import { redirect } from 'next/navigation';
 import { routes } from '@/lib/navigation/routes';
 import { trpc } from '@/trpc/server';

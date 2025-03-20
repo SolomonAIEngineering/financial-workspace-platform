@@ -39,47 +39,47 @@ export const TEXT_STYLE_ITEMS: {
   label: string;
   tooltip: string;
 }[] = [
-    {
-      key: TextStyle.DEFAULT,
-      fontFamily: 'inherit',
-      label: 'Default',
-      tooltip: 'Standard sans-serif',
-    },
-    {
-      key: TextStyle.SERIF,
-      fontFamily: 'Lyon-Text, Georgia, ui-serif, serif',
-      label: 'Serif',
-      tooltip: 'Elegant style for formal writing',
-    },
-    {
-      key: TextStyle.MONO,
-      fontFamily: 'iawriter-mono, Nitti, Menlo, Courier, monospace',
-      label: 'Mono',
-      tooltip: 'Fixed-width font for code',
-    },
-  ];
+  {
+    key: TextStyle.DEFAULT,
+    fontFamily: 'inherit',
+    label: 'Default',
+    tooltip: 'Standard sans-serif',
+  },
+  {
+    key: TextStyle.SERIF,
+    fontFamily: 'Lyon-Text, Georgia, ui-serif, serif',
+    label: 'Serif',
+    tooltip: 'Elegant style for formal writing',
+  },
+  {
+    key: TextStyle.MONO,
+    fontFamily: 'iawriter-mono, Nitti, Menlo, Courier, monospace',
+    label: 'Mono',
+    tooltip: 'Fixed-width font for code',
+  },
+];
 
 const SWITCH_ITEMS: {
   key: 'fullWidth' | 'lockPage' | 'smallText' | 'toc';
   label: string;
 }[] = [
-    {
-      key: 'smallText',
-      label: 'Small text',
-    },
-    {
-      key: 'fullWidth',
-      label: 'Full width',
-    },
-    {
-      key: 'lockPage',
-      label: 'Lock page',
-    },
-    {
-      key: 'toc',
-      label: 'Table of contents',
-    },
-  ];
+  {
+    key: 'smallText',
+    label: 'Small text',
+  },
+  {
+    key: 'fullWidth',
+    label: 'Full width',
+  },
+  {
+    key: 'lockPage',
+    label: 'Lock page',
+  },
+  {
+    key: 'toc',
+    label: 'Table of contents',
+  },
+];
 
 export const DocumentMenu = React.memo(() => {
   return (

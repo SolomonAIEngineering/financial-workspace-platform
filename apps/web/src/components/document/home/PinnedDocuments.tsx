@@ -1,12 +1,9 @@
-import React from 'react';
-
 import type { Document, User } from '@/server/types/index';
 
-import { motion } from 'framer-motion';
-
-import { WithSkeleton } from '@/components/ui/skeleton';
-
 import { DocumentCard } from './DocumentCard';
+import React from 'react';
+import { WithSkeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 /**
  * Props for the PinnedDocuments component
@@ -68,7 +65,7 @@ export function PinnedDocuments({
 
   return (
     <motion.div
-      className="mb-8"
+      className="mb-8 flex flex-col gap-4"
       animate={{ opacity: 1 }}
       initial={{ opacity: 0 }}
       transition={{ duration: 0.3 }}

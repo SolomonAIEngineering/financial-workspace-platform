@@ -1,7 +1,7 @@
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 import { Button } from '@/registry/default/potion-ui/button';
-import Link from 'next/link';
+import { Link } from '@/components/ui/link';
 import { Progress } from '@/registry/default/potion-ui/progress';
 import { getUserOnboardingStatus } from '@/lib/onboarding';
 import { trpc } from '@/trpc/server';

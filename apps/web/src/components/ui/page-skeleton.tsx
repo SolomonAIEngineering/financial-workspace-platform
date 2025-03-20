@@ -111,7 +111,7 @@ export function PageSkeleton({
         {/* Decorative accent line */}
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-primary/0 via-primary/20 to-primary/0" />
 
-        <div className="mx-auto flex w-full max-w-screen-2xl flex-col gap-2">
+        <div className="flex w-full max-w-screen-2xl flex-col gap-2">
           {/* Refined Breadcrumbs */}
           {breadcrumbs && breadcrumbs.length > 0 && (
             <motion.div
@@ -239,7 +239,7 @@ export function PageSkeleton({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="mx-auto h-full w-full max-w-screen-2xl"
+            className="mx-auto h-full w-full max-w-screen"
           >
             {isLoading ? (
               <div className="flex h-full items-center justify-center">

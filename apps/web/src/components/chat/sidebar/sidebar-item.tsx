@@ -2,21 +2,20 @@
 
 import * as React from 'react';
 
-import type { Chat } from '@/components/ai/utils/ai.types';
-
-import { cn } from '@udecode/cn';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-import { Icons } from '@/components/ui/icons';
-import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { buttonVariants } from '@/registry/default/potion-ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/registry/default/potion-ui/tooltip';
+
+import type { Chat } from '@/components/ai/utils/ai.types';
+import { Icons } from '@/components/ui/icons';
+import { Link } from '@/components/ui/link';
+import { buttonVariants } from '@/registry/default/potion-ui/button';
+import { cn } from '@udecode/cn';
+import { motion } from 'framer-motion';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { usePathname } from 'next/navigation';
 
 interface SidebarItemProps {
   chat: Chat;

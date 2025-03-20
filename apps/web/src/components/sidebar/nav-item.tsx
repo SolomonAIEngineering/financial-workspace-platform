@@ -13,7 +13,7 @@ import { api, useTRPC } from '@/trpc/react';
 import { Button } from '@/registry/default/potion-ui/button';
 import type { IconProps } from '../ui/icon';
 import { Icons } from '../ui/icons';
-import Link from 'next/link';
+import { Link } from '@/components/ui/link';
 import { Skeleton } from '../ui/skeleton';
 import { TooltipTC } from '@/registry/default/potion-ui/tooltip';
 import { cn } from '@udecode/cn';

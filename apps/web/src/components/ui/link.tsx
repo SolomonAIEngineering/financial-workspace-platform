@@ -7,10 +7,14 @@ export interface LinkProps extends NextLinkProps {
   className?: string;
   children?: React.ReactNode;
   hideArrow?: boolean;
+  prefetch?: boolean;
 }
 
 const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ className, href, children, hideArrow, ...props }, ref) => {
+  (
+    { className, href, children, hideArrow, prefetch = true, ...props },
+    ref
+  ) => {
     const isInternal =
       href?.toString().startsWith('/') || href?.toString().startsWith('#');
     const externalLinkProps = !isInternal
@@ -26,6 +30,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         )}
         ref={ref}
         href={href}
+        prefetch={prefetch}
         {...externalLinkProps}
         {...props}
       >

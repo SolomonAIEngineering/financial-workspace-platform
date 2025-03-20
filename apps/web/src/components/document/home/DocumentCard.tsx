@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Document, User } from '@/server/types/index';
 import React, { useState } from 'react';
 
-import Link from 'next/link';
+import { Link } from '@/components/ui/link';
 import { UserAvatar } from '@/components/user-avatar';
 import { WithSkeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
