@@ -1,0 +1,50 @@
+name: Production Deployment - Web
+env:
+  VERCEL_ORG_ID: team_x84egOHMvGonH5dGuyfwtCQU
+  VERCEL_PROJECT_ID: prj_OFiBLOvwehSAZh7USt6Fr8Lr0ztO
+  TURBO_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  TURBO_TEAM: team_x84egOHMvGonH5dGuyfwtCQU
+  SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING: true
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - apps/web/**
+      - packages/**
+  workflow_dispatch:
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+      # - name: 🔦 Run linter
+      #   run: pnpm run lint --filter=@midday/dashboard
+      # - name: 🪐 Check TypeScript
+      #   run: pnpm run typecheck --filter=@midday/dashboard
+      # - name: 🧪 Run unit tests
+      #   run: pnpm run test
+      - name: 📤 Pull Vercel Environment Information
+        run: pnpm dlx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: 🏗 Build Project Artifacts
+        run: pnpm dlx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: 🔄 Deploy Background Jobs
+        env:
+          TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+        run: |
+          TRIGGER_PROJECT_ID=${{ secrets.TRIGGER_PROJECT_ID }} pnpm dlx trigger.dev@3.3.12 deploy
+        working-directory: apps/web
+      - name: 🚀 Deploy to Vercel
+        run: |
+          pnpm dlx vercel deploy --prebuilt --prod --archive=tgz --token=${{ secrets.VERCEL_TOKEN }} > domain.txt
+          pnpm dlx vercel alias --scope=${{ secrets.VERCEL_ORG_ID }} --token=${{ secrets.VERCEL_TOKEN }} set `cat domain.txt` smb.solomon-ai.dev
