@@ -45,4 +45,4 @@ jobs:
           PLAID_SECRET: ${{ secrets.PLAID_SECRET }}
         working-directory: apps/web
         run: |
-          pnpm dlx prisma generate && pnpm run db:generate && pnpm dlx trigger.dev@3.3.12 deploy
+          pnpm run db:generate && pnpm dlx trigger.dev@3.3.12 deploy
