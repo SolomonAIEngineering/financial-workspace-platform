@@ -8,7 +8,7 @@ export function CurrencyInput({
   return (
     <NumericFormat
       thousandSeparator={thousandSeparator}
-      customInput={Input}
+      customInput={Input as any}
       {...props}
     />
   )

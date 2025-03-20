@@ -1,10 +1,12 @@
 'use client'
 
-import type { DialogProps } from '@radix-ui/react-dialog'
-import { Command as CommandPrimitive } from 'cmdk'
 import * as React from 'react'
-import { cn } from '../utils'
+
 import { Dialog, DialogContent } from './dialog'
+
+import { Command as CommandPrimitive } from 'cmdk'
+import type { DialogProps } from '@radix-ui/react-dialog'
+import { cn } from '../utils'
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -21,14 +23,14 @@ const Command = React.forwardRef<
 ))
 Command.displayName = CommandPrimitive.displayName
 
-interface CommandDialogProps extends DialogProps {}
+interface CommandDialogProps extends DialogProps { }
 
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
       <DialogContent className="max-w-[740px] overflow-hidden p-0" hideClose>
         <Command className="&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:text-muted-foreground h-[480px] [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5">
-          {children}
+          {children as any}
         </Command>
       </DialogContent>
     </Dialog>

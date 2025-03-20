@@ -1,13 +1,14 @@
 'use client'
 
-import { Command as CommandPrimitive, useCommandState } from 'cmdk'
-import { X } from 'lucide-react'
 import * as React from 'react'
+
+import { Command, CommandGroup, CommandItem, CommandList } from './command'
+import { Command as CommandPrimitive, useCommandState } from 'cmdk'
 import { forwardRef, useEffect } from 'react'
 
-import { cn } from '../utils'
 import { Badge } from './badge'
-import { Command, CommandGroup, CommandItem, CommandList } from './command'
+import { X } from 'lucide-react'
+import { cn } from '../utils'
 
 export interface Option {
   value: string
@@ -412,12 +413,12 @@ const MultipleSelector = React.forwardRef<
       if (onSearch && !creatable && Object.keys(options).length === 0) {
         return (
           <CommandItem value="-" disabled>
-            {emptyIndicator}
+            {emptyIndicator as any}
           </CommandItem>
         )
       }
 
-      return <CommandEmpty>{emptyIndicator}</CommandEmpty>
+      return <CommandEmpty>{emptyIndicator as any}</CommandEmpty>
     }, [creatable, emptyIndicator, onSearch, options])
 
     const selectables = React.useMemo<GroupOption>(
@@ -442,7 +443,7 @@ const MultipleSelector = React.forwardRef<
 
     return (
       <Command
-        ref={dropdownRef}
+        ref={dropdownRef as any}
         {...commandProps}
         onKeyDown={(e) => {
           handleKeyDown(e)
@@ -558,7 +559,7 @@ const MultipleSelector = React.forwardRef<
                   disabled ||
                   selected.length < 1 ||
                   selected.filter((s) => s.fixed).length === selected.length) &&
-                  'hidden',
+                'hidden',
               )}
             >
               <X className="text-muted-foreground hover:text-foreground size-4" />
@@ -617,10 +618,10 @@ const MultipleSelector = React.forwardRef<
                             className={cn(
                               'w-full cursor-pointer',
                               option.disable &&
-                                'text-muted-foreground cursor-default',
+                              'text-muted-foreground cursor-default',
                             )}
                           >
-                            {renderOption ? renderOption(option) : option.label}
+                            {renderOption ? (renderOption(option) as any) : option.label}
                           </CommandItem>
                         )
                       })}

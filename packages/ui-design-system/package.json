@@ -68,6 +68,7 @@
     "./input-otp": "./src/components/input-otp.tsx",
     "./label": "./src/components/label.tsx",
     "./navigation-menu": "./src/components/navigation-menu.tsx",
+    "./next-link": "./src/components/next-link.tsx",
     "./popover": "./src/components/popover.tsx",
     "./postcss": "./postcss.config.js",
     "./progress": "./src/components/progress.tsx",

@@ -71,6 +71,7 @@
     "dist",
     "**/vault",
     "**/_vault",
-    "**/build-registry.mts"
+    "**/build-registry.mts",
+    "**/*.stories.tsx"
   ]
 }

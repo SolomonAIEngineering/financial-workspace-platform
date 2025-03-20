@@ -12,9 +12,9 @@ import {
 } from './command'
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
 
+import { Button } from './button'
 import { CommandList } from 'cmdk'
 import { cn } from '../utils'
-import { Button } from './button'
 
 export type ComboboxItem = {
   id: string
@@ -96,7 +96,7 @@ export function ComboboxDropdown<T extends ComboboxItem>({
                   const foundItem = items.find((item) => item.id === id)
 
                   if (!foundItem) {
-                    console.log('No item found', id)
+                    console.info('No item found', id)
                     return
                   }
 
@@ -106,7 +106,7 @@ export function ComboboxDropdown<T extends ComboboxItem>({
                 }}
               >
                 {renderListItem ? (
-                  renderListItem({ isChecked, item })
+                  renderListItem({ isChecked, item }) as any
                 ) : (
                   <>
                     <Check
@@ -122,7 +122,7 @@ export function ComboboxDropdown<T extends ComboboxItem>({
             )
           })}
 
-          <CommandEmpty>{emptyResults ?? 'No item found'}</CommandEmpty>
+          <CommandEmpty>{emptyResults ?? 'No item found' as any}</CommandEmpty>
 
           {showCreate && (
             <CommandItem
@@ -138,7 +138,7 @@ export function ComboboxDropdown<T extends ComboboxItem>({
                 event.stopPropagation()
               }}
             >
-              {renderOnCreate ? renderOnCreate(inputValue) : null}
+              {renderOnCreate ? (renderOnCreate(inputValue) as any) : null}
             </CommandItem>
           )}
         </CommandList>

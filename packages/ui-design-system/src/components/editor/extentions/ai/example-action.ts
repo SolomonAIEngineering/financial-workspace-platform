@@ -11,7 +11,7 @@ type Params = {
 export async function generateEditorContent({ input, context }: Params) {
   // Check if we're running in a browser (like Storybook)
   if (typeof window !== 'undefined') {
-    console.log(
+    console.info(
       'AI features are disabled in browser environments like Storybook',
     )
     // Return a mock object that has a similar structure but doesn't use any server-only code
@@ -30,12 +30,12 @@ export async function generateEditorContent({ input, context }: Params) {
 
     const stream = createStreamableValue('')
 
-    ;(async () => {
-      const { textStream } = await streamText({
-        model: openai('gpt-4o-mini'),
-        prompt: input,
-        temperature: 0.8,
-        system: `
+      ; (async () => {
+        const { textStream } = await streamText({
+          model: openai('gpt-4o-mini'),
+          prompt: input,
+          temperature: 0.8,
+          system: `
           You are an expert AI assistant specializing in content generation and improvement. Your task is to enhance or modify text based on specific instructions. Follow these guidelines:
 
           1. Language: Always respond in the same language as the input prompt.
@@ -46,14 +46,14 @@ export async function generateEditorContent({ input, context }: Params) {
           Begin your response directly with the relevant text or information.
         ${context}
   `,
-      })
+        })
 
-      for await (const delta of textStream) {
-        stream.update(delta)
-      }
+        for await (const delta of textStream) {
+          stream.update(delta)
+        }
 
-      stream.done()
-    })()
+        stream.done()
+      })()
 
     return { output: stream.value }
   } catch (error) {

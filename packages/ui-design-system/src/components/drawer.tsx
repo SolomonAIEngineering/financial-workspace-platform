@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+
 import { Drawer as DrawerPrimitive } from 'vaul'
 import { cn } from '../utils'
 
@@ -17,7 +18,7 @@ Drawer.displayName = 'Drawer'
 
 const DrawerTrigger = DrawerPrimitive.Trigger
 
-const DrawerPortal = DrawerPrimitive.Portal
+const DrawerPortal = DrawerPrimitive.Portal as React.FC<React.PropsWithChildren>
 
 const DrawerClose = DrawerPrimitive.Close
 
