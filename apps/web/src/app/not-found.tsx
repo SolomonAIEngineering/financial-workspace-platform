@@ -1,7 +1,7 @@
+import { LinkButton } from '@/registry/default/potion-ui/button';
 import { MainScreen } from '@/components/screens/main-screen';
 import { StaticLayout } from '@/components/screens/static-layout';
 import { routes } from '@/lib/navigation/routes';
-import { LinkButton } from '@/registry/default/potion-ui/button';
 
 export default function NotFound() {
   return (
