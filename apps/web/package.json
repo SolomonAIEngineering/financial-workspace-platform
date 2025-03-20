@@ -118,7 +118,7 @@
     "@trigger.dev/express": "3.3.12",
     "@trigger.dev/nextjs": "3.3.12",
     "@trigger.dev/react": "3.3.12",
-    "@trigger.dev/react-hooks": "^3.3.12",
+    "@trigger.dev/react-hooks": "3.3.12",
     "@trigger.dev/sdk": "3.3.12",
     "@trpc/client": "11.0.0-rc.648",
     "@trpc/react-query": "11.0.0-rc.648",
