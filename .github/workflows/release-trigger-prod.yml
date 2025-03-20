@@ -35,7 +35,7 @@ jobs:
         run: pnpm build-packages
       - name: Generate Prisma Client
         working-directory: apps/web
-        run: pnpm dlx prisma generate
+        run: pnpm run db:generate
       - name: 🚀 Deploy Trigger.dev
         timeout-minutes: 5
         env:

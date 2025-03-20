@@ -42,15 +42,15 @@ jobs:
         run: pnpm build-packages
       - name: Generate Prisma Client
         working-directory: apps/web
-        run: pnpm dlx prisma generate
-      - name: 🏗 Build Project Artifacts
-        run: pnpm dlx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm run db:generate
       - name: 🔄 Deploy Background Jobs
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
         run: |
           TRIGGER_PROJECT_ID=${{ secrets.TRIGGER_PROJECT_ID }} pnpm dlx trigger.dev@3.3.12 deploy
         working-directory: apps/web
+      - name: 🏗 Build Project Artifacts
+        run: pnpm dlx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: 🚀 Deploy to Vercel
         run: |
           pnpm dlx vercel deploy --prebuilt --prod --archive=tgz --token=${{ secrets.VERCEL_TOKEN }} > domain.txt
