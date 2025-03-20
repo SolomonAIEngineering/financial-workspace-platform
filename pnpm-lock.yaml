@@ -215,6 +215,9 @@ importers:
       '@solomonai/prisma':
         specifier: workspace:*
         version: link:../../packages/prisma
+      '@solomonai/ui-design-system':
+        specifier: workspace:*
+        version: link:../../packages/ui-design-system
       '@t3-oss/env-core':
         specifier: ^0.12.0
         version: 0.12.0(typescript@5.7.3)(zod@3.24.2)
