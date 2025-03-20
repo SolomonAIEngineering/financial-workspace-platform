@@ -5,28 +5,6 @@ export type Generated<T> =
     : ColumnType<T, T | undefined, T>
 export type Timestamp = ColumnType<Date, Date | string, Date | string>
 
-export const FollowStatus = {
-  NONE: 'NONE',
-  FOLLOWING: 'FOLLOWING',
-  MUTED: 'MUTED',
-  BOOKMARKED: 'BOOKMARKED',
-} as const
-export type FollowStatus = (typeof FollowStatus)[keyof typeof FollowStatus]
-export const SentimentType = {
-  POSITIVE: 'POSITIVE',
-  NEUTRAL: 'NEUTRAL',
-  NEGATIVE: 'NEGATIVE',
-  MIXED: 'MIXED',
-} as const
-export type SentimentType = (typeof SentimentType)[keyof typeof SentimentType]
-export const MentionType = {
-  USER: 'USER',
-  TEAM: 'TEAM',
-  ALL: 'ALL',
-  ROLE: 'ROLE',
-  CUSTOM: 'CUSTOM',
-} as const
-export type MentionType = (typeof MentionType)[keyof typeof MentionType]
 export const BankConnectionStatus = {
   ACTIVE: 'ACTIVE',
   ERROR: 'ERROR',
@@ -279,6 +257,9 @@ export type BankAccount = {
   recurringMonthlyInflow: Generated<number | null>
   recurringMonthlyOutflow: Generated<number | null>
   nextScheduledTransaction: Timestamp | null
+  errorDetails: string | null
+  errorRetries: number | null
+  balance: number | null
 }
 export type BankAccountToTeam = {
   A: string
@@ -319,62 +300,21 @@ export type BankConnection = {
   lastExpiryNotifiedAt: Timestamp | null
   expiryNotificationCount: Generated<number>
   expiresAt: Timestamp | null
+  provider: string
+}
+export type BankConnectionToTeam = {
+  A: string
+  B: string
 }
 export type Comment = {
   id: string
   userId: string
-  /**
-   * @zod.string.describe("We store the IP address of the user who made the comment for security reasons.")
-   */
-  userIp: string | null
-  /**
-   * @zod.string.describe("We store the user agent of the user who made the comment for security reasons.")
-   */
-  userAgent: string | null
   discussionId: string
-  language: string | null
-  translatedContent: unknown | null
   content: string
   contentRich: unknown | null
   isEdited: Generated<boolean>
-  hasMedia: Generated<boolean>
   createdAt: Generated<Timestamp>
   updatedAt: Generated<Timestamp>
-  readingTimeMinutes: Generated<string>
-  wordCount: Generated<number>
-  sentiment: SentimentType | null
-  toxicityScore: string | null
-  parentId: string | null
-  depth: Generated<number>
-  likeCount: Generated<number>
-  viewCount: Generated<number>
-  isDeleted: Generated<boolean>
-  isPinned: Generated<boolean>
-  isHidden: Generated<boolean>
-  editHistory: unknown | null
-  lastReadAt: Timestamp | null
-  viewsByUser: unknown | null
-  impressionCount: Generated<number>
-  publishedAt: Timestamp | null
-  scheduledFor: Timestamp | null
-  expiresAt: Timestamp | null
-  isReported: Generated<boolean>
-  reportCount: Generated<number>
-  moderatedBy: string | null
-  moderatedAt: Timestamp | null
-  moderationReason: string | null
-  moderationHistory: unknown | null
-  autoModerated: Generated<boolean>
-  notifyReplies: Generated<boolean>
-  followStatus: Generated<FollowStatus>
-  maxChildDepth: number | null
-  isSolution: Generated<boolean>
-  markedAsSolutionBy: string | null
-  markedAsSolutionAt: Timestamp | null
-}
-export type CommentToTag = {
-  A: string
-  B: string
 }
 export type Customer = {
   id: string
@@ -424,9 +364,6 @@ export type Discussion = {
   isResolved: Generated<boolean>
   createdAt: Generated<Timestamp>
   updatedAt: Generated<Timestamp>
-  solutionCommentId: string | null
-  solvedAt: Timestamp | null
-  solvedBy: string | null
 }
 export type Document = {
   id: string
@@ -506,6 +443,7 @@ export type Inbox = {
 export type Invoice = {
   id: string
   team_id: string
+  title: string | null
   status: Generated<InvoiceStatus>
   customer_id: string | null
   customer_name: string | null
@@ -521,7 +459,6 @@ export type Invoice = {
   paid_at: Timestamp | null
   viewed_at: Timestamp | null
   reminder_sent_at: Timestamp | null
-  line_items: unknown | null
   from_details: unknown | null
   customer_details: unknown | null
   payment_details: unknown | null
@@ -539,6 +476,14 @@ export type Invoice = {
   user_id: string | null
   created_at: Generated<Timestamp>
   updated_at: Timestamp | null
+}
+export type InvoiceLineItem = {
+  id: string
+  invoice_id: string
+  name: string
+  quantity: number
+  price: number
+  unit: string | null
 }
 export type InvoiceTemplate = {
   id: string
@@ -576,21 +521,9 @@ export type InvoiceTemplate = {
   include_qr: boolean | null
   created_at: Generated<Timestamp>
 }
-export type Mention = {
-  id: string
-  userId: string
-  commentId: string
-  isRead: Generated<boolean>
-  readAt: Timestamp | null
-  isNotified: Generated<boolean>
-  notifiedAt: Timestamp | null
-  positionX: Generated<string>
-  positionY: Generated<string>
-  length: number | null
-  mentionType: Generated<MentionType>
-  context: string | null
-  createdAt: Generated<Timestamp>
-  updatedAt: Timestamp
+export type InvoiceToInvoiceLineItem = {
+  A: string
+  B: string
 }
 export type Notification = {
   id: string
@@ -607,14 +540,6 @@ export type OauthAccount = {
   providerId: string
   providerUserId: string
   userId: string
-}
-export type Reaction = {
-  id: string
-  type: string
-  emoji: string | null
-  userId: string
-  commentId: string
-  createdAt: Generated<Timestamp>
 }
 export type RecurringTransaction = {
   id: string
@@ -718,18 +643,13 @@ export type SpendingInsight = {
 export type Tag = {
   id: string
   name: string
-  slug: string
-  description: string | null
   team_id: string
   created_at: Generated<Timestamp>
-  category: string | null
-  color: string | null
-  icon: string | null
-  isPublic: Generated<boolean>
 }
 export type Team = {
   id: string
   name: string | null
+  slug: string
   base_currency: string | null
   email: string | null
   logo_url: string | null
@@ -1009,7 +929,8 @@ export type UsersOnTeam = {
 }
 export type DB = {
   _BankAccountToTeam: BankAccountToTeam
-  _CommentToTag: CommentToTag
+  _BankConnectionToTeam: BankConnectionToTeam
+  _InvoiceToInvoiceLineItem: InvoiceToInvoiceLineItem
   apps: App
   Attachment: Attachment
   BankAccount: BankAccount
@@ -1023,12 +944,11 @@ export type DB = {
   exchange_rates: ExchangeRate
   File: File
   inbox: Inbox
+  invoice_line_items: InvoiceLineItem
   invoice_templates: InvoiceTemplate
   invoices: Invoice
-  Mention: Mention
   Notification: Notification
   OauthAccount: OauthAccount
-  Reaction: Reaction
   recurring_transactions: RecurringTransaction
   reports: Report
   Session: Session

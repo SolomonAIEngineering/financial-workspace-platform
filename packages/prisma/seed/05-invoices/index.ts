@@ -19,6 +19,7 @@ export const seedDatabase = async () => {
         OR: [
           { email: 'john.doe@example.com' },
           { email: 'jane.smith@example.com' },
+          { email: 'yoanyomba@solomon-ai.co' },
         ],
       },
     })
@@ -203,7 +204,7 @@ export const seedDatabase = async () => {
       // Create invoices for each customer
       for (const customer of createdCustomers) {
         // Create paid invoice
-        await prisma.invoice.create({
+        const paidInvoice = await prisma.invoice.create({
           data: {
             id: uuidv4(),
             teamId: team.id,
@@ -228,15 +229,6 @@ export const seedDatabase = async () => {
             currency: 'USD',
             note: 'Thank you for your business',
             internalNote: 'Payment received on time',
-            lineItems: [
-              {
-                description: 'Consulting Services',
-                quantity: 10,
-                price: 100.0,
-                amount: 1000.0,
-                taxRate: 10,
-              },
-            ],
             fromDetails: {
               name: team.name,
               email: team.email,
@@ -277,8 +269,19 @@ export const seedDatabase = async () => {
           },
         })
 
+        // Create line item for paid invoice
+        await prisma.invoiceLineItem.create({
+          data: {
+            id: uuidv4(),
+            invoiceId: paidInvoice.id,
+            name: 'Consulting Services',
+            quantity: 10,
+            price: 100.0
+          }
+        })
+
         // Create unpaid invoice
-        await prisma.invoice.create({
+        const unpaidInvoice = await prisma.invoice.create({
           data: {
             id: uuidv4(),
             teamId: team.id,
@@ -303,15 +306,6 @@ export const seedDatabase = async () => {
             currency: 'USD',
             note: 'Please pay within the due date',
             internalNote: 'Follow up if not paid by due date',
-            lineItems: [
-              {
-                description: 'Web Development',
-                quantity: 20,
-                price: 100.0,
-                amount: 2000.0,
-                taxRate: 10,
-              },
-            ],
             fromDetails: {
               name: team.name,
               email: team.email,
@@ -352,8 +346,19 @@ export const seedDatabase = async () => {
           },
         })
 
+        // Create line item for unpaid invoice
+        await prisma.invoiceLineItem.create({
+          data: {
+            id: uuidv4(),
+            invoiceId: unpaidInvoice.id,
+            name: 'Web Development',
+            quantity: 20,
+            price: 100.0
+          }
+        })
+
         // Create draft invoice
-        await prisma.invoice.create({
+        const draftInvoice = await prisma.invoice.create({
           data: {
             id: uuidv4(),
             teamId: team.id,
@@ -378,15 +383,6 @@ export const seedDatabase = async () => {
             currency: 'USD',
             note: 'Draft invoice - not yet sent',
             internalNote: 'Need to confirm details before sending',
-            lineItems: [
-              {
-                description: 'UI/UX Design',
-                quantity: 15,
-                price: 100.0,
-                amount: 1500.0,
-                taxRate: 10,
-              },
-            ],
             fromDetails: {
               name: team.name,
               email: team.email,
@@ -425,6 +421,17 @@ export const seedDatabase = async () => {
             createdAt: new Date(),
             updatedAt: new Date(),
           },
+        })
+
+        // Create line item for draft invoice
+        await prisma.invoiceLineItem.create({
+          data: {
+            id: uuidv4(),
+            invoiceId: draftInvoice.id,
+            name: 'UI/UX Design',
+            quantity: 15,
+            price: 100.0
+          }
         })
       }
     }

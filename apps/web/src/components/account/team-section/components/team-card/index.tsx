@@ -17,7 +17,7 @@ import { TeamCurrencySetting } from './team-settings/currency-setting';
 import { TeamFeaturesSetting } from './team-settings/features-setting';
 import { TeamInboxForwardingSetting } from './team-settings/inbox-forwarding-setting';
 import { TeamMembersList } from './team-members/members-list';
-import { TeamRole } from '@prisma/client';
+import { TeamRole } from '@solomonai/prisma/client';
 import { TeamSlugSetting } from './team-settings/slug-setting';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';

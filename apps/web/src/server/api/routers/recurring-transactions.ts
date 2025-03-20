@@ -1,4 +1,4 @@
-import { TransactionCategory, TransactionFrequency } from '@prisma/client';
+import { TransactionCategory, TransactionFrequency } from '@solomonai/prisma/client';
 
 import { TRPCError } from '@trpc/server';
 import { createRouter } from '@/server/api/trpc';
@@ -1061,7 +1061,7 @@ export const recurringTransactionsRouter = createRouter({
           const dayDiff = Math.round(
             (merchantTransactions[i].date.getTime() -
               merchantTransactions[i - 1].date.getTime()) /
-              (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24)
           );
           intervals.push(dayDiff);
         }

@@ -1,28 +1,12 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearchPostgres", "driverAdapters"]
-  binaryTargets = ["native", "debian-openssl-3.0.x"] //  "debian-openssl-3.0.x" for google functions
+  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-3.0.x"] //  "debian-openssl-3.0.x" for google functions
 }
 
 generator jsonSchema {
-  provider              = "prisma-json-schema-generator"
+  provider              = "npx prisma-json-schema-generator"
   includeRequiredFields = "true"
-}
-
-generator json {
-  provider = "prisma-json-types-generator"
-}
-
-generator types {
-  provider = "prisma-type-generator"
-  output   = "./server"
-}
-
-generator zod {
-  provider         = "zod-prisma-types"
-  createInputTypes = false
-  writeBarrelFiles = true
-  useMultipleFiles = true
 }
 
 datasource db {
@@ -31,9 +15,14 @@ datasource db {
 }
 
 generator kysely {
-  provider        = "prisma-kysely"
+  provider        = "npx prisma-kysely"
   previewFeatures = ["fullTextSearchPostgres"]
   output          = "./kysely"
+}
+
+generator types {
+  provider = "npx prisma-type-generator"
+  output   = "../src/server/types"
 }
 
 model Session {
@@ -146,22 +135,19 @@ model User {
   notifications Notification[]
 
   // New models from database schema
-  team           Team?           @relation(fields: [teamId], references: [id])
-  teamId         String?
-  usersOnTeams   UsersOnTeam[]
-  sentInvites    UserInvite[]    @relation("invites")
-  trackerEntries TrackerEntry[]
-  reports        Report[]
-  trackerReports TrackerReport[]
-  apps           App[]
-  Invoice        Invoice[]
-  Discussion     Discussion[]    @relation("SolutionProvider")
-  Reaction       Reaction[]
-  Mention        Mention[]
+  team                Team? @relation(fields: [teamId], references: [id])
+  teamId String?
+  usersOnTeams        UsersOnTeam[]
+  sentInvites         UserInvite[]     @relation("invites")
+  trackerEntries      TrackerEntry[]
+  reports             Report[]
+  trackerReports      TrackerReport[]
+  apps                App[]
 
   @@index([username])
   @@index([email])
   @@index([organizationName])
+  Invoice Invoice[]
 }
 
 model Document {
@@ -231,173 +217,23 @@ model Discussion {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-
-  // Discussion Resolution Feature: Add solution tracking
-  solutionCommentId String?
-  solutionComment   Comment? @relation("SolutionComment", fields: [solutionCommentId], references: [id])
-
-  // Discussion Resolution Feature: Add metadata about solution
-  solvedAt     DateTime?
-  solvedBy     String?
-  solvedByUser User?     @relation("SolutionProvider", fields: [solvedBy], references: [id])
-}
-
-// Enum for comment moderation status
-enum FollowStatus {
-  NONE
-  FOLLOWING
-  MUTED
-  BOOKMARKED
-}
-
-enum SentimentType {
-  POSITIVE
-  NEUTRAL
-  NEGATIVE
-  MIXED
 }
 
 model Comment {
   id String @id
 
-  userId    String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userIp    String? /// @zod.string.describe("We store the IP address of the user who made the comment for security reasons.")
-  userAgent String? /// @zod.string.describe("We store the user agent of the user who made the comment for security reasons.")
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   discussionId String
   discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
 
-  // Language and localization
-  language          String? // ISO language code
-  translatedContent Json? // Translations in other languages
-
   content     String
   contentRich Json?
   isEdited    Boolean @default(false)
-  hasMedia    Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
-
-  // Content analytics
-  readingTimeMinutes Decimal        @default(0)
-  wordCount          Int            @default(0)
-  sentiment          SentimentType? // Automated sentiment analysis
-  toxicityScore      Decimal? // Content moderation score
-
-  // Parent-child relationship for nested comments
-  parentId String?
-  parent   Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: SetNull)
-  replies  Comment[] @relation("CommentToComment")
-
-  // Comment depth control
-  depth Int @default(0) // Root comments have depth 0, replies increment
-
-  // Reactions and engagement
-  reactions Reaction[]
-  likeCount Int        @default(0)
-  viewCount Int        @default(0)
-
-  // Status fields
-  isDeleted Boolean @default(false)
-  isPinned  Boolean @default(false)
-  isHidden  Boolean @default(false)
-
-  // Metadata relationships
-  mentions Mention[]
-  tags     Tag[]
-
-  // Analytics and history
-  editHistory     Json? // Store previous versions
-  lastReadAt      DateTime?
-  viewsByUser     Json? // Track which users viewed the comment
-  impressionCount Int       @default(0) // How many times shown in feed
-
-  // Scheduling
-  publishedAt  DateTime?
-  scheduledFor DateTime?
-  expiresAt    DateTime?
-
-  // Moderation fields
-  isReported        Boolean   @default(false)
-  reportCount       Int       @default(0)
-  moderatedBy       String?
-  moderatedAt       DateTime?
-  moderationReason  String?
-  moderationHistory Json?
-  autoModerated     Boolean   @default(false)
-
-  // User experience settings
-  notifyReplies Boolean      @default(true)
-  followStatus  FollowStatus @default(NONE) // If user is following this comment thread
-
-  // System settings
-  maxChildDepth Int? // Optional override of system default depth limit
-
-  // Add relation for solved discussions
-  solvedDiscussions Discussion[] @relation("SolutionComment")
-
-  // Add fields to track solution status
-  isSolution         Boolean   @default(false)
-  markedAsSolutionBy String?
-  markedAsSolutionAt DateTime?
-}
-
-model Reaction {
-  id String @id @default(cuid())
-
-  type  String // Like, Love, Laugh, etc.
-  emoji String? // Unicode emoji
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  commentId String
-  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([userId, commentId, type])
-}
-
-enum MentionType {
-  USER
-  TEAM
-  ALL
-  ROLE
-  CUSTOM
-}
-
-model Mention {
-  id String @id @default(cuid())
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  commentId String
-  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
-
-  // Mention status tracking
-  isRead     Boolean   @default(false)
-  readAt     DateTime?
-  isNotified Boolean   @default(false)
-  notifiedAt DateTime?
-
-  // Mention position in text
-  positionX Decimal @default(0)
-  positionY Decimal @default(0)
-  length    Int? // Length of the mention
-
-  // Mention context
-  mentionType MentionType @default(USER) // USER, TEAM, ALL, etc.
-  context     String? // Additional context about the mention
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, commentId])
 }
 
 model File {
@@ -460,7 +296,7 @@ model BankConnection {
   disabled Boolean @default(false) // Whether this connection is disabled
 
   // Accounts associated with this connection
-  accounts BankAccount[]
+  accounts     BankAccount[]
 
   // Audit trail
   lastUpdated DateTime  @default(now())
@@ -478,6 +314,8 @@ model BankConnection {
   lastExpiryNotifiedAt    DateTime?
   expiryNotificationCount Int       @default(0)
   expiresAt               DateTime?
+  provider String
+  team Team[]
 
   @@index([userId])
   @@index([itemId])
@@ -553,25 +391,29 @@ model BankAccount {
   deletedAt   DateTime?
 
   // Add this relation
-  recurringTransactions         RecurringTransaction[]
+  recurringTransactions RecurringTransaction[]
   recurringTransferDestinations RecurringTransaction[] @relation("RecurringTransferDestination")
 
   // Add bank account balance projections
   balanceProjections Json? // Projected daily balances
-  scheduledInflows   Float? @default(0) // Sum of upcoming inflows
-  scheduledOutflows  Float? @default(0) // Sum of upcoming outflows
-
+  scheduledInflows Float? @default(0) // Sum of upcoming inflows
+  scheduledOutflows Float? @default(0) // Sum of upcoming outflows
+  
   // Add recurring transaction statistics
-  recurringMonthlyInflow   Float?    @default(0) // Sum of recurring monthly inflows
-  recurringMonthlyOutflow  Float?    @default(0) // Sum of recurring monthly outflows
+  recurringMonthlyInflow Float? @default(0) // Sum of recurring monthly inflows
+  recurringMonthlyOutflow Float? @default(0) // Sum of recurring monthly outflows
   nextScheduledTransaction DateTime? // Date of next scheduled transaction
-  Team                     Team[]
 
+  errorDetails String?
+  errorRetries Int?
+
+  balance Float?
   @@unique([userId, plaidAccountId])
   @@index([userId])
   @@index([bankConnectionId])
   @@index([type])
   @@index([status])
+  Team Team[]
 }
 
 // New Transaction model for enhanced financial tracking
@@ -580,8 +422,8 @@ model Transaction {
   userId String
 
   // Relationship to accounts
-  bankAccountId String
-  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+  bankAccountId    String
+  bankAccount      BankAccount    @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
 
   // Transaction details
   plaidTransactionId String?  @unique // Plaid's transaction ID (null for manual transactions)
@@ -594,25 +436,25 @@ model Transaction {
   pending            Boolean  @default(false)
 
   // Enhanced categorization
-  category        TransactionCategory?
-  subCategory     String?
-  categoryIconUrl String?
-  customCategory  String?
-
+  category           TransactionCategory?
+  subCategory        String?
+  categoryIconUrl    String?
+  customCategory     String?
+  
   // Comprehensive merchant data
-  merchantId       String? // Unique identifier for the merchant
-  merchantLogoUrl  String?
-  merchantCategory String? // Merchant category code (MCC)
-  merchantWebsite  String?
-  merchantPhone    String?
-  merchantAddress  String?
-  merchantCity     String?
-  merchantState    String?
-  merchantZip      String?
-  merchantCountry  String?
+  merchantId         String? // Unique identifier for the merchant
+  merchantLogoUrl    String?
+  merchantCategory   String? // Merchant category code (MCC)
+  merchantWebsite    String?
+  merchantPhone      String?
+  merchantAddress    String?
+  merchantCity       String?
+  merchantState      String?
+  merchantZip        String?
+  merchantCountry    String?
 
   // Location data
-  location  Json? // Stores address, city, region, postal code, country, lat/long
+  location Json? // Stores address, city, region, postal code, country, lat/long
   latitude  Float?
   longitude Float?
 
@@ -636,114 +478,114 @@ model Transaction {
   originalMerchantName String?
 
   // Financial reporting & analysis
-  fiscalYear    Int?
-  fiscalMonth   Int?
-  fiscalQuarter Int?
-  vatAmount     Float? // Value-added tax amount
-  vatRate       Float? // VAT percentage
-  taxAmount     Float? // Tax amount
-  taxRate       Float? // Tax percentage
-  taxDeductible Boolean @default(false)
-  taxExempt     Boolean @default(false)
-  taxCategory   String? // Income, capital gains, etc.
+  fiscalYear           Int?
+  fiscalMonth          Int?
+  fiscalQuarter        Int?
+  vatAmount            Float? // Value-added tax amount
+  vatRate              Float? // VAT percentage
+  taxAmount            Float? // Tax amount
+  taxRate              Float? // Tax percentage
+  taxDeductible        Boolean @default(false)
+  taxExempt            Boolean @default(false)
+  taxCategory          String? // Income, capital gains, etc.
 
   // Enhanced transaction attributes
-  status             String? // Cleared, reconciled, voided, etc.
-  transactionType    String? // Purchase, refund, payment, transfer, etc.
-  transactionMethod  String? // ACH, wire, card, cash, check, etc.
-  transactionChannel String? // In-person, online, mobile, ATM, etc.
+  status             String?  // Cleared, reconciled, voided, etc.
+  transactionType    String?  // Purchase, refund, payment, transfer, etc.
+  transactionMethod  String?  // ACH, wire, card, cash, check, etc.
+  transactionChannel String?  // In-person, online, mobile, ATM, etc.
 
   // Budgeting & financial planning
-  budgetCategory     String?
-  budgetSubcategory  String?
-  budgetId           String? // Reference to a budget
-  plannedExpense     Boolean @default(false) // Part of planned spending
-  discretionary      Boolean @default(false) // Discretionary vs. essential
-  needsWantsCategory String? // Needs, wants, savings
-  spendingGoalId     String? // Reference to a spending goal
+  budgetCategory      String?
+  budgetSubcategory   String?
+  budgetId            String? // Reference to a budget
+  plannedExpense      Boolean @default(false) // Part of planned spending
+  discretionary       Boolean @default(false) // Discretionary vs. essential
+  needsWantsCategory  String? // Needs, wants, savings
+  spendingGoalId      String? // Reference to a spending goal
 
   // Investment & business categorization
-  investmentCategory String? // For investment transactions
-  businessPurpose    String? // For business expenses
-  costCenter         String? // For business accounting
-  projectCode        String? // For project-based accounting
-  reimbursable       Boolean @default(false) // For expense reimbursement
-  clientId           String? // For client billing
-  invoiceId          String? // Related invoice
-
+  investmentCategory  String? // For investment transactions
+  businessPurpose     String? // For business expenses
+  costCenter          String? // For business accounting
+  projectCode         String? // For project-based accounting
+  reimbursable        Boolean @default(false) // For expense reimbursement
+  clientId            String? // For client billing
+  invoiceId           String? // Related invoice
+  
   // Personal finance management
-  excludeFromBudget   Boolean   @default(false)
-  isRecurring         Boolean   @default(false)
+  excludeFromBudget   Boolean @default(false)
+  isRecurring         Boolean @default(false)
   recurrenceId        String?
   recurringFrequency  String? // Weekly, monthly, etc.
-  recurringDay        Int? // Day of month/week
+  recurringDay        Int?    // Day of month/week
   estimatedNextDate   DateTime?
-  similarTransactions Int? // Count of similar transactions
+  similarTransactions Int?    // Count of similar transactions
 
   // Enrichment & insights
-  cashFlowCategory  String? // Income, expense, transfer, excluded
-  cashFlowType      String? // Fixed, variable
-  inflationCategory String? // For inflation analysis
-  confidenceScore   Float? // Confidence in categorization (0-1)
-  anomalyScore      Float? // How unusual this transaction is (0-1)
-  insightTags       String[] @default([]) // Auto-generated insights
+  cashFlowCategory    String? // Income, expense, transfer, excluded
+  cashFlowType        String? // Fixed, variable
+  inflationCategory   String? // For inflation analysis
+  confidenceScore     Float?  // Confidence in categorization (0-1)
+  anomalyScore        Float?  // How unusual this transaction is (0-1)
+  insightTags         String[] @default([]) // Auto-generated insights
 
   // User interaction & management
-  isManual       Boolean @default(false) // Manually entered
-  isModified     Boolean @default(false) // Modified from original
-  isVerified     Boolean @default(false) // Verified by user
-  isFlagged      Boolean @default(false) // Flagged for review
-  isHidden       Boolean @default(false) // Hidden from views
-  isLocked       Boolean @default(false) // Prevent edits
-  isReconciled   Boolean @default(false) // Reconciled with statement
-  needsAttention Boolean @default(false) // Needs user attention
-  reviewStatus   String? // Not reviewed, reviewed, needs review
-  userNotes      String? // User notes
-
+  isManual            Boolean @default(false) // Manually entered
+  isModified          Boolean @default(false) // Modified from original
+  isVerified          Boolean @default(false) // Verified by user
+  isFlagged           Boolean @default(false) // Flagged for review
+  isHidden            Boolean @default(false) // Hidden from views
+  isLocked            Boolean @default(false) // Prevent edits
+  isReconciled        Boolean @default(false) // Reconciled with statement
+  needsAttention      Boolean @default(false) // Needs user attention
+  reviewStatus        String?  // Not reviewed, reviewed, needs review
+  userNotes           String?  // User notes
+  
   // Tagging and organization
-  tags         String[]     @default([])
-  notes        String?
-  attachments  Attachment[]
-  customFields Json? // For user-defined fields
-  labels       String[]     @default([]) // Custom labels
+  tags                String[]     @default([])
+  notes               String?
+  attachments         Attachment[]
+  customFields        Json?        // For user-defined fields
+  labels              String[]     @default([]) // Custom labels
 
   // Split transaction support
   parentTransactionId String?
   parentTransaction   Transaction?  @relation("SplitTransactions", fields: [parentTransactionId], references: [id])
   splitTransactions   Transaction[] @relation("SplitTransactions")
   isSplit             Boolean       @default(false)
-  splitTotal          Float? // Total of split transactions
-  splitCount          Int? // Number of splits
+  splitTotal          Float?        // Total of split transactions
+  splitCount          Int?          // Number of splits
 
   // Enhanced search & filtering
-  searchableText String?                  @db.Text // For full-text search
-  ftsIndex       Unsupported("tsvector")? // Full text search index
-  dateYear       Int? // Year component of date
-  dateMonth      Int? // Month component of date
-  dateDay        Int? // Day component of date
-  dateDayOfWeek  Int? // Day of week (0-6)
-  dateWeekOfYear Int? // Week of year
-
+  searchableText      String?       @db.Text // For full-text search
+  ftsIndex            Unsupported("tsvector")?  // Full text search index
+  dateYear            Int?          // Year component of date
+  dateMonth           Int?          // Month component of date
+  dateDay             Int?          // Day component of date
+  dateDayOfWeek       Int?          // Day of week (0-6)
+  dateWeekOfYear      Int?          // Week of year
+  
   // Audit trail
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  importedAt        DateTime? // When transaction was imported
-  lastReviewedAt    DateTime? // When last reviewed
-  lastModifiedAt    DateTime? // When last modified by user
-  lastCategorizedAt DateTime? // When last categorized
-
-  categorySlug String?               @map("category_slug")
-  frequency    TransactionFrequency?
-  internal     Boolean?
-  notified     Boolean?
-  baseAmount   Float?                @map("base_amount")
-  baseCurrency String?               @map("base_currency")
-
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  importedAt          DateTime?     // When transaction was imported
+  lastReviewedAt      DateTime?     // When last reviewed
+  lastModifiedAt      DateTime?     // When last modified by user
+  lastCategorizedAt   DateTime?     // When last categorized
+  
+  categorySlug        String?       @map("category_slug") 
+  frequency           TransactionFrequency?
+  internal            Boolean?
+  notified            Boolean?
+  baseAmount          Float?        @map("base_amount")
+  baseCurrency        String?       @map("base_currency")
+  
   // New relations
-  transactionCategory CustomTransactionCategory? @relation("customCategoryToTransaction", fields: [categorySlug], references: [id])
-  transactionTags     TransactionTag[]
-  customAttachments   TransactionAttachment[]
-  inboxItems          Inbox[]
+  transactionCategory    CustomTransactionCategory?  @relation("customCategoryToTransaction", fields: [categorySlug], references: [id])
+  transactionTags        TransactionTag[]
+  customAttachments      TransactionAttachment[]
+  inboxItems             Inbox[]
 
   // Add this field for recurring transaction reference
   recurringTransactionId String?
@@ -762,108 +604,110 @@ model Transaction {
   @@index([dateYear, dateMonth]) // For monthly reports
   @@index([excludeFromBudget]) // For budget calculations
   @@index([recurringTransactionId])
+  
   @@map("transactions")
 }
 
 // Recurring Transaction model for subscriptions, bills, and scheduled payments
 model RecurringTransaction {
-  id String @id @default(cuid())
-
+  id            String   @id @default(cuid())
+  
   // Make bank account required
-  bankAccountId String // Required bank account ID
-  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id])
-
+  bankAccountId String            // Required bank account ID
+  bankAccount   BankAccount       @relation(fields: [bankAccountId], references: [id])
+  
   // Basic information
-  title       String // E.g., "Netflix Subscription", "Rent Payment"
-  description String?
-  amount      Float
-  currency    String
-
+  title         String    // E.g., "Netflix Subscription", "Rent Payment"
+  description   String?
+  amount        Float
+  currency      String
+  
   // Add original bank account balance at time of setup
   initialAccountBalance Float?
-
+  
   // Schedule information
-  frequency     TransactionFrequency // Weekly, monthly, annually, etc.
-  interval      Int                  @default(1) // Every X days/weeks/months
-  startDate     DateTime // When this recurring schedule starts
-  endDate       DateTime? // When this recurring schedule ends (null = indefinite)
-  dayOfMonth    Int? // For monthly: which day (1-31)
-  dayOfWeek     Int? // For weekly: which day (0-6, 0=Sunday)
-  weekOfMonth   Int? // For monthly: which week (1-5, -1=last)
-  monthOfYear   Int? // For yearly: which month (1-12)
-  executionDays Int[] // For custom frequencies: which days to execute
-
+  frequency           TransactionFrequency  // Weekly, monthly, annually, etc.
+  interval            Int                   @default(1) // Every X days/weeks/months
+  startDate           DateTime              // When this recurring schedule starts
+  endDate             DateTime?             // When this recurring schedule ends (null = indefinite)
+  dayOfMonth          Int?                  // For monthly: which day (1-31)
+  dayOfWeek           Int?                  // For weekly: which day (0-6, 0=Sunday)
+  weekOfMonth         Int?                  // For monthly: which week (1-5, -1=last)
+  monthOfYear         Int?                  // For yearly: which month (1-12)
+  executionDays       Int[]                 // For custom frequencies: which days to execute
+  
   // Additional schedule options
-  skipWeekends      Boolean @default(false) // Move to previous Friday or next Monday
-  adjustForHolidays Boolean @default(false) // Adjust for banking holidays
-  allowExecution    Boolean @default(true) // Whether execution is currently allowed
-  limitExecutions   Int? // Maximum number of executions
-
+  skipWeekends        Boolean  @default(false) // Move to previous Friday or next Monday
+  adjustForHolidays   Boolean  @default(false) // Adjust for banking holidays
+  allowExecution      Boolean  @default(true)  // Whether execution is currently allowed
+  limitExecutions     Int?                     // Maximum number of executions
+  
   // Template for created transactions
-  transactionTemplate Json? // Template data for created transactions
-  categorySlug        String? // Default category
-  tags                String[] @default([]) // Default tags
-  notes               String? // Default notes
-  customFields        Json? // Default custom fields
-
+  transactionTemplate Json?                    // Template data for created transactions
+  categorySlug        String?                  // Default category
+  tags                String[]  @default([])   // Default tags
+  notes               String?                  // Default notes
+  customFields        Json?                    // Default custom fields
+  
   // Add bank account specific details
-  targetAccountId        String? // For transfers: destination account
-  targetAccount          BankAccount? @relation("RecurringTransferDestination", fields: [targetAccountId], references: [id])
-  affectAvailableBalance Boolean      @default(true) // Whether this affects available balance calculations
-
+  targetAccountId     String?                  // For transfers: destination account
+  targetAccount       BankAccount? @relation("RecurringTransferDestination", fields: [targetAccountId], references: [id])
+  affectAvailableBalance Boolean @default(true) // Whether this affects available balance calculations
+  
   // Execution tracking
-  lastExecutedAt      DateTime? // When last transaction was created
-  nextScheduledDate   DateTime? // Next scheduled execution date
-  executionCount      Int       @default(0) // How many times this has executed
-  totalExecuted       Float     @default(0) // Total amount executed
-  lastExecutionStatus String? // Success, failed, skipped, etc.
-  lastExecutionError  String? // Error message if last execution failed
-
+  lastExecutedAt      DateTime?               // When last transaction was created
+  nextScheduledDate   DateTime?               // Next scheduled execution date
+  executionCount      Int        @default(0)  // How many times this has executed
+  totalExecuted       Float      @default(0)  // Total amount executed
+  lastExecutionStatus String?                 // Success, failed, skipped, etc.
+  lastExecutionError  String?                 // Error message if last execution failed
+  
   // Account health monitoring
-  minBalanceRequired     Float? // Minimum balance required to execute
-  overspendAction        String? @default("block") // block, notify, proceed
-  insufficientFundsCount Int     @default(0) // Count of insufficient funds incidents
-
+  minBalanceRequired  Float?                  // Minimum balance required to execute
+  overspendAction     String?   @default("block") // block, notify, proceed
+  insufficientFundsCount Int    @default(0)   // Count of insufficient funds incidents
+  
   // Smart variance handling
-  expectedAmount  Float? // Expected amount (for variable amounts)
-  allowedVariance Float? // Allowed variance percentage
-  varianceAction  String? // What to do on variance (notify, block, auto-adjust)
-
+  expectedAmount      Float?                  // Expected amount (for variable amounts)
+  allowedVariance     Float?                  // Allowed variance percentage
+  varianceAction      String?                 // What to do on variance (notify, block, auto-adjust)
+  
   // Reminders and notifications
-  reminderDays      Int[]     @default([]) // Days before to send reminder
-  reminderSentAt    DateTime? // When last reminder was sent
-  notifyOnExecution Boolean   @default(true) // Notify user on execution
-  notifyOnFailure   Boolean   @default(true) // Notify user on failure
-
+  reminderDays        Int[]      @default([]) // Days before to send reminder
+  reminderSentAt      DateTime?               // When last reminder was sent
+  notifyOnExecution   Boolean    @default(true) // Notify user on execution
+  notifyOnFailure     Boolean    @default(true) // Notify user on failure
+  
   // Status fields
-  status           String  @default("active") // active, paused, completed, cancelled
-  isAutomated      Boolean @default(true) // Auto-create transactions
-  requiresApproval Boolean @default(false) // Require approval before creating transaction
-  isVariable       Boolean @default(false) // Variable amount (vs. fixed)
-
+  status              String     @default("active") // active, paused, completed, cancelled
+  isAutomated         Boolean    @default(true)     // Auto-create transactions
+  requiresApproval    Boolean    @default(false)    // Require approval before creating transaction
+  isVariable          Boolean    @default(false)    // Variable amount (vs. fixed)
+  
   // Metadata
-  source          String? // Source of this recurring transaction (manual, detected, imported)
-  confidenceScore Float? // For auto-detected recurring transactions (0-1)
-  merchantId      String? // Associated merchant
-  merchantName    String? // Associated merchant name
-
+  source              String?    // Source of this recurring transaction (manual, detected, imported)
+  confidenceScore     Float?     // For auto-detected recurring transactions (0-1)
+  merchantId          String?    // Associated merchant
+  merchantName        String?    // Associated merchant name
+  
   // Categorization
-  transactionType String? // Purchase, subscription, bill, income, transfer
-  importanceLevel String? // Critical, high, medium, low
-
+  transactionType     String?    // Purchase, subscription, bill, income, transfer
+  importanceLevel     String?    // Critical, high, medium, low
+  
   // Historical transactions
-  transactions Transaction[] @relation("TransactionToRecurringTransaction")
-
+  transactions        Transaction[] @relation("TransactionToRecurringTransaction")
+  
   // Audit trail
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  lastModifiedBy String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  lastModifiedBy      String?
 
   @@index([bankAccountId])
   @@index([status])
   @@index([frequency])
   @@index([nextScheduledDate])
   @@index([merchantName])
+  
   @@map("recurring_transactions")
 }
 
@@ -1006,7 +850,7 @@ model UserActivity {
   metadata  Json?
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // Notification model for system and user notifications
@@ -1020,7 +864,7 @@ model Notification {
   metadata  Json?
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([type])
@@ -1079,41 +923,43 @@ enum SpendingTimeframe {
 // New models from database schema
 
 model Team {
-  id                     String   @id @default(cuid())
+  id                     String    @id @default(cuid())
   name                   String?
-  baseCurrency           String?  @map("base_currency")
+  slug                   String    @unique
+  baseCurrency           String?   @map("base_currency")
   email                  String?
-  logoUrl                String?  @map("logo_url")
-  inboxEmail             String?  @map("inbox_email")
-  inboxId                String?  @map("inbox_id")
-  inboxForwarding        Boolean? @map("inbox_forwarding")
-  documentClassification Boolean? @map("document_classification")
-  flags                  String[] @default([])
-  createdAt              DateTime @default(now()) @map("created_at")
-
+  logoUrl                String?   @map("logo_url")
+  inboxEmail             String?   @map("inbox_email")
+  inboxId                String?   @map("inbox_id")
+  inboxForwarding        Boolean?  @map("inbox_forwarding")
+  documentClassification Boolean?  @map("document_classification")
+  flags                  String[]  @default([])
+  createdAt              DateTime  @default(now()) @map("created_at")
+  
   // Relations
-  users                  User[]
-  usersOnTeam            UsersOnTeam[]
-  customers              Customer[]
-  tags                   Tag[]
-  invoices               Invoice[]
-  bankAccounts           BankAccount[]
-  transactionCategories  CustomTransactionCategory[]
+  users                 User[]
+  usersOnTeam           UsersOnTeam[]
+  customers             Customer[]
+  tags                  Tag[]
+  invoices              Invoice[]
+  bankAccounts          BankAccount[]
+  transactionCategories CustomTransactionCategory[]
   transactionEnrichments TransactionEnrichment[]
-  inboxItems             Inbox[]
+  inboxItems            Inbox[]
   transactionAttachments TransactionAttachment[]
-  apps                   App[]
-  reports                Report[]
-  trackerProjects        TrackerProject[]
-  trackerReports         TrackerReport[]
-  UserInvite             UserInvite[]
-  CustomerTag            CustomerTag[]
-  TransactionTag         TransactionTag[]
-  InvoiceTemplate        InvoiceTemplate[]
-  TrackerEntry           TrackerEntry[]
-  TrackerProjectTag      TrackerProjectTag[]
+  apps                  App[]
+  reports               Report[]
+  trackerProjects       TrackerProject[]
+  trackerReports        TrackerReport[]
+  bankConnections       BankConnection[]
 
   @@map("teams")
+  UserInvite UserInvite[]
+  CustomerTag CustomerTag[]
+  TransactionTag TransactionTag[]
+  InvoiceTemplate InvoiceTemplate[]
+  TrackerEntry TrackerEntry[]
+  TrackerProjectTag TrackerProjectTag[]
 }
 
 model UsersOnTeam {
@@ -1122,11 +968,11 @@ model UsersOnTeam {
   teamId    String    @map("team_id")
   role      TeamRole  @default(MEMBER)
   createdAt DateTime? @default(now()) @map("created_at")
-
+  
   // Relations
-  user User @relation(fields: [userId], references: [id])
-  team Team @relation(fields: [teamId], references: [id])
-
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
   @@unique([userId, teamId])
   @@map("users_on_team")
 }
@@ -1139,65 +985,55 @@ model UserInvite {
   invitedBy String?   @map("invited_by")
   role      TeamRole?
   createdAt DateTime  @default(now()) @map("created_at")
-
+  
   // Relations
-  team    Team? @relation(fields: [teamId], references: [id])
-  inviter User? @relation("invites", fields: [invitedBy], references: [id])
-
+  team     Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  inviter  User? @relation("invites", fields: [invitedBy], references: [id], onDelete: SetNull)
+  
   @@map("user_invites")
 }
 
 model Customer {
-  id           String   @id @default(cuid())
-  name         String
-  email        String
-  token        String
-  phone        String?
-  contact      String?
-  website      String?
-  note         String?
-  vatNumber    String?  @map("vat_number")
-  addressLine1 String?  @map("address_line_1")
-  addressLine2 String?  @map("address_line_2")
-  city         String?
-  state        String?
-  zip          String?
-  country      String?
-  countryCode  String?  @map("country_code")
-  teamId       String   @map("team_id")
-  createdAt    DateTime @default(now()) @map("created_at")
-
+  id            String    @id @default(cuid())
+  name          String
+  email         String
+  token         String
+  phone         String?
+  contact       String?
+  website       String?
+  note          String?
+  vatNumber     String?   @map("vat_number")
+  addressLine1  String?   @map("address_line_1")
+  addressLine2  String?   @map("address_line_2")
+  city          String?
+  state         String?
+  zip           String?
+  country       String?
+  countryCode   String?   @map("country_code")
+  teamId        String    @map("team_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  
   // Relations
-  team            Team             @relation(fields: [teamId], references: [id])
-  customerTags    CustomerTag[]
-  invoices        Invoice[]
+  team          Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  customerTags  CustomerTag[]
+  invoices      Invoice[]
   trackerProjects TrackerProject[]
-
+  
   @@map("customers")
 }
 
 model Tag {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique
-  description String?
-  teamId      String   @map("team_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  // Tag categorization
-  category String?
-  color    String? // Hex color code
-  icon     String? // Icon identifier
-
-  isPublic Boolean @default(true)
-
+  id        String    @id @default(cuid())
+  name      String
+  teamId    String    @map("team_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  
   // Relations
-  team            Team                @relation(fields: [teamId], references: [id])
+  team            Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
   customerTags    CustomerTag[]
   transactionTags TransactionTag[]
   projectTags     TrackerProjectTag[]
-  Comment         Comment[]
-
+  
   @@map("tags")
 }
 
@@ -1207,12 +1043,12 @@ model CustomerTag {
   tagId      String   @map("tag_id")
   teamId     String   @map("team_id")
   createdAt  DateTime @default(now()) @map("created_at")
-
+  
   // Relations
-  customer Customer @relation(fields: [customerId], references: [id])
-  tag      Tag      @relation(fields: [tagId], references: [id])
-  team     Team     @relation(fields: [teamId], references: [id])
-
+  customer   Customer @relation(fields: [customerId], references: [id])
+  tag        Tag      @relation(fields: [tagId], references: [id])
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
   @@map("customer_tags")
 }
 
@@ -1222,12 +1058,12 @@ model TransactionTag {
   tagId         String   @map("tag_id")
   teamId        String   @map("team_id")
   createdAt     DateTime @default(now()) @map("created_at")
-
+  
   // Relations
-  transaction Transaction @relation(fields: [transactionId], references: [id])
-  tag         Tag         @relation(fields: [tagId], references: [id])
-  team        Team        @relation(fields: [teamId], references: [id])
-
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  tag           Tag         @relation(fields: [tagId], references: [id])
+  team          Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
   @@map("transaction_tags")
 }
 
@@ -1242,11 +1078,11 @@ model CustomTransactionCategory {
   embedding   String?
   teamId      String    @map("team_id")
   createdAt   DateTime? @default(now()) @map("created_at")
-
+  
   // Relations
-  team         Team          @relation(fields: [teamId], references: [id])
-  transactions Transaction[] @relation("customCategoryToTransaction")
-
+  team          Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  transactions  Transaction[] @relation("customCategoryToTransaction")
+  
   @@unique([slug, teamId])
   @@map("transaction_categories")
 }
@@ -1258,135 +1094,148 @@ model TransactionEnrichment {
   teamId       String?  @map("team_id")
   system       Boolean?
   createdAt    DateTime @default(now()) @map("created_at")
-
+  
   // Relations
-  team Team? @relation(fields: [teamId], references: [id])
-
+  team         Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
   @@map("transaction_enrichments")
 }
 
 model Invoice {
-  id              String        @id @default(cuid())
-  teamId          String        @map("team_id")
-  status          InvoiceStatus @default(DRAFT)
-  customerId      String?       @map("customer_id")
-  customerName    String?       @map("customer_name")
-  invoiceNumber   String?       @map("invoice_number")
+  id              String         @id @default(cuid())
+  teamId          String         @map("team_id")
+  title           String?        @map("title")
+  status          InvoiceStatus  @default(DRAFT)
+  customerId      String?        @map("customer_id")
+  customerName    String?        @map("customer_name")
+  invoiceNumber   String?        @map("invoice_number")
   amount          Float?
   subtotal        Float?
   tax             Float?
   vat             Float?
   discount        Float?
   currency        String?
-  issueDate       DateTime?     @map("issue_date")
-  dueDate         DateTime?     @map("due_date")
-  paidAt          DateTime?     @map("paid_at")
-  viewedAt        DateTime?     @map("viewed_at")
-  reminderSentAt  DateTime?     @map("reminder_sent_at")
-  lineItems       Json?         @map("line_items")
-  fromDetails     Json?         @map("from_details")
-  customerDetails Json?         @map("customer_details")
-  paymentDetails  Json?         @map("payment_details")
+  issueDate       DateTime?      @map("issue_date")
+  dueDate         DateTime?      @map("due_date")
+  paidAt          DateTime?      @map("paid_at")
+  viewedAt        DateTime?      @map("viewed_at")
+  reminderSentAt  DateTime?      @map("reminder_sent_at")
+  lineItems       InvoiceLineItem[]
+  fromDetails     Json?          @map("from_details")
+  customerDetails Json?          @map("customer_details")
+  paymentDetails  Json?          @map("payment_details")
   note            String?
-  internalNote    String?       @map("internal_note")
-  noteDetails     Json?         @map("note_details")
-  topBlock        Json?         @map("top_block")
-  bottomBlock     Json?         @map("bottom_block")
+  internalNote    String?        @map("internal_note")
+  noteDetails     Json?          @map("note_details")
+  topBlock        Json?          @map("top_block")
+  bottomBlock     Json?          @map("bottom_block")
   template        Json?
   url             String?
   token           String
-  fileSize        Int?          @map("file_size")
-  filePath        String[]      @default([]) @map("file_path")
-  sentTo          String?       @map("sent_to")
-  userId          String?       @map("user_id")
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime?     @map("updated_at")
-
+  fileSize        Int?           @map("file_size")
+  filePath        String[]       @map("file_path") @default([])
+  sentTo          String?        @map("sent_to")
+  userId          String?        @map("user_id")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime?      @map("updated_at")
+  
   // Relations
-  team     Team      @relation(fields: [teamId], references: [id])
-  customer Customer? @relation(fields: [customerId], references: [id])
-  user     User?     @relation(fields: [userId], references: [id])
-
+  team            Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  customer        Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user            User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
   @@map("invoices")
 }
 
+model InvoiceLineItem {
+  id        String    @id @default(cuid())
+  invoiceId String    @map("invoice_id")
+  name      String
+  quantity  Float
+  price     Float
+  unit      String?
+
+  @@map("invoice_line_items")
+  Invoice Invoice[]
+}
+
 model InvoiceTemplate {
-  id                String              @id @default(cuid())
-  teamId            String              @map("team_id")
-  title             String?
-  deliveryType      InvoiceDeliveryType @default(CREATE) @map("delivery_type")
-  size              InvoiceSize?
-  logoUrl           String?             @map("logo_url")
-  currency          String?
-  fromLabel         String?             @map("from_label")
-  fromDetails       Json?               @map("from_details")
-  customerLabel     String?             @map("customer_label")
-  invoiceNoLabel    String?             @map("invoice_no_label")
-  issueDateLabel    String?             @map("issue_date_label")
-  dueDateLabel      String?             @map("due_date_label")
-  descriptionLabel  String?             @map("description_label")
-  quantityLabel     String?             @map("quantity_label")
-  priceLabel        String?             @map("price_label")
-  taxLabel          String?             @map("tax_label")
-  discountLabel     String?             @map("discount_label")
-  vatLabel          String?             @map("vat_label")
-  totalLabel        String?             @map("total_label")
-  totalSummaryLabel String?             @map("total_summary_label")
-  noteLabel         String?             @map("note_label")
-  paymentLabel      String?             @map("payment_label")
-  paymentDetails    Json?               @map("payment_details")
-  taxRate           Float?              @map("tax_rate")
-  vatRate           Float?              @map("vat_rate")
-  dateFormat        String?             @map("date_format")
-  includeDecimals   Boolean?            @map("include_decimals")
-  includeDiscount   Boolean?            @map("include_discount")
-  includeTax        Boolean?            @map("include_tax")
-  includeVat        Boolean?            @map("include_vat")
-  includeUnits      Boolean?            @map("include_units")
-  includeQr         Boolean?            @map("include_qr")
-  createdAt         DateTime            @default(now()) @map("created_at")
-
+  id                 String              @id @default(cuid())
+  teamId             String              @map("team_id")
+  title              String?
+  deliveryType       InvoiceDeliveryType @default(CREATE) @map("delivery_type")
+  size               InvoiceSize?
+  logoUrl            String?             @map("logo_url")
+  currency           String?
+  fromLabel          String?             @map("from_label")
+  fromDetails        Json?               @map("from_details")
+  customerLabel      String?             @map("customer_label")
+  invoiceNoLabel     String?             @map("invoice_no_label")
+  issueDateLabel     String?             @map("issue_date_label")
+  dueDateLabel       String?             @map("due_date_label")
+  descriptionLabel   String?             @map("description_label")
+  quantityLabel      String?             @map("quantity_label")
+  priceLabel         String?             @map("price_label")
+  taxLabel           String?             @map("tax_label")
+  discountLabel      String?             @map("discount_label")
+  vatLabel           String?             @map("vat_label")
+  totalLabel         String?             @map("total_label")
+  totalSummaryLabel  String?             @map("total_summary_label")
+  noteLabel          String?             @map("note_label")
+  paymentLabel       String?             @map("payment_label")
+  paymentDetails     Json?               @map("payment_details")
+  taxRate            Float?              @map("tax_rate")
+  vatRate            Float?              @map("vat_rate")
+  dateFormat         String?             @map("date_format")
+  includeDecimals    Boolean?            @map("include_decimals")
+  includeDiscount    Boolean?            @map("include_discount")
+  includeTax         Boolean?            @map("include_tax")
+  includeVat         Boolean?            @map("include_vat")
+  includeUnits       Boolean?            @map("include_units")
+  includeQr          Boolean?            @map("include_qr")
+  createdAt          DateTime            @default(now()) @map("created_at")
+  
   // Relations
-  team Team @relation(fields: [teamId], references: [id])
-
+  team               Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
   @@map("invoice_templates")
 }
 
 model TrackerProject {
-  id          String        @id @default(cuid())
-  name        String
-  description String?
-  status      TrackerStatus @default(IN_PROGRESS)
-  customerId  String?       @map("customer_id")
-  billable    Boolean?
-  currency    String?
-  rate        Float?
-  estimate    Float?
-  teamId      String?       @map("team_id")
-  createdAt   DateTime      @default(now()) @map("created_at")
-
+  id           String         @id @default(cuid())
+  name         String
+  description  String?
+  status       TrackerStatus  @default(IN_PROGRESS)
+  customerId   String?        @map("customer_id")
+  billable     Boolean?
+  currency     String?
+  rate         Float?
+  estimate     Float?
+  teamId       String?        @map("team_id")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  
   // Relations
-  team        Team?               @relation(fields: [teamId], references: [id])
-  customer    Customer?           @relation(fields: [customerId], references: [id])
-  entries     TrackerEntry[]
-  projectTags TrackerProjectTag[]
-  reports     TrackerReport[]
-
+  team         Team?     @relation(fields: [teamId], references: [id])
+  customer     Customer? @relation(fields: [customerId], references: [id])
+  entries      TrackerEntry[]
+  projectTags  TrackerProjectTag[]
+  reports      TrackerReport[]
+  
   @@map("tracker_projects")
 }
 
 model TrackerProjectTag {
-  id               String   @id @default(cuid())
-  trackerProjectId String   @map("tracker_project_id")
-  tagId            String   @map("tag_id")
-  teamId           String   @map("team_id")
-  createdAt        DateTime @default(now()) @map("created_at")
-
+  id               String        @id @default(cuid())
+  trackerProjectId String        @map("tracker_project_id")
+  tagId            String        @map("tag_id")
+  teamId           String        @map("team_id")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  
   // Relations
-  trackerProject TrackerProject @relation(fields: [trackerProjectId], references: [id])
-  tag            Tag            @relation(fields: [tagId], references: [id])
-  team           Team           @relation(fields: [teamId], references: [id])
-
+  trackerProject   TrackerProject @relation(fields: [trackerProjectId], references: [id])
+  tag              Tag            @relation(fields: [tagId], references: [id])
+  team             Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
   @@map("tracker_project_tags")
 }
 
@@ -1404,49 +1253,49 @@ model TrackerEntry {
   billed      Boolean?
   teamId      String?   @map("team_id")
   createdAt   DateTime  @default(now()) @map("created_at")
-
+  
   // Relations
-  project  TrackerProject? @relation(fields: [projectId], references: [id])
-  assigned User?           @relation(fields: [assignedId], references: [id])
-  team     Team?           @relation(fields: [teamId], references: [id])
-
+  project     TrackerProject? @relation(fields: [projectId], references: [id])
+  assigned    User?           @relation(fields: [assignedId], references: [id], onDelete: SetNull)
+  team        Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
   @@map("tracker_entries")
 }
 
 model TrackerReport {
-  id        String   @id @default(cuid())
-  projectId String?  @map("project_id")
-  createdBy String?  @map("created_by")
-  linkId    String?  @map("link_id")
-  shortLink String?  @map("short_link")
-  teamId    String?  @map("team_id")
-  createdAt DateTime @default(now()) @map("created_at")
-
+  id          String    @id @default(cuid())
+  projectId   String?   @map("project_id")
+  createdBy   String?   @map("created_by")
+  linkId      String?   @map("link_id")
+  shortLink   String?   @map("short_link")
+  teamId      String?   @map("team_id") 
+  createdAt   DateTime  @default(now()) @map("created_at")
+  
   // Relations
-  project TrackerProject? @relation(fields: [projectId], references: [id])
-  creator User?           @relation(fields: [createdBy], references: [id])
-  team    Team?           @relation(fields: [teamId], references: [id])
-
+  project     TrackerProject? @relation(fields: [projectId], references: [id])
+  creator     User?           @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  team        Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
   @@map("tracker_reports")
 }
 
 model Report {
-  id        String      @id @default(cuid())
-  type      ReportType?
-  from      DateTime?
-  to        DateTime?
-  currency  String?
-  linkId    String?     @map("link_id")
-  shortLink String?     @map("short_link")
-  expireAt  DateTime?   @map("expire_at")
-  createdBy String?     @map("created_by")
-  teamId    String?     @map("team_id")
-  createdAt DateTime    @default(now()) @map("created_at")
-
+  id          String      @id @default(cuid())
+  type        ReportType?
+  from        DateTime?
+  to          DateTime?
+  currency    String?
+  linkId      String?     @map("link_id")
+  shortLink   String?     @map("short_link")
+  expireAt    DateTime?   @map("expire_at")
+  createdBy   String?     @map("created_by")
+  teamId      String?     @map("team_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  
   // Relations
-  creator User? @relation(fields: [createdBy], references: [id])
-  team    Team? @relation(fields: [teamId], references: [id])
-
+  creator     User?       @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  team        Team?       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
   @@map("reports")
 }
 
@@ -1456,57 +1305,57 @@ model ExchangeRate {
   target    String?
   rate      Float?
   updatedAt DateTime? @map("updated_at")
-
+  
   @@map("exchange_rates")
 }
 
 model Inbox {
-  id            String       @id @default(cuid())
-  type          InboxType?
-  status        InboxStatus? @default(NEW)
-  displayName   String?      @map("display_name")
-  description   String?
-  date          DateTime?
-  amount        Float?
-  currency      String?
-  baseAmount    Float?       @map("base_amount")
-  baseCurrency  String?      @map("base_currency")
-  website       String?
-  fileName      String?      @map("file_name")
-  contentType   String?      @map("content_type")
-  size          Int?
-  filePath      String[]     @default([]) @map("file_path")
-  attachmentId  String?      @map("attachment_id")
-  transactionId String?      @map("transaction_id")
-  referenceId   String?      @map("reference_id")
-  forwardedTo   String?      @map("forwarded_to")
-  meta          Json?
-  teamId        String?      @map("team_id")
-  createdAt     DateTime     @default(now()) @map("created_at")
-
+  id              String       @id @default(cuid())
+  type            InboxType?
+  status          InboxStatus? @default(NEW)
+  displayName     String?      @map("display_name")
+  description     String?
+  date            DateTime?
+  amount          Float?
+  currency        String?
+  baseAmount      Float?       @map("base_amount")
+  baseCurrency    String?      @map("base_currency")
+  website         String?
+  fileName        String?      @map("file_name")
+  contentType     String?      @map("content_type")
+  size            Int?
+  filePath        String[]     @map("file_path") @default([])
+  attachmentId    String?      @map("attachment_id")
+  transactionId   String?      @map("transaction_id")
+  referenceId     String?      @map("reference_id")
+  forwardedTo     String?      @map("forwarded_to")
+  meta            Json?
+  teamId          String?      @map("team_id")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  
   // Relations
-  team        Team?                  @relation(fields: [teamId], references: [id])
-  transaction Transaction?           @relation(fields: [transactionId], references: [id])
-  attachment  TransactionAttachment? @relation(fields: [attachmentId], references: [id])
-
+  team            Team?                  @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  transaction     Transaction?           @relation(fields: [transactionId], references: [id])
+  attachment      TransactionAttachment? @relation(fields: [attachmentId], references: [id])
+  
   @@map("inbox")
 }
 
 model TransactionAttachment {
-  id            String   @id @default(cuid())
-  transactionId String?  @map("transaction_id")
+  id            String     @id @default(cuid())
+  transactionId String?    @map("transaction_id")
   name          String?
   type          String?
   size          Int?
-  path          String[] @default([]) @map("path")
-  teamId        String?  @map("team_id")
-  createdAt     DateTime @default(now()) @map("created_at")
-
+  path          String[]   @map("path") @default([])
+  teamId        String?    @map("team_id")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  
   // Relations
-  transaction Transaction? @relation(fields: [transactionId], references: [id])
-  team        Team?        @relation(fields: [teamId], references: [id])
-  inboxItems  Inbox[]
-
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
+  team          Team?        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  inboxItems    Inbox[]
+  
   @@map("transaction_attachments")
 }
 
@@ -1518,11 +1367,11 @@ model App {
   teamId    String?   @map("team_id")
   createdBy String?   @map("created_by")
   createdAt DateTime? @default(now()) @map("created_at")
-
+  
   // Relations
-  team    Team? @relation(fields: [teamId], references: [id])
-  creator User? @relation(fields: [createdBy], references: [id])
-
+  team      Team?     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator   User?     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  
   @@map("apps")
 }
 

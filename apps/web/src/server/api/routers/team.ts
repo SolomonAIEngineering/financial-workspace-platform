@@ -1,6 +1,6 @@
 import { ResourceType } from '@/server/services/payment-tier';
 import { TRPCError } from '@trpc/server';
-import { TeamRole } from '@prisma/client';
+import { TeamRole } from '@solomonai/prisma/client';
 import { createResourceValidationMiddleware } from '../middlewares/resourceValidationMiddleware';
 import { createRouter } from '../trpc';
 import { prisma } from '@/server/db';

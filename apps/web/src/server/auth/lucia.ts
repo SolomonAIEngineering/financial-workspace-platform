@@ -1,4 +1,4 @@
-import type { User as PrismaUser, Session } from '@prisma/client';
+import type { User as PrismaUser, Session } from '@solomonai/prisma/client';
 
 import { NodePostgresAdapter } from '@lucia-auth/adapter-postgresql';
 import { type User, Lucia, TimeSpan } from 'lucia';
@@ -89,5 +89,5 @@ declare module 'lucia' {
   }
 }
 interface DatabaseSessionAttributes
-  extends Pick<Session, 'ip_address' | 'user_agent'> {}
-interface DatabaseUserAttributes extends PrismaUser {}
+  extends Pick<Session, 'ip_address' | 'user_agent'> { }
+interface DatabaseUserAttributes extends PrismaUser { }

@@ -2,7 +2,7 @@ import { differenceInDays, subDays } from 'date-fns';
 import { logger, schedules } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
-import { BankConnectionStatus } from '@prisma/client';
+import { BankConnectionStatus } from '@solomonai/prisma/client';
 import { client } from '@/jobs';
 import { prisma } from '@/server/db';
 

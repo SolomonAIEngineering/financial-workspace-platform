@@ -4,7 +4,7 @@
  * @file Team section type definitions
  */
 
-import { TeamRole } from '@prisma/client';
+import { TeamRole } from '@solomonai/prisma/client';
 import { useRouter } from 'next/navigation';
 
 /**

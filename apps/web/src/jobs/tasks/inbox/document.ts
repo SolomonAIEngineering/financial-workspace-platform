@@ -8,7 +8,7 @@
 import { logger, wait } from '@trigger.dev/sdk/v3';
 
 import { DocumentClient } from '@solomonai/documents';
-import { InboxType } from '@prisma/client';
+import { InboxType } from '@solomonai/prisma/client';
 import { prisma } from '@/server/db';
 import { schemaTask } from '@trigger.dev/sdk/v3';
 import { utapi } from '@/lib/uploadthing';

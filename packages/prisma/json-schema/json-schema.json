@@ -495,24 +495,6 @@
           "items": {
             "$ref": "#/definitions/Invoice"
           }
-        },
-        "Discussion": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Discussion"
-          }
-        },
-        "Reaction": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Reaction"
-          }
-        },
-        "Mention": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Mention"
-          }
         }
       },
       "required": [
@@ -755,33 +737,6 @@
         "updatedAt": {
           "type": "string",
           "format": "date-time"
-        },
-        "solutionComment": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/Comment"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "solvedAt": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "solvedByUser": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/User"
-            },
-            {
-              "type": "null"
-            }
-          ]
         }
       },
       "required": [
@@ -800,38 +755,8 @@
         "user": {
           "$ref": "#/definitions/User"
         },
-        "userIp": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "@zod.string.describe(\"We store the IP address of the user who made the comment for security reasons.\")"
-        },
-        "userAgent": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "description": "@zod.string.describe(\"We store the user agent of the user who made the comment for security reasons.\")"
-        },
         "discussion": {
           "$ref": "#/definitions/Discussion"
-        },
-        "language": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "translatedContent": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
         },
         "content": {
           "type": "string"
@@ -850,236 +775,12 @@
           "type": "boolean",
           "default": false
         },
-        "hasMedia": {
-          "type": "boolean",
-          "default": false
-        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
         },
         "updatedAt": {
           "type": "string",
-          "format": "date-time"
-        },
-        "readingTimeMinutes": {
-          "type": "number",
-          "default": 0
-        },
-        "wordCount": {
-          "type": "integer",
-          "default": 0
-        },
-        "sentiment": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "POSITIVE",
-            "NEUTRAL",
-            "NEGATIVE",
-            "MIXED"
-          ]
-        },
-        "toxicityScore": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "parent": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/Comment"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "replies": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Comment"
-          }
-        },
-        "depth": {
-          "type": "integer",
-          "default": 0
-        },
-        "reactions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Reaction"
-          }
-        },
-        "likeCount": {
-          "type": "integer",
-          "default": 0
-        },
-        "viewCount": {
-          "type": "integer",
-          "default": 0
-        },
-        "isDeleted": {
-          "type": "boolean",
-          "default": false
-        },
-        "isPinned": {
-          "type": "boolean",
-          "default": false
-        },
-        "isHidden": {
-          "type": "boolean",
-          "default": false
-        },
-        "mentions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Mention"
-          }
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Tag"
-          }
-        },
-        "editHistory": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
-        },
-        "lastReadAt": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "viewsByUser": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
-        },
-        "impressionCount": {
-          "type": "integer",
-          "default": 0
-        },
-        "publishedAt": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "scheduledFor": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "expiresAt": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "isReported": {
-          "type": "boolean",
-          "default": false
-        },
-        "reportCount": {
-          "type": "integer",
-          "default": 0
-        },
-        "moderatedBy": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "moderatedAt": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "moderationReason": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "moderationHistory": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
-        },
-        "autoModerated": {
-          "type": "boolean",
-          "default": false
-        },
-        "notifyReplies": {
-          "type": "boolean",
-          "default": true
-        },
-        "followStatus": {
-          "type": "string",
-          "default": "NONE",
-          "enum": [
-            "NONE",
-            "FOLLOWING",
-            "MUTED",
-            "BOOKMARKED"
-          ]
-        },
-        "maxChildDepth": {
-          "type": [
-            "integer",
-            "null"
-          ]
-        },
-        "solvedDiscussions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Discussion"
-          }
-        },
-        "isSolution": {
-          "type": "boolean",
-          "default": false
-        },
-        "markedAsSolutionBy": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "markedAsSolutionAt": {
-          "type": [
-            "string",
-            "null"
-          ],
           "format": "date-time"
         }
       },
@@ -1088,118 +789,6 @@
         "userId",
         "discussionId",
         "content"
-      ]
-    },
-    "Reaction": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        },
-        "emoji": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "user": {
-          "$ref": "#/definitions/User"
-        },
-        "comment": {
-          "$ref": "#/definitions/Comment"
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "type",
-        "userId",
-        "commentId"
-      ]
-    },
-    "Mention": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "user": {
-          "$ref": "#/definitions/User"
-        },
-        "comment": {
-          "$ref": "#/definitions/Comment"
-        },
-        "isRead": {
-          "type": "boolean",
-          "default": false
-        },
-        "readAt": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "isNotified": {
-          "type": "boolean",
-          "default": false
-        },
-        "notifiedAt": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "positionX": {
-          "type": "number",
-          "default": 0
-        },
-        "positionY": {
-          "type": "number",
-          "default": 0
-        },
-        "length": {
-          "type": [
-            "integer",
-            "null"
-          ]
-        },
-        "mentionType": {
-          "type": "string",
-          "default": "USER",
-          "enum": [
-            "USER",
-            "TEAM",
-            "ALL",
-            "ROLE",
-            "CUSTOM"
-          ]
-        },
-        "context": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "userId",
-        "commentId",
-        "updatedAt"
       ]
     },
     "File": {
@@ -1450,6 +1039,15 @@
             "null"
           ],
           "format": "date-time"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "team": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Team"
+          }
         }
       },
       "required": [
@@ -1458,7 +1056,8 @@
         "institutionName",
         "accessToken",
         "itemId",
-        "updatedAt"
+        "updatedAt",
+        "provider"
       ]
     },
     "BankAccount": {
@@ -1777,6 +1376,24 @@
             "null"
           ],
           "format": "date-time"
+        },
+        "errorDetails": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errorRetries": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "balance": {
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "Team": {
           "type": "array",
@@ -3141,6 +2758,9 @@
             "null"
           ]
         },
+        "slug": {
+          "type": "string"
+        },
         "baseCurrency": {
           "type": [
             "string",
@@ -3277,6 +2897,12 @@
             "$ref": "#/definitions/TrackerReport"
           }
         },
+        "bankConnections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankConnection"
+          }
+        },
         "UserInvite": {
           "type": "array",
           "items": {
@@ -3314,7 +2940,9 @@
           }
         }
       },
-      "required": []
+      "required": [
+        "slug"
+      ]
     },
     "UsersOnTeam": {
       "type": "object",
@@ -3533,40 +3161,9 @@
         "name": {
           "type": "string"
         },
-        "slug": {
-          "type": "string"
-        },
-        "description": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
-        },
-        "category": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "color": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "icon": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "isPublic": {
-          "type": "boolean",
-          "default": true
         },
         "team": {
           "$ref": "#/definitions/Team"
@@ -3588,17 +3185,10 @@
           "items": {
             "$ref": "#/definitions/TrackerProjectTag"
           }
-        },
-        "Comment": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Comment"
-          }
         }
       },
       "required": [
         "name",
-        "slug",
         "teamId"
       ]
     },
@@ -3766,6 +3356,12 @@
         "id": {
           "type": "string"
         },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "status": {
           "type": "string",
           "default": "DRAFT",
@@ -3861,14 +3457,10 @@
           "format": "date-time"
         },
         "lineItems": {
-          "type": [
-            "number",
-            "string",
-            "boolean",
-            "object",
-            "array",
-            "null"
-          ]
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InvoiceLineItem"
+          }
         },
         "fromDetails": {
           "type": [
@@ -4017,6 +3609,44 @@
       "required": [
         "teamId",
         "token"
+      ]
+    },
+    "InvoiceLineItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "invoiceId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "number"
+        },
+        "price": {
+          "type": "number"
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "Invoice": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Invoice"
+          }
+        }
+      },
+      "required": [
+        "invoiceId",
+        "name",
+        "quantity",
+        "price"
       ]
     },
     "InvoiceTemplate": {
@@ -4934,12 +4564,6 @@
     "comment": {
       "$ref": "#/definitions/Comment"
     },
-    "reaction": {
-      "$ref": "#/definitions/Reaction"
-    },
-    "mention": {
-      "$ref": "#/definitions/Mention"
-    },
     "file": {
       "$ref": "#/definitions/File"
     },
@@ -4996,6 +4620,9 @@
     },
     "invoice": {
       "$ref": "#/definitions/Invoice"
+    },
+    "invoiceLineItem": {
+      "$ref": "#/definitions/InvoiceLineItem"
     },
     "invoiceTemplate": {
       "$ref": "#/definitions/InvoiceTemplate"

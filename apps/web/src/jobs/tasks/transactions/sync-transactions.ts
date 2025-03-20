@@ -1,4 +1,4 @@
-import { type BankConnection, SyncStatus } from '@prisma/client';
+import { type BankConnection, SyncStatus } from '@solomonai/prisma/client';
 import { z } from 'zod';
 
 import { prisma } from '@/server/db';

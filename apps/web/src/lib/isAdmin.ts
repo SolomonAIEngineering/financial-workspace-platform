@@ -1,4 +1,4 @@
-import { UserRole } from '@prisma/client';
+import { UserRole } from '@solomonai/prisma/client';
 
 export const isAdmin = (role?: UserRole) => {
   return isSuperAdmin(role) || role === UserRole.ADMIN;

@@ -8,7 +8,7 @@
  * 2. Add Plaid API keys to your environment variables
  */
 
-import type { BankAccount, BankConnection } from '@prisma/client';
+import type { BankAccount, BankConnection } from '@solomonai/prisma/client';
 
 import {
   type CountryCode,

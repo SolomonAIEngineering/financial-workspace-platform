@@ -34,7 +34,11 @@ export const seedDatabase = async () => {
     // Get users to associate documents with
     const users = await prisma.user.findMany({
       where: {
-        OR: [{ email: 'john.doe@example.com' }, { email: 'admin@example.com' }],
+        OR: [
+          { email: 'john.doe@example.com' },
+          { email: 'admin@example.com' },
+          { email: 'yoanyomba@solomon-ai.co' }
+        ],
       },
     })
 

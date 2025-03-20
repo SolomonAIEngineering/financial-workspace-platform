@@ -16,6 +16,7 @@ export const seedDatabase = async () => {
           { email: 'jane.smith@example.com' },
           { email: 'bob.johnson@example.com' },
           { email: 'admin@example.com' },
+          { email: 'yoanyomba@solomon-ai.co' },
         ],
       },
     })
@@ -36,11 +37,19 @@ export const seedDatabase = async () => {
     const bobUser = users.find(
       (user) => user.email === 'bob.johnson@example.com',
     )
+    const yoanUser = users.find(
+      (user) => user.email === 'yoanyomba@solomon-ai.co',
+    )
 
     // Create Finance Team with enhanced data
-    const financeTeam = await prisma.team.create({
-      data: {
+    const financeTeam = await prisma.team.upsert({
+      where: {
+        slug: 'finance-team'
+      },
+      update: {},
+      create: {
         id: uuidv4(),
+        slug: 'finance-team',
         name: 'Finance Team',
         email: 'finance@example.com',
         logoUrl: 'https://example.com/logos/finance.png',
@@ -55,9 +64,14 @@ export const seedDatabase = async () => {
     })
 
     // Create Marketing Team with enhanced data
-    const marketingTeam = await prisma.team.create({
-      data: {
+    const marketingTeam = await prisma.team.upsert({
+      where: {
+        slug: 'marketing-team'
+      },
+      update: {},
+      create: {
         id: uuidv4(),
+        slug: 'marketing-team',
         name: 'Marketing Team',
         email: 'marketing@example.com',
         logoUrl: 'https://example.com/logos/marketing.png',
@@ -78,9 +92,14 @@ export const seedDatabase = async () => {
     })
 
     // Create Operations Team with enhanced data
-    const operationsTeam = await prisma.team.create({
-      data: {
+    const operationsTeam = await prisma.team.upsert({
+      where: {
+        slug: 'operations-team'
+      },
+      update: {},
+      create: {
         id: uuidv4(),
+        slug: 'operations-team',
         name: 'Operations Team',
         email: 'operations@example.com',
         logoUrl: 'https://example.com/logos/operations.png',
@@ -102,8 +121,15 @@ export const seedDatabase = async () => {
 
     // Add users to Finance Team
     if (johnUser) {
-      await prisma.usersOnTeam.create({
-        data: {
+      await prisma.usersOnTeam.upsert({
+        where: {
+          userId_teamId: {
+            userId: johnUser.id,
+            teamId: financeTeam.id
+          }
+        },
+        update: {},
+        create: {
           id: uuidv4(),
           userId: johnUser.id,
           teamId: financeTeam.id,
@@ -114,8 +140,15 @@ export const seedDatabase = async () => {
     }
 
     if (bobUser) {
-      await prisma.usersOnTeam.create({
-        data: {
+      await prisma.usersOnTeam.upsert({
+        where: {
+          userId_teamId: {
+            userId: bobUser.id,
+            teamId: financeTeam.id
+          }
+        },
+        update: {},
+        create: {
           id: uuidv4(),
           userId: bobUser.id,
           teamId: financeTeam.id,
@@ -125,9 +158,35 @@ export const seedDatabase = async () => {
       })
     }
 
+    if (yoanUser) {
+      await prisma.usersOnTeam.upsert({
+        where: {
+          userId_teamId: {
+            userId: yoanUser.id,
+            teamId: financeTeam.id
+          }
+        },
+        update: {},
+        create: {
+          id: uuidv4(),
+          userId: yoanUser.id,
+          teamId: financeTeam.id,
+          role: TeamRole.OWNER,
+          createdAt: new Date(),
+        },
+      })
+    }
+
     if (adminUser) {
-      await prisma.usersOnTeam.create({
-        data: {
+      await prisma.usersOnTeam.upsert({
+        where: {
+          userId_teamId: {
+            userId: adminUser.id,
+            teamId: financeTeam.id
+          }
+        },
+        update: {},
+        create: {
           id: uuidv4(),
           userId: adminUser.id,
           teamId: financeTeam.id,
@@ -139,8 +198,15 @@ export const seedDatabase = async () => {
 
     // Add users to Marketing Team
     if (janeUser) {
-      await prisma.usersOnTeam.create({
-        data: {
+      await prisma.usersOnTeam.upsert({
+        where: {
+          userId_teamId: {
+            userId: janeUser.id,
+            teamId: marketingTeam.id
+          }
+        },
+        update: {},
+        create: {
           id: uuidv4(),
           userId: janeUser.id,
           teamId: marketingTeam.id,
@@ -151,8 +217,15 @@ export const seedDatabase = async () => {
     }
 
     if (bobUser) {
-      await prisma.usersOnTeam.create({
-        data: {
+      await prisma.usersOnTeam.upsert({
+        where: {
+          userId_teamId: {
+            userId: bobUser.id,
+            teamId: marketingTeam.id
+          }
+        },
+        update: {},
+        create: {
           id: uuidv4(),
           userId: bobUser.id,
           teamId: marketingTeam.id,
@@ -164,8 +237,15 @@ export const seedDatabase = async () => {
 
     // Add users to Operations Team
     if (adminUser) {
-      await prisma.usersOnTeam.create({
-        data: {
+      await prisma.usersOnTeam.upsert({
+        where: {
+          userId_teamId: {
+            userId: adminUser.id,
+            teamId: operationsTeam.id
+          }
+        },
+        update: {},
+        create: {
           id: uuidv4(),
           userId: adminUser.id,
           teamId: operationsTeam.id,
@@ -176,8 +256,15 @@ export const seedDatabase = async () => {
     }
 
     if (johnUser) {
-      await prisma.usersOnTeam.create({
-        data: {
+      await prisma.usersOnTeam.upsert({
+        where: {
+          userId_teamId: {
+            userId: johnUser.id,
+            teamId: operationsTeam.id
+          }
+        },
+        update: {},
+        create: {
           id: uuidv4(),
           userId: johnUser.id,
           teamId: operationsTeam.id,
@@ -244,31 +331,13 @@ export const seedDatabase = async () => {
     // Create tags for Finance Team
     const financeTags = [
       {
-        name: 'Expenses',
-        slug: 'expenses',
-        description: 'General business expenses',
-        category: 'Finance',
-        color: '#FF5733',
-        icon: 'receipt',
-        isPublic: true,
+        name: 'Expenses'
       },
       {
-        name: 'Revenue',
-        slug: 'revenue',
-        description: 'Income and revenue streams',
-        category: 'Finance',
-        color: '#33FF57',
-        icon: 'trending_up',
-        isPublic: true,
+        name: 'Revenue'
       },
       {
-        name: 'Tax Deductible',
-        slug: 'tax-deductible',
-        description: 'Expenses that can be deducted from taxes',
-        category: 'Tax',
-        color: '#3357FF',
-        icon: 'savings',
-        isPublic: true,
+        name: 'Tax Deductible'
       },
     ]
 
@@ -285,31 +354,13 @@ export const seedDatabase = async () => {
     // Create tags for Marketing Team
     const marketingTags = [
       {
-        name: 'Social Media',
-        slug: 'social-media',
-        description: 'Social media related activities',
-        category: 'Marketing',
-        color: '#9B59B6',
-        icon: 'share',
-        isPublic: true,
+        name: 'Social Media'
       },
       {
-        name: 'Content Creation',
-        slug: 'content-creation',
-        description: 'Content creation and production',
-        category: 'Marketing',
-        color: '#F1C40F',
-        icon: 'create',
-        isPublic: true,
+        name: 'Content Creation'
       },
       {
-        name: 'Advertising',
-        slug: 'advertising',
-        description: 'Paid advertising campaigns',
-        category: 'Marketing',
-        color: '#E74C3C',
-        icon: 'campaign',
-        isPublic: true,
+        name: 'Advertising'
       },
     ]
 
@@ -352,8 +403,15 @@ export const seedDatabase = async () => {
     ]
 
     for (const categoryData of financeCategories) {
-      await prisma.customTransactionCategory.create({
-        data: {
+      await prisma.customTransactionCategory.upsert({
+        where: {
+          slug_teamId: {
+            slug: categoryData.slug,
+            teamId: financeTeam.id
+          }
+        },
+        update: {},
+        create: {
           id: uuidv4(),
           teamId: financeTeam.id,
           ...categoryData,
