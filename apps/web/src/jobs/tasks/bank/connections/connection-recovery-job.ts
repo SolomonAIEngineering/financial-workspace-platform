@@ -106,16 +106,20 @@ export const connectionRecoveryJob = schemaTask({
         case 'plaid': {
           const itemDetails = await getItemDetails(accessToken);
 
+          // TODO: Add error handling for Plaid API failures or timeouts during status checks
+
           status.valid = itemDetails.status === 'HEALTHY';
           status.error = itemDetails.status;
           break;
         }
         case 'teller': {
+          // TODO: Implement actual Teller connection validation instead of simulation
           // Simulate Teller connection check
           status = { valid: true, error: null };
           break;
         }
         case 'gocardless': {
+          // TODO: Implement actual GoCardless connection validation instead of simulation
           // Simulate GoCardless connection check
           status = { valid: true, error: null };
           break;
@@ -135,6 +139,9 @@ export const connectionRecoveryJob = schemaTask({
           where: { id: connectionId },
         });
 
+        // TODO: Validate the returned access token has sufficient permissions
+        // TODO: Add validation that the connection is actually working with a simple data fetch
+
         // Get the user ID for this connection
         const connection = await prisma.bankConnection.findUnique({
           select: {
@@ -142,6 +149,8 @@ export const connectionRecoveryJob = schemaTask({
           },
           where: { id: connectionId },
         });
+
+        // TODO: Combine these separate database queries into a single query for efficiency
 
         // Trigger a sync to verify the connection works
         await client.sendEvent({
@@ -151,6 +160,8 @@ export const connectionRecoveryJob = schemaTask({
             userId: connection?.userId,
           },
         });
+
+        // TODO: Add validation that the sync event was successfully scheduled
 
         return {
           success: true,
@@ -168,8 +179,12 @@ export const connectionRecoveryJob = schemaTask({
           where: { id: connectionId },
         });
 
+        // TODO: Add a check for connection existence before updating its status
+        // TODO: Handle race conditions where status might change between checks
+
         // If we haven't exceeded max retries, schedule another attempt
         if (newRetryCount < 3) {
+          // TODO: Make max retry count and backoff times configurable instead of hardcoded
           // Schedule with exponential backoff
           const delayMinutes = Math.pow(2, newRetryCount) * 15; // 15min, 30min, 60min
 
@@ -185,6 +200,9 @@ export const connectionRecoveryJob = schemaTask({
               retryCount: newRetryCount,
             },
           });
+
+          // TODO: Add validation that the retry event was successfully scheduled
+          // TODO: Add tracking metrics for retry rates and recovery success rates
 
           logger.info('Scheduled next recovery attempt', {
             connectionId,
@@ -208,6 +226,8 @@ export const connectionRecoveryJob = schemaTask({
           where: { id: connectionId },
         });
 
+        // TODO: Add handling for case where user might have deleted the connection during recovery
+
         // Max retries exceeded, notify user
         await client.sendEvent({
           name: 'connection-notification',
@@ -224,6 +244,10 @@ export const connectionRecoveryJob = schemaTask({
           },
         });
 
+        // TODO: Provide more specific error information to users based on provider error codes
+        // TODO: Add validation that the notification was successfully sent
+        // TODO: Consider adding fallback notification mechanisms (email, SMS) for critical failures
+
         return {
           success: true,
           recovered: false,
@@ -237,6 +261,10 @@ export const connectionRecoveryJob = schemaTask({
         provider,
         error: error.message,
       });
+
+      // TODO: Add detailed error categorization based on error types
+      // TODO: Add handling for transient errors versus permanent failures
+      // TODO: Consider updating connection status on critical errors
 
       return {
         success: false,

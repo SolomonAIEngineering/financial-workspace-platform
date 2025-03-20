@@ -16,7 +16,7 @@ export type ErrorContext = Record<string, unknown>
 // Allow both with and without cause property in Error
 declare global {
   interface Error {
-    cause?: unknown;
+    cause?: unknown
   }
 }
 

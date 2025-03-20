@@ -45,6 +45,9 @@ export const deleteConnection = schemaTask({
 
     /** The access token used to authenticate with the provider */
     accessToken: z.string().min(1, 'Access token is required'),
+
+    // TODO: Add optional userId parameter to track which user triggered the deletion
+    // TODO: Add optional flag for cascading deletion (delete related records)
   }),
   maxDuration: 60,
   queue: {
@@ -79,6 +82,8 @@ export const deleteConnection = schemaTask({
     const { referenceId, provider, accessToken } = payload;
 
     try {
+      // TODO: Add pre-deletion validation to check if the connection still exists
+
       // Create a trace for this operation
       return await logger.trace('delete-bank-connection', async (span) => {
         // Add attributes to the trace for better observability
@@ -90,16 +95,25 @@ export const deleteConnection = schemaTask({
           provider,
         });
 
+        // TODO: Implement cleanup of related data before deletion (transactions, accounts, etc.)
+        // TODO: Consider adding soft delete option for temporary/reversible deletions
+
         await engine.apiFinancialAccounts.delete(referenceId, {
           accountId: referenceId,
           provider: provider as 'teller' | 'plaid' | 'gocardless' | 'stripe',
           accessToken,
         });
 
+        // TODO: Add verification that provider actually removed the connection
+        // TODO: Check for and handle orphaned data after deletion
+
         logger.info('Successfully deleted bank connection', {
           referenceId,
           provider,
         });
+
+        // TODO: Send confirmation notification to user about successful deletion
+        // TODO: Add audit logging for compliance and security purposes
 
         return {
           success: true,
@@ -115,6 +129,9 @@ export const deleteConnection = schemaTask({
         provider,
         error: errorMessage,
       });
+
+      // TODO: Add specific error handling for provider API errors
+      // TODO: Implement partial deletion recovery for cases where the provider deleted but database cleanup failed
 
       // Propagate error but with context
       throw new Error(
@@ -141,6 +158,9 @@ export const deleteConnection = schemaTask({
         skipRetrying: true,
       };
     }
+
+    // TODO: Add more specific error categories to optimize retry behavior
+    // TODO: Implement exponential backoff with jitter for certain error types
 
     // Let other errors use the default retry strategy
     return;

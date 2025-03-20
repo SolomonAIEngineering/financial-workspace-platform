@@ -27,7 +27,6 @@ export function Meta({ template, invoiceNumber, issueDate, dueDate }: Props) {
         </span>
         <span className="font-mono text-[22px] text-white">
           {format(parseISO(dueDate), template.date_format)}
-
         </span>
       </div>
 

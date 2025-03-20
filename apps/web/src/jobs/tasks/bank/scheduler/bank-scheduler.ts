@@ -8,6 +8,8 @@ import { z } from 'zod';
 const formattedConnectionSchema = z.object({
   payload: z.object({
     connectionId: z.string(),
+    // TODO: Add userId to ensure proper ownership tracking across sync operations
+    // TODO: Add priority field to enable prioritization of certain connections
   }),
 });
 
@@ -70,12 +72,16 @@ export const bankSyncScheduler = schedules.task({
       throw new Error('teamId is required');
     }
 
+    // TODO: Add validation that the team exists before proceeding
+
     try {
       // Create a trace for the entire sync operation
       return await logger.trace('bank-sync-scheduler', async (span) => {
         span.setAttribute('teamId', teamId);
 
         logger.info('Starting bank connection sync for team', { teamId });
+
+        // TODO: Add rate limiting check to prevent excessive syncs for the same team
 
         // Get all bank connections for the team
         const bankConnections = await prisma.bankConnection.findMany({
@@ -86,10 +92,13 @@ export const bankSyncScheduler = schedules.task({
                   where: { teamId },
                   select: { userId: true },
                 })
-                .then(users => users.map(u => u.userId))
+                .then((users) => users.map((u) => u.userId)),
             },
           },
         });
+
+        // TODO: Add filtering for connections that don't need syncing (recently synced)
+        // TODO: Add sorting to prioritize connections that haven't been synced in longest time
 
         span.setAttribute('connectionCount', bankConnections.length);
         logger.info(`Found ${bankConnections.length} bank connections`, {
@@ -101,6 +110,8 @@ export const bankSyncScheduler = schedules.task({
           bankConnections?.map((connection) => ({
             payload: {
               connectionId: connection.id,
+              // TODO: Add lastSyncedAt timestamp to track sync history
+              // TODO: Add connection status to enable conditional sync logic
             },
           }));
 
@@ -114,13 +125,22 @@ export const bankSyncScheduler = schedules.task({
           };
         }
 
+        // TODO: Add batching with delays to prevent provider rate limits
+        // TODO: Add prioritization for connections that need immediate syncing
+
         // Trigger the sync connection job for each bank connection
         await syncConnectionJob.batchTrigger(formattedConnections);
+
+        // TODO: Add verification that batch trigger succeeded
+        // TODO: Add tracking for which connections were triggered
 
         logger.info('Successfully triggered sync for all connections', {
           teamId,
           connectionCount: formattedConnections.length,
         });
+
+        // TODO: Add schedule for follow-up verification that all connections synced successfully
+        // TODO: Add metrics collection for sync success rates and performance
 
         return {
           success: true,
@@ -136,6 +156,10 @@ export const bankSyncScheduler = schedules.task({
         teamId,
         error: errorMessage,
       });
+
+      // TODO: Add more granular error handling based on error type
+      // TODO: Add alerting for persistent failures
+      // TODO: Add partial success handling for partially successful batch runs
 
       // Propagate error with context
       throw new Error(
@@ -161,6 +185,10 @@ export const bankSyncScheduler = schedules.task({
         retryAt: new Date(Date.now() + 60000), // Wait at least 1 minute
       };
     }
+
+    // TODO: Add specialized handling for provider rate limits
+    // TODO: Add circuit breaker pattern for persistent failures
+    // TODO: Add exponential backoff with jitter for network-related errors
 
     // For other errors, use the default retry strategy
     return;

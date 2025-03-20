@@ -42,10 +42,7 @@ export function Meta({
                   {template.issue_date_label}:
                 </span>
                 <span className="flex-shrink-0 font-mono text-[11px]">
-                  {format(
-                    parseISO(issueDate),
-                    template.date_format,
-                  )}
+                  {format(parseISO(issueDate), template.date_format)}
                 </span>
               </div>
             </div>

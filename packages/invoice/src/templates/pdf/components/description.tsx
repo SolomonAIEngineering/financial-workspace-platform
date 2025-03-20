@@ -1,7 +1,7 @@
 import { Text, View } from '@react-pdf/renderer'
 
-import { EditorContent } from './editor-content'
 import { isValidJSON } from '../../../utils/content'
+import { EditorContent } from './editor-content'
 
 export function Description({ content }: { content: string }) {
   const value = isValidJSON(content) ? JSON.parse(content) : null

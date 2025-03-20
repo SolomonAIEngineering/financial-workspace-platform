@@ -19,11 +19,16 @@ export const syncAllTransactionsJob = schedules.task({
   id: TRANSACTION_JOBS.SYNC_ALL_TRANSACTIONS,
   description: 'Sync All Transactions',
   cron: '0 */4 * * *', // Every 4 hours
+  // TODO: Add staggered execution to prevent provider rate limits
+  // TODO: Add configurable sync frequency based on account activity levels
   run: async () => {
     await logger.info('Starting transaction sync for all connections');
 
     // Get all connections that need syncing
     const connections = await getConnectionsForSync();
+
+    // TODO: Add prioritization for recently active connections
+    // TODO: Add smart batching based on provider to prevent rate limits
 
     await logger.info(`Found ${connections.length} connections to sync`);
 
@@ -44,8 +49,14 @@ export const syncAllTransactionsJob = schedules.task({
           SyncStatus.FAILED,
           errorMessage
         );
+
+        // TODO: Add retry mechanism for transient errors
+        // TODO: Add notification for persistent failures
       }
     }
+
+    // TODO: Add metrics collection for sync performance and success rates
+    // TODO: Add verification of data completeness across connections
 
     return { connectionsProcessed: connections.length, success: true };
   },
@@ -57,6 +68,8 @@ export const syncUserTransactionsJob = schemaTask({
   description: 'Sync User Transactions',
   schema: z.object({
     userId: z.string(),
+    // TODO: Add optional date range parameters for targeted syncs
+    // TODO: Add force sync option to override default sync logic
   }),
   run: async (payload, io) => {
     const { userId } = payload;
@@ -71,6 +84,9 @@ export const syncUserTransactionsJob = schemaTask({
         userId,
       },
     });
+
+    // TODO: Add filtering for connections that don't need syncing (recently synced)
+    // TODO: Add sorting to prioritize connections that haven't been synced in longest time
 
     await logger.info(
       `Found ${connections.length} connections for user ${userId}`
@@ -93,8 +109,14 @@ export const syncUserTransactionsJob = schemaTask({
           SyncStatus.FAILED,
           errorMessage
         );
+
+        // TODO: Add user notification for failed syncs of important accounts
+        // TODO: Add intelligent retry strategy based on error type
       }
     }
+
+    // TODO: Add progress reporting for long-running syncs
+    // TODO: Add metrics for sync timing and performance
 
     return { connectionsProcessed: connections.length, success: true, userId };
   },
@@ -104,16 +126,28 @@ export const syncUserTransactionsJob = schemaTask({
 async function syncConnectionTransactions(connection: BankConnection) {
   const { endDate, startDate } = getTransactionDateRange(30);
 
+  // TODO: Add configurable date range based on account type and history
+  // TODO: Add incremental sync optimization for frequent updates
+
   // Check item status
   const itemDetails = await getItemDetails(connection.accessToken);
+
+  // TODO: Add validation of item status before proceeding
+  // TODO: Add handling for different provider item status formats
 
   // Get accounts for this connection
   const bankAccounts = await prisma.bankAccount.findMany({
     where: { bankConnectionId: connection.id },
   });
 
+  // TODO: Add filtering for accounts that don't need updating
+  // TODO: Add support for user-specified account sync preferences
+
   // Update account balances
   const accountsPrimedForUpdate = await getAccounts(connection.accessToken);
+
+  // TODO: Add error handling for specific provider error codes
+  // TODO: Add validation of returned account data
 
   // Update each account with new balance information
   for (const plaidAccount of accountsPrimedForUpdate) {
@@ -132,6 +166,9 @@ async function syncConnectionTransactions(connection: BankConnection) {
         where: { id: bankAccount.id },
       });
     }
+
+    // TODO: Add handling for new accounts that might have been added
+    // TODO: Add detection for closed or removed accounts
   }
 
   // Sync transactions
@@ -144,10 +181,17 @@ async function syncConnectionTransactions(connection: BankConnection) {
     endDate
   );
 
+  // TODO: Add pagination for large transaction volumes
+  // TODO: Add optimized updates for unchanged transactions
+  // TODO: Add handling for pending transaction changes
+
   // Process each transaction
   let created = 0;
   let updated = 0;
   const skipped = 0;
+
+  // TODO: Track different types of updates for better metrics
+  // TODO: Add transaction deduplication for transfers between accounts
 
   for (const transaction of transactions) {
     // Check if transaction already exists
@@ -170,14 +214,23 @@ async function syncConnectionTransactions(connection: BankConnection) {
         where: { id: existingTransaction.id },
       });
       updated++;
+
+      // TODO: Add selective updates only for fields that changed
+      // TODO: Add tracking for pending transactions that have cleared
     } else {
       // Create new transaction
       await prisma.transaction.create({
         data: transaction,
       });
       created++;
+
+      // TODO: Add categorization for new transactions
+      // TODO: Add matching for recurring transaction patterns
     }
   }
+
+  // TODO: Add detection for deleted or removed transactions
+  // TODO: Add handling for transaction splits and merges
 
   // Calculate account statistics
   for (const account of bankAccounts) {
@@ -204,6 +257,10 @@ async function syncConnectionTransactions(connection: BankConnection) {
     // Calculate average balance
     const averageBalance = account.currentBalance;
 
+    // TODO: Add more sophisticated average balance calculation
+    // TODO: Add trend detection for spending patterns
+    // TODO: Add anomaly detection for unusual income/spending
+
     // Update account with statistics
     await prisma.bankAccount.update({
       data: {
@@ -213,6 +270,9 @@ async function syncConnectionTransactions(connection: BankConnection) {
       },
       where: { id: account.id },
     });
+
+    // TODO: Add historical tracking of key metrics over time
+    // TODO: Add forecasting for future balance trends
   }
 
   return {
@@ -220,6 +280,8 @@ async function syncConnectionTransactions(connection: BankConnection) {
       created,
       skipped,
       updated,
+      // TODO: Add detailed metrics about transaction types and categories
+      // TODO: Add performance metrics for sync timing and efficiency
     },
   };
 }
