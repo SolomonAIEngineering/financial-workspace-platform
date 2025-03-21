@@ -438,20 +438,23 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       // Convert enum values to more readable format
       const formattedFrequency = frequency
         ? {
-            WEEKLY: 'Weekly',
-            BIWEEKLY: 'Every 2 Weeks',
-            MONTHLY: 'Monthly',
-            SEMI_MONTHLY: 'Twice Monthly',
-            ANNUALLY: 'Yearly',
-            IRREGULAR: 'Irregular',
-            UNKNOWN: 'Unknown',
-          }[frequency] || frequency
+          WEEKLY: 'Weekly',
+          BIWEEKLY: 'Every 2 Weeks',
+          MONTHLY: 'Monthly',
+          SEMI_MONTHLY: 'Twice Monthly',
+          ANNUALLY: 'Yearly',
+          IRREGULAR: 'Irregular',
+          UNKNOWN: 'Unknown',
+        }[frequency] || frequency
         : null;
 
       return formattedFrequency ? (
-        <div className="font-mono text-sm text-muted-foreground">
+        <Badge
+          variant="outline"
+          className="rounded-md bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-700 shadow-sm"
+        >
           {formattedFrequency}
-        </div>
+        </Badge>
       ) : (
         <Minus className="h-4 w-4 text-muted-foreground opacity-50" />
       );
@@ -469,10 +472,28 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       const value = row.getValue('bankAccountName') as string | undefined;
       const displayValue = value || row.original.bankAccountId;
       return (
-        <TextWithTooltip
-          text={displayValue}
-          className="font-mono text-sm text-muted-foreground"
-        />
+        <HoverCard openDelay={50} closeDelay={50}>
+          <HoverCardTrigger className="opacity-90 transition-opacity hover:opacity-100">
+            <Badge
+              variant="outline"
+              className="rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 shadow-sm"
+            >
+              {displayValue}
+            </Badge>
+          </HoverCardTrigger>
+          <HoverCardPortal>
+            <HoverCardContent
+              side="bottom"
+              align="start"
+              className="z-10 w-auto p-3"
+            >
+              <div className="flex flex-col gap-1">
+                <div className="font-medium">{displayValue}</div>
+                <div className="text-xs text-muted-foreground">Bank Account</div>
+              </div>
+            </HoverCardContent>
+          </HoverCardPortal>
+        </HoverCard>
       );
     },
     size: 150,
@@ -535,10 +556,12 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       const value = row.getValue('budgetCategory');
       if (value) {
         return (
-          <TextWithTooltip
-            text={`${value}`}
-            className="font-mono text-sm text-muted-foreground"
-          />
+          <Badge
+            variant="outline"
+            className="rounded-md bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700 shadow-sm"
+          >
+            {`${value}`.replaceAll(/_/g, ' ')}
+          </Badge>
         );
       }
       return <Minus className="h-4 w-4 text-muted-foreground/50" />;
@@ -554,18 +577,35 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     cell: ({ row }) => {
       const value = row.getValue('needsWantsCategory') as string | null;
       if (value) {
-        const badgeClass =
-          value === 'NEEDS'
-            ? 'text-blue-600 border-blue-300 bg-blue-50'
-            : value === 'WANTS'
-              ? 'text-purple-600 border-purple-300 bg-purple-50'
-              : 'text-green-600 border-green-300 bg-green-50';
+        const badgeConfig = {
+          NEEDS: {
+            bg: 'bg-blue-50',
+            text: 'text-blue-700',
+            border: 'border-blue-300',
+            icon: <Check className="mr-1 h-3 w-3" />
+          },
+          WANTS: {
+            bg: 'bg-purple-50',
+            text: 'text-purple-700',
+            border: 'border-purple-300',
+            icon: <CreditCard className="mr-1 h-3 w-3" />
+          },
+          SAVINGS: {
+            bg: 'bg-green-50',
+            text: 'text-green-700',
+            border: 'border-green-300',
+            icon: <Download className="mr-1 h-3 w-3" />
+          }
+        };
+
+        const config = badgeConfig[value as keyof typeof badgeConfig];
 
         return (
           <Badge
             variant="outline"
-            className={`${badgeClass} rounded-md px-2 py-0.5 text-xs font-medium`}
+            className={`${config.bg} ${config.text} ${config.border} rounded-md px-2 py-0.5 text-xs font-medium shadow-sm flex items-center`}
           >
+            {config.icon}
             {value}
           </Badge>
         );
