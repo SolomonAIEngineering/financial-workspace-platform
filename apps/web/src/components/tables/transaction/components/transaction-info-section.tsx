@@ -304,25 +304,58 @@ function TransactionStatusField() {
     const currentStatus = getStatusValue();
     const statusMetadata = TransactionStatusMetadata[currentStatus];
 
+    // Check if this status needs review or attention
+    const needsReview = [
+        TransactionStatus.AWAITING_REVIEW,
+        TransactionStatus.UNDER_REVIEW,
+        TransactionStatus.FLAGGED,
+        TransactionStatus.DISPUTED,
+        TransactionStatus.NEEDS_DOCUMENTATION,
+        TransactionStatus.REQUIRES_APPROVAL,
+        TransactionStatus.UNVERIFIED
+    ].includes(currentStatus);
+
+    // Render the status field in edit mode
     if (isEditMode) {
         return (
-            <EditableDetailRow
-                label={isStatusUpdating ? "Status (Updating...)" : "Status"}
-                tooltip={`${getStatusDescription(currentStatus)}${statusErrorMessage ? ` - ERROR: ${statusErrorMessage}` : ''}`}
-                isSelect={true}
-                options={getFilteredStatusOptions()}
-                value={getStatusValue()}
-                onChange={handleStatusChange}
-            >
-                {isStatusUpdating && (
-                    <div className="ml-2 inline-flex items-center">
-                        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+            <>
+                <EditableDetailRow
+                    label={isStatusUpdating ? "Status (Updating...)" : "Status"}
+                    tooltip={`${getStatusDescription(currentStatus)}${statusErrorMessage ? ` - ERROR: ${statusErrorMessage}` : ''}`}
+                    isSelect={true}
+                    options={getFilteredStatusOptions()}
+                    value={getStatusValue()}
+                    onChange={handleStatusChange}
+                >
+                    {isStatusUpdating && (
+                        <div className="ml-2 inline-flex items-center">
+                            <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                        </div>
+                    )}
+                </EditableDetailRow>
+
+                {/* Show review notice even in edit mode if needed */}
+                {needsReview && (
+                    <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-3 dark:border-amber-900 dark:bg-amber-950/30">
+                        <h4 className="mb-2 text-sm font-medium text-amber-800 dark:text-amber-400">
+                            Review Required
+                        </h4>
+                        <p className="text-xs text-amber-700 dark:text-amber-300">
+                            This transaction is marked as <strong className="font-medium">{statusMetadata.label}</strong> and
+                            needs additional attention. {statusMetadata.description}
+                        </p>
+                        {statusMetadata.requiresApproval && (
+                            <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
+                                <strong className="font-medium">Note:</strong> This status requires approval by an authorized team member.
+                            </p>
+                        )}
                     </div>
                 )}
-            </EditableDetailRow>
+            </>
         );
     }
 
+    // Render the status field in view mode
     return (
         <>
             <DetailRow
@@ -348,6 +381,31 @@ function TransactionStatusField() {
                     isBadge
                     badgeType="warning"
                 />
+            )}
+
+            {/* Review section for statuses that need attention */}
+            {needsReview && (
+                <div className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-3 dark:border-amber-900 dark:bg-amber-950/30">
+                    <h4 className="mb-2 text-sm font-medium text-amber-800 dark:text-amber-400">
+                        Review Required
+                    </h4>
+                    <p className="text-xs text-amber-700 dark:text-amber-300">
+                        This transaction is marked as <strong className="font-medium">{statusMetadata.label}</strong> and
+                        needs additional attention. {statusMetadata.description}
+                    </p>
+                    {statusMetadata.requiresApproval && (
+                        <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
+                            <strong className="font-medium">Note:</strong> This status requires approval by an authorized team member.
+                        </p>
+                    )}
+                    {currentStatus === TransactionStatus.NEEDS_DOCUMENTATION && (
+                        <div className="mt-2 flex items-center gap-2">
+                            <button className="inline-flex h-8 items-center rounded-md border border-amber-700 bg-amber-50 px-3 text-xs font-medium text-amber-700 hover:bg-amber-100 dark:border-amber-500 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/60">
+                                Add Documentation
+                            </button>
+                        </div>
+                    )}
+                </div>
             )}
         </>
     );
