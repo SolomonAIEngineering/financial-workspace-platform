@@ -142,7 +142,7 @@ export function SubscriptionManagement({
   // Show subscription details if the user has an active subscription
   if (subscription?.id) {
     return (
-      <Card className="w-full rounded-xl border-2 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
+      <Card className="w-full rounded-xl border-4 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
         <CardHeader>
           <CardTitle>Your Subscription</CardTitle>
           <CardDescription>
@@ -189,8 +189,8 @@ export function SubscriptionManagement({
                       Your subscription will end on{' '}
                       {subscription.currentPeriodEnd
                         ? new Date(
-                            subscription.currentPeriodEnd
-                          ).toLocaleDateString()
+                          subscription.currentPeriodEnd
+                        ).toLocaleDateString()
                         : 'the next billing date'}
                       .
                     </div>
@@ -216,7 +216,7 @@ export function SubscriptionManagement({
 
   // Show subscription plans if the user doesn't have an active subscription
   return (
-    <Card className="w-full rounded-xl border-2 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
+    <Card className="w-full rounded-xl border-4 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
       <CardHeader>
         <CardTitle>Subscription Plans</CardTitle>
         <CardDescription>Choose a plan that works for you</CardDescription>

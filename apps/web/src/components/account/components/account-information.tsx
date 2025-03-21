@@ -40,7 +40,7 @@ export function AccountInformation({ user }: AccountInformationProps) {
   const accountStatus = getAccountStatus(user);
 
   return (
-    <Card className="overflow-hidden rounded-xl border-2 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
+    <Card className="overflow-hidden rounded-xl border-4 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
       <CardHeader className="border-b border-muted/10 bg-background pb-6 text-foreground">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">

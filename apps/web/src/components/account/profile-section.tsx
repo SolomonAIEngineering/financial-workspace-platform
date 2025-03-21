@@ -308,9 +308,9 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
 
               <Button
                 className={cn(
-                  'relative overflow-hidden rounded-full border-2 border-primary bg-background px-10 py-3 text-sm font-medium text-foreground transition-all duration-300 hover:from-primary/90 hover:to-primary/70',
+                  'relative overflow-hidden rounded-full border-4 border-primary bg-background px-10 py-3 text-sm font-medium text-foreground transition-all duration-300 hover:from-primary/90 hover:to-primary/70',
                   form.formState.isDirty &&
-                    'animate-pulse shadow-lg shadow-primary/20'
+                  'animate-pulse shadow-lg shadow-primary/20'
                 )}
                 disabled={isLoading || !form.formState.isDirty}
                 type="submit"
@@ -323,7 +323,7 @@ export function ProfileSection({ user, userSettings }: ProfileSectionProps) {
                 />
                 <span className="relative flex items-center text-foreground">
                   {isLoading ? (
-                    <Icons.spinner className="mr-2.5 size-5 animate-spin rounded-full border-2 border-primary" />
+                    <Icons.spinner className="mr-2.5 size-5 animate-spin rounded-full border-4 border-primary" />
                   ) : (
                     <Icons.check className="mr-2.5 size-5 rounded-full bg-primary" />
                   )}

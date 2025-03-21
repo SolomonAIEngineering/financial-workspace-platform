@@ -22,7 +22,7 @@ export const buttonVariants = cva(
     variants: {
       active: {
         false: '',
-        true: 'border-primary border-2',
+        true: 'border-primary border-4',
       },
       disabled: {
         true: 'pointer-events-none opacity-50',
@@ -73,7 +73,7 @@ export const buttonVariants = cva(
           'border-input bg-background hover:bg-accent hover:text-accent-foreground border',
         primaryOutline:
           'border-primary-foreground text-primary-foreground hover:bg-accent/15 [&_svg]:text-primary-foreground border',
-        radio: 'border-input hover:border-primary border-2',
+        radio: 'border-input hover:border-primary border-4',
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
       },
@@ -129,7 +129,7 @@ export const Button = withTooltip(function Button({
           truncate,
           variant,
         }),
-        active && 'border-2 border-primary',
+        active && 'border-4 border-primary',
         className
       )}
       aria-label={label && label.length > 0 ? label : undefined}
@@ -178,7 +178,7 @@ export const LinkButton = withTooltip(
               truncate,
               variant,
             }),
-            active && 'border-2 border-primary',
+            active && 'border-4 border-primary',
             className
           )}
           aria-label={label && label.length > 0 ? label : undefined}

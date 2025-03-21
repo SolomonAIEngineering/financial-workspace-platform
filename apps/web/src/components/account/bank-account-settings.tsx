@@ -16,7 +16,7 @@ interface BankAccountSettingsProps {
 
 export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
   return (
-    <div className="rounded-xl border-2 border-muted/10 shadow-md transition-all duration-300 hover:shadow-lg md:p-[4%]">
+    <div className="rounded-xl border-4 border-muted/10 shadow-md transition-all duration-300 hover:shadow-lg md:p-[4%]">
       <div className="w-full">
         <div className="mb-6">
           <h2 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
@@ -113,7 +113,7 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
                   variant: 'secondary',
                   size: 'sm',
                   className: cn(
-                    'h-8 px-3 bg-background  text-foreground border-2 border-primary/10 gap-1 rounded-full px-2 text-xs'
+                    'h-8 px-3 bg-background  text-foreground border-4 border-primary/10 gap-1 rounded-full px-2 text-xs'
                   ),
                 }}
               />

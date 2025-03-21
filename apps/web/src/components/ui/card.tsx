@@ -4,7 +4,7 @@ import { cva } from 'class-variance-authority';
 import { withVariants } from '@udecode/cn';
 
 const cardVariants = cva(
-  'rounded-2xl bg-card text-card-foreground border-2 border-gray-50 dark:border-gray-900',
+  'rounded-2xl bg-card text-card-foreground border-4 border-gray-50 dark:border-gray-900',
   {
     defaultVariants: {
       variant: 'default',
@@ -14,7 +14,7 @@ const cardVariants = cva(
         cv: 'flex flex-col overflow-hidden border border-border/70 p-3 ',
         cvRow: '',
         default:
-          'border shadow-xs border-2 border-gray-50 dark:border-gray-900',
+          'border shadow-xs border-4 border-gray-50 dark:border-gray-900',
       },
     },
   }
@@ -29,7 +29,7 @@ const cardHeaderVariants = cva('flex flex-col space-y-1', {
   variants: {
     variant: {
       cv: '',
-      default: 'p-6 border-2 border-gray-50 dark:border-gray-900',
+      default: 'p-6 border-4 border-gray-50 dark:border-gray-900',
     },
   },
 });

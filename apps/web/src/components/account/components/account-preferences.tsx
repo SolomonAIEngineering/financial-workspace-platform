@@ -69,7 +69,7 @@ export function AccountPreferences({
   } = updateUserSettings;
 
   return (
-    <Card className="overflow-hidden rounded-xl border-2 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
+    <Card className="overflow-hidden rounded-xl border-4 border-muted/10 p-[2%] shadow-md transition-all duration-300 hover:shadow-lg">
       <CardHeader className="border-b border-muted/10 bg-background pb-6 text-foreground">
         <div className="flex items-center gap-2">
           <Icons.settings className="size-5 text-primary" />
@@ -216,7 +216,7 @@ export function AccountPreferences({
           <Button
             size="xs"
             variant="default"
-            className="rounded-full border-2 border-foreground bg-background px-3 py-3 text-foreground shadow-sm transition-all duration-200 hover:from-primary hover:to-primary/80 hover:shadow"
+            className="rounded-full border-4 border-foreground bg-background px-3 py-3 text-foreground shadow-sm transition-all duration-200 hover:from-primary hover:to-primary/80 hover:shadow"
             disabled={isLoading || isUpdating !== null}
             onClick={() => saveAllPreferences(user.isPremium)}
           >

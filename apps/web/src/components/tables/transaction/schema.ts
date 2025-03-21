@@ -596,4 +596,4 @@ export type ColumnFilterSchema = z.infer<typeof columnFilterSchema>;
  * @property [key: string] - Dynamic properties storing numeric values for the
  *   chart
  */
-export type BaseChartSchema = { timestamp: number; [key: string]: number };
+export type BaseChartSchema = { timestamp: number;[key: string]: number };

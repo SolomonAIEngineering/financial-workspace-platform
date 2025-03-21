@@ -62,7 +62,7 @@ export function BasicProfileTab({
     >
       {/* Avatar display section */}
       <div className="flex flex-col items-center gap-6 rounded-xl border border-muted/10 bg-gradient-to-br from-background via-background to-muted/10 p-6 shadow-sm sm:flex-row">
-        <Avatar className="size-28 border-2 border-primary/10 shadow-md">
+        <Avatar className="size-28 border-4 border-primary/10 shadow-md">
           <AvatarImage
             className="object-cover"
             alt="Profile"

@@ -37,7 +37,7 @@ export default async function OnboardingLayout({
                 alt="Logo"
                 width={48}
                 height={48}
-                className="rounded-xl border-2 border-gray-50 p-2 shadow-sm transition-all duration-300 hover:shadow-md dark:border-gray-900"
+                className="rounded-xl border-4 border-gray-50 p-2 shadow-sm transition-all duration-300 hover:shadow-md dark:border-gray-900"
               />
               <div className="space-y-1">
                 <h1 className="text-2xl font-semibold text-gray-900">

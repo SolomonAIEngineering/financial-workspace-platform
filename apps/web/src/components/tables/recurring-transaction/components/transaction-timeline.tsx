@@ -267,7 +267,7 @@ export function TransactionTimeline({
                 <button
                     onClick={() => setShowFuture(!showFuture)}
                     className={cn(
-                        'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
+                        'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-4 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
                         showFuture ? 'bg-blue-500' : 'bg-gray-200'
                     )}
                 >
@@ -293,7 +293,7 @@ export function TransactionTimeline({
                 className="group relative pb-8 pl-12"
             >
                 {/* Timeline node */}
-                <div className="absolute left-10 z-10 -ml-2.5 flex h-5 w-5 items-center justify-center rounded-full border-2 border-dashed border-blue-300 bg-white">
+                <div className="absolute left-10 z-10 -ml-2.5 flex h-5 w-5 items-center justify-center rounded-full border-4 border-dashed border-blue-300 bg-white">
                     <div className="h-2 w-2 rounded-full bg-blue-200"></div>
                 </div>
 
