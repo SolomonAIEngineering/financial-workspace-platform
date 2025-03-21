@@ -438,14 +438,14 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       // Convert enum values to more readable format
       const formattedFrequency = frequency
         ? {
-          WEEKLY: 'Weekly',
-          BIWEEKLY: 'Every 2 Weeks',
-          MONTHLY: 'Monthly',
-          SEMI_MONTHLY: 'Twice Monthly',
-          ANNUALLY: 'Yearly',
-          IRREGULAR: 'Irregular',
-          UNKNOWN: 'Unknown',
-        }[frequency] || frequency
+            WEEKLY: 'Weekly',
+            BIWEEKLY: 'Every 2 Weeks',
+            MONTHLY: 'Monthly',
+            SEMI_MONTHLY: 'Twice Monthly',
+            ANNUALLY: 'Yearly',
+            IRREGULAR: 'Irregular',
+            UNKNOWN: 'Unknown',
+          }[frequency] || frequency
         : null;
 
       return formattedFrequency ? (
@@ -489,7 +489,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
             >
               <div className="flex flex-col gap-1">
                 <div className="font-medium">{displayValue}</div>
-                <div className="text-xs text-muted-foreground">Bank Account</div>
+                <div className="text-xs text-muted-foreground">
+                  Bank Account
+                </div>
               </div>
             </HoverCardContent>
           </HoverCardPortal>
@@ -582,20 +584,20 @@ export const columns: ColumnDef<ColumnSchema>[] = [
             bg: 'bg-blue-50',
             text: 'text-blue-700',
             border: 'border-blue-300',
-            icon: <Check className="mr-1 h-3 w-3" />
+            icon: <Check className="mr-1 h-3 w-3" />,
           },
           WANTS: {
             bg: 'bg-purple-50',
             text: 'text-purple-700',
             border: 'border-purple-300',
-            icon: <CreditCard className="mr-1 h-3 w-3" />
+            icon: <CreditCard className="mr-1 h-3 w-3" />,
           },
           SAVINGS: {
             bg: 'bg-green-50',
             text: 'text-green-700',
             border: 'border-green-300',
-            icon: <Download className="mr-1 h-3 w-3" />
-          }
+            icon: <Download className="mr-1 h-3 w-3" />,
+          },
         };
 
         const config = badgeConfig[value as keyof typeof badgeConfig];
@@ -603,7 +605,7 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         return (
           <Badge
             variant="outline"
-            className={`${config.bg} ${config.text} ${config.border} rounded-md px-2 py-0.5 text-xs font-medium shadow-sm flex items-center`}
+            className={`${config.bg} ${config.text} ${config.border} flex items-center rounded-md px-2 py-0.5 text-xs font-medium shadow-sm`}
           >
             {config.icon}
             {value}

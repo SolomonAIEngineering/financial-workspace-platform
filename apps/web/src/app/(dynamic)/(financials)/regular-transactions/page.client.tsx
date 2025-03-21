@@ -197,11 +197,11 @@ export function ClientTransactionsTable({
           pagination={
             pagination
               ? {
-                page: pagination.page,
-                limit: pagination.limit,
-                total: pagination.total,
-                pages: pagination.pages,
-              }
+                  page: pagination.page,
+                  limit: pagination.limit,
+                  total: pagination.total,
+                  pages: pagination.pages,
+                }
               : undefined
           }
           onPaginationChange={{
