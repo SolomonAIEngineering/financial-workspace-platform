@@ -69,7 +69,7 @@ function getBadgeClass(badgeType?: string): string {
  * Interface for props accepted by the DetailRow component.
  *
  * @property {string} label - The label text shown on the left side of the row.
- * @property {string | React.ReactNode} value - The value to display on the
+ * @property {string | number | React.ReactNode} value - The value to display on the
  *   right side of the row.
  * @property {boolean} [monospace] - Whether to display the value in a monospace
  *   font for better legibility of codes/IDs.
@@ -93,11 +93,13 @@ function getBadgeClass(badgeType?: string): string {
  *   clipboard.
  * @property {() => void} [onCopy] - Function to call when the value is copied.
  * @property {boolean} [loading] - Whether the row is in a loading state.
+ * @property {boolean} [interactive] - Whether the value is interactive (can be clicked).
+ * @property {string} [hoverText] - Text to display when hovering over an interactive value.
  * @interface DetailRowProps
  */
 interface DetailRowProps {
   label: string;
-  value: string | number;
+  value: string | number | React.ReactNode;
   tooltip?: string;
   isBadge?: boolean;
   badgeType?: string;
@@ -106,6 +108,8 @@ interface DetailRowProps {
   monospace?: boolean;
   href?: string;
   onClick?: () => void;
+  interactive?: boolean;
+  hoverText?: string;
 }
 
 /**
@@ -124,6 +128,17 @@ interface DetailRowProps {
  *
  *   // With badge
  *   <DetailRow label="Status" value="COMPLETED" isBadge={true} badgeType="success" />
+ *
+ *   // With interactive badge
+ *   <DetailRow 
+ *     label="Status" 
+ *     value="Pending" 
+ *     isBadge={true} 
+ *     badgeType="warning" 
+ *     interactive={true}
+ *     onClick={() => markAsComplete()}
+ *     hoverText="Click to mark as complete"
+ *   />
  *
  *   // With amount styling
  *   <DetailRow label="Amount" value="$1,250.00" isAmount={true} amountType="positive" />
@@ -151,6 +166,8 @@ export function DetailRow({
   monospace = false,
   href,
   onClick,
+  interactive = false,
+  hoverText,
 }: DetailRowProps) {
   /**
    * Renders the appropriate value display based on the props provided.
@@ -158,66 +175,73 @@ export function DetailRow({
    * @returns {JSX.Element} The rendered value element
    */
   const renderValue = () => {
+    // If value is a React element, return it directly
+    if (React.isValidElement(value)) {
+      return value;
+    }
+
     // Badge display
     if (isBadge && typeof value === 'string') {
       return (
-        <Badge
-          variant={getBadgeVariant(badgeType)}
-          className={cn('text-xs font-medium', getBadgeClass(badgeType))}
+        <div
+          className={cn(
+            "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
+            getBadgeClass(badgeType),
+            interactive && "cursor-pointer hover:opacity-80 transition-opacity",
+            interactive && "relative group"
+          )}
+          onClick={interactive ? onClick : undefined}
+          role={interactive ? "button" : undefined}
+          tabIndex={interactive ? 0 : undefined}
+          onKeyDown={interactive ? (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onClick?.();
+            }
+          } : undefined}
         >
           {value}
-        </Badge>
+          {interactive && hoverText && (
+            <span className="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded z-50">
+              {hoverText}
+            </span>
+          )}
+        </div>
       );
     }
 
-    // Amount display (with color)
     if (isAmount) {
       return (
         <span
           className={cn(
             'font-medium',
-            amountType === 'positive' &&
-              'text-emerald-600 dark:text-emerald-400',
-            amountType === 'negative' && 'text-red-600 dark:text-red-400',
-            monospace && 'font-mono text-xs'
+            amountType === 'positive' && 'text-green-600 dark:text-green-400',
+            amountType === 'negative' && 'text-red-600 dark:text-red-400'
           )}
-          onClick={onClick}
         >
           {value}
         </span>
       );
     }
 
-    // Link display
+    if (monospace) {
+      return <code className="rounded bg-muted px-1 py-0.5 font-mono text-sm">{value}</code>;
+    }
+
     if (href) {
       return (
         <a
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className={cn(
-            'text-blue-600 hover:underline dark:text-blue-400',
-            monospace && 'font-mono text-xs'
-          )}
-          onClick={onClick}
+          className="text-primary hover:underline"
         >
           {value}
         </a>
       );
     }
 
-    // Standard display
-    return (
-      <span
-        className={cn(
-          monospace && 'font-mono text-xs tracking-tight',
-          !monospace && 'text-sm'
-        )}
-        onClick={onClick}
-      >
-        {value}
-      </span>
-    );
+    return <span className="text-foreground">{value}</span>;
   };
 
   return (

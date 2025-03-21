@@ -1,14 +1,11 @@
-import * as React from 'react';
-
-import { TransactionData, TransactionProvider } from './transaction-context';
-
 import { CategorizationSection } from './categorization-section';
 import { EditModeControls } from './edit-mode-controls';
 import { MerchantSection } from './merchant-section';
 import { PaymentDetailsSection } from './payment-details-section';
 import { TaxFinancialSection } from './tax-financial-section';
-import { TransactionCategory } from '@solomonai/prisma/client';
+import { Transaction as TransactionData } from '@solomonai/prisma/client';
 import { TransactionInfoSection } from './transaction-info-section';
+import { TransactionProvider } from './transaction-context';
 
 /**
  * Interface for the TransactionDetails component props.

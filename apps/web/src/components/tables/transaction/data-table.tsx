@@ -598,6 +598,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
         <TransactionSheetDetails
           onDeleteSuccess={refetch}
           onCreateSuccess={refetch}
+          onUpdateSuccess={refetch}
         />
       </DataTableSheetDetails>
 

@@ -1,134 +1,10 @@
 import * as React from 'react';
 
 import { TransactionCategory } from '@solomonai/prisma/client';
+import { Transaction as TransactionData } from '@solomonai/prisma/client';
 import { api } from '@/trpc/react';
 import { formatDate } from './utils';
 import { useUpdateTransaction } from '@/trpc/hooks/transaction-hooks';
-
-// Define the transaction shape
-export interface TransactionData {
-    id: string;
-    userId: string;
-    bankAccountId: string;
-    plaidTransactionId: string | null;
-    amount: number;
-    isoCurrencyCode: string | null;
-    date: Date | string;
-    name: string;
-    merchantName: string | null;
-    description: string | null;
-    pending: boolean;
-    category: TransactionCategory | null;
-    subCategory: string | null;
-    customCategory: string | null;
-    merchantId: string | null;
-    merchantLogoUrl: string | null;
-    merchantCategory: string | null;
-    merchantWebsite: string | null;
-    merchantPhone: string | null;
-    merchantAddress: string | null;
-    merchantCity: string | null;
-    merchantState: string | null;
-    merchantZip: string | null;
-    merchantCountry: string | null;
-    location?: Record<string, unknown> | null;
-    latitude: number | null;
-    longitude: number | null;
-    paymentChannel: string | null;
-    paymentMethod: string | null;
-    paymentProcessor: string | null;
-    paymentGateway: string | null;
-    transactionReference: string | null;
-    authorizationCode: string | null;
-    checkNumber: string | null;
-    wireReference: string | null;
-    accountNumber: string | null;
-    cardType: string | null;
-    cardNetwork: string | null;
-    cardLastFour: string | null;
-    originalDescription: string | null;
-    originalCategory: string | null;
-    originalMerchantName: string | null;
-    fiscalYear: number | null;
-    fiscalMonth: number | null;
-    fiscalQuarter: number | null;
-    vatAmount: number | null;
-    vatRate: number | null;
-    taxAmount: number | null;
-    taxRate: number | null;
-    taxDeductible: boolean;
-    taxExempt: boolean;
-    taxCategory: string | null;
-    status: string | null;
-    transactionType: string | null;
-    transactionMethod: string | null;
-    transactionChannel: string | null;
-    budgetCategory: string | null;
-    budgetSubcategory: string | null;
-    budgetId: string | null;
-    plannedExpense: boolean;
-    discretionary: boolean;
-    needsWantsCategory: string | null;
-    spendingGoalId: string | null;
-    investmentCategory: string | null;
-    businessPurpose: string | null;
-    costCenter: string | null;
-    projectCode: string | null;
-    reimbursable: boolean;
-    clientId: string | null;
-    invoiceId: string | null;
-    excludeFromBudget: boolean;
-    isRecurring: boolean;
-    recurrenceId: string | null;
-    recurringFrequency: string | null;
-    recurringDay: number | null;
-    estimatedNextDate: Date | string | null;
-    similarTransactions: number | null;
-    cashFlowCategory: string | null;
-    cashFlowType: string | null;
-    inflationCategory: string | null;
-    confidenceScore: number | null;
-    anomalyScore: number | null;
-    insightTags: string[];
-    isManual: boolean;
-    isModified: boolean;
-    isVerified: boolean;
-    isFlagged: boolean;
-    isHidden: boolean;
-    isLocked: boolean;
-    isReconciled: boolean;
-    needsAttention: boolean;
-    reviewStatus: string | null;
-    userNotes: string | null;
-    tags: string[];
-    notes: string | null;
-    customFields: Record<string, unknown> | null;
-    labels: string[];
-    parentTransactionId: string | null;
-    isSplit: boolean;
-    splitTotal: number | null;
-    splitCount: number | null;
-    searchableText: string | null;
-    dateYear: number | null;
-    dateMonth: number | null;
-    dateDay: number | null;
-    dateDayOfWeek: number | null;
-    dateWeekOfYear: number | null;
-    createdAt: Date | string;
-    updatedAt: Date | string;
-    importedAt: Date | string | null;
-    lastReviewedAt: Date | string | null;
-    lastModifiedAt: Date | string | null;
-    lastCategorizedAt: Date | string | null;
-    categorySlug: string | null;
-    frequency: string | null;
-    internal: boolean | null;
-    notified: boolean | null;
-    baseAmount: number | null;
-    baseCurrency: string | null;
-    recurringTransactionId: string | null;
-    [key: string]: any; // Index signature to allow dynamic access
-}
 
 // List of editable fields
 export const EDITABLE_FIELDS = [
@@ -138,6 +14,8 @@ export const EDITABLE_FIELDS = [
     'notes',
     'date',
     'amount',
+    'status',
+    'pending',
 
     // Merchant details
     'merchantName',

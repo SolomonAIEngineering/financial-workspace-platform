@@ -26,7 +26,7 @@
 export const sectionDescriptions: Record<string, string> = {
   // Section descriptions
   transactionInformation:
-    'Basic details about the transaction including amount, date, and description',
+    'Basic details about the transaction including amount, date, and status. Transaction status follows a comprehensive workflow including states like Pending, Completed, Under Review, Approved, Rejected, and more.',
   merchantDetails:
     'Information about the merchant involved in the transaction including contact and address details',
   categorization:
@@ -41,7 +41,7 @@ export const sectionDescriptions: Record<string, string> = {
   splitTransaction:
     'Information about how this transaction is split into multiple parts',
   analytics: 'Analysis metrics and statistics about this transaction',
-  statusInformation: 'Current status flags and indicators for this transaction',
+  statusInformation: 'Current status flags and approval workflow indicators. The transaction status system supports team approval processes with states like Awaiting Review, Under Review, Approved, and Rejected. Some statuses may require approval from authorized team members.',
   systemInformation:
     'System-related details and metadata about this transaction record',
   customFields: 'User-defined custom fields added to this transaction',
