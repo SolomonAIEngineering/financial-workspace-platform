@@ -137,7 +137,8 @@ function TransactionStatusField() {
         transaction,
         isEditMode,
         handleFieldChange,
-        editedValues
+        editedValues,
+        handleSave
     } = useTransactionContext();
 
     const completeTransaction = useCompleteTransaction();
@@ -210,7 +211,7 @@ function TransactionStatusField() {
         // Set loading state and update the status in the database
         setIsStatusUpdating(true);
 
-        // Also update the status in the database through the API
+        // Always update the status in the database immediately, regardless of edit mode
         updateTransactionStatus.mutate(
             {
                 id: transaction.id,
@@ -219,6 +220,15 @@ function TransactionStatusField() {
             {
                 onSuccess: () => {
                     console.log("Transaction status updated successfully to:", targetStatus);
+
+                    // Update the transaction object directly
+                    transaction.status = targetStatus;
+                    transaction.pending = isPending;
+
+                    // Still update local state for form consistency
+                    handleFieldChange('status', targetStatus);
+                    handleFieldChange('pending', isPending);
+
                     setIsStatusUpdating(false);
                 },
                 onError: (error) => {
@@ -241,13 +251,11 @@ function TransactionStatusField() {
         // Show loading state
         setIsStatusUpdating(true);
 
-        // Update both via completeTransaction and updateTransactionStatus for consistency
+        // First update the pending status using the dedicated API
         completeTransaction.mutate(
             { id },
             {
                 onSuccess: () => {
-                    // The transaction will be updated automatically through 
-                    // the optimistic updates in the useCompleteTransaction hook
                     console.log("Transaction marked as complete successfully");
 
                     // Also update the status field for consistency
@@ -259,8 +267,16 @@ function TransactionStatusField() {
                         {
                             onSuccess: () => {
                                 console.log("Status field updated to COMPLETED");
-                                // Update local state
+
+                                // Update local state for the form
                                 handleFieldChange('status', TransactionStatus.COMPLETED);
+                                handleFieldChange('pending', false);
+
+                                // Also update the transaction object directly since we're in view mode
+                                // This ensures the UI stays in sync
+                                transaction.status = TransactionStatus.COMPLETED;
+                                transaction.pending = false;
+
                                 setIsStatusUpdating(false);
                             },
                             onError: (error) => {
