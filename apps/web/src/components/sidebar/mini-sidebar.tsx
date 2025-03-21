@@ -66,12 +66,12 @@ const MiniSidebarItem = ({
           animate={
             active
               ? {
-                  boxShadow: [
-                    '0 0 0 rgba(var(--primary) / 0.2)',
-                    '0 0 12px rgba(var(--primary) / 0.3)',
-                    '0 0 0 rgba(var(--primary) / 0.2)',
-                  ],
-                }
+                boxShadow: [
+                  '0 0 0 rgba(var(--primary) / 0.2)',
+                  '0 0 12px rgba(var(--primary) / 0.3)',
+                  '0 0 0 rgba(var(--primary) / 0.2)',
+                ],
+              }
               : {}
           }
           transition={{
@@ -198,67 +198,60 @@ export function MiniSidebar() {
 
   const sidebarItems = useDemoItems
     ? demoItems.map((item) => ({
-        ...item,
-        isActive: pathname.includes(item.href),
-      }))
+      ...item,
+      isActive: pathname.includes(item.href),
+    }))
     : [
-        {
-          category: 'main',
-          href: '/dashboard',
-          icon: HomeIcon,
-          isActive: pathname.includes('/dashboard'),
-          tooltip: 'Workspace',
-        },
-        {
-          category: 'documents',
-          href: '/financial-overview',
-          icon: ChartBarSquareIcon,
-          isActive: pathname.includes('/financial-overview'),
-          tooltip: 'Financial Overview',
-        },
-        {
-          category: 'documents',
-          href: '/financial-analytics',
-          icon: CubeIcon,
-          isActive: pathname.includes('/financial-analytics'),
-          tooltip: 'Financial Analytics',
-        },
-        {
-          category: 'documents',
-          href: '/transactions',
-          icon: TableCellsIcon,
-          isActive: pathname.includes('/transactions'),
-          tooltip: 'Transactions',
-        },
-        {
-          category: 'documents',
-          href: '/regular-transactions',
-          icon: DiamondPercentIcon,
-          isActive: pathname.includes('/regular-transactions'),
-          tooltip: 'Regular Transactions',
-        },
-        {
-          category: 'documents',
-          href: '/recurring-transactions',
-          icon: ReloadIcon,
-          isActive: pathname.includes('/recurring-transactions'),
-          tooltip: 'Recurring Transactions',
-        },
-        {
-          category: 'documents',
-          href: '/invoices',
-          icon: CurrencyDollarIcon,
-          isActive: pathname.includes('/invoices'),
-          tooltip: 'invoices',
-        },
-        {
-          category: 'documents',
-          href: '/customers',
-          icon: UserGroupIcon,
-          isActive: pathname.includes('/customers'),
-          tooltip: 'customers',
-        },
-      ];
+      {
+        category: 'main',
+        href: '/dashboard',
+        icon: HomeIcon,
+        isActive: pathname.includes('/dashboard'),
+        tooltip: 'Workspace',
+      },
+      {
+        category: 'documents',
+        href: '/financial-overview',
+        icon: ChartBarSquareIcon,
+        isActive: pathname.includes('/financial-overview'),
+        tooltip: 'Financial Overview',
+      },
+      {
+        category: 'documents',
+        href: '/financial-analytics',
+        icon: CubeIcon,
+        isActive: pathname.includes('/financial-analytics'),
+        tooltip: 'Financial Analytics',
+      },
+      {
+        category: 'documents',
+        href: '/regular-transactions',
+        icon: DiamondPercentIcon,
+        isActive: pathname.includes('/regular-transactions'),
+        tooltip: 'Regular Transactions',
+      },
+      {
+        category: 'documents',
+        href: '/recurring-transactions',
+        icon: ReloadIcon,
+        isActive: pathname.includes('/recurring-transactions'),
+        tooltip: 'Recurring Transactions',
+      },
+      {
+        category: 'documents',
+        href: '/invoices',
+        icon: CurrencyDollarIcon,
+        isActive: pathname.includes('/invoices'),
+        tooltip: 'invoices',
+      },
+      {
+        category: 'documents',
+        href: '/customers',
+        icon: UserGroupIcon,
+        isActive: pathname.includes('/customers'),
+        tooltip: 'customers',
+      },
+    ];
 
   const container = {
     hidden: { opacity: 0 },

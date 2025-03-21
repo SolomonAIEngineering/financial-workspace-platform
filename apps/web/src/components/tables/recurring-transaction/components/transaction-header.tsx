@@ -2,6 +2,7 @@ import { AlertCircle, Calendar, CheckCircle2, ChevronDown, CircleDollarSign, Clo
 import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
 
+import { Card } from '@/components/ui/card';
 import { StatusBadge } from './status-badge';
 import { cn } from '@/lib/utils';
 import { formatAmount } from '../utils/transaction-formatters';
@@ -68,7 +69,7 @@ export function TransactionHeader({
             case 'paused':
                 return <PauseCircle className="h-5 w-5 text-blue-500" />;
             case 'cancelled':
-                return <AlertCircle className="h-5 w-5 text-blue-700" />;
+                return <AlertCircle className="h-5 w-5 text-foreground" />;
             case 'pending':
                 return <Clock className="h-5 w-5 text-blue-400" />;
             default:
@@ -113,7 +114,7 @@ export function TransactionHeader({
     // Determine importance styling - all blue variations
     const importanceStyles: Record<string, string> = {
         LOW: 'bg-blue-50 text-blue-600 border-blue-200',
-        MEDIUM: 'bg-blue-100 text-blue-700 border-blue-200',
+        MEDIUM: 'bg-blue-100 text-foreground border-blue-200',
         HIGH: 'bg-blue-200 text-blue-800 border-blue-300',
         CRITICAL: 'bg-blue-300 text-blue-900 border-blue-400',
     };
@@ -127,7 +128,7 @@ export function TransactionHeader({
 
         // Different blue variations
         const colors = [
-            'bg-blue-100 text-blue-700',
+            'bg-blue-100 text-foreground',
             'bg-blue-200 text-blue-800',
             'bg-blue-50 text-blue-600',
             'bg-blue-300 text-blue-900',
@@ -154,7 +155,7 @@ export function TransactionHeader({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="overflow-hidden rounded-xl border border-blue-100 bg-white shadow-sm"
+            className="overflow-hidden rounded-xl border-4 border-gray-50 bg-white shadow-sm"
         >
             {/* Top status strip */}
             <div className={cn("h-1 w-full", statusColor)} />
@@ -186,7 +187,7 @@ export function TransactionHeader({
                         <div className="flex flex-col items-end">
                             <div className={cn(
                                 "text-2xl font-semibold flex items-center gap-1",
-                                "text-blue-700" // Use blue for all amount text
+                                "text-foreground" // Use blue for all amount text
                             )}>
                                 {amount < 0 ? (
                                     <TrendingDown className="h-5 w-5" />
@@ -227,12 +228,12 @@ export function TransactionHeader({
                         className="overflow-hidden"
                     >
                         {/* Info Cards Row */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 m-4">
                             {/* Next Payment Card */}
-                            <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-3 border border-blue-100">
+                            <Card className="rounded-lg p-3 border-4 border-gray-50 shadow-sm">
                                 <div className="flex items-start justify-between">
                                     <div>
-                                        <p className="text-xs text-blue-700 mb-1">Next Payment</p>
+                                        <p className="text-xs text-foreground mb-1">Next Payment</p>
                                         <p className="text-sm font-medium text-gray-900">{formattedNextDate}</p>
                                         {daysLeft !== null && (
                                             <p className="text-xs text-blue-600 mt-1 flex items-center">
@@ -243,40 +244,40 @@ export function TransactionHeader({
                                     </div>
                                     <Calendar className="h-5 w-5 text-blue-600" />
                                 </div>
-                            </div>
+                            </Card>
 
                             {/* Type Card */}
-                            <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg p-3 border border-blue-200">
+                            <Card className="rounded-lg p-3 border-4 border-gray-50 shadow-sm">
                                 <div className="flex items-start justify-between">
                                     <div>
-                                        <p className="text-xs text-blue-700 mb-1">Type</p>
+                                        <p className="text-xs text-foreground mb-1">Type</p>
                                         <p className="text-sm font-medium text-gray-900 capitalize">{type || 'Unknown'}</p>
                                     </div>
                                     <CreditCard className="h-5 w-5 text-blue-600" />
                                 </div>
-                            </div>
+                            </Card>
 
                             {/* Frequency Card */}
-                            <div className="bg-gradient-to-br from-blue-50 to-white rounded-lg p-3 border border-blue-100">
+                            <Card className="rounded-lg p-3 border-4 border-gray-50 shadow-sm">
                                 <div className="flex items-start justify-between">
                                     <div>
-                                        <p className="text-xs text-blue-700 mb-1">Frequency</p>
+                                        <p className="text-xs text-foreground mb-1">Frequency</p>
                                         <p className="text-sm font-medium text-gray-900 capitalize">{frequency || 'Unknown'}</p>
                                     </div>
                                     <RefreshCw className="h-5 w-5 text-blue-600" />
                                 </div>
-                            </div>
+                            </Card>
 
                             {/* Status Card */}
-                            <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg p-3 border border-blue-200">
+                            <Card className="rounded-lg p-3 border-4 border-gray-50 shadow-sm">
                                 <div className="flex items-start justify-between">
                                     <div>
-                                        <p className="text-xs text-blue-700 mb-1">Status</p>
+                                        <p className="text-xs text-foreground mb-1">Status</p>
                                         <p className="text-sm font-medium text-gray-900 capitalize">{status}</p>
                                     </div>
                                     {getStatusIcon()}
                                 </div>
-                            </div>
+                            </Card>
                         </div>
                     </motion.div>
                 </div>

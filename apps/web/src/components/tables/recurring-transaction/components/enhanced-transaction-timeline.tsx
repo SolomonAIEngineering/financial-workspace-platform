@@ -378,7 +378,7 @@ export function EnhancedTransactionTimeline({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 p-5 shadow-sm"
+                className="rounded-xl border-4 border-gray-50 p-5 shadow-sm"
             >
                 <div className="mb-4 flex items-center gap-2">
                     <History className="h-5 w-5 text-blue-600" />

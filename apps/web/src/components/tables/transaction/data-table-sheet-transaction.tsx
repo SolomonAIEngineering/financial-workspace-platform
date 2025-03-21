@@ -597,8 +597,8 @@ export function TransactionSheetDetails() {
                     <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted">
                       {(related.category &&
                         categoryColors[related.category]?.icon) || (
-                        <DollarSign className="h-3 w-3" />
-                      )}
+                          <DollarSign className="h-3 w-3" />
+                        )}
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-xs font-medium">

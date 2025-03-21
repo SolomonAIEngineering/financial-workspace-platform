@@ -79,6 +79,7 @@ export const routes = {
   analytics: defineRoute('/analytics'),
   calendar: defineRoute('/calendar'),
   transactions: defineRoute('/transactions'),
+  recurringTransactions: defineRoute('/recurring-transactions'),
   invoices: defineRoute('/invoices'),
   customers: defineRoute('/customers'),
   help: defineRoute('/help'),

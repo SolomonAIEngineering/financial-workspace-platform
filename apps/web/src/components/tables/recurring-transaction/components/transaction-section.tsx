@@ -130,7 +130,7 @@ export function TransactionSection({
     return (
         <div
             className={cn(
-                'mb-4 overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm transition-all duration-200',
+                'mb-4 overflow-hidden rounded-lg border-4 border-gray-50 bg-white shadow-sm transition-all duration-200',
                 isOpen ? 'shadow-md' : '',
                 className
             )}
