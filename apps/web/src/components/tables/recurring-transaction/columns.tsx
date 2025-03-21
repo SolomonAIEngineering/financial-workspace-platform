@@ -176,14 +176,14 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       const status = row.original.status;
 
       return (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1 py-1">
           <div className="flex items-center gap-2">
             <span className="font-medium">{title}</span>
             {status && (
               <Badge
                 variant="outline"
                 className={cn(
-                  'text-xs',
+                  'text-xs px-2 py-1',
                   status === 'active'
                     ? 'border-green-200 bg-green-50 text-green-700'
                     : status === 'paused'
@@ -220,8 +220,8 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       return (
         <div
           className={cn(
-            'font-medium tabular-nums',
-            amount < 0 ? 'text-red-500' : 'text-green-500'
+            'font-medium tabular-nums px-2 py-1 rounded-md inline-block',
+            amount < 0 ? 'text-red-500 bg-red-50' : 'text-green-500 bg-green-50'
           )}
         >
           {formatted}
@@ -239,9 +239,9 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       const interval = row.original.interval || 1;
 
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 px-1">
           <CalendarClock className="h-4 w-4 text-muted-foreground" />
-          <span>{formatFrequency(frequency, interval)}</span>
+          <span className="font-medium">{formatFrequency(frequency, interval)}</span>
         </div>
       );
     },
@@ -265,9 +265,10 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       const isOverdue = daysDiff < 0;
 
       return (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1 py-1">
           <span
             className={cn(
+              'font-medium',
               isOverdue ? 'text-red-500' : isUpcoming ? 'text-amber-500' : ''
             )}
           >
@@ -298,7 +299,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       return (
         <Badge
           variant="outline"
-          className={cn('flex items-center gap-1', typeColor.badge)}
+          className={cn('flex items-center gap-1 px-3 py-1.5', typeColor.badge)}
         >
           {typeColor.icon}
           <span className="capitalize">{type || 'Other'}</span>
@@ -317,8 +318,8 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       const currency = row.original.currency || 'USD';
 
       return (
-        <div className="flex flex-col">
-          <span>{count || 0}</span>
+        <div className="flex flex-col gap-1 py-1">
+          <span className="font-medium">{count || 0}</span>
           <span className="text-xs text-muted-foreground">
             {new Intl.NumberFormat('en-US', {
               style: 'currency',
@@ -338,19 +339,27 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       const status = row.getValue('status') as string;
 
       return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 px-1">
           {status === 'active' ? (
             <>
-              <Check className="h-4 w-4 text-green-500" /> Active
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100">
+                <Check className="h-4 w-4 text-green-500" />
+              </div>
+              <span className="font-medium text-green-700">Active</span>
             </>
           ) : status === 'paused' ? (
             <>
-              <Clock className="h-4 w-4 text-amber-500" /> Paused
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100">
+                <Clock className="h-4 w-4 text-amber-500" />
+              </div>
+              <span className="font-medium text-amber-700">Paused</span>
             </>
           ) : (
             <>
-              <X className="h-4 w-4 text-muted-foreground" />{' '}
-              {status || 'Inactive'}
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100">
+                <X className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <span className="font-medium text-gray-500">{status || 'Inactive'}</span>
             </>
           )}
         </div>
@@ -365,9 +374,15 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     cell: ({ row }) => {
       const date = row.original.lastExecutedAt;
 
-      if (!date) return <span className="text-muted-foreground">Never</span>;
+      if (!date) return <span className="text-muted-foreground italic">Never</span>;
 
-      return format(new Date(date), 'MMM d, yyyy');
+      return (
+        <div className="flex items-center gap-2">
+          <span className="font-medium">
+            {format(new Date(date), 'MMM d, yyyy')}
+          </span>
+        </div>
+      );
     },
   },
   {
@@ -504,7 +519,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       if (!level) return <span className="text-muted-foreground">-</span>;
 
       return (
-        <Badge variant="outline" className={cn('capitalize', levelColor.badge)}>
+        <Badge variant="outline" className={cn('capitalize px-3 py-1', levelColor.badge)}>
           {level}
         </Badge>
       );
@@ -524,9 +539,13 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       return (
         <span>
           {affects ? (
-            <Check className="h-4 w-4 text-green-500" />
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100">
+              <Check className="h-4 w-4 text-green-500" />
+            </div>
           ) : (
-            <X className="h-4 w-4 text-muted-foreground" />
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100">
+              <X className="h-4 w-4 text-muted-foreground" />
+            </div>
           )}
         </span>
       );

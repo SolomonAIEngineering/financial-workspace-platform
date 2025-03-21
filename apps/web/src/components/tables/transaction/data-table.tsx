@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import { BaseChartSchema, columnFilterSchema } from './schema';
+import { ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react';
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -47,7 +48,6 @@ import { DataTableProvider } from '@/components/data-table/data-table-provider';
 import { DataTableSheetDetails } from '@/components/data-table/data-table-sheet/data-table-sheet-details';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 import { FilterSidebar } from './filter-sidebar';
-import { PlusCircle } from 'lucide-react';
 import { RefreshButton } from '@/components/buttons/refresh-button';
 import { TransactionSheetDetails } from './data-table-sheet-transaction';
 import { cn } from '@/lib/utils';
@@ -449,18 +449,45 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
               ]}
             />
           </div>
-          <div className="z-0">
+          <div className="z-0 relative">
+            <div className="absolute -left-8 top-1/2 z-20 -translate-y-1/2">
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 focus:outline-none"
+                onClick={() => {
+                  const tableContainer = document.querySelector('[class*="max-h-[calc(100vh_-_var(--top-bar-height))]"]');
+                  if (tableContainer) {
+                    tableContainer.scrollLeft -= 200;
+                  }
+                }}
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="absolute right-0 top-1/2 z-20 -translate-y-1/2">
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 focus:outline-none"
+                onClick={() => {
+                  const tableContainer = document.querySelector('[class*="max-h-[calc(100vh_-_var(--top-bar-height))]"]');
+                  if (tableContainer) {
+                    tableContainer.scrollLeft += 200;
+                  }
+                }}
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+
             <Table
-              className="![&_tr]:border-gray-300 ![&_td]:border-gray-300 ![&_th]:border-gray-300 border-separate border-spacing-0 [&_*]:border-gray-300"
-              containerClassName="max-h-[calc(100vh_-_var(--top-bar-height))]"
+              className="border-separate border-spacing-y-2 border-spacing-x-0"
+              containerClassName="max-h-[calc(100vh_-_var(--top-bar-height))] overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
               <TableHeader className={cn('sticky top-0 z-20 bg-background')}>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow
                     key={headerGroup.id}
                     className={cn(
-                      'bg-muted/50 hover:bg-muted/50',
-                      '[&>*]:border-t [&>*]:border-gray-300 [&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300'
+                      'bg-muted/50 hover:bg-muted/50'
                     )}
                   >
                     {headerGroup.headers.map((header) => {
@@ -468,7 +495,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                         <TableHead
                           key={header.id}
                           className={cn(
-                            'relative truncate border-b border-gray-300 select-none [&>.cursor-col-resize]:last:opacity-0',
+                            'relative truncate select-none [&>.cursor-col-resize]:last:opacity-0',
                             header.column.columnDef.meta?.headerClassName
                           )}
                           aria-sort={
@@ -491,8 +518,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                               onMouseDown={header.getResizeHandler()}
                               onTouchStart={header.getResizeHandler()}
                               className={cn(
-                                'user-select-none absolute top-0 -right-2 z-10 flex h-full w-4 cursor-col-resize touch-none justify-center',
-                                'before:absolute before:inset-y-0 before:w-px before:translate-x-px before:bg-gray-300'
+                                'user-select-none absolute top-0 -right-2 z-10 flex h-full w-4 cursor-col-resize touch-none justify-center'
                               )}
                             />
                           )}
@@ -505,7 +531,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
               <TableBody
                 id="content"
                 tabIndex={-1}
-                className="outline-1 -outline-offset-1 outline-gray-300 transition-colors focus-visible:outline"
+                className="transition-colors"
                 style={{
                   scrollMarginTop: 'calc(var(--top-bar-height) + 40px)',
                 }}
@@ -525,10 +551,8 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                         }
                       }}
                       className={cn(
-                        'border-b border-gray-300',
-                        '[&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300',
-                        'outline-1 -outline-offset-1 outline-gray-300 transition-colors',
-                        'focus-visible:bg-muted/50 focus-visible:outline data-[state=selected]:outline',
+                        'transition-colors',
+                        'focus-visible:bg-muted/50',
                         table.options.meta?.getRowClassName?.(row)
                       )}
                     >
@@ -536,7 +560,8 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                         <TableCell
                           key={cell.id}
                           className={cn(
-                            'truncate border-b border-gray-300',
+                            'truncate',
+                            'py-4',
                             cell.column.columnDef.meta?.cellClassName
                           )}
                         >

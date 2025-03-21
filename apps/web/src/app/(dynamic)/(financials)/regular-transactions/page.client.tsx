@@ -85,7 +85,6 @@ export function ClientTransactionsTable({
 
   // Function to handle refetching transactions data
   const handleRefetch = useCallback(() => {
-    console.log('Refetching transactions data...');
     setHasRefetched(true);
     return refetch();
   }, [refetch]);
@@ -198,11 +197,11 @@ export function ClientTransactionsTable({
           pagination={
             pagination
               ? {
-                  page: pagination.page,
-                  limit: pagination.limit,
-                  total: pagination.total,
-                  pages: pagination.pages,
-                }
+                page: pagination.page,
+                limit: pagination.limit,
+                total: pagination.total,
+                pages: pagination.pages,
+              }
               : undefined
           }
           onPaginationChange={{
