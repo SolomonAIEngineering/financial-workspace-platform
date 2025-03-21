@@ -36,7 +36,7 @@ import { formatISO } from 'date-fns';
  *   } = useTrackerParams('2023-01-01');
  *
  *   // Read current parameters
- *   console.log(`Current date: ${date}, Project: ${projectId}`);
+ *   console.info(`Current date: ${date}, Project: ${projectId}`);
  *
  *   // Update parameters
  *   setParams({ date: '2023-02-01', projectId: 'project-123' });

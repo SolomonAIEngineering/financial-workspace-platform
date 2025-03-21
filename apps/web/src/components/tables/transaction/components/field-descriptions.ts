@@ -36,7 +36,8 @@ export const fieldDescriptions: Record<string, string> = {
   name: 'Display name for the transaction',
   amount: 'Transaction amount - positive for income, negative for expenses',
   date: 'The date when the transaction occurred',
-  status: 'Current transaction status in the workflow. Can include states like Pending, Completed, Under Review, Approved, Rejected, Flagged, Disputed, Needs Documentation, Reconciled, and more. Status transitions follow a defined workflow path.',
+  status:
+    'Current transaction status in the workflow. Can include states like Pending, Completed, Under Review, Approved, Rejected, Flagged, Disputed, Needs Documentation, Reconciled, and more. Status transitions follow a defined workflow path.',
   description: 'Detailed description of the transaction',
   notes: 'Additional notes or comments added to this transaction',
 

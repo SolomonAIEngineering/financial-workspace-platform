@@ -449,12 +449,14 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
               ]}
             />
           </div>
-          <div className="z-0 relative">
-            <div className="absolute -left-8 top-1/2 z-20 -translate-y-1/2">
+          <div className="relative z-0">
+            <div className="absolute top-1/2 -left-8 z-20 -translate-y-1/2">
               <button
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 focus:outline-none"
                 onClick={() => {
-                  const tableContainer = document.querySelector('[class*="max-h-[calc(100vh_-_var(--top-bar-height))]"]');
+                  const tableContainer = document.querySelector(
+                    '[class*="max-h-[calc(100vh_-_var(--top-bar-height))]"]'
+                  );
                   if (tableContainer) {
                     tableContainer.scrollLeft -= 200;
                   }
@@ -464,11 +466,13 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
               </button>
             </div>
 
-            <div className="absolute right-0 top-1/2 z-20 -translate-y-1/2">
+            <div className="absolute top-1/2 right-0 z-20 -translate-y-1/2">
               <button
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 focus:outline-none"
                 onClick={() => {
-                  const tableContainer = document.querySelector('[class*="max-h-[calc(100vh_-_var(--top-bar-height))]"]');
+                  const tableContainer = document.querySelector(
+                    '[class*="max-h-[calc(100vh_-_var(--top-bar-height))]"]'
+                  );
                   if (tableContainer) {
                     tableContainer.scrollLeft += 200;
                   }
@@ -479,16 +483,14 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
             </div>
 
             <Table
-              className="border-separate border-spacing-y-2 border-spacing-x-0"
+              className="border-separate border-spacing-x-0 border-spacing-y-2"
               containerClassName="max-h-[calc(100vh_-_var(--top-bar-height))] overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
               <TableHeader className={cn('sticky top-0 z-20 bg-background')}>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow
                     key={headerGroup.id}
-                    className={cn(
-                      'bg-muted/50 hover:bg-muted/50'
-                    )}
+                    className={cn('bg-muted/50 hover:bg-muted/50')}
                   >
                     {headerGroup.headers.map((header) => {
                       return (
@@ -509,9 +511,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}

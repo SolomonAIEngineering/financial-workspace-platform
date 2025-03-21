@@ -1,9 +1,11 @@
 # Transaction "Mark as Complete" Feature Implementation Plan
 
 ## Overview
+
 This document outlines the plan for implementing a "Mark as Complete" feature for transactions in the financial management platform. This feature will allow users to mark transactions as completed directly from the transaction details sheet by interacting with the status field.
 
 ## Current State Analysis
+
 - The application has a transaction detail sheet (TransactionSheetDetails) that displays when a user selects a transaction from the data table
 - The existing transaction system already has a backend TRPC procedure `completeTransaction` in the transactions router
 - There is also a React hook `useCompleteTransaction()` available for frontend use
@@ -12,6 +14,7 @@ This document outlines the plan for implementing a "Mark as Complete" feature fo
 ## Implementation Plan
 
 ### 1. Make the Status DetailRow Interactive
+
 Instead of adding a separate button, we'll enhance the existing Status DetailRow to be interactive:
 
 ```typescript
@@ -46,7 +49,7 @@ const completeTransaction = useCompleteTransaction();
 // Add the handler function:
 const handleMarkAsComplete = (id: string) => {
   if (!id) return;
-  
+
   completeTransaction.mutate(
     { id },
     {
@@ -63,6 +66,7 @@ const handleMarkAsComplete = (id: string) => {
 ```
 
 ### 2. Enhance the DetailRow Component
+
 Update the DetailRow component to support interactivity:
 
 ```typescript
@@ -113,14 +117,15 @@ interface DetailRowProps {
 ```
 
 ### 3. Update the TransactionDetails Component
+
 Make sure the parent component can handle the status update:
 
 ```typescript
 // in src/components/tables/transaction/components/transaction-details.tsx
 // Pass transaction ID and onUpdate to the TransactionInfoSection
 
-<TransactionInfoSection 
-  onUpdateStatus={onUpdate} 
+<TransactionInfoSection
+  onUpdateStatus={onUpdate}
 />
 ```
 

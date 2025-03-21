@@ -183,7 +183,7 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
               <Badge
                 variant="outline"
                 className={cn(
-                  'text-xs px-2 py-1',
+                  'px-2 py-1 text-xs',
                   status === 'active'
                     ? 'border-green-200 bg-green-50 text-green-700'
                     : status === 'paused'
@@ -220,8 +220,8 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       return (
         <div
           className={cn(
-            'font-medium tabular-nums px-2 py-1 rounded-md inline-block',
-            amount < 0 ? 'text-red-500 bg-red-50' : 'text-green-500 bg-green-50'
+            'inline-block rounded-md px-2 py-1 font-medium tabular-nums',
+            amount < 0 ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-500'
           )}
         >
           {formatted}
@@ -241,7 +241,9 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       return (
         <div className="flex items-center gap-2 px-1">
           <CalendarClock className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{formatFrequency(frequency, interval)}</span>
+          <span className="font-medium">
+            {formatFrequency(frequency, interval)}
+          </span>
         </div>
       );
     },
@@ -359,7 +361,9 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100">
                 <X className="h-4 w-4 text-muted-foreground" />
               </div>
-              <span className="font-medium text-gray-500">{status || 'Inactive'}</span>
+              <span className="font-medium text-gray-500">
+                {status || 'Inactive'}
+              </span>
             </>
           )}
         </div>
@@ -374,7 +378,8 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
     cell: ({ row }) => {
       const date = row.original.lastExecutedAt;
 
-      if (!date) return <span className="text-muted-foreground italic">Never</span>;
+      if (!date)
+        return <span className="text-muted-foreground italic">Never</span>;
 
       return (
         <div className="flex items-center gap-2">
@@ -519,7 +524,10 @@ export const columns: ColumnDef<RecurringTransactionSchema>[] = [
       if (!level) return <span className="text-muted-foreground">-</span>;
 
       return (
-        <Badge variant="outline" className={cn('capitalize px-3 py-1', levelColor.badge)}>
+        <Badge
+          variant="outline"
+          className={cn('px-3 py-1 capitalize', levelColor.badge)}
+        >
           {level}
         </Badge>
       );

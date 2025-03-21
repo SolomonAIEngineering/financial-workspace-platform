@@ -69,8 +69,8 @@ function getBadgeClass(badgeType?: string): string {
  * Interface for props accepted by the DetailRow component.
  *
  * @property {string} label - The label text shown on the left side of the row.
- * @property {string | number | React.ReactNode} value - The value to display on the
- *   right side of the row.
+ * @property {string | number | React.ReactNode} value - The value to display on
+ *   the right side of the row.
  * @property {boolean} [monospace] - Whether to display the value in a monospace
  *   font for better legibility of codes/IDs.
  * @property {boolean} [isBadge] - Whether to display the value as a badge
@@ -93,8 +93,10 @@ function getBadgeClass(badgeType?: string): string {
  *   clipboard.
  * @property {() => void} [onCopy] - Function to call when the value is copied.
  * @property {boolean} [loading] - Whether the row is in a loading state.
- * @property {boolean} [interactive] - Whether the value is interactive (can be clicked).
- * @property {string} [hoverText] - Text to display when hovering over an interactive value.
+ * @property {boolean} [interactive] - Whether the value is interactive (can be
+ *   clicked).
+ * @property {string} [hoverText] - Text to display when hovering over an
+ *   interactive value.
  * @interface DetailRowProps
  */
 interface DetailRowProps {
@@ -130,11 +132,11 @@ interface DetailRowProps {
  *   <DetailRow label="Status" value="COMPLETED" isBadge={true} badgeType="success" />
  *
  *   // With interactive badge
- *   <DetailRow 
- *     label="Status" 
- *     value="Pending" 
- *     isBadge={true} 
- *     badgeType="warning" 
+ *   <DetailRow
+ *     label="Status"
+ *     value="Pending"
+ *     isBadge={true}
+ *     badgeType="warning"
  *     interactive={true}
  *     onClick={() => markAsComplete()}
  *     hoverText="Click to mark as complete"
@@ -185,24 +187,28 @@ export function DetailRow({
       return (
         <div
           className={cn(
-            "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
+            'inline-flex items-center rounded-full px-2 py-1 text-xs font-medium',
             getBadgeClass(badgeType),
-            interactive && "cursor-pointer hover:opacity-80 transition-opacity",
-            interactive && "relative group"
+            interactive && 'cursor-pointer transition-opacity hover:opacity-80',
+            interactive && 'group relative'
           )}
           onClick={interactive ? onClick : undefined}
-          role={interactive ? "button" : undefined}
+          role={interactive ? 'button' : undefined}
           tabIndex={interactive ? 0 : undefined}
-          onKeyDown={interactive ? (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              onClick?.();
-            }
-          } : undefined}
+          onKeyDown={
+            interactive
+              ? (e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onClick?.();
+                  }
+                }
+              : undefined
+          }
         >
           {value}
           {interactive && hoverText && (
-            <span className="absolute -top-8 left-1/2 -translate-x-1/2 hidden group-hover:block bg-black text-white text-xs px-2 py-1 rounded z-50">
+            <span className="absolute -top-8 left-1/2 z-50 hidden -translate-x-1/2 rounded bg-black px-2 py-1 text-xs text-white group-hover:block">
               {hoverText}
             </span>
           )}
@@ -225,7 +231,11 @@ export function DetailRow({
     }
 
     if (monospace) {
-      return <code className="rounded bg-muted px-1 py-0.5 font-mono text-sm">{value}</code>;
+      return (
+        <code className="rounded bg-muted px-1 py-0.5 font-mono text-sm">
+          {value}
+        </code>
+      );
     }
 
     if (href) {
