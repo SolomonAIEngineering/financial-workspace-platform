@@ -39,6 +39,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
+import { Button } from '@/registry/default/potion-ui/button';
+import { CreateTransactionModal } from '../../modals/create-transaction-modal';
 import { DataTableFilterCommand } from '@/components/data-table/data-table-filter-command';
 import { DataTableFilterControls } from '@/components/data-table/data-table-filter-controls';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
@@ -46,6 +48,7 @@ import { DataTableProvider } from '@/components/data-table/data-table-provider';
 import { DataTableResetButton } from '@/components/data-table/data-table-reset-button';
 import { DataTableSheetDetails } from '@/components/data-table/data-table-sheet/data-table-sheet-details';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
+import { PlusCircle } from 'lucide-react';
 import { RefreshButton } from '@/components/buttons/refresh-button';
 import { TransactionSheetDetails } from './data-table-sheet-transaction';
 import { cn } from '@/lib/utils';
@@ -203,6 +206,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
       'data-table-visibility',
       defaultColumnVisibility
     );
+  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
   const [_, setSearch] = useQueryStates(searchParamsParser);
   const topBarRef = React.useRef<HTMLDivElement>(null);
   const [topBarHeight, setTopBarHeight] = React.useState(0);
@@ -450,6 +454,16 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
             <DataTableFilterCommand schema={columnFilterSchema} />
             <DataTableToolbar
               renderActions={() => [
+                <Button
+                  key="create"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="mr-2 flex items-center gap-1"
+                >
+                  <PlusCircle className="h-4 w-4" />
+                  Create Transaction
+                </Button>,
                 refetch && <RefreshButton key="refresh" onClick={refetch} />,
               ]}
             />
@@ -487,9 +501,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}
@@ -575,8 +589,18 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
         title="Transaction Details"
         titleClassName="font-medium"
       >
-        <TransactionSheetDetails onDeleteSuccess={refetch} />
+        <TransactionSheetDetails
+          onDeleteSuccess={refetch}
+          onCreateSuccess={refetch}
+        />
       </DataTableSheetDetails>
+
+      {/* Create Transaction Modal */}
+      <CreateTransactionModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+        onSuccess={refetch}
+      />
     </DataTableProvider>
   );
 }

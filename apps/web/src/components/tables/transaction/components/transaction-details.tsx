@@ -373,48 +373,48 @@ export function TransactionDetails({ transaction }: TransactionDetailsProps) {
             transaction.merchantState ||
             transaction.merchantZip ||
             transaction.merchantCountry) && (
-            <div className="mt-2 border-t border-border/20 pt-2">
-              <SubheadingWithTooltip
-                label="Merchant Address"
-                tooltip="Physical address of the merchant or business"
-              />
-              {transaction.merchantAddress && (
-                <DetailRow
-                  label="Street"
-                  value={transaction.merchantAddress}
-                  tooltip={fieldDescriptions.merchantAddress}
+              <div className="mt-2 border-t border-border/20 pt-2">
+                <SubheadingWithTooltip
+                  label="Merchant Address"
+                  tooltip="Physical address of the merchant or business"
                 />
-              )}
-              {transaction.merchantCity && (
-                <DetailRow
-                  label="City"
-                  value={transaction.merchantCity}
-                  tooltip={fieldDescriptions.merchantCity}
-                />
-              )}
-              {transaction.merchantState && (
-                <DetailRow
-                  label="State"
-                  value={transaction.merchantState}
-                  tooltip={fieldDescriptions.merchantState}
-                />
-              )}
-              {transaction.merchantZip && (
-                <DetailRow
-                  label="ZIP"
-                  value={transaction.merchantZip}
-                  tooltip={fieldDescriptions.merchantZip}
-                />
-              )}
-              {transaction.merchantCountry && (
-                <DetailRow
-                  label="Country"
-                  value={transaction.merchantCountry}
-                  tooltip={fieldDescriptions.merchantCountry}
-                />
-              )}
-            </div>
-          )}
+                {transaction.merchantAddress && (
+                  <DetailRow
+                    label="Street"
+                    value={transaction.merchantAddress}
+                    tooltip={fieldDescriptions.merchantAddress}
+                  />
+                )}
+                {transaction.merchantCity && (
+                  <DetailRow
+                    label="City"
+                    value={transaction.merchantCity}
+                    tooltip={fieldDescriptions.merchantCity}
+                  />
+                )}
+                {transaction.merchantState && (
+                  <DetailRow
+                    label="State"
+                    value={transaction.merchantState}
+                    tooltip={fieldDescriptions.merchantState}
+                  />
+                )}
+                {transaction.merchantZip && (
+                  <DetailRow
+                    label="ZIP"
+                    value={transaction.merchantZip}
+                    tooltip={fieldDescriptions.merchantZip}
+                  />
+                )}
+                {transaction.merchantCountry && (
+                  <DetailRow
+                    label="Country"
+                    value={transaction.merchantCountry}
+                    tooltip={fieldDescriptions.merchantCountry}
+                  />
+                )}
+              </div>
+            )}
         </div>
       </TransactionSection>
 
@@ -476,34 +476,34 @@ export function TransactionDetails({ transaction }: TransactionDetailsProps) {
           {(transaction.fiscalYear ||
             transaction.fiscalMonth ||
             transaction.fiscalQuarter) && (
-            <div className="mt-2 border-t border-border/20 pt-2">
-              <SubheadingWithTooltip
-                label="Fiscal Period"
-                tooltip="Financial period to which this transaction belongs"
-              />
-              {transaction.fiscalYear && (
-                <DetailRow
-                  label="Fiscal Year"
-                  value={transaction.fiscalYear}
-                  tooltip={fieldDescriptions.fiscalYear}
+              <div className="mt-2 border-t border-border/20 pt-2">
+                <SubheadingWithTooltip
+                  label="Fiscal Period"
+                  tooltip="Financial period to which this transaction belongs"
                 />
-              )}
-              {transaction.fiscalMonth && (
-                <DetailRow
-                  label="Fiscal Month"
-                  value={transaction.fiscalMonth}
-                  tooltip={fieldDescriptions.fiscalMonth}
-                />
-              )}
-              {transaction.fiscalQuarter && (
-                <DetailRow
-                  label="Fiscal Quarter"
-                  value={transaction.fiscalQuarter}
-                  tooltip={fieldDescriptions.fiscalQuarter}
-                />
-              )}
-            </div>
-          )}
+                {transaction.fiscalYear && (
+                  <DetailRow
+                    label="Fiscal Year"
+                    value={transaction.fiscalYear}
+                    tooltip={fieldDescriptions.fiscalYear}
+                  />
+                )}
+                {transaction.fiscalMonth && (
+                  <DetailRow
+                    label="Fiscal Month"
+                    value={transaction.fiscalMonth}
+                    tooltip={fieldDescriptions.fiscalMonth}
+                  />
+                )}
+                {transaction.fiscalQuarter && (
+                  <DetailRow
+                    label="Fiscal Quarter"
+                    value={transaction.fiscalQuarter}
+                    tooltip={fieldDescriptions.fiscalQuarter}
+                  />
+                )}
+              </div>
+            )}
 
           {/* Tags */}
           {transaction.tags && transaction.tags.length > 0 && (
@@ -579,34 +579,34 @@ export function TransactionDetails({ transaction }: TransactionDetailsProps) {
           {(transaction.cardType ||
             transaction.cardNetwork ||
             transaction.cardLastFour) && (
-            <div className="mt-2 border-t border-border/20 pt-2">
-              <SubheadingWithTooltip
-                label="Card Information"
-                tooltip="Details about the card used for this transaction"
-              />
-              {transaction.cardType && (
-                <DetailRow
-                  label="Card Type"
-                  value={transaction.cardType}
-                  tooltip={fieldDescriptions.cardType}
+              <div className="mt-2 border-t border-border/20 pt-2">
+                <SubheadingWithTooltip
+                  label="Card Information"
+                  tooltip="Details about the card used for this transaction"
                 />
-              )}
-              {transaction.cardNetwork && (
-                <DetailRow
-                  label="Card Network"
-                  value={transaction.cardNetwork}
-                  tooltip={fieldDescriptions.cardNetwork}
-                />
-              )}
-              {transaction.cardLastFour && (
-                <DetailRow
-                  label="Last Four"
-                  value={transaction.cardLastFour}
-                  tooltip={fieldDescriptions.cardLastFour}
-                />
-              )}
-            </div>
-          )}
+                {transaction.cardType && (
+                  <DetailRow
+                    label="Card Type"
+                    value={transaction.cardType}
+                    tooltip={fieldDescriptions.cardType}
+                  />
+                )}
+                {transaction.cardNetwork && (
+                  <DetailRow
+                    label="Card Network"
+                    value={transaction.cardNetwork}
+                    tooltip={fieldDescriptions.cardNetwork}
+                  />
+                )}
+                {transaction.cardLastFour && (
+                  <DetailRow
+                    label="Last Four"
+                    value={transaction.cardLastFour}
+                    tooltip={fieldDescriptions.cardLastFour}
+                  />
+                )}
+              </div>
+            )}
 
           {/* Reference numbers */}
           {(transaction.transactionReference ||
@@ -614,53 +614,53 @@ export function TransactionDetails({ transaction }: TransactionDetailsProps) {
             transaction.checkNumber ||
             transaction.wireReference ||
             transaction.accountNumber) && (
-            <div className="mt-2 border-t border-border/20 pt-2">
-              <SubheadingWithTooltip
-                label="Reference Information"
-                tooltip="Reference numbers and identifiers associated with this transaction"
-              />
-              {transaction.transactionReference && (
-                <DetailRow
-                  label="Transaction Reference"
-                  value={transaction.transactionReference}
-                  tooltip={fieldDescriptions.transactionReference}
-                  monospace
+              <div className="mt-2 border-t border-border/20 pt-2">
+                <SubheadingWithTooltip
+                  label="Reference Information"
+                  tooltip="Reference numbers and identifiers associated with this transaction"
                 />
-              )}
-              {transaction.authorizationCode && (
-                <DetailRow
-                  label="Authorization Code"
-                  value={transaction.authorizationCode}
-                  tooltip={fieldDescriptions.authorizationCode}
-                  monospace
-                />
-              )}
-              {transaction.checkNumber && (
-                <DetailRow
-                  label="Check Number"
-                  value={transaction.checkNumber}
-                  tooltip={fieldDescriptions.checkNumber}
-                  monospace
-                />
-              )}
-              {transaction.wireReference && (
-                <DetailRow
-                  label="Wire Reference"
-                  value={transaction.wireReference}
-                  tooltip={fieldDescriptions.wireReference}
-                  monospace
-                />
-              )}
-              {transaction.accountNumber && (
-                <DetailRow
-                  label="Account Number"
-                  value={transaction.accountNumber}
-                  tooltip={fieldDescriptions.accountNumber}
-                  monospace
-                />
-              )}
-            </div>
-          )}
+                {transaction.transactionReference && (
+                  <DetailRow
+                    label="Transaction Reference"
+                    value={transaction.transactionReference}
+                    tooltip={fieldDescriptions.transactionReference}
+                    monospace
+                  />
+                )}
+                {transaction.authorizationCode && (
+                  <DetailRow
+                    label="Authorization Code"
+                    value={transaction.authorizationCode}
+                    tooltip={fieldDescriptions.authorizationCode}
+                    monospace
+                  />
+                )}
+                {transaction.checkNumber && (
+                  <DetailRow
+                    label="Check Number"
+                    value={transaction.checkNumber}
+                    tooltip={fieldDescriptions.checkNumber}
+                    monospace
+                  />
+                )}
+                {transaction.wireReference && (
+                  <DetailRow
+                    label="Wire Reference"
+                    value={transaction.wireReference}
+                    tooltip={fieldDescriptions.wireReference}
+                    monospace
+                  />
+                )}
+                {transaction.accountNumber && (
+                  <DetailRow
+                    label="Account Number"
+                    value={transaction.accountNumber}
+                    tooltip={fieldDescriptions.accountNumber}
+                    monospace
+                  />
+                )}
+              </div>
+            )}
         </div>
       </TransactionSection>
 
@@ -957,36 +957,36 @@ export function TransactionDetails({ transaction }: TransactionDetailsProps) {
       {/* Analytics and Insights */}
       {(transaction.confidenceScore !== null ||
         transaction.anomalyScore !== null) && (
-        <TransactionSection
-          title="Analytics"
-          icon={<BarChart4 className="h-4 w-4" />}
-          tooltip={sectionDescriptions.analytics}
-        >
-          <div className="space-y-1">
-            {transaction.confidenceScore !== null && (
-              <DetailRow
-                label="Confidence Score"
-                value={`${(transaction.confidenceScore * 100).toFixed(1)}%`}
-                tooltip={fieldDescriptions.confidenceScore}
-              />
-            )}
-            {transaction.anomalyScore !== null && (
-              <DetailRow
-                label="Anomaly Score"
-                value={`${(transaction.anomalyScore * 100).toFixed(1)}%`}
-                tooltip={fieldDescriptions.anomalyScore}
-              />
-            )}
-            {transaction.inflationCategory && (
-              <DetailRow
-                label="Inflation Category"
-                value={transaction.inflationCategory}
-                tooltip={fieldDescriptions.inflationCategory}
-              />
-            )}
-          </div>
-        </TransactionSection>
-      )}
+          <TransactionSection
+            title="Analytics"
+            icon={<BarChart4 className="h-4 w-4" />}
+            tooltip={sectionDescriptions.analytics}
+          >
+            <div className="space-y-1">
+              {transaction.confidenceScore !== null && (
+                <DetailRow
+                  label="Confidence Score"
+                  value={`${(transaction.confidenceScore * 100).toFixed(1)}%`}
+                  tooltip={fieldDescriptions.confidenceScore}
+                />
+              )}
+              {transaction.anomalyScore !== null && (
+                <DetailRow
+                  label="Anomaly Score"
+                  value={`${(transaction.anomalyScore * 100).toFixed(1)}%`}
+                  tooltip={fieldDescriptions.anomalyScore}
+                />
+              )}
+              {transaction.inflationCategory && (
+                <DetailRow
+                  label="Inflation Category"
+                  value={transaction.inflationCategory}
+                  tooltip={fieldDescriptions.inflationCategory}
+                />
+              )}
+            </div>
+          </TransactionSection>
+        )}
 
       {/* Status Information */}
       <TransactionSection

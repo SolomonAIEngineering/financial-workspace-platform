@@ -28,6 +28,11 @@ interface TransactionSheetDetailsProps {
    * perform other actions
    */
   onDeleteSuccess?: () => void;
+  /**
+   * Optional callback function that will be called after a transaction is
+   * successfully created
+   */
+  onCreateSuccess?: () => void;
 }
 
 /**
@@ -53,7 +58,10 @@ interface TransactionSheetDetailsProps {
  *   // Used inside a sheet or dialog component
  *   <Sheet>
  *     <SheetContent>
- *       <TransactionSheetDetails onDeleteSuccess={() => refetchTransactions()} />
+ *       <TransactionSheetDetails
+ *         onDeleteSuccess={() => refetchTransactions()}
+ *         onCreateSuccess={() => refetchTransactions()}
+ *       />
  *     </SheetContent>
  *   </Sheet>
  *   ```;
@@ -63,6 +71,7 @@ interface TransactionSheetDetailsProps {
  */
 export function TransactionSheetDetails({
   onDeleteSuccess,
+  onCreateSuccess,
 }: TransactionSheetDetailsProps = {}) {
   const { rowSelection, table } = useDataTable();
   const deleteTransaction = useDeleteTransaction();
@@ -118,7 +127,7 @@ export function TransactionSheetDetails({
     <>
       <ScrollArea className="scrollbar-hide h-full">
         <div className="flex flex-col space-y-4">
-          <div className="flex justify-end px-4">
+          <div className="flex items-center justify-end px-4">
             <Button
               variant="destructive"
               size="sm"
@@ -133,6 +142,7 @@ export function TransactionSheetDetails({
         </div>
       </ScrollArea>
 
+      {/* Delete Confirmation Dialog */}
       <AlertDialog
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
