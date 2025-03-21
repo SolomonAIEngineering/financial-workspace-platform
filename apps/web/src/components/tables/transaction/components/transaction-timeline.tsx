@@ -14,50 +14,50 @@ import { cn } from '@/lib/utils';
  * @property color - The color to use for the phase visualization
  */
 interface TimingPhase {
-    name: string;
-    percentage: number;
-    value: number;
-    color: string;
+  name: string;
+  percentage: number;
+  value: number;
+  color: string;
 }
 
 interface TransactionTimelineProps {
-    timingPhases: TimingPhase[];
-    totalLatency: number;
+  timingPhases: TimingPhase[];
+  totalLatency: number;
 }
 
 export function TransactionTimeline({
-    timingPhases,
-    totalLatency,
+  timingPhases,
+  totalLatency,
 }: TransactionTimelineProps) {
-    return (
-        <div className="rounded-md border bg-gray-50/50 p-3">
-            <div className="mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="text-sm font-medium">Processing Time</h3>
-                </div>
-                <div className="flex items-center gap-1">
-                    <Badge
-                        variant="outline"
-                        className="border-amber-200 bg-amber-50 text-xs font-normal"
-                    >
-                        P50
-                    </Badge>
-                    <p className="text-sm">{totalLatency}ms</p>
-                </div>
-            </div>
-
-            <div className="space-y-2">
-                {timingPhases.map((phase) => (
-                    <ProcessingStep
-                        key={phase.name}
-                        name={phase.name}
-                        percentage={phase.percentage}
-                        value={phase.value}
-                        color={phase.color}
-                    />
-                ))}
-            </div>
+  return (
+    <div className="rounded-md border bg-gray-50/50 p-3">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          <h3 className="text-sm font-medium">Processing Time</h3>
         </div>
-    );
-} 
+        <div className="flex items-center gap-1">
+          <Badge
+            variant="outline"
+            className="border-amber-200 bg-amber-50 text-xs font-normal"
+          >
+            P50
+          </Badge>
+          <p className="text-sm">{totalLatency}ms</p>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        {timingPhases.map((phase) => (
+          <ProcessingStep
+            key={phase.name}
+            name={phase.name}
+            percentage={phase.percentage}
+            value={phase.value}
+            color={phase.color}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

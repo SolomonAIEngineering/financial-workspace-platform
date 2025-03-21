@@ -11,4 +11,4 @@ export * from './processing-step';
 export * from './enhanced-transaction-timeline';
 
 // Utility functions
-export * from '../utils/transaction-formatters'; 
+export * from '../utils/transaction-formatters';

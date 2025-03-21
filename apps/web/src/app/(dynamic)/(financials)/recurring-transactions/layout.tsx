@@ -1,5 +1,5 @@
-import { PageSkeleton } from "@/components/ui/page-skeleton";
-import { routes } from "@/lib/navigation/routes";
+import { PageSkeleton } from '@/components/ui/page-skeleton';
+import { routes } from '@/lib/navigation/routes';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +9,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       title="Recurring Transactions"
       breadcrumbs={[
         { href: routes.dashboard(), label: 'Dashboard' },
-        { href: routes.recurringTransactions(), label: 'Recurring Transactions' },
+        {
+          href: routes.recurringTransactions(),
+          label: 'Recurring Transactions',
+        },
       ]}
       className="flex min-h-screen w-full max-w-screen overflow-x-hidden"
     >

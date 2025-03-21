@@ -11,7 +11,8 @@ import { sampleRecurringTransactions } from '@/components/tables/recurring-trans
 // Define type for the router output
 type RouterOutput = inferRouterOutputs<AppRouter>;
 // Extract the exact type returned by getRecurringTransactions
-type RecurringTransactionsOutput = RouterOutput['recurringTransactions']['getRecurringTransactions'];
+type RecurringTransactionsOutput =
+  RouterOutput['recurringTransactions']['getRecurringTransactions'];
 
 // Define the props interface with initialData
 interface ClientTransactionsTableProps {

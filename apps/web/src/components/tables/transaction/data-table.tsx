@@ -575,7 +575,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
         title="Transaction Details"
         titleClassName="font-medium"
       >
-        <TransactionSheetDetails />
+        <TransactionSheetDetails onDeleteSuccess={refetch} />
       </DataTableSheetDetails>
     </DataTableProvider>
   );

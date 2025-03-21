@@ -189,8 +189,8 @@ export function SubscriptionManagement({
                       Your subscription will end on{' '}
                       {subscription.currentPeriodEnd
                         ? new Date(
-                          subscription.currentPeriodEnd
-                        ).toLocaleDateString()
+                            subscription.currentPeriodEnd
+                          ).toLocaleDateString()
                         : 'the next billing date'}
                       .
                     </div>
