@@ -42,12 +42,11 @@ import {
 import { Button } from '@/registry/default/potion-ui/button';
 import { CreateTransactionModal } from '../../modals/create-transaction-modal';
 import { DataTableFilterCommand } from '@/components/data-table/data-table-filter-command';
-import { DataTableFilterControls } from '@/components/data-table/data-table-filter-controls';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 import { DataTableProvider } from '@/components/data-table/data-table-provider';
-import { DataTableResetButton } from '@/components/data-table/data-table-reset-button';
 import { DataTableSheetDetails } from '@/components/data-table/data-table-sheet/data-table-sheet-details';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
+import { FilterSidebar } from './filter-sidebar';
 import { PlusCircle } from 'lucide-react';
 import { RefreshButton } from '@/components/buttons/refresh-button';
 import { TransactionSheetDetails } from './data-table-sheet-transaction';
@@ -128,6 +127,10 @@ export interface DataTableProps<
     onPageChange: (page: number) => void;
     onPageSizeChange: (pageSize: number) => void;
   };
+  filterSidebarClassName?: string;
+  filterHeaderClassName?: string;
+  filterContentClassName?: string;
+  filterTitle?: string;
 }
 
 /**
@@ -184,6 +187,10 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   meta,
   pagination: serverPagination,
   onPaginationChange,
+  filterSidebarClassName,
+  filterHeaderClassName,
+  filterContentClassName,
+  filterTitle,
 }: DataTableProps<TData, TValue, TMeta>) {
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -406,38 +413,12 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
           } as React.CSSProperties
         }
       >
-        <div
-          className={cn(
-            'h-full w-full flex-col p-[1%] sm:sticky sm:top-0 sm:max-h-screen sm:min-h-screen sm:max-w-52 sm:min-w-52 sm:self-start md:max-w-100 md:min-w-90',
-            'group-data-[expanded=false]/controls:hidden',
-            'hidden sm:flex'
-          )}
-        >
-          <div className="rounded-t-lg border-b border-gray-200 bg-background md:sticky md:top-0 dark:border-gray-800">
-            <div className="flex h-[46px] items-center justify-between gap-3 px-4">
-              <p className="font-medium text-foreground">Filters</p>
-              <div>
-                {table.getState().columnFilters.length > 0 ? (
-                  <DataTableResetButton />
-                ) : null}
-              </div>
-            </div>
-          </div>
-          <div
-            className="no-scrollbar flex-1 overflow-y-auto p-3"
-            style={{
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-            }}
-          >
-            <style jsx global>{`
-              .no-scrollbar::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
-            <DataTableFilterControls />
-          </div>
-        </div>
+        <FilterSidebar
+          className={filterSidebarClassName}
+          headerClassName={filterHeaderClassName}
+          contentClassName={filterContentClassName}
+          title={filterTitle}
+        />
         <div
           className={cn(
             'flex max-w-full flex-1 flex-col border-gray-300 md:p-[2%]',
