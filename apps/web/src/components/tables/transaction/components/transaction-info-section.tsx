@@ -14,24 +14,72 @@ import { sectionDescriptions } from './section-descriptions';
 import { useTransactionContext } from './transaction-context';
 
 /**
- * TransactionInfoSection component displays the basic information about a transaction.
+ * TransactionAmountField component handles displaying and editing the transaction amount
  */
-export function TransactionInfoSection() {
+function TransactionAmountField() {
     const {
         transaction,
         formatAmount,
-        formatDateTime,
         isEditMode,
         handleFieldChange,
         editedValues
     } = useTransactionContext();
 
-    const completeTransaction = useCompleteTransaction();
-    const updateTransactionStatus = useUpdateTransactionStatus();
+    // Get the current amount value (original or edited)
+    const getAmountValue = () => {
+        return 'amount' in editedValues
+            ? editedValues.amount
+            : transaction.amount;
+    };
 
-    // Local state for a tooltip showing invalid status transitions
-    const [statusErrorMessage, setStatusErrorMessage] = React.useState<string | null>(null);
-    const [isStatusUpdating, setIsStatusUpdating] = React.useState(false);
+    // Update transaction amount
+    const handleAmountChange = (newAmount: number) => {
+        console.log("Transaction amount changing to:", newAmount);
+        handleFieldChange('amount', newAmount);
+    };
+
+    if (isEditMode) {
+        return (
+            <EditableDetailRow
+                label="Amount"
+                tooltip={fieldDescriptions.amount}
+            >
+                <CurrencyInput
+                    value={getAmountValue()}
+                    onChange={handleAmountChange}
+                    currency={transaction.isoCurrencyCode || 'USD'}
+                    className="w-full"
+                    placeholder="Enter transaction amount"
+                />
+            </EditableDetailRow>
+        );
+    }
+
+    return (
+        <DetailRow
+            label="Amount"
+            value={formatAmount(
+                transaction.amount,
+                transaction.isoCurrencyCode
+            )}
+            tooltip={fieldDescriptions.amount}
+            isAmount
+            amountType={transaction.amount > 0 ? 'positive' : 'negative'}
+        />
+    );
+}
+
+/**
+ * TransactionDateField component handles displaying and editing the transaction date
+ */
+function TransactionDateField() {
+    const {
+        transaction,
+        formatDateTime,
+        isEditMode,
+        handleFieldChange,
+        editedValues
+    } = useTransactionContext();
 
     // Convert string date to Date object if needed
     const getDateValue = () => {
@@ -47,12 +95,57 @@ export function TransactionInfoSection() {
             : new Date(transaction.date);
     };
 
-    // Get the current amount value (original or edited)
-    const getAmountValue = () => {
-        return 'amount' in editedValues
-            ? editedValues.amount
-            : transaction.amount;
+    // Update transaction date
+    const handleDateChange = (newDate?: Date) => {
+        console.log("Transaction date changing to:", newDate);
+        if (newDate) {
+            // Ensure we're passing a valid date object
+            handleFieldChange('date', newDate);
+        }
     };
+
+    if (isEditMode) {
+        return (
+            <EditableDetailRow
+                label="Date"
+                tooltip={fieldDescriptions.date}
+            >
+                <DatePicker
+                    date={getDateValue()}
+                    onDateChange={handleDateChange}
+                    placeholder="Select transaction date"
+                    className="w-full"
+                />
+            </EditableDetailRow>
+        );
+    }
+
+    return (
+        <DetailRow
+            label="Date"
+            value={formatDateTime(transaction.date)}
+            tooltip={fieldDescriptions.date}
+        />
+    );
+}
+
+/**
+ * TransactionStatusField component handles displaying and editing the transaction status
+ */
+function TransactionStatusField() {
+    const {
+        transaction,
+        isEditMode,
+        handleFieldChange,
+        editedValues
+    } = useTransactionContext();
+
+    const completeTransaction = useCompleteTransaction();
+    const updateTransactionStatus = useUpdateTransactionStatus();
+
+    // Local state for a tooltip showing invalid status transitions
+    const [statusErrorMessage, setStatusErrorMessage] = React.useState<string | null>(null);
+    const [isStatusUpdating, setIsStatusUpdating] = React.useState(false);
 
     // Get the current status value (original or edited)
     const getStatusValue = (): TransactionStatus => {
@@ -82,21 +175,6 @@ export function TransactionInfoSection() {
     const getStatusDescription = (status: TransactionStatus): string => {
         return TransactionStatusMetadata[status]?.description ||
             'Current transaction status';
-    };
-
-    // Update transaction date
-    const handleDateChange = (newDate?: Date) => {
-        console.log("Transaction date changing to:", newDate);
-        if (newDate) {
-            // Ensure we're passing a valid date object
-            handleFieldChange('date', newDate);
-        }
-    };
-
-    // Update transaction amount
-    const handleAmountChange = (newAmount: number) => {
-        console.log("Transaction amount changing to:", newAmount);
-        handleFieldChange('amount', newAmount);
     };
 
     // Update transaction status
@@ -226,6 +304,76 @@ export function TransactionInfoSection() {
     const currentStatus = getStatusValue();
     const statusMetadata = TransactionStatusMetadata[currentStatus];
 
+    if (isEditMode) {
+        return (
+            <EditableDetailRow
+                label={isStatusUpdating ? "Status (Updating...)" : "Status"}
+                tooltip={`${getStatusDescription(currentStatus)}${statusErrorMessage ? ` - ERROR: ${statusErrorMessage}` : ''}`}
+                isSelect={true}
+                options={getFilteredStatusOptions()}
+                value={getStatusValue()}
+                onChange={handleStatusChange}
+            >
+                {isStatusUpdating && (
+                    <div className="ml-2 inline-flex items-center">
+                        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                    </div>
+                )}
+            </EditableDetailRow>
+        );
+    }
+
+    return (
+        <>
+            <DetailRow
+                label={isStatusUpdating ? "Status (Updating...)" : "Status"}
+                value={isStatusUpdating
+                    ? statusMetadata?.label + " (Updating...)"
+                    : statusMetadata?.label || currentStatus}
+                tooltip={getStatusDescription(currentStatus)}
+                isBadge
+                badgeType={getStatusBadgeTypeForDisplay(currentStatus)}
+                interactive={currentStatus === TransactionStatus.PENDING && !isStatusUpdating}
+                onClick={currentStatus === TransactionStatus.PENDING && !isStatusUpdating ?
+                    () => handleMarkAsComplete(transaction.id) : undefined}
+                hoverText={currentStatus === TransactionStatus.PENDING ?
+                    "Click to mark as complete" : undefined}
+            />
+
+            {statusMetadata?.requiresApproval && (
+                <DetailRow
+                    label="Approval Required"
+                    value="Yes"
+                    tooltip="This transaction status requires approval by an authorized team member"
+                    isBadge
+                    badgeType="warning"
+                />
+            )}
+        </>
+    );
+}
+
+/**
+ * TransactionIdField component displays the transaction ID
+ */
+function TransactionIdField() {
+    const { transaction } = useTransactionContext();
+
+    return (
+        <DetailRow
+            label="ID"
+            value={transaction.id}
+            tooltip={fieldDescriptions.id}
+            monospace
+        />
+    );
+}
+
+/**
+ * TransactionInfoSection component displays the basic information about a transaction.
+ * Now refactored into smaller, focused components.
+ */
+export function TransactionInfoSection() {
     return (
         <TransactionSection
             title="Transaction Information"
@@ -234,102 +382,11 @@ export function TransactionInfoSection() {
             tooltip={sectionDescriptions.transactionInformation}
         >
             <div className="space-y-1">
-                <DetailRow
-                    label="ID"
-                    value={transaction.id}
-                    tooltip={fieldDescriptions.id}
-                    monospace
-                />
+                <TransactionIdField />
                 <FieldRenderer field="name" label="Name" />
-
-                {isEditMode ? (
-                    <EditableDetailRow
-                        label="Amount"
-                        tooltip={fieldDescriptions.amount}
-                    >
-                        <CurrencyInput
-                            value={getAmountValue()}
-                            onChange={handleAmountChange}
-                            currency={transaction.isoCurrencyCode || 'USD'}
-                            className="w-full"
-                            placeholder="Enter transaction amount"
-                        />
-                    </EditableDetailRow>
-                ) : (
-                    <DetailRow
-                        label="Amount"
-                        value={formatAmount(
-                            transaction.amount,
-                            transaction.isoCurrencyCode
-                        )}
-                        tooltip={fieldDescriptions.amount}
-                        isAmount
-                        amountType={transaction.amount > 0 ? 'positive' : 'negative'}
-                    />
-                )}
-
-                {isEditMode ? (
-                    <EditableDetailRow
-                        label="Date"
-                        tooltip={fieldDescriptions.date}
-                    >
-                        <DatePicker
-                            date={getDateValue()}
-                            onDateChange={handleDateChange}
-                            placeholder="Select transaction date"
-                            className="w-full"
-                        />
-                    </EditableDetailRow>
-                ) : (
-                    <DetailRow
-                        label="Date"
-                        value={formatDateTime(transaction.date)}
-                        tooltip={fieldDescriptions.date}
-                    />
-                )}
-
-                {isEditMode ? (
-                    <EditableDetailRow
-                        label={isStatusUpdating ? "Status (Updating...)" : "Status"}
-                        tooltip={`${getStatusDescription(currentStatus)}${statusErrorMessage ? ` - ERROR: ${statusErrorMessage}` : ''}`}
-                        isSelect={true}
-                        options={getFilteredStatusOptions()}
-                        value={getStatusValue()}
-                        onChange={handleStatusChange}
-                    >
-                        {isStatusUpdating && (
-                            <div className="ml-2 inline-flex items-center">
-                                <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-                            </div>
-                        )}
-                    </EditableDetailRow>
-                ) : (
-                    <DetailRow
-                        label={isStatusUpdating ? "Status (Updating...)" : "Status"}
-                        value={isStatusUpdating
-                            ? statusMetadata?.label + " (Updating...)"
-                            : statusMetadata?.label || currentStatus}
-                        tooltip={getStatusDescription(currentStatus)}
-                        isBadge
-                        badgeType={getStatusBadgeTypeForDisplay(currentStatus)}
-                        interactive={currentStatus === TransactionStatus.PENDING && !isStatusUpdating}
-                        onClick={currentStatus === TransactionStatus.PENDING && !isStatusUpdating ?
-                            () => handleMarkAsComplete(transaction.id) : undefined}
-                        hoverText={currentStatus === TransactionStatus.PENDING ?
-                            "Click to mark as complete" : undefined}
-                    />
-                )}
-
-                {statusMetadata?.requiresApproval && (
-                    <DetailRow
-                        label="Approval Required"
-                        value="Yes"
-                        tooltip="This transaction status requires approval by an authorized team member"
-                        isBadge
-                        badgeType="warning"
-                    />
-                )}
-
+                <TransactionAmountField />
+                <TransactionDateField />
+                <TransactionStatusField />
                 <FieldRenderer field="description" label="Description" />
                 <FieldRenderer field="notes" label="Notes" isTextarea={true} />
             </div>
