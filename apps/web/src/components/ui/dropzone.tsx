@@ -126,7 +126,7 @@ export function Dropzone({
   return (
     <Card
       className={cn(
-        'relative size-full border-2 border-dashed bg-muted hover:cursor-pointer hover:border-muted-foreground/50',
+        'relative size-full border-4 border-dashed bg-muted hover:cursor-pointer hover:border-muted-foreground/50',
         isDragActive && 'border-muted-foreground/50 bg-accent',
         className
       )}

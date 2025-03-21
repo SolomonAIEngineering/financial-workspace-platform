@@ -126,13 +126,13 @@ export async function middleware(request: NextRequest) {
     // Only check for name, email, profileImageUrl and username
     const hasProfile = Boolean(
       user.name &&
-      user.name.trim() !== '' &&
-      user.email &&
-      user.email.trim() !== '' &&
-      user.profileImageUrl &&
-      user.profileImageUrl.trim() !== '' &&
-      user.username &&
-      user.username.trim() !== ''
+        user.name.trim() !== '' &&
+        user.email &&
+        user.email.trim() !== '' &&
+        user.profileImageUrl &&
+        user.profileImageUrl.trim() !== '' &&
+        user.username &&
+        user.username.trim() !== ''
     );
 
     if (

@@ -2,13 +2,21 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import type { AppRouter } from '@/server/api/root';
 import { RecurringTransactionsView } from '@/components/tables/recurring-transaction/recurring-transactions-view';
 import { api } from '@/trpc/react';
+import type { inferRouterOutputs } from '@trpc/server';
 import { sampleRecurringTransactions } from '@/components/tables/recurring-transaction/constants';
+
+// Define type for the router output
+type RouterOutput = inferRouterOutputs<AppRouter>;
+// Extract the exact type returned by getRecurringTransactions
+type RecurringTransactionsOutput =
+  RouterOutput['recurringTransactions']['getRecurringTransactions'];
 
 // Define the props interface with initialData
 interface ClientTransactionsTableProps {
-  initialData?: any;
+  initialData?: RecurringTransactionsOutput;
 }
 
 export function ClientTransactionsTable({

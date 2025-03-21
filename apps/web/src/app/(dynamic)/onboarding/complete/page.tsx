@@ -74,7 +74,7 @@ export default async function CompletePage() {
         <Button
           variant="outline"
           size="lg"
-          className="w-full border-2 py-6 text-lg font-medium tracking-wide text-gray-800 transition-all duration-300 hover:bg-gray-50/80"
+          className="w-full border-4 py-6 text-lg font-medium tracking-wide text-gray-800 transition-all duration-300 hover:bg-gray-50/80"
         >
           Explore Features
         </Button>

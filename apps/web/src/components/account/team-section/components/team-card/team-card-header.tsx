@@ -77,7 +77,7 @@ export function TeamCardHeader({
       <div className="space-y-1">
         <div className="flex items-center gap-3">
           {team.logoUrl ? (
-            <Avatar className="h-10 w-10 border-2 border-background shadow-sm">
+            <Avatar className="h-10 w-10 border-4 border-background shadow-sm">
               <AvatarImage
                 src={team.logoUrl}
                 alt={`${team.name || 'Team'} logo`}

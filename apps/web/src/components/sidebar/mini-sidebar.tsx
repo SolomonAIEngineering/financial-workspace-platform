@@ -225,13 +225,6 @@ export function MiniSidebar() {
         },
         {
           category: 'documents',
-          href: '/transactions',
-          icon: TableCellsIcon,
-          isActive: pathname.includes('/transactions'),
-          tooltip: 'Transactions',
-        },
-        {
-          category: 'documents',
           href: '/regular-transactions',
           icon: DiamondPercentIcon,
           isActive: pathname.includes('/regular-transactions'),

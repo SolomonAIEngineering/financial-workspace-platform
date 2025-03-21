@@ -19,6 +19,10 @@ export function ClientTransactionsTable({
   // Add state for pagination
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(100);
+  // State to store the effective data that should be displayed
+  const [effectiveData, setEffectiveData] = useState(initialData);
+  // Track whether a refetch has occurred
+  const [hasRefetched, setHasRefetched] = useState(false);
 
   // Use refs to handle pagination updates without causing render cycle issues
   const pageChangeRef = useRef<((page: number) => void) | null>(null);
@@ -41,28 +45,49 @@ export function ClientTransactionsTable({
   }, [page, pageSize]);
 
   // Only query if we're not on the first page or if initialData wasn't provided
-  const shouldSkipQuery = initialData && page === 1;
+  const shouldSkipQuery = initialData && page === 1 && !hasRefetched;
 
   // Use the initialData for the query with TRPCQuery
-  const { data: queryData, isPending } =
-    api.transactions.getTransactions.useQuery(
-      {
-        page,
-        limit: pageSize,
-      },
-      {
-        // Use initialData if available to avoid refetching
-        initialData: initialData,
-        // Skip the initial query if we're on page 1 and have initialData
-        // This ensures we use the server data first
-        enabled: !shouldSkipQuery,
-        // Only refetch if the initial data is stale
-        staleTime: 60 * 1000, // 1 minute
-      }
-    );
+  const {
+    data: queryData,
+    isPending,
+    refetch,
+  } = api.transactions.getTransactions.useQuery(
+    {
+      page,
+      limit: pageSize,
+    },
+    {
+      // Use initialData if available to avoid refetching
+      initialData: initialData,
+      // Skip the initial query if we're on page 1 and have initialData and no refetch has occurred
+      enabled: !shouldSkipQuery,
+      // Only refetch if the initial data is stale
+      staleTime: 60 * 1000, // 1 minute
+    }
+  );
 
-  // Prioritize initialData for the first page, otherwise use queryData
-  const effectiveData = page === 1 && initialData ? initialData : queryData;
+  // Update effectiveData when queryData changes or on initial load
+  useEffect(() => {
+    // If we've refetched, always use the fresh queryData
+    if (hasRefetched) {
+      setEffectiveData(queryData);
+    }
+    // On first page without refetch, use initialData if available
+    else if (page === 1 && initialData) {
+      setEffectiveData(initialData);
+    }
+    // Otherwise use queryData for all other cases
+    else if (queryData) {
+      setEffectiveData(queryData);
+    }
+  }, [queryData, initialData, page, hasRefetched]);
+
+  // Function to handle refetching transactions data
+  const handleRefetch = useCallback(() => {
+    setHasRefetched(true);
+    return refetch();
+  }, [refetch]);
 
   // Extract transactions from data, ensuring we handle both array and object structures
   const transactions = (() => {
@@ -93,8 +118,10 @@ export function ClientTransactionsTable({
   // Log data in development to help with debugging
   if (process.env.NODE_ENV === 'development') {
     console.info('Regular Transactions:', {
-      usingInitialData: page === 1 && initialData !== undefined,
+      usingInitialData:
+        page === 1 && initialData !== undefined && !hasRefetched,
       initialDataPresent: !!initialData,
+      hasRefetched,
       initialTransactions: initialData?.transactions?.length,
       queryDataPresent: !!queryData,
       queryTransactions: queryData?.transactions?.length,
@@ -181,6 +208,8 @@ export function ClientTransactionsTable({
             onPageChange: handlePageChange,
             onPageSizeChange: handlePageSizeChange,
           }}
+          refetch={handleRefetch}
+          isLoading={isPending}
         />
       )}
     </div>

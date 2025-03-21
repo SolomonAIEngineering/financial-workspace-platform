@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import { BaseChartSchema, columnFilterSchema } from './schema';
+import { ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react';
 import type {
   ColumnDef,
   ColumnFiltersState,
@@ -39,13 +40,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
+import { Button } from '@/registry/default/potion-ui/button';
+import { CreateTransactionModal } from '../../modals/create-transaction-modal';
 import { DataTableFilterCommand } from '@/components/data-table/data-table-filter-command';
-import { DataTableFilterControls } from '@/components/data-table/data-table-filter-controls';
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 import { DataTableProvider } from '@/components/data-table/data-table-provider';
-import { DataTableResetButton } from '@/components/data-table/data-table-reset-button';
 import { DataTableSheetDetails } from '@/components/data-table/data-table-sheet/data-table-sheet-details';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
+import { FilterSidebar } from './filter-sidebar';
 import { RefreshButton } from '@/components/buttons/refresh-button';
 import { TransactionSheetDetails } from './data-table-sheet-transaction';
 import { cn } from '@/lib/utils';
@@ -125,6 +127,10 @@ export interface DataTableProps<
     onPageChange: (page: number) => void;
     onPageSizeChange: (pageSize: number) => void;
   };
+  filterSidebarClassName?: string;
+  filterHeaderClassName?: string;
+  filterContentClassName?: string;
+  filterTitle?: string;
 }
 
 /**
@@ -181,6 +187,10 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
   meta,
   pagination: serverPagination,
   onPaginationChange,
+  filterSidebarClassName,
+  filterHeaderClassName,
+  filterContentClassName,
+  filterTitle,
 }: DataTableProps<TData, TValue, TMeta>) {
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
@@ -203,6 +213,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
       'data-table-visibility',
       defaultColumnVisibility
     );
+  const [isCreateModalOpen, setIsCreateModalOpen] = React.useState(false);
   const [_, setSearch] = useQueryStates(searchParamsParser);
   const topBarRef = React.useRef<HTMLDivElement>(null);
   const [topBarHeight, setTopBarHeight] = React.useState(0);
@@ -402,38 +413,12 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
           } as React.CSSProperties
         }
       >
-        <div
-          className={cn(
-            'h-full w-full flex-col p-[1%] sm:sticky sm:top-0 sm:max-h-screen sm:min-h-screen sm:max-w-52 sm:min-w-52 sm:self-start md:max-w-100 md:min-w-90',
-            'group-data-[expanded=false]/controls:hidden',
-            'hidden sm:flex'
-          )}
-        >
-          <div className="rounded-t-lg border-b border-gray-200 bg-background md:sticky md:top-0 dark:border-gray-800">
-            <div className="flex h-[46px] items-center justify-between gap-3 px-4">
-              <p className="font-medium text-foreground">Filters</p>
-              <div>
-                {table.getState().columnFilters.length > 0 ? (
-                  <DataTableResetButton />
-                ) : null}
-              </div>
-            </div>
-          </div>
-          <div
-            className="no-scrollbar flex-1 overflow-y-auto p-3"
-            style={{
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-            }}
-          >
-            <style jsx global>{`
-              .no-scrollbar::-webkit-scrollbar {
-                display: none;
-              }
-            `}</style>
-            <DataTableFilterControls />
-          </div>
-        </div>
+        <FilterSidebar
+          className={filterSidebarClassName}
+          headerClassName={filterHeaderClassName}
+          contentClassName={filterContentClassName}
+          title={filterTitle}
+        />
         <div
           className={cn(
             'flex max-w-full flex-1 flex-col border-gray-300 md:p-[2%]',
@@ -450,22 +435,59 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
             <DataTableFilterCommand schema={columnFilterSchema} />
             <DataTableToolbar
               renderActions={() => [
+                <Button
+                  key="create"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsCreateModalOpen(true)}
+                  className="mr-2 flex items-center gap-1"
+                >
+                  <PlusCircle className="h-4 w-4" />
+                  Create Transaction
+                </Button>,
                 refetch && <RefreshButton key="refresh" onClick={refetch} />,
               ]}
             />
           </div>
-          <div className="z-0">
+          <div className="z-0 relative">
+            <div className="absolute -left-8 top-1/2 z-20 -translate-y-1/2">
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 focus:outline-none"
+                onClick={() => {
+                  const tableContainer = document.querySelector('[class*="max-h-[calc(100vh_-_var(--top-bar-height))]"]');
+                  if (tableContainer) {
+                    tableContainer.scrollLeft -= 200;
+                  }
+                }}
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="absolute right-0 top-1/2 z-20 -translate-y-1/2">
+              <button
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100 focus:outline-none"
+                onClick={() => {
+                  const tableContainer = document.querySelector('[class*="max-h-[calc(100vh_-_var(--top-bar-height))]"]');
+                  if (tableContainer) {
+                    tableContainer.scrollLeft += 200;
+                  }
+                }}
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+
             <Table
-              className="![&_tr]:border-gray-300 ![&_td]:border-gray-300 ![&_th]:border-gray-300 border-separate border-spacing-0 [&_*]:border-gray-300"
-              containerClassName="max-h-[calc(100vh_-_var(--top-bar-height))]"
+              className="border-separate border-spacing-y-2 border-spacing-x-0"
+              containerClassName="max-h-[calc(100vh_-_var(--top-bar-height))] overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
               <TableHeader className={cn('sticky top-0 z-20 bg-background')}>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow
                     key={headerGroup.id}
                     className={cn(
-                      'bg-muted/50 hover:bg-muted/50',
-                      '[&>*]:border-t [&>*]:border-gray-300 [&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300'
+                      'bg-muted/50 hover:bg-muted/50'
                     )}
                   >
                     {headerGroup.headers.map((header) => {
@@ -473,7 +495,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                         <TableHead
                           key={header.id}
                           className={cn(
-                            'relative truncate border-b border-gray-300 select-none [&>.cursor-col-resize]:last:opacity-0',
+                            'relative truncate select-none [&>.cursor-col-resize]:last:opacity-0',
                             header.column.columnDef.meta?.headerClassName
                           )}
                           aria-sort={
@@ -487,17 +509,16 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}
                               onMouseDown={header.getResizeHandler()}
                               onTouchStart={header.getResizeHandler()}
                               className={cn(
-                                'user-select-none absolute top-0 -right-2 z-10 flex h-full w-4 cursor-col-resize touch-none justify-center',
-                                'before:absolute before:inset-y-0 before:w-px before:translate-x-px before:bg-gray-300'
+                                'user-select-none absolute top-0 -right-2 z-10 flex h-full w-4 cursor-col-resize touch-none justify-center'
                               )}
                             />
                           )}
@@ -510,7 +531,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
               <TableBody
                 id="content"
                 tabIndex={-1}
-                className="outline-1 -outline-offset-1 outline-gray-300 transition-colors focus-visible:outline"
+                className="transition-colors"
                 style={{
                   scrollMarginTop: 'calc(var(--top-bar-height) + 40px)',
                 }}
@@ -530,10 +551,8 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                         }
                       }}
                       className={cn(
-                        'border-b border-gray-300',
-                        '[&>:not(:last-child)]:border-r [&>:not(:last-child)]:border-gray-300',
-                        'outline-1 -outline-offset-1 outline-gray-300 transition-colors',
-                        'focus-visible:bg-muted/50 focus-visible:outline data-[state=selected]:outline',
+                        'transition-colors',
+                        'focus-visible:bg-muted/50',
                         table.options.meta?.getRowClassName?.(row)
                       )}
                     >
@@ -541,7 +560,8 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                         <TableCell
                           key={cell.id}
                           className={cn(
-                            'truncate border-b border-gray-300',
+                            'truncate',
+                            'py-4',
                             cell.column.columnDef.meta?.cellClassName
                           )}
                         >
@@ -575,8 +595,18 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
         title="Transaction Details"
         titleClassName="font-medium"
       >
-        <TransactionSheetDetails />
+        <TransactionSheetDetails
+          onDeleteSuccess={refetch}
+          onCreateSuccess={refetch}
+        />
       </DataTableSheetDetails>
+
+      {/* Create Transaction Modal */}
+      <CreateTransactionModal
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+        onSuccess={refetch}
+      />
     </DataTableProvider>
   );
 }

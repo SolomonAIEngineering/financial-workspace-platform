@@ -38,3 +38,5 @@ Please describe the tests that you ran to verify your changes. Provide instructi
 - [ ] New and existing unit tests pass locally with my changes
 - [ ] Any dependent changes have been merged and published in downstream modules
 - [ ] Mermaid diagram for each PR
+- [ ] For UI changes: Added video demo or GIF captured with Screen Studio
+- [ ] For UI changes: Added screenshots captured with shots.so (including before/after comparisons if appropriate)

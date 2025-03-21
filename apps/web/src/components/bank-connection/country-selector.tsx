@@ -82,7 +82,7 @@ export function CountrySelector({
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-30" />
         </Button>
       </PopoverTrigger>
-      <PopoverContentWithoutPortal className="w-[225px] rounded-2xl border-2 border-zinc-200 p-0">
+      <PopoverContentWithoutPortal className="w-[225px] rounded-2xl border-4 border-zinc-200 p-0">
         <Command>
           <CommandInput placeholder="Search country..." className="h-9 px-2" />
           <CommandEmpty>No country found.</CommandEmpty>

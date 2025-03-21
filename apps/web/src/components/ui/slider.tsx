@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-
 import * as SliderPrimitive from '@radix-ui/react-slider';
+
 import { cn } from '@udecode/cn';
 
 export function Slider({
@@ -21,7 +21,7 @@ export function Slider({
         <SliderPrimitive.Range className="absolute h-full bg-primary" />
       </SliderPrimitive.Track>
 
-      <SliderPrimitive.Thumb className="block size-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors disabled:pointer-events-none disabled:opacity-50" />
+      <SliderPrimitive.Thumb className="block size-5 rounded-full border-4 border-primary bg-background ring-offset-background transition-colors disabled:pointer-events-none disabled:opacity-50" />
     </SliderPrimitive.Root>
   );
 }
