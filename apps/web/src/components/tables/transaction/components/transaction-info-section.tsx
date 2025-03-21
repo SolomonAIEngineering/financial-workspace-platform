@@ -1,3 +1,4 @@
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { DatePicker } from '@/components/ui/date-picker';
 import { DetailRow } from './detail-row';
 import { EditableDetailRow } from './editable-detail-row';
@@ -36,6 +37,13 @@ export function TransactionInfoSection() {
             : new Date(transaction.date);
     };
 
+    // Get the current amount value (original or edited)
+    const getAmountValue = () => {
+        return 'amount' in editedValues
+            ? editedValues.amount
+            : transaction.amount;
+    };
+
     // Update transaction date
     const handleDateChange = (newDate?: Date) => {
         console.log("Transaction date changing to:", newDate);
@@ -43,6 +51,12 @@ export function TransactionInfoSection() {
             // Ensure we're passing a valid date object
             handleFieldChange('date', newDate);
         }
+    };
+
+    // Update transaction amount
+    const handleAmountChange = (newAmount: number) => {
+        console.log("Transaction amount changing to:", newAmount);
+        handleFieldChange('amount', newAmount);
     };
 
     return (
@@ -60,16 +74,32 @@ export function TransactionInfoSection() {
                     monospace
                 />
                 <FieldRenderer field="name" label="Name" />
-                <DetailRow
-                    label="Amount"
-                    value={formatAmount(
-                        transaction.amount,
-                        transaction.isoCurrencyCode
-                    )}
-                    tooltip={fieldDescriptions.amount}
-                    isAmount
-                    amountType={transaction.amount > 0 ? 'positive' : 'negative'}
-                />
+
+                {isEditMode ? (
+                    <EditableDetailRow
+                        label="Amount"
+                        tooltip={fieldDescriptions.amount}
+                    >
+                        <CurrencyInput
+                            value={getAmountValue()}
+                            onChange={handleAmountChange}
+                            currency={transaction.isoCurrencyCode || 'USD'}
+                            className="w-full"
+                            placeholder="Enter transaction amount"
+                        />
+                    </EditableDetailRow>
+                ) : (
+                    <DetailRow
+                        label="Amount"
+                        value={formatAmount(
+                            transaction.amount,
+                            transaction.isoCurrencyCode
+                        )}
+                        tooltip={fieldDescriptions.amount}
+                        isAmount
+                        amountType={transaction.amount > 0 ? 'positive' : 'negative'}
+                    />
+                )}
 
                 {isEditMode ? (
                     <EditableDetailRow

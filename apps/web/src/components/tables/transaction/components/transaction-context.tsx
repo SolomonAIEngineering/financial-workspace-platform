@@ -137,6 +137,7 @@ export const EDITABLE_FIELDS = [
     'description',
     'notes',
     'date',
+    'amount',
 
     // Merchant details
     'merchantName',
@@ -290,6 +291,26 @@ export function TransactionProvider({
             } else {
                 // Fallback
                 processedValue = value;
+            }
+        } else if (field === 'amount') {
+            // Handle amount values specially
+            if (typeof value === 'number') {
+                // Ensure it's a properly formatted number with 2 decimal places
+                processedValue = parseFloat(value.toFixed(2));
+                console.log("Storing amount value:", processedValue);
+            } else if (typeof value === 'string') {
+                // Try to convert string to number
+                const parsedValue = parseFloat(value);
+                if (!isNaN(parsedValue)) {
+                    processedValue = parseFloat(parsedValue.toFixed(2));
+                    console.log("Converting string amount to number:", processedValue);
+                } else {
+                    console.warn("Invalid amount value:", value);
+                    return; // Don't update if invalid
+                }
+            } else {
+                console.warn("Unexpected amount value type:", typeof value);
+                return; // Don't update if invalid
             }
         } else if (typeof value === 'boolean') {
             // Handle boolean values
