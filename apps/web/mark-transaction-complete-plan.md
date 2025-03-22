@@ -153,7 +153,3 @@ The `DataTable` component already passes the `refetch` callback to `TransactionS
 ## Future Enhancements
 
 1. Add ability to mark multiple transactions as complete in bulk from the table
-2. Add confirmation dialog for marking transactions as complete
-3. Add support for additional transaction status types (beyond pending/completed)
-4. Implement an undo functionality to revert completed transactions back to pending
-5. Add visual feedback (like a small animation) when status changes
