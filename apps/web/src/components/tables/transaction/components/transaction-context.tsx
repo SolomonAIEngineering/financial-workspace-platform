@@ -1,10 +1,14 @@
 import * as React from 'react';
 
+import {
+  useUpdateTransaction,
+  useUpdateTransactionCategory,
+} from '@/trpc/hooks/transaction-hooks';
+
 import { TransactionCategory } from '@solomonai/prisma/client';
 import { Transaction as TransactionData } from '@solomonai/prisma/client';
 import { api } from '@/trpc/react';
 import { formatDate } from './utils';
-import { useUpdateTransaction } from '@/trpc/hooks/transaction-hooks';
 
 // List of editable fields
 export const EDITABLE_FIELDS = [
@@ -89,6 +93,8 @@ interface TransactionContextType {
   toggleEditMode: () => void;
   formatAmount: (amount: number, currency?: string | null) => string;
   formatDateTime: (date: Date | string | null) => string;
+  enterEditModeForCategory: () => void;
+  updateTransactionData: (updatedData: Partial<TransactionData>) => void;
 }
 
 // Create the context with a default value
@@ -98,7 +104,7 @@ const TransactionContext = React.createContext<
 
 // Provider component that wraps parts of the app that need access to the context
 export function TransactionProvider({
-  transaction,
+  transaction: initialTransaction,
   onUpdate,
   children,
 }: {
@@ -106,12 +112,20 @@ export function TransactionProvider({
   transaction: TransactionData;
   onUpdate?: (updatedData: any) => void;
 }) {
+  const [transaction, setTransaction] =
+    React.useState<TransactionData>(initialTransaction);
   const [isEditMode, setIsEditMode] = React.useState(false);
   const [editedValues, setEditedValues] = React.useState<Record<string, any>>(
     {}
   );
   const updateTransaction = useUpdateTransaction();
+  const updateCategory = useUpdateTransactionCategory();
   const trpc = api.useUtils();
+
+  // Update local transaction when props change
+  React.useEffect(() => {
+    setTransaction(initialTransaction);
+  }, [initialTransaction]);
 
   // Reset edited values when the transaction changes
   React.useEffect(() => {
@@ -122,6 +136,35 @@ export function TransactionProvider({
       setEditedValues({});
     }
   }, [transaction.id, transaction.updatedAt]);
+
+  // Function to update transaction data locally (without saving to the server)
+  const updateTransactionData = (updatedData: Partial<TransactionData>) => {
+    // Process the data to ensure dates are properly formatted for the API
+    const processedData = Object.entries(updatedData).reduce(
+      (acc, [key, value]) => {
+        // Convert Date objects to ISO strings for the API
+        if (value instanceof Date) {
+          acc[key] = value.toISOString();
+        } else {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, any>
+    );
+
+    // Update the local state
+    setTransaction((current) => ({
+      ...current,
+      ...updatedData, // Use original data for local state
+      updatedAt: new Date(), // Update the updatedAt field to trigger useEffect
+    }));
+
+    // If there's an onUpdate callback, call it with the processed data
+    if (onUpdate) {
+      onUpdate(processedData);
+    }
+  };
 
   // Format helpers
   const formatAmount = (amount: number, currency?: string | null) => {
@@ -218,6 +261,16 @@ export function TransactionProvider({
     }
   };
 
+  // Enter edit mode specifically for updating the category
+  const enterEditModeForCategory = () => {
+    setEditedValues((prev) => ({
+      ...prev,
+      category: transaction.category || '',
+    }));
+    setIsEditMode(true);
+    // Note: Scrolling to the categorization section would require additional DOM manipulation
+  };
+
   // Handle save of edits with trpc
   const handleSave = () => {
     if (Object.keys(editedValues).length > 0) {
@@ -281,6 +334,8 @@ export function TransactionProvider({
     toggleEditMode,
     formatAmount,
     formatDateTime,
+    enterEditModeForCategory,
+    updateTransactionData,
   };
 
   return (

@@ -1,6 +1,24 @@
 'use client';
 
-import { Check, CreditCard, Download, Minus, Upload, X } from 'lucide-react';
+import * as React from 'react';
+
+import {
+  Check,
+  CreditCard,
+  Download,
+  Loader2,
+  Minus,
+  Upload,
+  X,
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/registry/default/potion-ui/dropdown-menu';
 import {
   HoverCard,
   HoverCardContent,
@@ -14,8 +32,11 @@ import type { ColumnDef } from '@tanstack/react-table';
 import type { ColumnSchema } from './schema';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { HoverCardPortal } from '@radix-ui/react-hover-card';
-// Add imports for SheetDetails
 import { TextWithTooltip } from '@/components/ui/text-with-tooltip';
+import { TransactionCategory } from '@/server/types/index';
+import { api } from '@/trpc/react';
+import { toast } from 'sonner';
+import { useUpdateTransactionCategory } from '@/trpc/hooks/transaction-hooks';
 
 /**
  * Defines the data table columns for financial transactions. This file contains
@@ -247,39 +268,16 @@ export const columns: ColumnDef<ColumnSchema>[] = [
 
       if (category && categoryColors[category]) {
         return (
-          <HoverCard openDelay={50} closeDelay={50}>
-            <HoverCardTrigger
-              className="opacity-90 transition-opacity hover:opacity-100"
-              asChild
+          <div className="flex cursor-pointer items-center gap-2 opacity-90 transition-opacity hover:opacity-100">
+            <div className="flex items-center justify-center p-0.5">
+              {categoryColors[category].icon}
+            </div>
+            <Badge
+              className={`${categoryColors[category].badge} rounded-md px-2 py-1 text-xs font-medium shadow-sm transition-all duration-200`}
             >
-              <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center p-0.5">
-                  {categoryColors[category].icon}
-                </div>
-                <Badge
-                  className={`${categoryColors[category].badge} rounded-md px-2 py-1 text-xs font-medium shadow-sm transition-all duration-200`}
-                >
-                  {category.replaceAll(/_/g, ' ')}
-                </Badge>
-              </div>
-            </HoverCardTrigger>
-            <HoverCardPortal>
-              <HoverCardContent
-                side="right"
-                align="start"
-                className="z-10 w-auto p-3"
-              >
-                <div className="flex flex-col gap-2">
-                  <div className="text-sm font-medium">
-                    {category.replaceAll(/_/g, ' ')}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {getCategoryDescription(category)}
-                  </div>
-                </div>
-              </HoverCardContent>
-            </HoverCardPortal>
-          </HoverCard>
+              {category.replaceAll(/_/g, ' ')}
+            </Badge>
+          </div>
         );
       } else if (customCategory) {
         return (
@@ -289,10 +287,14 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         );
       }
 
+      // No category set - show dropdown with "Uncategorized" label
       return (
-        <div className="text-sm text-muted-foreground italic">
+        <Badge
+          variant="outline"
+          className="rounded-md px-2 py-1 text-xs font-medium"
+        >
           Uncategorized
-        </div>
+        </Badge>
       );
     },
     filterFn: (row, id, value) => {

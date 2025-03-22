@@ -133,8 +133,8 @@ function TransactionDateField() {
    * Converts and retrieves the current date value Handles different date
    * formats and prioritizes edited values
    *
-   * @returns {Date | undefined} The current date as a Date object, or
-   *   undefined if no date
+   * @returns {Date | undefined} The current date as a Date object, or undefined
+   *   if no date
    */
   const getDateValue = () => {
     // First check if we have an edited date value
