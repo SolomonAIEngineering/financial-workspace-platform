@@ -381,7 +381,7 @@ export const seedDatabase = async () => {
           lastLoginAt: userData.lastLoginAt,
           uploadLimit:
             userData.department === 'Marketing' ||
-              userData.department === 'Product'
+            userData.department === 'Product'
               ? 1000000000
               : 100000000, // 1GB or 100MB
 
@@ -457,7 +457,8 @@ export const seedDatabase = async () => {
         name: 'D Yoan L Mekontchou Yomba',
         firstName: 'Yoan',
         lastName: 'Yomba',
-        profileImageUrl: 'https://lh3.googleusercontent.com/a/ACg8ocLPD-nkYF58AaJVyLbwgInGrV_TgmDZIVEXsRJoWm_1JuyrTg=s96-c',
+        profileImageUrl:
+          'https://lh3.googleusercontent.com/a/ACg8ocLPD-nkYF58AaJVyLbwgInGrV_TgmDZIVEXsRJoWm_1JuyrTg=s96-c',
         bio: 'Software Engineer and AI Enthusiast',
         timezone: 'America/New_York',
         language: 'en',
@@ -506,7 +507,8 @@ export const seedDatabase = async () => {
         user_id: yoanUser.id,
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
         ip_address: '192.168.1.5',
-        user_agent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
+        user_agent:
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36',
       },
     })
 

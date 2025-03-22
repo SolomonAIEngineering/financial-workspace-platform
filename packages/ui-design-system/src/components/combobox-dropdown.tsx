@@ -12,9 +12,9 @@ import {
 } from './command'
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
 
-import { Button } from './button'
 import { CommandList } from 'cmdk'
 import { cn } from '../utils'
+import { Button } from './button'
 
 export type ComboboxItem = {
   id: string
@@ -106,7 +106,7 @@ export function ComboboxDropdown<T extends ComboboxItem>({
                 }}
               >
                 {renderListItem ? (
-                  renderListItem({ isChecked, item }) as any
+                  (renderListItem({ isChecked, item }) as any)
                 ) : (
                   <>
                     <Check
@@ -122,7 +122,9 @@ export function ComboboxDropdown<T extends ComboboxItem>({
             )
           })}
 
-          <CommandEmpty>{emptyResults ?? 'No item found' as any}</CommandEmpty>
+          <CommandEmpty>
+            {emptyResults ?? ('No item found' as any)}
+          </CommandEmpty>
 
           {showCreate && (
             <CommandItem

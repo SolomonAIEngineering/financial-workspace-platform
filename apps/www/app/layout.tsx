@@ -1,19 +1,19 @@
 import './css/style.css'
 
-import Footer from '@/components/ui/footer'
 import Header from '@/components/ui/header'
-import { Inter } from 'next/font/google'
 import { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'swap'
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
   title: 'Solomon AI - Financial Management Platform for SMBs',
-  description: 'Powerful financial management platform for small and medium-sized businesses',
+  description:
+    'Powerful financial management platform for small and medium-sized businesses',
   keywords: 'finance, smb, business, financial management, accounting',
   authors: [{ name: 'Solomon AI' }],
   viewport: 'width=device-width, initial-scale=1.0',
@@ -31,12 +31,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.variable} font-inter antialiased bg-slate-900 text-slate-100 tracking-tight`}>
-        <div className="flex flex-col min-h-screen overflow-hidden supports-[overflow:clip]:overflow-clip">
+      <body
+        className={`${inter.variable} font-inter bg-slate-900 tracking-tight text-slate-100 antialiased`}
+      >
+        <div className="flex min-h-screen flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
           <Header />
-          <main className="flex-grow">
-            {children}
-          </main>
+          <main className="flex-grow">{children}</main>
         </div>
       </body>
     </html>

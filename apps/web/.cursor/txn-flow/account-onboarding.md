@@ -346,7 +346,7 @@ export function ConnectTransactionsModal({
               </div>
 
               {/* Search results */}
-              <div className="mt-2 scrollbar-hide h-[430px] space-y-4 overflow-auto pt-2">
+              <div className="scrollbar-hide mt-2 h-[430px] space-y-4 overflow-auto pt-2">
                 {loading && <SearchSkeleton />}
 
                 {results?.map((institution) => {
@@ -439,9 +439,9 @@ function SearchResult({
         <BankLogo src={logo} alt={name} />
 
         <div className="ml-4 cursor-default space-y-1">
-          <p className="text-sm leading-none font-medium">{name}</p>
+          <p className="text-sm font-medium leading-none">{name}</p>
           <InstitutionInfo provider={provider}>
-            <span className="text-xs text-[#878787] capitalize">
+            <span className="text-xs capitalize text-[#878787]">
               Via {provider}
             </span>
           </InstitutionInfo>

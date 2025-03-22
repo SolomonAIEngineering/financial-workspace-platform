@@ -12,10 +12,10 @@ export const prisma =
     log:
       env.NODE_ENV === 'development'
         ? [
-          // 'query', 'info',
-          'error',
-          'warn',
-        ]
+            // 'query', 'info',
+            'error',
+            'warn',
+          ]
         : ['error'],
   });
 

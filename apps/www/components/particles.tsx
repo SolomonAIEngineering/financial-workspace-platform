@@ -1,13 +1,13 @@
 'use client'
 
-import React, { useRef, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import MousePosition from './utils/mouse-position'
 
 interface ParticlesProps {
   className?: string
   quantity?: number
   staticity?: number
-  ease?: number,
+  ease?: number
   refresh?: boolean
 }
 
@@ -16,7 +16,7 @@ export default function Particles({
   quantity = 30,
   staticity = 50,
   ease = 50,
-  refresh = false
+  refresh = false,
 }: ParticlesProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const canvasContainerRef = useRef<HTMLDivElement>(null)
@@ -27,7 +27,7 @@ export default function Particles({
   const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 })
   const dpr = typeof window !== 'undefined' ? window.devicePixelRatio : 1
 
-  useEffect(() => {    
+  useEffect(() => {
     if (canvasRef.current) {
       context.current = canvasRef.current.getContext('2d')
     }
@@ -46,7 +46,7 @@ export default function Particles({
 
   useEffect(() => {
     initCanvas()
-  }, [refresh])  
+  }, [refresh])
 
   const initCanvas = () => {
     resizeCanvas()
@@ -104,7 +104,18 @@ export default function Particles({
     const dx = (Math.random() - 0.5) * 0.2
     const dy = (Math.random() - 0.5) * 0.2
     const magnetism = 0.1 + Math.random() * 4
-    return { x, y, translateX, translateY, size, alpha, targetAlpha, dx, dy, magnetism }
+    return {
+      x,
+      y,
+      translateX,
+      translateY,
+      size,
+      alpha,
+      targetAlpha,
+      dx,
+      dy,
+      magnetism,
+    }
   }
 
   const drawCircle = (circle: Circle, update = false) => {
@@ -125,7 +136,12 @@ export default function Particles({
 
   const clearContext = () => {
     if (context.current) {
-      context.current.clearRect(0, 0, canvasSize.current.w, canvasSize.current.h)
+      context.current.clearRect(
+        0,
+        0,
+        canvasSize.current.w,
+        canvasSize.current.h,
+      )
     }
   }
 
@@ -143,9 +159,10 @@ export default function Particles({
     start1: number,
     end1: number,
     start2: number,
-    end2: number
+    end2: number,
   ): number => {
-    const remapped = ((value - start1) * (end2 - start2)) / (end1 - start1) + start2
+    const remapped =
+      ((value - start1) * (end2 - start2)) / (end1 - start1) + start2
     return remapped > 0 ? remapped : 0
   }
 
@@ -160,7 +177,9 @@ export default function Particles({
         canvasSize.current.h - circle.y - circle.translateY - circle.size, // distance from bottom edge
       ]
       const closestEdge = edge.reduce((a, b) => Math.min(a, b))
-      const remapClosestEdge = parseFloat(remapValue(closestEdge, 0, 20, 0, 1).toFixed(2))
+      const remapClosestEdge = parseFloat(
+        remapValue(closestEdge, 0, 20, 0, 1).toFixed(2),
+      )
       if (remapClosestEdge > 1) {
         circle.alpha += 0.02
         if (circle.alpha > circle.targetAlpha) circle.alpha = circle.targetAlpha
@@ -169,8 +188,12 @@ export default function Particles({
       }
       circle.x += circle.dx
       circle.y += circle.dy
-      circle.translateX += ((mouse.current.x / (staticity / circle.magnetism)) - circle.translateX) / ease
-      circle.translateY += ((mouse.current.y / (staticity / circle.magnetism)) - circle.translateY) / ease
+      circle.translateX +=
+        (mouse.current.x / (staticity / circle.magnetism) - circle.translateX) /
+        ease
+      circle.translateY +=
+        (mouse.current.y / (staticity / circle.magnetism) - circle.translateY) /
+        ease
       // circle gets out of the canvas
       if (
         circle.x < -circle.size ||
@@ -194,7 +217,7 @@ export default function Particles({
             translateY: circle.translateY,
             alpha: circle.alpha,
           },
-          true
+          true,
         )
       }
     })
@@ -206,5 +229,4 @@ export default function Particles({
       <canvas ref={canvasRef} />
     </div>
   )
-
 }

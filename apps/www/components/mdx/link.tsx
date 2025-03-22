@@ -6,5 +6,9 @@ interface PostLinkProps {
 }
 
 export default function PostLink({ href, ...props }: PostLinkProps) {
-  return <Link href={href} {...props}>{props.children}</Link>
+  return (
+    <Link href={href} {...props}>
+      {props.children}
+    </Link>
+  )
 }

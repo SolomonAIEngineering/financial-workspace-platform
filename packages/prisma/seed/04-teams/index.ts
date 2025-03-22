@@ -44,7 +44,7 @@ export const seedDatabase = async () => {
     // Create Finance Team with enhanced data
     const financeTeam = await prisma.team.upsert({
       where: {
-        slug: 'finance-team'
+        slug: 'finance-team',
       },
       update: {},
       create: {
@@ -66,7 +66,7 @@ export const seedDatabase = async () => {
     // Create Marketing Team with enhanced data
     const marketingTeam = await prisma.team.upsert({
       where: {
-        slug: 'marketing-team'
+        slug: 'marketing-team',
       },
       update: {},
       create: {
@@ -94,7 +94,7 @@ export const seedDatabase = async () => {
     // Create Operations Team with enhanced data
     const operationsTeam = await prisma.team.upsert({
       where: {
-        slug: 'operations-team'
+        slug: 'operations-team',
       },
       update: {},
       create: {
@@ -125,8 +125,8 @@ export const seedDatabase = async () => {
         where: {
           userId_teamId: {
             userId: johnUser.id,
-            teamId: financeTeam.id
-          }
+            teamId: financeTeam.id,
+          },
         },
         update: {},
         create: {
@@ -144,8 +144,8 @@ export const seedDatabase = async () => {
         where: {
           userId_teamId: {
             userId: bobUser.id,
-            teamId: financeTeam.id
-          }
+            teamId: financeTeam.id,
+          },
         },
         update: {},
         create: {
@@ -163,8 +163,8 @@ export const seedDatabase = async () => {
         where: {
           userId_teamId: {
             userId: yoanUser.id,
-            teamId: financeTeam.id
-          }
+            teamId: financeTeam.id,
+          },
         },
         update: {},
         create: {
@@ -182,8 +182,8 @@ export const seedDatabase = async () => {
         where: {
           userId_teamId: {
             userId: adminUser.id,
-            teamId: financeTeam.id
-          }
+            teamId: financeTeam.id,
+          },
         },
         update: {},
         create: {
@@ -202,8 +202,8 @@ export const seedDatabase = async () => {
         where: {
           userId_teamId: {
             userId: janeUser.id,
-            teamId: marketingTeam.id
-          }
+            teamId: marketingTeam.id,
+          },
         },
         update: {},
         create: {
@@ -221,8 +221,8 @@ export const seedDatabase = async () => {
         where: {
           userId_teamId: {
             userId: bobUser.id,
-            teamId: marketingTeam.id
-          }
+            teamId: marketingTeam.id,
+          },
         },
         update: {},
         create: {
@@ -241,8 +241,8 @@ export const seedDatabase = async () => {
         where: {
           userId_teamId: {
             userId: adminUser.id,
-            teamId: operationsTeam.id
-          }
+            teamId: operationsTeam.id,
+          },
         },
         update: {},
         create: {
@@ -260,8 +260,8 @@ export const seedDatabase = async () => {
         where: {
           userId_teamId: {
             userId: johnUser.id,
-            teamId: operationsTeam.id
-          }
+            teamId: operationsTeam.id,
+          },
         },
         update: {},
         create: {
@@ -331,13 +331,13 @@ export const seedDatabase = async () => {
     // Create tags for Finance Team
     const financeTags = [
       {
-        name: 'Expenses'
+        name: 'Expenses',
       },
       {
-        name: 'Revenue'
+        name: 'Revenue',
       },
       {
-        name: 'Tax Deductible'
+        name: 'Tax Deductible',
       },
     ]
 
@@ -354,13 +354,13 @@ export const seedDatabase = async () => {
     // Create tags for Marketing Team
     const marketingTags = [
       {
-        name: 'Social Media'
+        name: 'Social Media',
       },
       {
-        name: 'Content Creation'
+        name: 'Content Creation',
       },
       {
-        name: 'Advertising'
+        name: 'Advertising',
       },
     ]
 
@@ -407,8 +407,8 @@ export const seedDatabase = async () => {
         where: {
           slug_teamId: {
             slug: categoryData.slug,
-            teamId: financeTeam.id
-          }
+            teamId: financeTeam.id,
+          },
         },
         update: {},
         create: {

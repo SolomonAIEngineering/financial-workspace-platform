@@ -1,5 +1,16 @@
 import Highlighter, { HighlighterItem02 } from '@/components/highlighter'
 
+import Particles from '@/components/particles'
+import CustomerImg01 from '@/public/images/customer-01.svg'
+import CustomerImg02 from '@/public/images/customer-02.svg'
+import CustomerImg03 from '@/public/images/customer-03.svg'
+import CustomerImg04 from '@/public/images/customer-04.svg'
+import CustomerImg05 from '@/public/images/customer-05.svg'
+import CustomerImg06 from '@/public/images/customer-06.svg'
+import CustomerImg07 from '@/public/images/customer-07.svg'
+import CustomerImg08 from '@/public/images/customer-08.svg'
+import CustomerImg09 from '@/public/images/customer-09.svg'
+import CustomerImg10 from '@/public/images/customer-10.svg'
 import CustomerAvatar01 from '@/public/images/customer-avatar-01.jpg'
 import CustomerAvatar02 from '@/public/images/customer-avatar-02.jpg'
 import CustomerBg01 from '@/public/images/customer-bg-01.png'
@@ -12,22 +23,10 @@ import CustomerBg07 from '@/public/images/customer-bg-07.png'
 import CustomerBg08 from '@/public/images/customer-bg-08.png'
 import CustomerBg09 from '@/public/images/customer-bg-09.png'
 import CustomerBg10 from '@/public/images/customer-bg-10.png'
-import CustomerImg01 from '@/public/images/customer-01.svg'
-import CustomerImg02 from '@/public/images/customer-02.svg'
-import CustomerImg03 from '@/public/images/customer-03.svg'
-import CustomerImg04 from '@/public/images/customer-04.svg'
-import CustomerImg05 from '@/public/images/customer-05.svg'
-import CustomerImg06 from '@/public/images/customer-06.svg'
-import CustomerImg07 from '@/public/images/customer-07.svg'
-import CustomerImg08 from '@/public/images/customer-08.svg'
-import CustomerImg09 from '@/public/images/customer-09.svg'
-import CustomerImg10 from '@/public/images/customer-10.svg'
 import Image from 'next/image'
 import Link from 'next/link'
-import Particles from '@/components/particles'
 
 export default function CustomersList() {
-
   const items = [
     {
       name: 'Customer name',
@@ -92,19 +91,29 @@ export default function CustomersList() {
   ]
 
   return (
-    <div className="max-w-[352px] mx-auto sm:max-w-[728px] lg:max-w-none pb-12 md:pb-20">
-      <Highlighter className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 group [&_*:nth-child(n+5):not(:nth-child(n+12))]:order-1 [&_*:nth-child(n+10):not(:nth-child(n+11))]:order-2!">
-
+    <div className="mx-auto max-w-[352px] pb-12 sm:max-w-[728px] md:pb-20 lg:max-w-none">
+      <Highlighter className="[&_*:nth-child(n+10):not(:nth-child(n+11))]:order-2! group grid gap-6 sm:grid-cols-2 lg:grid-cols-3 [&_*:nth-child(n+5):not(:nth-child(n+12))]:order-1">
         {items.map((item, index) => (
           <div key={index}>
             <Link href={item.link}>
               <HighlighterItem02>
-                <div className="relative h-full bg-slate-900 rounded-[inherit] z-20 overflow-hidden">
+                <div className="relative z-20 h-full overflow-hidden rounded-[inherit] bg-slate-900">
                   {/* Particles animation */}
                   <Particles className="absolute inset-0 -z-10" quantity={3} />
                   <div className="flex items-center justify-center">
-                    <Image className="w-full h-full aspect-video object-cover" src={item.bg} width={352} height={198} alt="Customer Background" aria-hidden="true" />
-                    <Image className="absolute" src={item.img} alt={item.name} />
+                    <Image
+                      className="aspect-video h-full w-full object-cover"
+                      src={item.bg}
+                      width={352}
+                      height={198}
+                      alt="Customer Background"
+                      aria-hidden="true"
+                    />
+                    <Image
+                      className="absolute"
+                      src={item.img}
+                      alt={item.name}
+                    />
                   </div>
                 </div>
               </HighlighterItem02>
@@ -113,34 +122,55 @@ export default function CustomersList() {
         ))}
 
         {/* Testimonial #01 */}
-        <div className="flex flex-col items-center justify-center text-center p-4">
-          <p className="font-medium bg-clip-text text-transparent bg-linear-to-r from-slate-200/60 via-slate-200 to-slate-200/60 pb-3">
+        <div className="flex flex-col items-center justify-center p-4 text-center">
+          <p className="bg-linear-to-r from-slate-200/60 via-slate-200 to-slate-200/60 bg-clip-text pb-3 font-medium text-transparent">
             <span className="line-clamp-4">
-              “We struggled to bring all our conversations into one place until we found Stellar. The UI is very clean and we love the integration with Spark.”
+              “We struggled to bring all our conversations into one place until
+              we found Stellar. The UI is very clean and we love the integration
+              with Spark.”
             </span>
           </p>
-          <div className="inline-flex mb-2">
-            <Image className="rounded-full" src={CustomerAvatar01} width={32} height={32} alt="Customer Avatar 01" />
+          <div className="mb-2 inline-flex">
+            <Image
+              className="rounded-full"
+              src={CustomerAvatar01}
+              width={32}
+              height={32}
+              alt="Customer Avatar 01"
+            />
           </div>
           <div className="text-sm font-medium text-slate-300">
-            Mike Hunt <span className="text-slate-700">-</span> <a className="text-purple-500 hover:underline" href="#0">Thunderbolt</a>
+            Mike Hunt <span className="text-slate-700">-</span>{' '}
+            <a className="text-purple-500 hover:underline" href="#0">
+              Thunderbolt
+            </a>
           </div>
         </div>
         {/* Testimonial #02 */}
-        <div className="flex flex-col items-center justify-center text-center p-4">
-          <p className="font-medium bg-clip-text text-transparent bg-linear-to-r from-slate-200/60 via-slate-200 to-slate-200/60 pb-3">
+        <div className="flex flex-col items-center justify-center p-4 text-center">
+          <p className="bg-linear-to-r from-slate-200/60 via-slate-200 to-slate-200/60 bg-clip-text pb-3 font-medium text-transparent">
             <span className="line-clamp-4">
-              “We struggled to bring all our conversations into one place until we found Stellar. The UI is very clean and we love the integration with Spark.”
+              “We struggled to bring all our conversations into one place until
+              we found Stellar. The UI is very clean and we love the integration
+              with Spark.”
             </span>
           </p>
-          <div className="inline-flex mb-2">
-            <Image className="rounded-full" src={CustomerAvatar02} width={32} height={32} alt="Customer Avatar 02" />
+          <div className="mb-2 inline-flex">
+            <Image
+              className="rounded-full"
+              src={CustomerAvatar02}
+              width={32}
+              height={32}
+              alt="Customer Avatar 02"
+            />
           </div>
           <div className="text-sm font-medium text-slate-300">
-            Mirko Mitt <span className="text-slate-700">-</span> <a className="text-purple-500 hover:underline" href="#0">Mildrink</a>
+            Mirko Mitt <span className="text-slate-700">-</span>{' '}
+            <a className="text-purple-500 hover:underline" href="#0">
+              Mildrink
+            </a>
           </div>
         </div>
-
       </Highlighter>
     </div>
   )

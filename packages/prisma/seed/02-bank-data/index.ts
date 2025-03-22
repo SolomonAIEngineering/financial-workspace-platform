@@ -679,7 +679,7 @@ export const seedDatabase = async () => {
         // Create a custom transaction category
         await prisma.customTransactionCategory.upsert({
           where: {
-            id: 'groceries'
+            id: 'groceries',
           },
           update: {},
           create: {

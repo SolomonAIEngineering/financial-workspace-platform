@@ -159,7 +159,7 @@ export const seedDatabase = async () => {
               where: {
                 name: tagName,
                 teamId: team.id,
-              }
+              },
             })
 
             if (tag) {

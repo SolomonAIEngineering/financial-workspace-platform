@@ -37,7 +37,7 @@ export const seedDatabase = async () => {
         OR: [
           { email: 'john.doe@example.com' },
           { email: 'admin@example.com' },
-          { email: 'yoanyomba@solomon-ai.co' }
+          { email: 'yoanyomba@solomon-ai.co' },
         ],
       },
     })
