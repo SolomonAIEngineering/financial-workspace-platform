@@ -1,3 +1,4 @@
+import { AssignmentSection } from './assignment-section';
 import { CategorizationSection } from './categorization-section';
 import { EditModeControls } from './edit-mode-controls';
 import { MerchantSection } from './merchant-section';
@@ -50,6 +51,7 @@ export function TransactionDetails({
     <TransactionProvider transaction={transaction} onUpdate={onUpdate}>
       <div className="space-y-1">
         <EditModeControls />
+        <AssignmentSection />
         <TransactionInfoSection />
         <MerchantSection />
         <CategorizationSection />
