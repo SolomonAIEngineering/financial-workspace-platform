@@ -37,7 +37,7 @@ interface TransactionNoteModalProps {
     initialNotes: string | null | undefined;
     initialRichNotes?: Value | null;
     onSuccess?: (updatedData?: any) => void;
-    isReadOnly?: boolean;
+    initialReadOnly?: boolean;
 }
 
 /**
@@ -60,6 +60,7 @@ interface TransactionNoteModalProps {
  *   onClose={() => setIsOpen(false)}
  *   transactionId="txn_123456"
  *   initialNotes="Some existing notes"
+ *   initialReadOnly={false}
  *   onSuccess={(data) => console.log("Notes updated", data)}
  * />
  * ```
@@ -71,7 +72,7 @@ export function TransactionNoteModal({
     initialNotes,
     initialRichNotes,
     onSuccess,
-    isReadOnly = false,
+    initialReadOnly = false,
 }: TransactionNoteModalProps) {
     /**
      * Keyboard event handler to prevent modal from closing during keyboard navigation
@@ -149,56 +150,58 @@ export function TransactionNoteModal({
                     </DialogDescription>
                 </DialogHeader>
 
-                <TransactionNoteEditor
-                    transactionId={transactionId}
-                    initialNotes={initialNotes}
-                    initialRichNotes={initialRichNotes}
-                    isReadOnly={isReadOnly}
-                    onClose={onClose}
-                    onSuccess={onSuccess}
-                />
+                <DndProvider backend={HTML5Backend}>
+                    <TransactionNoteEditor
+                        transactionId={transactionId}
+                        initialNotes={initialNotes}
+                        initialRichNotes={initialRichNotes}
+                        initialReadOnly={initialReadOnly}
+                        onClose={onClose}
+                        onSuccess={onSuccess}
+                    />
+                </DndProvider>
             </DialogContent>
         </Dialog>
     );
 }
 
+interface TransactionNoteEditorProps {
+    transactionId: string;
+    initialNotes: string | null | undefined;
+    initialRichNotes?: Value | null;
+    onClose: () => void;
+    onSuccess?: (updatedData?: any) => void;
+    initialReadOnly?: boolean;
+}
+
 /**
  * TransactionNoteEditor Component
  * 
- * The internal editor component used by the TransactionNoteModal.
- * Handles the state management, editing functionality, and saving operations.
+ * The internal component that handles state management and editor functionality.
+ * Provides template selection, rich text editing, and saving to database.
  * 
  * Features:
- * - Template selection and application
- * - Rich text editing interface
- * - Read-only mode toggle
- * - Handles saving to database via API
- * - Converts between rich text and plain text formats
+ * - Template selection from predefined note templates
+ * - Rich text editing with formatting options
+ * - Toggle between read-only and edit modes
+ * - Save functionality with database integration
  * 
  * @param props - Component properties
- * @param props.transactionId - ID of the transaction being edited
- * @param props.initialNotes - Initial plain text notes (if any)
- * @param props.initialRichNotes - Initial rich content (if available)
- * @param props.isReadOnly - Whether to start in read-only mode
- * @param props.onClose - Function to call when closing the editor
- * @param props.onSuccess - Callback for successful note updates
- * @returns A rich text editor component
+ * @param props.transactionId - ID of the transaction to edit notes for
+ * @param props.initialNotes - Plain text initial notes if available
+ * @param props.initialRichNotes - Rich text format initial notes if available
+ * @param props.onClose - Function to call when closing the modal
+ * @param props.onSuccess - Callback function when notes are successfully saved
+ * @param props.initialReadOnly - Whether the notes should start in read-only mode
  */
 function TransactionNoteEditor({
     transactionId,
     initialNotes,
     initialRichNotes,
-    isReadOnly: initialReadOnly = false,
     onClose,
     onSuccess,
-}: {
-    transactionId: string;
-    initialNotes: string | null | undefined;
-    initialRichNotes?: Value | null;
-    isReadOnly?: boolean;
-    onClose: () => void;
-    onSuccess?: (updatedData?: any) => void;
-}) {
+    initialReadOnly = false,
+}: TransactionNoteEditorProps) {
     // State management
     const [isReadOnly, setIsReadOnly] = React.useState(initialReadOnly);
     const [activeTemplate, setActiveTemplate] = React.useState<string | null>(null);
@@ -245,6 +248,7 @@ function TransactionNoteEditor({
     }, [transactionId]);
 
     // Ensure editor content is properly initialized when transaction changes
+    // but not when just toggling read-only mode
     React.useEffect(() => {
         // Set editor value from initialValue
         setEditorValue(initialValue);
@@ -256,6 +260,13 @@ function TransactionNoteEditor({
 
         setIsReadOnly(initialReadOnly);
     }, [transactionId, initialValue, initialReadOnly, editor]);
+
+    // Ensure the editor stays in read-only mode without affecting content
+    React.useEffect(() => {
+        if (editor && typeof editor.setReadOnly === 'function') {
+            editor.setReadOnly(isReadOnly);
+        }
+    }, [isReadOnly, editor]);
 
     // Handle template selection changes
     React.useEffect(() => {
@@ -340,7 +351,9 @@ function TransactionNoteEditor({
                     // Store both formats - plain text for backward compatibility
                     notes: plainTextNotes,
                     // And rich text format for the enhanced editor
-                    notesRichContent: richContent
+                    notesRichContent: richContent,
+                    // Save the read-only state to the transaction
+                    isNoteReadOnly: isReadOnly
                 } as any,
             },
             {
@@ -350,7 +363,8 @@ function TransactionNoteEditor({
                     if (onSuccess) {
                         onSuccess({
                             notes: plainTextNotes,
-                            notesRichContent: editorValue
+                            notesRichContent: editorValue,
+                            isNoteReadOnly: isReadOnly
                         });
                     }
                 },
@@ -425,7 +439,7 @@ function TransactionNoteEditor({
                     </Button>
                     <Button
                         onClick={handleSave}
-                        disabled={updateTransaction.isPending || isReadOnly}
+                        disabled={updateTransaction.isPending}
                         className="h-10 gap-2 bg-primary/90 text-primary-foreground hover:bg-primary rounded-md shadow-sm hover:shadow transition-all font-medium"
                     >
                         <SaveIcon className="size-4" />

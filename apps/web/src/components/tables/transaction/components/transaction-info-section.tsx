@@ -537,6 +537,17 @@ function TransactionNotesField() {
     };
 
     /**
+     * Gets the current read-only state for notes, prioritizing edited values
+     * 
+     * @returns {boolean} Whether the notes are set to read-only
+     */
+    const getIsNoteReadOnly = () => {
+        return 'isNoteReadOnly' in editedValues
+            ? Boolean(editedValues.isNoteReadOnly)
+            : Boolean((transaction as any).isNoteReadOnly);
+    };
+
+    /**
      * Safely retrieves and parses rich notes content
      * Handles various edge cases including:
      * - Edited values vs original transaction data
@@ -582,6 +593,7 @@ function TransactionNotesField() {
      * @param {object} updatedData - The data returned from the notes modal
      * @param {string} updatedData.notes - Plain text version of the notes
      * @param {object | string} updatedData.notesRichContent - Rich content structure or JSON string
+     * @param {boolean} updatedData.isNoteReadOnly - Whether the note is set to read-only
      */
     const handleNotesUpdated = (updatedData: any) => {
         // Use the standard field change handler for consistency
@@ -594,7 +606,14 @@ function TransactionNotesField() {
                     : JSON.stringify(updatedData.notesRichContent)
             );
         }
+        // Update the read-only state if provided
+        if (updatedData.isNoteReadOnly !== undefined) {
+            handleFieldChange('isNoteReadOnly', updatedData.isNoteReadOnly);
+        }
     };
+
+    // Determine if we should display the read-only indicator
+    const isReadOnly = getIsNoteReadOnly();
 
     return (
         <>
@@ -604,6 +623,11 @@ function TransactionNotesField() {
                     <div className="flex items-center gap-1.5">
                         <FileText className="h-3.5 w-3.5 text-primary/70" />
                         <label className="text-xs font-medium text-foreground/90">Notes</label>
+                        {isReadOnly && (
+                            <span className="text-[10px] ml-2 px-1.5 py-0.5 rounded-sm bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800">
+                                Read-only
+                            </span>
+                        )}
                     </div>
                     <Button
                         variant={getNotes() ? "outline" : "default"}
@@ -649,6 +673,7 @@ function TransactionNotesField() {
                 transactionId={transaction.id}
                 initialNotes={transaction.notes}
                 initialRichNotes={getRichNotes()}
+                initialReadOnly={isReadOnly}
                 onSuccess={handleNotesUpdated}
             />
         </>
