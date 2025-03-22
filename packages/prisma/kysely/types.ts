@@ -708,6 +708,7 @@ export type Transaction = {
   id: string
   userId: string
   bankAccountId: string
+  teamId: string | null
   plaidTransactionId: string | null
   amount: number
   isoCurrencyCode: string | null
@@ -730,6 +731,9 @@ export type Transaction = {
   merchantState: string | null
   merchantZip: string | null
   merchantCountry: string | null
+  assigneeId: string | null
+  assignedAt: Timestamp | null
+  assignedById: string | null
   location: unknown | null
   latitude: number | null
   longitude: number | null

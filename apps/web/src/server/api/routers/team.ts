@@ -867,4 +867,57 @@ export const teamRouter = createRouter({
         });
       }
     }),
+
+  // Get team members
+  getMembers: protectedProcedure
+    .query(async ({ ctx }) => {
+      try {
+        // Fetch teams the user belongs to
+        const userTeams = await prisma.usersOnTeam.findMany({
+          where: { userId: ctx.userId },
+          select: { teamId: true },
+        });
+
+        if (!userTeams.length) {
+          return [];
+        }
+
+        const teamIds = userTeams.map(team => team.teamId);
+
+        // Get all members from the user's teams
+        const teamMembers = await prisma.usersOnTeam.findMany({
+          where: {
+            teamId: { in: teamIds }
+          },
+          select: {
+            id: true,
+            role: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                firstName: true,
+                lastName: true,
+                profileImageUrl: true,
+                email: true,
+              }
+            }
+          }
+        });
+
+        // Transform to expected format
+        return teamMembers.map(member => ({
+          id: member.user.id,
+          name: member.user.name || `${member.user.firstName || ''} ${member.user.lastName || ''}`.trim() || member.user.email || 'Unknown User',
+          avatar: member.user.profileImageUrl,
+          role: member.role,
+        }));
+      } catch (error) {
+        console.error('Failed to fetch team members:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch team members',
+        });
+      }
+    }),
 });
