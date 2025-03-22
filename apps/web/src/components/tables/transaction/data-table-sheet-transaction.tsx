@@ -166,38 +166,14 @@ export function TransactionSheetDetails({
     <>
       <ScrollArea className="scrollbar-hide h-full">
         <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-end px-4">
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setIsDeleteDialogOpen(true)}
-              className="flex items-center gap-1"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </Button>
-          </div>
           <TransactionDetails
             transaction={transaction as any}
             onUpdate={handleUpdateTransaction}
+            onDelete={handleDeleteTransaction}
             key={`${transaction.id}-${updateCounter}`}
           />
         </div>
       </ScrollArea>
-
-      {/* Enhanced DeleteModal with double confirmation */}
-      <DeleteModal
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        title="Delete Transaction"
-        description="Are you sure you want to delete this transaction? This action cannot be undone."
-        secondStageTitle="Confirm Transaction Deletion"
-        secondStageDescription={`This will permanently delete the transaction "${transaction.name || 'Unknown'}" with an amount of ${transaction.amount ? `$${transaction.amount}` : 'unknown amount'}. This action cannot be reversed.`}
-        confirmText="Proceed"
-        finalConfirmText="Permanently Delete"
-        confirmationWord="DELETE"
-        onConfirm={handleDeleteTransaction}
-      />
     </>
   );
 }

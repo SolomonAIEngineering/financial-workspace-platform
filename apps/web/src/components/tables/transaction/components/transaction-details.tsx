@@ -13,6 +13,7 @@ import { TransactionProvider } from './transaction-context';
 interface TransactionDetailsProps {
   transaction: TransactionData;
   onUpdate?: (updatedData: any) => void;
+  onDelete?: () => void;
 }
 
 /**
@@ -46,11 +47,12 @@ interface TransactionDetailsProps {
 export function TransactionDetails({
   transaction,
   onUpdate,
+  onDelete,
 }: TransactionDetailsProps) {
   return (
     <TransactionProvider transaction={transaction} onUpdate={onUpdate}>
       <div className="space-y-1">
-        <EditModeControls />
+        <EditModeControls onDelete={onDelete} />
         <AssignmentSection />
         <TransactionInfoSection />
         <MerchantSection />

@@ -15,7 +15,7 @@ import {
   Receipt,
   Smartphone,
   Store,
-  Wallet
+  Wallet,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -37,25 +37,100 @@ import { useUpdateTransactionPaymentMethod } from '@/trpc/hooks/transaction-hook
 
 // Define payment method options with icons
 const paymentMethodOptions = [
-  { value: 'credit_card', label: 'Credit Card', icon: <CreditCard className="h-4 w-4" />, color: 'bg-blue-500/10 text-blue-600 hover:bg-blue-500/20' },
-  { value: 'debit_card', label: 'Debit Card', icon: <CreditCard className="h-4 w-4" />, color: 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20' },
-  { value: 'bank_transfer', label: 'Bank Transfer', icon: <Landmark className="h-4 w-4" />, color: 'bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20' },
-  { value: 'cash', label: 'Cash', icon: <Banknote className="h-4 w-4" />, color: 'bg-green-500/10 text-green-600 hover:bg-green-500/20' },
-  { value: 'digital_wallet', label: 'Digital Wallet', icon: <Wallet className="h-4 w-4" />, color: 'bg-orange-500/10 text-orange-600 hover:bg-orange-500/20' },
-  { value: 'check', label: 'Check', icon: <Receipt className="h-4 w-4" />, color: 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20' },
-  { value: 'other', label: 'Other', icon: <HelpCircle className="h-4 w-4" />, color: 'bg-gray-500/10 text-gray-600 hover:bg-gray-500/20' },
+  {
+    value: 'credit_card',
+    label: 'Credit Card',
+    icon: <CreditCard className="h-4 w-4" />,
+    color: 'bg-blue-500/10 text-blue-600 hover:bg-blue-500/20',
+  },
+  {
+    value: 'debit_card',
+    label: 'Debit Card',
+    icon: <CreditCard className="h-4 w-4" />,
+    color: 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20',
+  },
+  {
+    value: 'bank_transfer',
+    label: 'Bank Transfer',
+    icon: <Landmark className="h-4 w-4" />,
+    color: 'bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20',
+  },
+  {
+    value: 'cash',
+    label: 'Cash',
+    icon: <Banknote className="h-4 w-4" />,
+    color: 'bg-green-500/10 text-green-600 hover:bg-green-500/20',
+  },
+  {
+    value: 'digital_wallet',
+    label: 'Digital Wallet',
+    icon: <Wallet className="h-4 w-4" />,
+    color: 'bg-orange-500/10 text-orange-600 hover:bg-orange-500/20',
+  },
+  {
+    value: 'check',
+    label: 'Check',
+    icon: <Receipt className="h-4 w-4" />,
+    color: 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20',
+  },
+  {
+    value: 'other',
+    label: 'Other',
+    icon: <HelpCircle className="h-4 w-4" />,
+    color: 'bg-gray-500/10 text-gray-600 hover:bg-gray-500/20',
+  },
 ];
 
 // Define payment channel options with icons
 const paymentChannelOptions = [
-  { value: 'in_store', label: 'In Store', icon: <Store className="h-4 w-4" />, color: 'bg-purple-500/10 text-purple-600 hover:bg-purple-500/20' },
-  { value: 'online', label: 'Online', icon: <Globe className="h-4 w-4" />, color: 'bg-sky-500/10 text-sky-600 hover:bg-sky-500/20' },
-  { value: 'phone', label: 'Phone', icon: <Phone className="h-4 w-4" />, color: 'bg-pink-500/10 text-pink-600 hover:bg-pink-500/20' },
-  { value: 'mobile_app', label: 'Mobile App', icon: <Smartphone className="h-4 w-4" />, color: 'bg-teal-500/10 text-teal-600 hover:bg-teal-500/20' },
-  { value: 'atm', label: 'ATM', icon: <Coins className="h-4 w-4" />, color: 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20' },
-  { value: 'direct_deposit', label: 'Direct Deposit', icon: <Landmark className="h-4 w-4" />, color: 'bg-blue-500/10 text-blue-600 hover:bg-blue-500/20' },
-  { value: 'wire', label: 'Wire', icon: <AtSign className="h-4 w-4" />, color: 'bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20' },
-  { value: 'other', label: 'Other', icon: <HelpCircle className="h-4 w-4" />, color: 'bg-gray-500/10 text-gray-600 hover:bg-gray-500/20' },
+  {
+    value: 'in_store',
+    label: 'In Store',
+    icon: <Store className="h-4 w-4" />,
+    color: 'bg-purple-500/10 text-purple-600 hover:bg-purple-500/20',
+  },
+  {
+    value: 'online',
+    label: 'Online',
+    icon: <Globe className="h-4 w-4" />,
+    color: 'bg-sky-500/10 text-sky-600 hover:bg-sky-500/20',
+  },
+  {
+    value: 'phone',
+    label: 'Phone',
+    icon: <Phone className="h-4 w-4" />,
+    color: 'bg-pink-500/10 text-pink-600 hover:bg-pink-500/20',
+  },
+  {
+    value: 'mobile_app',
+    label: 'Mobile App',
+    icon: <Smartphone className="h-4 w-4" />,
+    color: 'bg-teal-500/10 text-teal-600 hover:bg-teal-500/20',
+  },
+  {
+    value: 'atm',
+    label: 'ATM',
+    icon: <Coins className="h-4 w-4" />,
+    color: 'bg-amber-500/10 text-amber-600 hover:bg-amber-500/20',
+  },
+  {
+    value: 'direct_deposit',
+    label: 'Direct Deposit',
+    icon: <Landmark className="h-4 w-4" />,
+    color: 'bg-blue-500/10 text-blue-600 hover:bg-blue-500/20',
+  },
+  {
+    value: 'wire',
+    label: 'Wire',
+    icon: <AtSign className="h-4 w-4" />,
+    color: 'bg-indigo-500/10 text-indigo-600 hover:bg-indigo-500/20',
+  },
+  {
+    value: 'other',
+    label: 'Other',
+    icon: <HelpCircle className="h-4 w-4" />,
+    color: 'bg-gray-500/10 text-gray-600 hover:bg-gray-500/20',
+  },
 ];
 
 /**
@@ -68,8 +143,12 @@ const paymentChannelOptions = [
 export function PaymentDetailsSection() {
   const { transaction, updateTransactionData } = useTransactionContext();
   const updatePaymentMethod = useUpdateTransactionPaymentMethod();
-  const [updatingMethod, setUpdatingMethod] = React.useState<string | null>(null);
-  const [updatingChannel, setUpdatingChannel] = React.useState<string | null>(null);
+  const [updatingMethod, setUpdatingMethod] = React.useState<string | null>(
+    null
+  );
+  const [updatingChannel, setUpdatingChannel] = React.useState<string | null>(
+    null
+  );
 
   const handlePaymentMethodUpdate = (newMethod: string) => {
     if (!transaction.id) return;
@@ -88,7 +167,9 @@ export function PaymentDetailsSection() {
           updateTransactionData({
             paymentMethod: newMethod,
           });
-          toast.success(`Payment method updated to ${getLabelFromValue(newMethod, paymentMethodOptions)}`);
+          toast.success(
+            `Payment method updated to ${getLabelFromValue(newMethod, paymentMethodOptions)}`
+          );
           setUpdatingMethod(null);
         },
         onError: (error) => {
@@ -117,7 +198,9 @@ export function PaymentDetailsSection() {
           updateTransactionData({
             paymentChannel: newChannel,
           });
-          toast.success(`Payment channel updated to ${getLabelFromValue(newChannel, paymentChannelOptions)}`);
+          toast.success(
+            `Payment channel updated to ${getLabelFromValue(newChannel, paymentChannelOptions)}`
+          );
           setUpdatingChannel(null);
         },
         onError: (error) => {
@@ -130,21 +213,36 @@ export function PaymentDetailsSection() {
   };
 
   // Helper function to get display label from value
-  const getLabelFromValue = (value: string, options: { value: string; label: string }[]) => {
-    const option = options.find(opt => opt.value === value);
+  const getLabelFromValue = (
+    value: string,
+    options: { value: string; label: string }[]
+  ) => {
+    const option = options.find((opt) => opt.value === value);
     return option?.label || value;
   };
 
   // Helper function to get method info from value
   const getMethodInfo = (value: string) => {
-    return paymentMethodOptions.find(opt => opt.value === value) ||
-      { value, label: value, icon: <HelpCircle className="h-4 w-4" />, color: 'bg-gray-500/10 text-gray-600' };
+    return (
+      paymentMethodOptions.find((opt) => opt.value === value) || {
+        value,
+        label: value,
+        icon: <HelpCircle className="h-4 w-4" />,
+        color: 'bg-gray-500/10 text-gray-600',
+      }
+    );
   };
 
   // Helper function to get channel info from value
   const getChannelInfo = (value: string) => {
-    return paymentChannelOptions.find(opt => opt.value === value) ||
-      { value, label: value, icon: <HelpCircle className="h-4 w-4" />, color: 'bg-gray-500/10 text-gray-600' };
+    return (
+      paymentChannelOptions.find((opt) => opt.value === value) || {
+        value,
+        label: value,
+        icon: <HelpCircle className="h-4 w-4" />,
+        color: 'bg-gray-500/10 text-gray-600',
+      }
+    );
   };
 
   const renderPaymentMethodField = () => {
@@ -174,10 +272,11 @@ export function PaymentDetailsSection() {
                 <div className="group flex w-fit cursor-pointer items-center gap-2 text-muted-foreground hover:text-foreground">
                   <Badge
                     variant="outline"
-                    className="rounded-md px-3 py-1.5 text-xs font-medium transition-all group-hover:border-border/50 group-hover:shadow-sm group-hover:scale-105"
+                    className="rounded-md px-3 py-1.5 text-xs font-medium transition-all group-hover:scale-105 group-hover:border-border/50 group-hover:shadow-sm"
                   >
-                    <Wallet className="h-3.5 w-3.5 mr-1.5 opacity-70" />
-                    Select Payment Method <ChevronDown className="ml-1.5 h-3 w-3" />
+                    <Wallet className="mr-1.5 h-3.5 w-3.5 opacity-70" />
+                    Select Payment Method{' '}
+                    <ChevronDown className="ml-1.5 h-3 w-3" />
                   </Badge>
                 </div>
               )}
@@ -198,14 +297,18 @@ export function PaymentDetailsSection() {
                   key={method.value}
                   onClick={() => handlePaymentMethodUpdate(method.value)}
                   disabled={updatingMethod !== null}
-                  className={`mb-1 flex cursor-pointer items-center gap-3 rounded-md px-4 py-3 transition-all ${method.value === currentMethod
-                    ? `${method.color.split(' ')[0]} font-medium`
-                    : 'hover:bg-accent/50 hover:scale-[1.01] focus:bg-accent'
-                    }`}
+                  className={`mb-1 flex cursor-pointer items-center gap-3 rounded-md px-4 py-3 transition-all ${
+                    method.value === currentMethod
+                      ? `${method.color.split(' ')[0]} font-medium`
+                      : 'hover:scale-[1.01] hover:bg-accent/50 focus:bg-accent'
+                  }`}
                 >
                   <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-full border ${method.value === currentMethod ? 'border-primary/40 bg-primary/5' : 'border-border/30'
-                      } ${updatingMethod === method.value ? 'animate-pulse' : ''}`}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full border ${
+                      method.value === currentMethod
+                        ? 'border-primary/40 bg-primary/5'
+                        : 'border-border/30'
+                    } ${updatingMethod === method.value ? 'animate-pulse' : ''}`}
                   >
                     {updatingMethod === method.value ? (
                       <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -231,7 +334,7 @@ export function PaymentDetailsSection() {
     const channelInfo = currentChannel ? getChannelInfo(currentChannel) : null;
 
     return (
-      <div className="flex flex-col space-y-1 mt-3">
+      <div className="mt-3 flex flex-col space-y-1">
         <span className="text-sm font-medium text-foreground/70">
           Payment Channel
         </span>
@@ -253,10 +356,11 @@ export function PaymentDetailsSection() {
                 <div className="group flex w-fit cursor-pointer items-center gap-2 text-muted-foreground hover:text-foreground">
                   <Badge
                     variant="outline"
-                    className="rounded-md px-3 py-1.5 text-xs font-medium transition-all group-hover:border-border/50 group-hover:shadow-sm group-hover:scale-105"
+                    className="rounded-md px-3 py-1.5 text-xs font-medium transition-all group-hover:scale-105 group-hover:border-border/50 group-hover:shadow-sm"
                   >
-                    <Globe className="h-3.5 w-3.5 mr-1.5 opacity-70" />
-                    Select Payment Channel <ChevronDown className="ml-1.5 h-3 w-3" />
+                    <Globe className="mr-1.5 h-3.5 w-3.5 opacity-70" />
+                    Select Payment Channel{' '}
+                    <ChevronDown className="ml-1.5 h-3 w-3" />
                   </Badge>
                 </div>
               )}
@@ -277,14 +381,18 @@ export function PaymentDetailsSection() {
                   key={channel.value}
                   onClick={() => handlePaymentChannelUpdate(channel.value)}
                   disabled={updatingChannel !== null}
-                  className={`mb-1 flex cursor-pointer items-center gap-3 rounded-md px-4 py-3 transition-all ${channel.value === currentChannel
-                    ? `${channel.color.split(' ')[0]} font-medium`
-                    : 'hover:bg-accent/50 hover:scale-[1.01] focus:bg-accent'
-                    }`}
+                  className={`mb-1 flex cursor-pointer items-center gap-3 rounded-md px-4 py-3 transition-all ${
+                    channel.value === currentChannel
+                      ? `${channel.color.split(' ')[0]} font-medium`
+                      : 'hover:scale-[1.01] hover:bg-accent/50 focus:bg-accent'
+                  }`}
                 >
                   <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-full border ${channel.value === currentChannel ? 'border-indigo-400/40 bg-indigo-50/30' : 'border-border/30'
-                      } ${updatingChannel === channel.value ? 'animate-pulse' : ''}`}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full border ${
+                      channel.value === currentChannel
+                        ? 'border-indigo-400/40 bg-indigo-50/30'
+                        : 'border-border/30'
+                    } ${updatingChannel === channel.value ? 'animate-pulse' : ''}`}
                   >
                     {updatingChannel === channel.value ? (
                       <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
@@ -320,7 +428,7 @@ export function PaymentDetailsSection() {
     >
       <div className="space-y-4">
         {/* Interactive payment method and channel fields */}
-        <div className="bg-background rounded-lg p-3 border border-border/10 shadow-sm">
+        <div className="rounded-lg border border-border/10 bg-background p-3 shadow-sm">
           {renderPaymentMethodField()}
           {renderPaymentChannelField()}
         </div>
@@ -329,18 +437,18 @@ export function PaymentDetailsSection() {
         {(transaction.cardType ||
           transaction.cardNetwork ||
           transaction.cardLastFour) && (
-            <div className="bg-background rounded-lg p-3 border border-border/10 shadow-sm">
-              <SubheadingWithTooltip
-                label="Card Information"
-                tooltip="Details about the card used for this transaction"
-              />
-              <div className="mt-2">
-                <FieldRenderer field="cardType" label="Card Type" />
-                <FieldRenderer field="cardNetwork" label="Card Network" />
-                <FieldRenderer field="cardLastFour" label="Last Four" />
-              </div>
+          <div className="rounded-lg border border-border/10 bg-background p-3 shadow-sm">
+            <SubheadingWithTooltip
+              label="Card Information"
+              tooltip="Details about the card used for this transaction"
+            />
+            <div className="mt-2">
+              <FieldRenderer field="cardType" label="Card Type" />
+              <FieldRenderer field="cardNetwork" label="Card Network" />
+              <FieldRenderer field="cardLastFour" label="Last Four" />
             </div>
-          )}
+          </div>
+        )}
 
         {/* Reference numbers */}
         {(transaction.transactionReference ||
@@ -348,36 +456,40 @@ export function PaymentDetailsSection() {
           transaction.checkNumber ||
           transaction.wireReference ||
           transaction.accountNumber) && (
-            <div className="bg-background rounded-lg p-3 border border-border/10 shadow-sm">
-              <SubheadingWithTooltip
-                label="Reference Information"
-                tooltip="Reference numbers and identifiers associated with this transaction"
+          <div className="rounded-lg border border-border/10 bg-background p-3 shadow-sm">
+            <SubheadingWithTooltip
+              label="Reference Information"
+              tooltip="Reference numbers and identifiers associated with this transaction"
+            />
+            <div className="mt-2">
+              <FieldRenderer
+                field="transactionReference"
+                label="Transaction Reference"
+                monospace
               />
-              <div className="mt-2">
-                <FieldRenderer
-                  field="transactionReference"
-                  label="Transaction Reference"
-                  monospace
-                />
-                <FieldRenderer
-                  field="authorizationCode"
-                  label="Authorization Code"
-                  monospace
-                />
-                <FieldRenderer field="checkNumber" label="Check Number" monospace />
-                <FieldRenderer
-                  field="wireReference"
-                  label="Wire Reference"
-                  monospace
-                />
-                <FieldRenderer
-                  field="accountNumber"
-                  label="Account Number"
-                  monospace
-                />
-              </div>
+              <FieldRenderer
+                field="authorizationCode"
+                label="Authorization Code"
+                monospace
+              />
+              <FieldRenderer
+                field="checkNumber"
+                label="Check Number"
+                monospace
+              />
+              <FieldRenderer
+                field="wireReference"
+                label="Wire Reference"
+                monospace
+              />
+              <FieldRenderer
+                field="accountNumber"
+                label="Account Number"
+                monospace
+              />
             </div>
-          )}
+          </div>
+        )}
       </div>
     </TransactionSection>
   );
