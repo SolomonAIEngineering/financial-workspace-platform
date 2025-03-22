@@ -46,4 +46,5 @@ export const sectionDescriptions: Record<string, string> = {
   systemInformation:
     'System-related details and metadata about this transaction record',
   customFields: 'User-defined custom fields added to this transaction',
+  tags: 'User-defined tags to categorize and filter transactions. Tags help with organizing, searching, and creating custom reports based on your own labeling system.',
 };

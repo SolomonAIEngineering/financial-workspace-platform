@@ -94,6 +94,7 @@ interface TransactionContextType {
   formatAmount: (amount: number, currency?: string | null) => string;
   formatDateTime: (date: Date | string | null) => string;
   enterEditModeForCategory: () => void;
+  enterEditMode: () => void;
   updateTransactionData: (updatedData: Partial<TransactionData>) => void;
 }
 
@@ -261,6 +262,11 @@ export function TransactionProvider({
     }
   };
 
+  // Enter edit mode
+  const enterEditMode = () => {
+    setIsEditMode(true);
+  };
+
   // Enter edit mode specifically for updating the category
   const enterEditModeForCategory = () => {
     setEditedValues((prev) => ({
@@ -335,6 +341,7 @@ export function TransactionProvider({
     formatAmount,
     formatDateTime,
     enterEditModeForCategory,
+    enterEditMode,
     updateTransactionData,
   };
 

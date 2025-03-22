@@ -748,10 +748,24 @@ export const transactionsRouter = createRouter({
         });
       }
 
-      // Merge existing tags with new tags (remove duplicates)
-      const updatedTags = [
-        ...new Set([...existingTransaction.tags, ...input.tags]),
-      ];
+      // Start with existing tags
+      const currentTags = existingTransaction.tags || [];
+      const updatedTags = [...currentTags];
+
+      // Process each new tag to add
+      for (const tag of input.tags) {
+        if (tag.trim() === '') continue; // Skip empty tags
+
+        // Check if this tag already exists (case-insensitive)
+        const isDuplicate = updatedTags.some(
+          existingTag => existingTag.toLowerCase() === tag.toLowerCase()
+        );
+
+        // Only add if it's not a duplicate
+        if (!isDuplicate) {
+          updatedTags.push(tag);
+        }
+      }
 
       // Update transaction with new tags
       const updatedTransaction = await prisma.transaction.update({
@@ -787,9 +801,10 @@ export const transactionsRouter = createRouter({
         });
       }
 
-      // Remove tag from transaction
+      // Case-insensitive tag removal
+      const tagToRemove = input.tag.toLowerCase();
       const updatedTags = existingTransaction.tags.filter(
-        (tag) => tag !== input.tag
+        (tag) => tag.toLowerCase() !== tagToRemove
       );
 
       // Update transaction with new tags
@@ -1298,20 +1313,53 @@ export const transactionsRouter = createRouter({
       // Check if transaction exists and belongs to user
       const existingTransaction = await prisma.transaction.findUnique({
         where: { id: input.id },
+        select: {
+          tags: true,
+          userId: true,
+        },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
         });
       }
 
-      // Update transaction with new tags
+      // Handle case-insensitive duplicates among input tags
+      const uniqueInputTags: string[] = [];
+      const lowerCaseInputTags = new Set<string>();
+
+      // Process each input tag, keeping only the first occurrence (case-insensitive)
+      for (const tag of input.tags) {
+        if (tag.trim() === '') continue; // Skip empty tags
+
+        const lowerCaseTag = tag.toLowerCase();
+
+        // Check if this tag already exists in our input (case-insensitive)
+        if (!lowerCaseInputTags.has(lowerCaseTag)) {
+          uniqueInputTags.push(tag);
+          lowerCaseInputTags.add(lowerCaseTag);
+        }
+      }
+
+      // Get existing tags from the transaction
+      const existingTags = existingTransaction.tags || [];
+      const lowerCaseExistingTags = new Set(existingTags.map(tag => tag.toLowerCase()));
+
+      // Only add tags that don't already exist (case-insensitive)
+      const tagsToAdd = uniqueInputTags.filter(
+        tag => !lowerCaseExistingTags.has(tag.toLowerCase())
+      );
+
+      // Combine existing tags with new unique tags
+      const updatedTags = [...existingTags, ...tagsToAdd];
+
+      // Update transaction with combined tags
       const updatedTransaction = await prisma.transaction.update({
         where: { id: input.id },
         data: {
-          tags: input.tags,
+          tags: updatedTags,
           lastModifiedAt: new Date(),
         },
       });
@@ -1396,16 +1444,51 @@ export const transactionsRouter = createRouter({
           let newTags: string[] = [];
 
           if (operation === 'replace') {
-            // Simply replace tags
-            newTags = tags;
+            // First clean up the input tags (handle duplicates case-insensitively)
+            newTags = [];
+            for (const tag of tags) {
+              if (tag.trim() === '') continue; // Skip empty tags
+
+              // Check if this tag already exists (case-insensitive)
+              const isDuplicate = newTags.some(
+                existingTag => existingTag.toLowerCase() === tag.toLowerCase()
+              );
+
+              // Only add if it's not a duplicate
+              if (!isDuplicate) {
+                newTags.push(tag);
+              }
+            }
           } else if (operation === 'add') {
-            // Add tags without duplicates
+            // Add tags without duplicates (case-insensitive)
             const currentTags = tx.tags as string[] || [];
-            newTags = [...new Set([...currentTags, ...tags])];
+
+            newTags = [...currentTags];
+
+            // Process each tag from the input
+            for (const tag of tags) {
+              if (tag.trim() === '') continue; // Skip empty tags
+
+              // Check if this tag already exists in the current tags (case-insensitive)
+              const isDuplicate = newTags.some(
+                existingTag => existingTag.toLowerCase() === tag.toLowerCase()
+              );
+
+              // Only add if it's not a duplicate
+              if (!isDuplicate) {
+                newTags.push(tag);
+              }
+            }
           } else if (operation === 'remove') {
-            // Remove specified tags
+            // Remove specified tags (case-insensitive)
             const currentTags = tx.tags as string[] || [];
-            newTags = currentTags.filter(tag => !tags.includes(tag));
+
+            // Keep tags that don't match any in the remove list (case-insensitive)
+            newTags = currentTags.filter(currentTag =>
+              !tags.some(tagToRemove =>
+                tagToRemove.toLowerCase() === currentTag.toLowerCase()
+              )
+            );
           }
 
           return prisma.transaction.update({

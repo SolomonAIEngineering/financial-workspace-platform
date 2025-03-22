@@ -1,4 +1,3 @@
-
 # Transaction Fields Update Feature Implementation Plan
 
 ## Overview
@@ -39,7 +38,7 @@ This document outlines the plan for implementing features that allow users to ma
 // Add a TagsInput component for creating/managing tags
 const TagsInput = ({ value, onChange }: { value: string[], onChange: (tags: string[]) => void }) => {
   const [inputValue, setInputValue] = useState("");
-  
+
   const handleAddTag = () => {
     if (inputValue.trim() && !value.includes(inputValue.trim())) {
       onChange([...value, inputValue.trim()]);
@@ -62,9 +61,9 @@ const TagsInput = ({ value, onChange }: { value: string[], onChange: (tags: stri
         ))}
       </div>
       <div className="flex gap-2">
-        <Input 
-          value={inputValue} 
-          onChange={(e) => setInputValue(e.target.value)} 
+        <Input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           placeholder="Add new tag"
           onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
         />
@@ -143,7 +142,7 @@ const teamMemberOptions = useMemo(() => {
   renderSelected={(selectedValue) => {
     const member = teamMemberOptions.find(m => m.value === selectedValue);
     if (!member) return "Unassigned";
-    
+
     return (
       <div className="flex items-center gap-2">
         {member.avatar && (
@@ -182,38 +181,46 @@ const enterEditModeForField = (field: string) => {
 // Add specific update functions for each field
 const handleSaveChanges = async () => {
   if (!transaction.id) return;
-  
+
   setIsSaving(true);
   const promises = [];
-  
+
   if (editedValues.category !== transaction.category) {
-    promises.push(updateCategory.mutateAsync({
-      id: transaction.id,
-      category: editedValues.category as TransactionCategory
-    }));
+    promises.push(
+      updateCategory.mutateAsync({
+        id: transaction.id,
+        category: editedValues.category as TransactionCategory,
+      })
+    );
   }
-  
+
   if (editedValues.tags && !arraysEqual(editedValues.tags, transaction.tags)) {
-    promises.push(updateTags.mutateAsync({
-      id: transaction.id,
-      tags: editedValues.tags
-    }));
+    promises.push(
+      updateTags.mutateAsync({
+        id: transaction.id,
+        tags: editedValues.tags,
+      })
+    );
   }
-  
+
   if (editedValues.paymentMethod !== transaction.paymentMethod) {
-    promises.push(updatePaymentMethod.mutateAsync({
-      id: transaction.id,
-      paymentMethod: editedValues.paymentMethod
-    }));
+    promises.push(
+      updatePaymentMethod.mutateAsync({
+        id: transaction.id,
+        paymentMethod: editedValues.paymentMethod,
+      })
+    );
   }
-  
+
   if (editedValues.assignedTo !== transaction.assignedTo) {
-    promises.push(updateAssignedTo.mutateAsync({
-      id: transaction.id,
-      assignedTo: editedValues.assignedTo
-    }));
+    promises.push(
+      updateAssignedTo.mutateAsync({
+        id: transaction.id,
+        assignedTo: editedValues.assignedTo,
+      })
+    );
   }
-  
+
   try {
     await Promise.all(promises);
     setIsEditMode(false);
@@ -288,7 +295,7 @@ const arraysEqual = (a: any[], b: any[]) => {
   cell: ({ row }) => {
     const tags = row.getValue('tags') as string[] || [];
     const updateTags = api.transactions.updateTags.useMutation();
-    
+
     return (
       <div className="flex flex-wrap gap-1 max-w-[200px]">
         {tags.length > 0 ? (
@@ -300,7 +307,7 @@ const arraysEqual = (a: any[], b: any[]) => {
         ) : (
           <span className="text-muted-foreground text-xs">No tags</span>
         )}
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="h-6 w-6 ml-1">
@@ -310,15 +317,15 @@ const arraysEqual = (a: any[], b: any[]) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Manage Tags</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <TagsEditor 
-              value={tags} 
+            <TagsEditor
+              value={tags}
               onChange={(newTags) => {
                 if (!row.original.id) return;
                 updateTags.mutate({
                   id: row.original.id,
                   tags: newTags
                 });
-              }} 
+              }}
             />
           </DropdownMenuContent>
         </DropdownMenu>
@@ -346,8 +353,8 @@ const arraysEqual = (a: any[], b: any[]) => {
   <DropdownMenuContent align="end">
     <DropdownMenuLabel>Manage Tags</DropdownMenuLabel>
     <DropdownMenuSeparator />
-    <TagsEditor 
-      value={[]} 
+    <TagsEditor
+      value={[]}
       onChange={(tags) => handleBulkTagsUpdate(tags)}
       placeholder="Add tags to selected transactions"
     />
@@ -439,53 +446,59 @@ const handleBulkTagsUpdate = (tags: string[]) => {
 
 export const transactionsRouter = createTRPCRouter({
   // Existing procedures...
-  
+
   updateTags: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      tags: z.array(z.string()),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        tags: z.array(z.string()),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       // Verify user has access to this transaction
       await verifyTransactionAccess(ctx, input.id);
-      
+
       return ctx.db.transaction.update({
         where: { id: input.id },
         data: { tags: input.tags },
       });
     }),
-  
+
   updatePaymentMethod: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      paymentMethod: z.string(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        paymentMethod: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       await verifyTransactionAccess(ctx, input.id);
-      
+
       return ctx.db.transaction.update({
         where: { id: input.id },
         data: { paymentMethod: input.paymentMethod },
       });
     }),
-  
+
   updateAssignedTo: protectedProcedure
-    .input(z.object({
-      id: z.string(),
-      assignedTo: z.string().nullable(),
-    }))
+    .input(
+      z.object({
+        id: z.string(),
+        assignedTo: z.string().nullable(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       await verifyTransactionAccess(ctx, input.id);
-      
+
       // Verify the assignee is a team member
       if (input.assignedTo) {
         const teamMember = await ctx.db.teamMember.findFirst({
           where: {
             id: input.assignedTo,
-            teamId: { in: ctx.user.teams.map(t => t.id) },
+            teamId: { in: ctx.user.teams.map((t) => t.id) },
           },
         });
-        
+
         if (!teamMember) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
@@ -493,27 +506,29 @@ export const transactionsRouter = createTRPCRouter({
           });
         }
       }
-      
+
       return ctx.db.transaction.update({
         where: { id: input.id },
         data: { assignedTo: input.assignedTo },
       });
     }),
-  
+
   // Bulk update procedures
   bulkUpdateTags: protectedProcedure
-    .input(z.object({
-      transactionIds: z.array(z.string()),
-      tags: z.array(z.string()),
-      operation: z.enum(['add', 'remove', 'replace']),
-    }))
+    .input(
+      z.object({
+        transactionIds: z.array(z.string()),
+        tags: z.array(z.string()),
+        operation: z.enum(['add', 'remove', 'replace']),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       // Verify user has access to all transactions
       await verifyBulkTransactionAccess(ctx, input.transactionIds);
-      
+
       // Get current tags for each transaction if needed
       const updates = [];
-      
+
       if (input.operation === 'replace') {
         // Simply replace tags
         for (const id of input.transactionIds) {
@@ -530,19 +545,19 @@ export const transactionsRouter = createTRPCRouter({
           where: { id: { in: input.transactionIds } },
           select: { id: true, tags: true },
         });
-        
+
         for (const tx of transactions) {
           const currentTags = tx.tags || [];
           let newTags;
-          
+
           if (input.operation === 'add') {
             // Add tags without duplicates
             newTags = [...new Set([...currentTags, ...input.tags])];
           } else {
             // Remove specified tags
-            newTags = currentTags.filter(tag => !input.tags.includes(tag));
+            newTags = currentTags.filter((tag) => !input.tags.includes(tag));
           }
-          
+
           updates.push(
             ctx.db.transaction.update({
               where: { id: tx.id },
@@ -551,11 +566,11 @@ export const transactionsRouter = createTRPCRouter({
           );
         }
       }
-      
+
       await Promise.all(updates);
       return { count: updates.length };
     }),
-  
+
   // Similar implementations for other bulk updates
 });
 ```
@@ -563,6 +578,7 @@ export const transactionsRouter = createTRPCRouter({
 ## Testing Plan
 
 1. **Manual Testing:**
+
    - Test updating each field in the transaction details sheet
    - Verify changes are reflected in the UI immediately
    - Test the dropdown functionality in the data table
@@ -570,6 +586,7 @@ export const transactionsRouter = createTRPCRouter({
    - Verify proper error handling when updates fail
 
 2. **Edge Cases to Test:**
+
    - Adding/removing multiple tags at once
    - Assigning to team members with different permission levels
    - Network failures during updates

@@ -48,8 +48,8 @@ export default async function CompletePage() {
       </div>
 
       {/* Heading with enhanced typography */}
-      <div className="space-y-6 flex flex-col justify-center items-center">
-        <h1 className="bg-gradient-to-r from-gray-900 via-slate-900 to-indigo-900 bg-clip-text text-4xl font-bold tracking-tight text-transparent rounded-2xl">
+      <div className="flex flex-col items-center justify-center space-y-6">
+        <h1 className="rounded-2xl bg-gradient-to-r from-gray-900 via-slate-900 to-indigo-900 bg-clip-text text-4xl font-bold tracking-tight text-transparent">
           Setup Complete
         </h1>
         <p className="mx-auto max-w-md text-lg [line-height:1.6] font-light text-gray-600">
@@ -70,7 +70,6 @@ export default async function CompletePage() {
         >
           Go to Dashboard
         </LinkButton>
-
       </div>
 
       {/* Premium support contact with styled elements */}

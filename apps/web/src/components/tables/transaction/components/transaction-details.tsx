@@ -2,6 +2,7 @@ import { CategorizationSection } from './categorization-section';
 import { EditModeControls } from './edit-mode-controls';
 import { MerchantSection } from './merchant-section';
 import { PaymentDetailsSection } from './payment-details-section';
+import { TagsSection } from './tags-section';
 import { TaxFinancialSection } from './tax-financial-section';
 import { Transaction as TransactionData } from '@solomonai/prisma/client';
 import { TransactionInfoSection } from './transaction-info-section';
@@ -52,6 +53,7 @@ export function TransactionDetails({
         <TransactionInfoSection />
         <MerchantSection />
         <CategorizationSection />
+        <TagsSection />
         <PaymentDetailsSection />
         <TaxFinancialSection />
         {/* 
