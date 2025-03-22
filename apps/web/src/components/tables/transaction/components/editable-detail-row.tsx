@@ -78,18 +78,21 @@ export function EditableDetailRow({
   const hasCustomInput = !!children;
 
   return (
-    <div className="mb-2 flex flex-col space-y-1.5">
-      <div className="flex items-center gap-1.5">
-        <Label htmlFor={id} className="text-xs font-medium">
+    <div className="mb-4 rounded-lg transition-all duration-200">
+      <div className="mb-1.5 flex items-center gap-2">
+        <Label htmlFor={id} className="text-xs font-medium text-foreground/80">
           {label}
         </Label>
         {tooltip && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <HelpCircle className="h-3 w-3 cursor-help text-muted-foreground/70" />
+                <HelpCircle className="h-3.5 w-3.5 cursor-help text-muted-foreground/60 transition-colors hover:text-muted-foreground/80" />
               </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs">
+              <TooltipContent
+                side="top"
+                className="max-w-xs border-border/40 bg-background/95 shadow-md backdrop-blur-sm"
+              >
                 <p className="text-xs">{tooltip}</p>
               </TooltipContent>
             </Tooltip>
@@ -99,17 +102,23 @@ export function EditableDetailRow({
 
       {hasCustomInput ? (
         // Render custom input (usually a complex component like DatePicker)
-        children
+        <div className="rounded-md transition-all duration-200 focus-within:ring-1 focus-within:ring-primary/30">
+          {children}
+        </div>
       ) : isBoolean ? (
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3 px-0.5 py-1">
           <Switch
             id={id}
             checked={!!value}
             onCheckedChange={(checked) => {
               if (onChange) onChange(checked);
             }}
+            className="data-[state=checked]:border-primary/50 data-[state=checked]:bg-primary"
           />
-          <Label htmlFor={id} className="text-xs text-muted-foreground">
+          <Label
+            htmlFor={id}
+            className="cursor-pointer text-xs text-muted-foreground transition-colors hover:text-foreground/80"
+          >
             {value ? 'Yes' : 'No'}
           </Label>
         </div>
@@ -120,12 +129,19 @@ export function EditableDetailRow({
             if (onChange) onChange(newValue);
           }}
         >
-          <SelectTrigger id={id} className="h-8 text-sm">
+          <SelectTrigger
+            id={id}
+            className="h-9 rounded-md border-border/30 bg-background text-sm shadow-sm transition-all hover:border-border/50 focus:ring-primary/20"
+          >
             <SelectValue placeholder={placeholder || `Select ${label}`} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-lg border-border/40 bg-background/95 p-[2%] shadow-lg backdrop-blur-sm">
             {options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                className="rounded text-sm transition-colors hover:bg-accent/50 focus:bg-accent"
+              >
                 {option.label}
               </SelectItem>
             ))}
@@ -139,7 +155,7 @@ export function EditableDetailRow({
             if (onChange) onChange(e.target.value);
           }}
           placeholder={placeholder}
-          className="min-h-[80px] text-sm"
+          className="scrollbar-hide min-h-[200px] w-full resize-y rounded-md border-border/30 bg-background/80 p-[2%] text-sm shadow-sm transition-all placeholder:text-muted-foreground/60 hover:border-border/50 focus:border-primary/30 focus:ring-primary/20"
         />
       ) : (
         <Input
@@ -150,7 +166,7 @@ export function EditableDetailRow({
             if (onChange) onChange(e.target.value);
           }}
           placeholder={placeholder}
-          className="h-8 text-sm"
+          className="h-9 rounded-md border-border/30 bg-background/80 text-sm shadow-sm transition-all placeholder:text-muted-foreground/60 hover:border-border/50 focus:border-primary/30 focus:ring-primary/20"
         />
       )}
     </div>
