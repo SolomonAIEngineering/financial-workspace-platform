@@ -48,8 +48,8 @@ export default async function CompletePage() {
       </div>
 
       {/* Heading with enhanced typography */}
-      <div className="space-y-6">
-        <h1 className="bg-gradient-to-r from-gray-900 via-slate-900 to-indigo-900 bg-clip-text text-4xl font-bold tracking-tight text-transparent">
+      <div className="flex flex-col items-center justify-center space-y-6">
+        <h1 className="rounded-2xl bg-gradient-to-r from-gray-900 via-slate-900 to-indigo-900 bg-clip-text text-4xl font-bold tracking-tight text-transparent">
           Setup Complete
         </h1>
         <p className="mx-auto max-w-md text-lg [line-height:1.6] font-light text-gray-600">
@@ -70,20 +70,12 @@ export default async function CompletePage() {
         >
           Go to Dashboard
         </LinkButton>
-
-        <Button
-          variant="outline"
-          size="lg"
-          className="w-full border-4 py-6 text-lg font-medium tracking-wide text-gray-800 transition-all duration-300 hover:bg-gray-50/80"
-        >
-          Explore Features
-        </Button>
       </div>
 
       {/* Premium support contact with styled elements */}
       <div className="mt-14 flex items-center gap-2 rounded-full border border-gray-100 bg-white/80 px-6 py-3 shadow-sm backdrop-blur-sm">
         <p className="text-sm text-gray-600">
-          Premium Support:{' '}
+          For support, please contact:{' '}
           <span className="font-medium text-primary">
             support@solomonai.com
           </span>

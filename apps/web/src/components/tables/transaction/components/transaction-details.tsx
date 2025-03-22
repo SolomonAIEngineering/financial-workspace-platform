@@ -1,7 +1,9 @@
+import { AssignmentSection } from './assignment-section';
 import { CategorizationSection } from './categorization-section';
 import { EditModeControls } from './edit-mode-controls';
 import { MerchantSection } from './merchant-section';
 import { PaymentDetailsSection } from './payment-details-section';
+import { TagsSection } from './tags-section';
 import { TaxFinancialSection } from './tax-financial-section';
 import { Transaction as TransactionData } from '@solomonai/prisma/client';
 import { TransactionInfoSection } from './transaction-info-section';
@@ -11,6 +13,7 @@ import { TransactionProvider } from './transaction-context';
 interface TransactionDetailsProps {
   transaction: TransactionData;
   onUpdate?: (updatedData: any) => void;
+  onDelete?: () => void;
 }
 
 /**
@@ -44,14 +47,17 @@ interface TransactionDetailsProps {
 export function TransactionDetails({
   transaction,
   onUpdate,
+  onDelete,
 }: TransactionDetailsProps) {
   return (
     <TransactionProvider transaction={transaction} onUpdate={onUpdate}>
       <div className="space-y-1">
-        <EditModeControls />
+        <EditModeControls onDelete={onDelete} />
+        <AssignmentSection />
         <TransactionInfoSection />
         <MerchantSection />
         <CategorizationSection />
+        <TagsSection />
         <PaymentDetailsSection />
         <TaxFinancialSection />
         {/* 

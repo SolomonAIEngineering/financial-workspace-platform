@@ -490,7 +490,19 @@
             "$ref": "#/definitions/App"
           }
         },
-        "Invoice": {
+        "transactionsAssignedByMe": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "transactionsAssignedToMe": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "invoices": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Invoice"
@@ -1424,6 +1436,16 @@
         "bankAccount": {
           "$ref": "#/definitions/BankAccount"
         },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "plaidTransactionId": {
           "type": [
             "string",
@@ -1562,6 +1584,33 @@
           "type": [
             "string",
             "null"
+          ]
+        },
+        "assignee": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assignedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "assignedBy": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "location": {
@@ -2901,6 +2950,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/BankConnection"
+          }
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
           }
         },
         "UserInvite": {

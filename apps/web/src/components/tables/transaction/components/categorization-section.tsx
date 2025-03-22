@@ -300,11 +300,6 @@ export function CategorizationSection() {
           </div>
         )}
 
-        {/* Tags */}
-        <div className="mt-2 border-t border-border/20 pt-2">
-          <TagsField />
-        </div>
-
         {/* Insight tags */}
         {transaction.insightTags && transaction.insightTags.length > 0 && (
           <DetailRow

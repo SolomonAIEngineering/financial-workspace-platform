@@ -94,6 +94,7 @@ interface TransactionContextType {
   formatAmount: (amount: number, currency?: string | null) => string;
   formatDateTime: (date: Date | string | null) => string;
   enterEditModeForCategory: () => void;
+  enterEditMode: () => void;
   updateTransactionData: (updatedData: Partial<TransactionData>) => void;
 }
 
@@ -139,6 +140,8 @@ export function TransactionProvider({
 
   // Function to update transaction data locally (without saving to the server)
   const updateTransactionData = (updatedData: Partial<TransactionData>) => {
+    console.log('[updateTransactionData] Input data:', updatedData);
+
     // Process the data to ensure dates are properly formatted for the API
     const processedData = Object.entries(updatedData).reduce(
       (acc, [key, value]) => {
@@ -153,6 +156,8 @@ export function TransactionProvider({
       {} as Record<string, any>
     );
 
+    console.log('[updateTransactionData] Processed data:', processedData);
+
     // Update the local state
     setTransaction((current) => ({
       ...current,
@@ -162,6 +167,10 @@ export function TransactionProvider({
 
     // If there's an onUpdate callback, call it with the processed data
     if (onUpdate) {
+      console.log(
+        '[updateTransactionData] Calling onUpdate with:',
+        processedData
+      );
       onUpdate(processedData);
     }
   };
@@ -261,6 +270,11 @@ export function TransactionProvider({
     }
   };
 
+  // Enter edit mode
+  const enterEditMode = () => {
+    setIsEditMode(true);
+  };
+
   // Enter edit mode specifically for updating the category
   const enterEditModeForCategory = () => {
     setEditedValues((prev) => ({
@@ -335,6 +349,7 @@ export function TransactionProvider({
     formatAmount,
     formatDateTime,
     enterEditModeForCategory,
+    enterEditMode,
     updateTransactionData,
   };
 
