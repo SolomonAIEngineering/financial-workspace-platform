@@ -484,7 +484,7 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
 
             <Table
               className="border-separate border-spacing-x-0 border-spacing-y-2"
-              containerClassName="max-h-[calc(100vh_-_var(--top-bar-height))] overflow-x-auto overflow-y-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              containerClassName="max-h-[calc(100vh_-_var(--top-bar-height))] overflow-x-auto overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             >
               <TableHeader className={cn('sticky top-0 z-20 bg-background')}>
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -511,9 +511,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}
