@@ -116,7 +116,12 @@ export function DataTableSheetDetails({
       >
         <SheetHeader className="bg-background p-4">
           <div className="flex items-center justify-between gap-2">
-            <SheetTitle className={cn(titleClassName, 'truncate text-left')}>
+            <SheetTitle
+              className={cn(
+                titleClassName,
+                'truncate text-left font-bold md:text-3xl'
+              )}
+            >
               {isLoading && !selectedRowKey ? (
                 <Skeleton className="h-7 w-36" />
               ) : (
