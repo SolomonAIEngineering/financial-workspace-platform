@@ -37,6 +37,8 @@ export const EDITABLE_FIELDS = [
     'budgetSubcategory',
     'needsWantsCategory',
 
+    "notes",
+
     // Payment details
     'paymentMethod',
     'paymentChannel',

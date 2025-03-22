@@ -19,6 +19,7 @@ import {
     SelectTrigger,
     SelectValue
 } from '@/components/ui/select';
+import { useUpdateTransaction, useUpdateTransactionNotes } from '@/trpc/hooks/transaction-hooks';
 
 import { Button } from '@/registry/default/potion-ui/button';
 import { DndProvider } from 'react-dnd';
@@ -28,7 +29,6 @@ import { Plate } from '@udecode/plate/react';
 import type { Value } from '@udecode/plate';
 import { toast } from 'sonner';
 import { useCreateEditor } from '@/components/editor/use-create-editor';
-import { useUpdateTransaction } from '@/trpc/hooks/transaction-hooks';
 
 interface TransactionNoteModalProps {
     isOpen: boolean;
@@ -61,7 +61,7 @@ interface TransactionNoteModalProps {
  *   transactionId="txn_123456"
  *   initialNotes="Some existing notes"
  *   initialReadOnly={false}
- *   onSuccess={(data) => console.log("Notes updated", data)}
+ *   onSuccess={(data) => console.info("Notes updated", data)}
  * />
  * ```
  */
@@ -206,6 +206,8 @@ function TransactionNoteEditor({
     const [isReadOnly, setIsReadOnly] = React.useState(initialReadOnly);
     const [activeTemplate, setActiveTemplate] = React.useState<string | null>(null);
     const updateTransaction = useUpdateTransaction();
+    const updateNotes = useUpdateTransactionNotes();
+    const [isSaving, setIsSaving] = React.useState(false);
 
     /**
      * Processes initial content to create the starting value for the editor.
@@ -215,13 +217,13 @@ function TransactionNoteEditor({
     const initialValue = React.useMemo(() => {
         // Use rich notes if provided and valid
         if (initialRichNotes && Array.isArray(initialRichNotes)) {
-            console.log('Using rich notes content:', initialRichNotes);
+            console.info('Using rich notes content:', initialRichNotes);
             return initialRichNotes;
         }
 
         // Convert plain text to rich text format
         if (initialNotes) {
-            console.log('Converting plain text to rich format:', initialNotes);
+            console.info('Converting plain text to rich format:', initialNotes);
             // Create paragraphs for each line of text
             return initialNotes.split('\n').map(line => ({
                 type: 'p',
@@ -230,7 +232,7 @@ function TransactionNoteEditor({
         }
 
         // Default empty value
-        console.log('Using default empty value');
+        console.info('Using default empty value');
         return [{ type: 'p', children: [{ text: '' }] }];
     }, [initialNotes, initialRichNotes]);
 
@@ -344,32 +346,40 @@ function TransactionNoteEditor({
             ? editorValue
             : JSON.stringify(editorValue);
 
+        // Set saving state
+        setIsSaving(true);
+
+        // First update the basic notes with the dedicated notes endpoint
+        updateNotes({
+            id: transactionId,
+            notes: richContent,
+        });
+
+        // Then update the rich content and read-only flag with the general update endpoint
         updateTransaction.mutate(
             {
                 id: transactionId,
                 data: {
-                    // Store both formats - plain text for backward compatibility
-                    notes: plainTextNotes,
-                    // And rich text format for the enhanced editor
-                    notesRichContent: richContent,
-                    // Save the read-only state to the transaction
+                    notes: richContent,
                     isNoteReadOnly: isReadOnly
                 } as any,
             },
             {
                 onSuccess: () => {
                     toast.success('Transaction notes updated');
+                    setIsSaving(false);
                     onClose();
                     if (onSuccess) {
                         onSuccess({
-                            notes: plainTextNotes,
+                            notes: richContent,
                             notesRichContent: editorValue,
                             isNoteReadOnly: isReadOnly
                         });
                     }
                 },
                 onError: (error) => {
-                    toast.error(`Failed to update notes: ${error.message}`);
+                    setIsSaving(false);
+                    toast.error(`Failed to update rich content: ${error.message}`);
                 },
             }
         );
@@ -439,11 +449,11 @@ function TransactionNoteEditor({
                     </Button>
                     <Button
                         onClick={handleSave}
-                        disabled={updateTransaction.isPending}
+                        disabled={isSaving}
                         className="h-10 gap-2 bg-primary/90 text-primary-foreground hover:bg-primary rounded-md shadow-sm hover:shadow transition-all font-medium"
                     >
                         <SaveIcon className="size-4" />
-                        <span>{updateTransaction.isPending ? 'Saving...' : 'Save Notes'}</span>
+                        <span>{isSaving ? 'Saving...' : 'Save Notes'}</span>
                     </Button>
                 </div>
             </div>

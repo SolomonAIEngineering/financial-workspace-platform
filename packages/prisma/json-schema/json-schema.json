@@ -1953,6 +1953,10 @@
             "null"
           ]
         },
+        "isUserNotesReadOnly": {
+          "type": "boolean",
+          "default": false
+        },
         "tags": {
           "type": "array",
           "items": {
@@ -1964,6 +1968,10 @@
             "string",
             "null"
           ]
+        },
+        "isNotesReadOnly": {
+          "type": "boolean",
+          "default": false
         },
         "attachments": {
           "type": "array",
@@ -2310,6 +2318,10 @@
             "string",
             "null"
           ]
+        },
+        "isNotesReadOnly": {
+          "type": "boolean",
+          "default": false
         },
         "customFields": {
           "type": [

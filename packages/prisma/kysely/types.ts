@@ -566,6 +566,7 @@ export type RecurringTransaction = {
   categorySlug: string | null
   tags: Generated<string[]>
   notes: string | null
+  isNotesReadOnly: Generated<boolean>
   customFields: unknown | null
   targetAccountId: string | null
   affectAvailableBalance: Generated<boolean>
@@ -799,8 +800,10 @@ export type Transaction = {
   needsAttention: Generated<boolean>
   reviewStatus: string | null
   userNotes: string | null
+  isUserNotesReadOnly: Generated<boolean>
   tags: Generated<string[]>
   notes: string | null
+  isNotesReadOnly: Generated<boolean>
   customFields: unknown | null
   labels: Generated<string[]>
   parentTransactionId: string | null

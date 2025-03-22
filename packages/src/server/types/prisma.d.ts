@@ -318,8 +318,10 @@ export interface Transaction {
   needsAttention: boolean;
   reviewStatus: string| null;
   userNotes: string| null;
+  isUserNotesReadOnly: boolean;
   tags: string[];
   notes: string| null;
+  isNotesReadOnly: boolean;
   customFields: Record<string, unknown>| null;
   labels: string[];
   parentTransactionId: string| null;
@@ -372,6 +374,7 @@ export interface RecurringTransaction {
   categorySlug: string| null;
   tags: string[];
   notes: string| null;
+  isNotesReadOnly: boolean;
   customFields: Record<string, unknown>| null;
   targetAccountId: string| null;
   affectAvailableBalance: boolean;
