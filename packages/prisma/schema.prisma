@@ -22,7 +22,7 @@ generator kysely {
 
 generator types {
   provider = "npx prisma-type-generator"
-  output   = "../src/server/types"
+  output   = "./server"
 }
 
 model Session {

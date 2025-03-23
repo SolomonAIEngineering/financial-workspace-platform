@@ -1,4 +1,4 @@
-import type { Document, User } from '@/server/types/index';
+import type { Document, User } from '@solomonai/prisma';
 
 import { DocumentCard } from './DocumentCard';
 import React from 'react';

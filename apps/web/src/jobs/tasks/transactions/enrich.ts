@@ -1,5 +1,5 @@
 import { EnrichmentService } from '../../utils/transaction-enrichment';
-import { Transaction } from '@/server/types/index';
+import { Transaction } from '@solomonai/prisma';
 import { prisma } from '@/server/db';
 import { schemaTask } from '@trigger.dev/sdk/v3';
 import { z } from 'zod';

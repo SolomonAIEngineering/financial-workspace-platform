@@ -33,7 +33,7 @@ import type { ColumnSchema } from './schema';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import { HoverCardPortal } from '@radix-ui/react-hover-card';
 import { TextWithTooltip } from '@/components/ui/text-with-tooltip';
-import { TransactionCategory } from '@/server/types/index';
+import { TransactionCategory } from '@solomonai/prisma';
 import { api } from '@/trpc/react';
 import { toast } from 'sonner';
 import { useUpdateTransactionCategory } from '@/trpc/hooks/transaction-hooks';

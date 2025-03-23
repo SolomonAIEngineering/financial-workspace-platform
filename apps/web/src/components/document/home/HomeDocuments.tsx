@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import type { Document, User } from '@/server/types/index';
+import type { Document, User } from '@solomonai/prisma';
 
 import { motion } from 'framer-motion';
 import { FilterIcon, MenuIcon, PlusIcon } from 'lucide-react';

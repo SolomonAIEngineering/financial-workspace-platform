@@ -3,6 +3,7 @@
 import { Button, ButtonProps } from '@/registry/default/potion-ui/button';
 
 import { Building } from 'lucide-react';
+import { ConnectTransactionsWrapper } from './connect-transactions-wrapper';
 import { useConnectTransactions } from './connect-transactions-context';
 import { useEffect } from 'react';
 
@@ -77,14 +78,23 @@ export function ConnectTransactionsButton({
   }, [openOnMount]);
 
   return (
-    <Button
-      icon={<Building className="h-4 w-4" />}
-      onClick={handleOpenModal}
-      variant="default"
-      size="xs"
-      {...buttonProps}
-    >
-      {children || 'Connect Bank'}
-    </Button>
+    <>
+      <Button
+        icon={<Building className="h-4 w-4" />}
+        onClick={handleOpenModal}
+        variant="default"
+        size="xs"
+        {...buttonProps}
+      >
+        {children || 'Connect Bank'}
+      </Button>
+
+      {/* 
+          NOTE: 
+            The modal wrapper component handles rendering the connect transaction modal and is required for the modal to work 
+            Please do not remove this component
+      */}
+      <ConnectTransactionsWrapper />
+    </>
   );
 }

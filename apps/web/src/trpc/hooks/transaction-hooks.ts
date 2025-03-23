@@ -1,7 +1,7 @@
 import { DEFAULT_QUERY_OPTIONS, QueryOptions } from './query-options';
 import { api, useTRPC } from '@/trpc/react';
 
-import { Transaction } from '@/server/types/index';
+import { Transaction } from '@solomonai/prisma';
 import { mergeDefined } from '@/lib/mergeDefined';
 import { produce } from 'immer';
 import { toast } from 'sonner';

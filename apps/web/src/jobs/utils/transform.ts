@@ -1,5 +1,5 @@
 import { APITransactionListResponse } from '@solomon-ai/workspace-financial-backend-sdk/resources/api-transactions.js';
-import { AccountType } from '@/server/types/index';
+import { AccountType } from '@solomonai/prisma';
 
 /**
  * Interface representing the data required to transform a transaction from the
