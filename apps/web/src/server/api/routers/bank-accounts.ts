@@ -791,4 +791,51 @@ export const bankAccountsRouter = createRouter({
         });
       }
     }),
+
+  /** Get a single bank account by ID */
+  getById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }): Promise<BankAccount | null> => {
+      try {
+        // Get the authenticated user ID
+        const { userId } = ctx;
+
+        // Fetch the bank account from the database
+        const bankAccount = await prisma.bankAccount.findFirst({
+          where: {
+            id: input.id,
+            userId,
+            deletedAt: null,
+            status: 'ACTIVE',
+          },
+          include: {
+            bankConnection: {
+              select: {
+                institutionName: true,
+                logo: true,
+                primaryColor: true,
+              },
+            },
+          },
+        });
+
+        if (!bankAccount) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Bank account not found',
+          });
+        }
+
+        // Return the account with the format expected by the frontend
+        return bankAccount as unknown as BankAccount;
+      } catch (error) {
+        console.error('Error fetching bank account:', error);
+
+        throw new TRPCError({
+          cause: error,
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch bank account',
+        });
+      }
+    }),
 });
