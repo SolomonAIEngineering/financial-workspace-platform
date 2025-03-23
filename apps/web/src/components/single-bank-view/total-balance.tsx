@@ -1,10 +1,24 @@
 import { Button } from '@/registry/default/potion-ui/button';
 import { ChevronDown } from 'lucide-react';
 
+/**
+ * Props interface for the TotalBalance component
+ * 
+ * @interface TotalBalanceProps
+ * @property {string} formattedBalance - Pre-formatted balance string with currency symbol
+ */
 interface TotalBalanceProps {
     formattedBalance: string;
 }
 
+/**
+ * TotalBalance component displays the user's total account balance
+ * along with currency selector and withdrawal options
+ * 
+ * @component
+ * @param {TotalBalanceProps} props - Component props
+ * @returns {JSX.Element} Balance display with currency selector and action buttons
+ */
 export function TotalBalance({ formattedBalance }: TotalBalanceProps) {
     return (
         <div className="mb-8">

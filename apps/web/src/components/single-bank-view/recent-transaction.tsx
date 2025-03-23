@@ -6,10 +6,24 @@ import { DataTable } from '@/components/tables/transaction/data-table';
 import { api } from '@/trpc/react';
 import { columns } from '../tables/transaction/columns';
 
+/**
+ * Props interface for the RecentTransactions component
+ * 
+ * @interface RecentTransactionsProps
+ * @property {boolean} [isLoading] - Optional flag indicating if parent component is in loading state
+ */
 interface RecentTransactionsProps {
     isLoading?: boolean;
 }
 
+/**
+ * RecentTransactions component displays a table of most recent financial transactions
+ * with filtering and sorting capabilities
+ * 
+ * @component
+ * @param {RecentTransactionsProps} props - Component props
+ * @returns {JSX.Element} Card containing transaction data table
+ */
 export function RecentTransactions({ isLoading: initialLoading }: RecentTransactionsProps) {
     // Fetch transactions directly with useQuery
     const { data, isLoading: apiLoading, refetch } = api.transactions.getTransactions.useQuery({
@@ -22,7 +36,11 @@ export function RecentTransactions({ isLoading: initialLoading }: RecentTransact
     // Determine if we're loading
     const isLoading = initialLoading || apiLoading;
 
-    // Get transactions from the response and map to expected format
+    /**
+     * Transform API transaction data to the format expected by the DataTable component
+     * 
+     * @returns {ColumnSchema[]} Formatted transaction data
+     */
     const transactions = useMemo(() => {
         return data?.transactions.map(transaction => ({
             ...transaction,

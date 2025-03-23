@@ -1,6 +1,12 @@
 import { ChartData, DateRangeType, MonthlyStats, Transaction } from './types';
 
-// Add CSS to hide scrollbars
+/**
+ * CSS to hide scrollbars across different browsers
+ * Applied globally to maintain a clean UI without visible scrollbars
+ * 
+ * @constant
+ * @type {string}
+ */
 export const hideScrollbarCSS = `
 ::-webkit-scrollbar {
     display: none;
@@ -14,7 +20,15 @@ html, body {
 }
 `;
 
-// Process transaction data for the chart
+/**
+ * Processes transaction data to prepare it for chart visualization
+ * Filters transactions by date range and aggregates expenses by day
+ * 
+ * @function
+ * @param {Transaction[]} transactions - Array of transaction objects to process
+ * @param {DateRangeType} [dateRange='30d'] - Time period to filter the data
+ * @returns {ChartData} Object containing labels and values arrays for charts
+ */
 export function prepareChartData(transactions: Transaction[], dateRange: DateRangeType = '30d'): ChartData {
     if (!transactions.length) return { labels: [], values: [] };
 
@@ -73,13 +87,26 @@ export function prepareChartData(transactions: Transaction[], dateRange: DateRan
     return { labels, values };
 }
 
-// Format a date to display format
+/**
+ * Formats a date string to a human-readable representation
+ * 
+ * @function
+ * @param {string} dateString - ISO date string to format
+ * @returns {string} Formatted date string (e.g., "Jan 15")
+ */
 export function formatDate(dateString: string): string {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
 }
 
-// Calculate total spending, income, and balance this month
+/**
+ * Calculates monthly financial statistics based on transaction data
+ * Includes spending, income, net change and percentage change
+ * 
+ * @function
+ * @param {Transaction[]} transactions - Array of transaction objects to analyze
+ * @returns {MonthlyStats} Object containing formatted financial statistics
+ */
 export function calculateMonthlyStats(transactions: Transaction[]): MonthlyStats {
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);

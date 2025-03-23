@@ -10,27 +10,75 @@ import { StatisticsPanel } from './statistic-panel';
 import { api } from '@/trpc/react';
 import { useCurrentUser } from '@/components/auth/useCurrentUser';
 
+/**
+ * Props interface for the SingleBankAccountView component.
+ * @interface SingleBankAccountViewProps
+ * @property {BankAccount} bankAccount - The bank account data to display in the view.
+ */
 interface SingleBankAccountViewProps {
     bankAccount: BankAccount;
 }
 
+/**
+ * SingleBankAccountView component provides a detailed view of a single bank account.
+ * It displays account details, transactions, and statistical visualizations.
+ * 
+ * @component
+ * @param {SingleBankAccountViewProps} props - The component props
+ * @returns {JSX.Element} Rendered component with tabs for account details and statistics
+ */
 export function SingleBankAccountView({ bankAccount }: SingleBankAccountViewProps) {
     const user = useCurrentUser();
+
+    /**
+     * State for storing bank account transactions
+     * @type {[Transaction[], React.Dispatch<React.SetStateAction<Transaction[]>>]}
+     */
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+    /**
+     * State for tracking transaction loading status
+     * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
+     */
     const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
+
+    /**
+     * State for tracking the active chart type (bar, line, etc.)
+     * @type {[ChartType, React.Dispatch<React.SetStateAction<ChartType>>]}
+     */
     const [activeChartType, setActiveChartType] = useState<ChartType>('bar');
+
+    /**
+     * State for tracking the selected date range for filtering data
+     * @type {[DateRangeType, React.Dispatch<React.SetStateAction<DateRangeType>>]}
+     */
     const [dateRange, setDateRange] = useState<DateRangeType>('30d');
+
+    /**
+     * State for tracking the active tab (account or statistics)
+     * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
+     */
     const [activeTab, setActiveTab] = useState<string>("account");
 
     // Convert bank account data to the format expected by our components
     const accountType = bankAccount.type;
-    // Create a proper Record<AccountType, BankAccount[]> with type assertion
+
+    /**
+     * Create a proper Record with account type as key and bank account array as value
+     * @type {Record<string, BankAccount[]>}
+     */
     const accountsRecord = {} as Record<typeof accountType, BankAccount[]>;
     accountsRecord[accountType] = [bankAccount];
 
+    /**
+     * Formatted bank account data ready for display in UI components
+     */
     const bankAccountCardData = convertBankAccountsToCardData(accountsRecord)[0];
 
-    // Format total balance
+    /**
+     * Formatted balance string with currency symbol and proper decimal places
+     * @type {string}
+     */
     const formattedBalance = `$${(
         bankAccount.availableBalance || 0
     ).toLocaleString('en-US', {
@@ -38,10 +86,15 @@ export function SingleBankAccountView({ bankAccount }: SingleBankAccountViewProp
         maximumFractionDigits: 2,
     })}`;
 
-    // Get user's name or use default
+    /**
+     * User's first name extracted from full name or default value
+     * @type {string}
+     */
     const userName = user?.name?.split(' ')[0] || 'User';
 
-    // Fetch real transactions 
+    /**
+     * TRPC query to fetch transactions for the current bank account
+     */
     const transactionsQuery = api.bankAccounts.getTransactions.useQuery(
         {
             accountId: bankAccount.id,
@@ -53,6 +106,10 @@ export function SingleBankAccountView({ bankAccount }: SingleBankAccountViewProp
         }
     );
 
+    /**
+     * Effect hook to process transaction data when it's loaded from the API
+     * Transforms API transaction format to the component's internal Transaction type
+     */
     useEffect(() => {
         if (transactionsQuery.isLoading) {
             setIsLoadingTransactions(true);
@@ -72,10 +129,16 @@ export function SingleBankAccountView({ bankAccount }: SingleBankAccountViewProp
         }
     }, [transactionsQuery.isLoading, transactionsQuery.isSuccess, transactionsQuery.data]);
 
-    // Prepare chart data
+    /**
+     * Prepared chart data based on transactions and selected date range
+     * @type {object}
+     */
     const chartData = prepareChartData(transactions, dateRange);
 
-    // Calculate monthly statistics
+    /**
+     * Calculated monthly statistics from transaction data
+     * @type {object}
+     */
     const monthlyStats = calculateMonthlyStats(transactions);
 
     return (

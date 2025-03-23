@@ -1,11 +1,26 @@
 import { Button } from '@/registry/default/potion-ui/button';
 import { MoreHorizontal } from 'lucide-react';
 
+/**
+ * Props interface for the WalletCard component
+ * 
+ * @interface WalletCardProps
+ * @property {string} userName - Name of the card holder to display on the card
+ * @property {string} cardNumber - Last 4 digits of the card number (or masked number)
+ */
 interface WalletCardProps {
     userName: string;
     cardNumber: string;
 }
 
+/**
+ * WalletCard component displays a stylized credit/debit card visualization
+ * with user information and masked card number
+ * 
+ * @component
+ * @param {WalletCardProps} props - Component props
+ * @returns {JSX.Element} Visual representation of a payment card with stacked shadow effect
+ */
 export function WalletCard({ userName, cardNumber }: WalletCardProps) {
     return (
         <div className="mb-12">

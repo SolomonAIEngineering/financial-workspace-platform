@@ -1,9 +1,23 @@
 import { MonthlyStats as MonthlyStatsType } from './types';
 
+/**
+ * Props interface for the MonthlyStats component
+ * 
+ * @interface MonthlyStatsProps
+ * @property {MonthlyStatsType} stats - Object containing income, spending, and net change data
+ */
 interface MonthlyStatsProps {
     stats: MonthlyStatsType;
 }
 
+/**
+ * MonthlyStats component displays a summary of monthly financial statistics
+ * including income, expenses, and net change with appropriate formatting
+ * 
+ * @component
+ * @param {MonthlyStatsProps} props - Component props
+ * @returns {JSX.Element} Grid of financial stat cards with monthly summary data
+ */
 export function MonthlyStats({ stats }: MonthlyStatsProps) {
     return (
         <div className="grid grid-cols-3 gap-4 mb-8">
