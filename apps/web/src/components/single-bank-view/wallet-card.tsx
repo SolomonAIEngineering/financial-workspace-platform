@@ -25,7 +25,7 @@ export function WalletCard({ userName, cardNumber }: WalletCardProps) {
     return (
         <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-indigo-950 dark:text-white">My Wallet</h2>
+                <h2 className="text-xl font-semibold text-indigo-950 dark:text-white">My Account</h2>
                 <Button variant="ghost" size="icon" className="text-gray-500">
                     <MoreHorizontal className="h-5 w-5" />
                 </Button>

@@ -45,7 +45,7 @@ export function AccountDetailsPanel({
             {/* Total Balance */}
             <TotalBalance formattedBalance={formattedBalance} />
 
-            {/* My Wallet */}
+            {/* My Account */}
             <WalletCard userName={userName} cardNumber={cardNumber} />
 
             {/* Recent Transactions */}
