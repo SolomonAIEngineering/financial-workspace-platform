@@ -49,7 +49,7 @@ export const enrichTransactions = schemaTask({
     const enrichmentService = new EnrichmentService();
 
     // Convert input transactions to the Transaction type expected by the enrichment service
-    const transactionsForEnrichment: Transaction[] = transactions.map((t) => ({
+    const transactionsForEnrichment = transactions.map((t) => ({
       id: t.id,
       name: t.name,
       description: t.description || null,
@@ -81,7 +81,7 @@ export const enrichTransactions = schemaTask({
       createdAt: new Date(),
       updatedAt: new Date(),
       isoCurrencyCode: null,
-    }));
+    })) as unknown as Transaction[];
 
     const data = await enrichmentService.batchEnrichTransactions(
       transactionsForEnrichment
