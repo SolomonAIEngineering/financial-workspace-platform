@@ -1,6 +1,6 @@
 'use client';
 
-import { BankConnection, BankConnectionStatus } from '@/server/types/prisma';
+import { BankConnection, BankConnectionStatus } from '@solomonai/prisma';
 
 import { Button } from '@/registry/default/potion-ui/button';
 import React from 'react';

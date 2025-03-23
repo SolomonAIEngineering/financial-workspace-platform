@@ -1,4 +1,4 @@
-import { Transaction } from '@/server/types/index';
+import { Transaction } from '@solomonai/prisma';
 import { type OpenAIProvider, createOpenAI } from '@ai-sdk/openai';
 import { generateObject } from 'ai';
 import { z } from 'zod';

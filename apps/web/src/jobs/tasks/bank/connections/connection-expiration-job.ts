@@ -1,7 +1,7 @@
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
-import { BankConnectionStatus } from '@/server/types/index';
+import { BankConnectionStatus } from '@solomonai/prisma';
 import { addDays } from 'date-fns';
 import { client } from '@/jobs/client';
 import { prisma } from '@/server/db';

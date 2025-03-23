@@ -1,6 +1,6 @@
 'use client';
 
-import type { Document, User } from '@/server/types/index';
+import type { Document, User } from '@solomonai/prisma';
 
 import { CreateDocumentButton } from '@/components/document/CreateDocumentButton';
 import { HomeDocuments } from '@/components/document/home/HomeDocuments';

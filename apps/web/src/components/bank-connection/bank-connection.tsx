@@ -1,6 +1,7 @@
 'use client';
 
 import { AccordionContent, AccordionTrigger } from '@/components/ui/accordion';
+import { BankAccount, BankConnectionStatus } from '@solomonai/prisma';
 import {
   Tooltip,
   TooltipContent,
@@ -29,16 +30,6 @@ export interface BankConnectionWithAccounts {
   status: string;
   expires_at?: Date | null;
   accounts: BankAccount[];
-}
-
-// Define the BankAccount interface if not already defined elsewhere
-export interface BankAccount {
-  id: string;
-  name: string;
-  type: string;
-  balance: number;
-  currency: string;
-  enabled: boolean;
 }
 
 /** Utility function to determine the connection status based on expiration date */
@@ -77,7 +68,7 @@ export function connectionStatus(connection: any) {
 export function BankAccountConnection({
   connection,
 }: {
-  connection: any; // Use type assertion to bypass type checks
+  connection: any; // TODO: Reconcile BankConnectionWithAccounts with BankConnection
 }) {
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -136,8 +127,8 @@ export function BankAccountConnection({
                   {account.type} •{' '}
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',
-                    currency: account.currency,
-                  }).format(account.balance)}
+                    currency: account.isoCurrencyCode || 'USD',
+                  }).format(account.currentBalance || 0)}
                 </p>
               </div>
 
@@ -174,7 +165,10 @@ function ConnectionState({
     );
   }
 
-  if (connection.status === 'disconnected') {
+  if (
+    connection.status === 'disconnected' ||
+    connection.status === BankConnectionStatus.DISCONNECTED
+  ) {
     return (
       <>
         <div className="flex items-center space-x-1 text-xs font-normal text-[#c33839]">

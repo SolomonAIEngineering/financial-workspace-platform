@@ -237,13 +237,6 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
           />
         </div>
       </div>
-
-      {/* 
-          NOTE: 
-            The modal wrapper component handles rendering the connect transaction modal and is required for the modal to work 
-            Please do not remove this component
-      */}
-      <ConnectTransactionsWrapper />
     </aside>
   );
 }

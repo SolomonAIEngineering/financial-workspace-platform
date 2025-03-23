@@ -7,7 +7,7 @@ import {
   StarIcon,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { Document, User } from '@/server/types/index';
+import type { Document, User } from '@solomonai/prisma';
 import React, { useState } from 'react';
 
 import { Link } from '@/components/ui/link';

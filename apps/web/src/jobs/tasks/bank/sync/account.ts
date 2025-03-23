@@ -5,7 +5,7 @@ import {
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { APITransactionListParams } from '@solomon-ai/workspace-financial-backend-sdk/resources/index.js';
-import { AccountType } from '@/server/types/index';
+import { AccountType } from '@solomonai/prisma';
 import { engine as client } from '@/lib/engine';
 import { parseAPIError } from '@/jobs/utils/parse-error';
 import { prisma } from '@/server/db';
