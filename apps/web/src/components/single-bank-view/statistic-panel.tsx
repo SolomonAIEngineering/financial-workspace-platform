@@ -27,7 +27,7 @@ export function StatisticsPanel({
     monthlyStats
 }: StatisticsPanelProps) {
     return (
-        <div className="w-1/2 bg-gray-100 dark:bg-gray-800 p-8 overflow-auto no-scrollbar">
+        <div className="w-full bg-gray-100 dark:bg-gray-800 p-8 overflow-auto no-scrollbar">
             {/* Transaction Analytics Header & Controls */}
             <TransactionAnalytics
                 stats={monthlyStats}

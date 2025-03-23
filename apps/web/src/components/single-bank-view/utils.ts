@@ -1,4 +1,4 @@
-import { ChartData, MonthlyStats, Transaction } from './types';
+import { ChartData, DateRangeType, MonthlyStats, Transaction } from './types';
 
 // Add CSS to hide scrollbars
 export const hideScrollbarCSS = `
@@ -15,19 +15,38 @@ html, body {
 `;
 
 // Process transaction data for the chart
-export function prepareChartData(transactions: Transaction[]): ChartData {
+export function prepareChartData(transactions: Transaction[], dateRange: DateRangeType = '30d'): ChartData {
     if (!transactions.length) return { labels: [], values: [] };
 
-    // For demonstration, we'll create daily aggregated data for the last 31 days
+    // Calculate date range based on selected option
     const today = new Date();
-    const thirtyOneDaysAgo = new Date();
-    thirtyOneDaysAgo.setDate(today.getDate() - 30);
+    let startDate = new Date();
+
+    switch (dateRange) {
+        case '7d':
+            startDate.setDate(today.getDate() - 7);
+            break;
+        case '30d':
+            startDate.setDate(today.getDate() - 30);
+            break;
+        case '90d':
+            startDate.setDate(today.getDate() - 90);
+            break;
+        case 'ytd':
+            startDate = new Date(today.getFullYear(), 0, 1); // Jan 1st of current year
+            break;
+        default:
+            startDate.setDate(today.getDate() - 30); // Default to 30 days
+    }
 
     // Create a map for each day
     const dailyData: Record<string, number> = {};
 
+    // Calculate number of days in the range
+    const dayDiff = Math.ceil((today.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
+
     // Initialize each day with 0
-    for (let i = 0; i <= 30; i++) {
+    for (let i = 0; i <= dayDiff; i++) {
         const date = new Date();
         date.setDate(today.getDate() - i);
         const dateKey = date.toISOString().split('T')[0];
@@ -36,7 +55,7 @@ export function prepareChartData(transactions: Transaction[]): ChartData {
 
     // Sum transaction amounts by day
     transactions
-        .filter(tx => new Date(tx.date) >= thirtyOneDaysAgo)
+        .filter(tx => new Date(tx.date) >= startDate)
         .forEach(tx => {
             const dateKey = tx.date.toISOString().split('T')[0];
             if (dailyData[dateKey] !== undefined) {

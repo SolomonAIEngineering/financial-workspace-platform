@@ -20,7 +20,7 @@ export function AccountDetailsPanel({
     isLoadingTransactions
 }: AccountDetailsPanelProps) {
     return (
-        <div className="w-1/2 p-8 overflow-auto no-scrollbar">
+        <div className="w-full p-8 overflow-auto no-scrollbar">
             {/* Greeting */}
             <Greeting userName={userName} />
 
@@ -32,7 +32,6 @@ export function AccountDetailsPanel({
 
             {/* Recent Transactions */}
             <RecentTransactions
-                transactions={transactions}
                 isLoading={isLoadingTransactions}
             />
         </div>
