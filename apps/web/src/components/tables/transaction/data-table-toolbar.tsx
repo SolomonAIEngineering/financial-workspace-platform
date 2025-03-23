@@ -18,7 +18,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/registry/default/potion-ui/button';
 import { Input } from '@/registry/default/potion-ui/input';
-import { MultiSelect } from './components/multi-select';
 import { api } from '@/trpc/react';
 import { toast } from 'sonner';
 import { useDataTable } from '@/components/data-table/data-table-provider';
