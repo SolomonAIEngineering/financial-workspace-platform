@@ -13,7 +13,6 @@ import { Badge } from '@/components/ui/badge';
 import { DetailRow } from './detail-row';
 import { FieldRenderer } from './field-renderer';
 import { SubheadingWithTooltip } from './subheading-with-tooltip';
-import { TagsField } from './tags-field';
 import { TransactionCategory } from '@solomonai/prisma/client';
 import { TransactionSection } from './transaction-section';
 import { categoryColors } from '../columns';
@@ -280,25 +279,25 @@ export function CategorizationSection() {
         {(transaction.fiscalYear ||
           transaction.fiscalMonth ||
           transaction.fiscalQuarter) && (
-          <div className="mt-2 border-t border-border/20 pt-2">
-            <SubheadingWithTooltip
-              label="Fiscal Period"
-              tooltip="Financial period to which this transaction belongs"
-            />
-            {transaction.fiscalYear && (
-              <DetailRow label="Fiscal Year" value={transaction.fiscalYear} />
-            )}
-            {transaction.fiscalMonth && (
-              <DetailRow label="Fiscal Month" value={transaction.fiscalMonth} />
-            )}
-            {transaction.fiscalQuarter && (
-              <DetailRow
-                label="Fiscal Quarter"
-                value={transaction.fiscalQuarter}
+            <div className="mt-2 border-t border-border/20 pt-2">
+              <SubheadingWithTooltip
+                label="Fiscal Period"
+                tooltip="Financial period to which this transaction belongs"
               />
-            )}
-          </div>
-        )}
+              {transaction.fiscalYear && (
+                <DetailRow label="Fiscal Year" value={transaction.fiscalYear} />
+              )}
+              {transaction.fiscalMonth && (
+                <DetailRow label="Fiscal Month" value={transaction.fiscalMonth} />
+              )}
+              {transaction.fiscalQuarter && (
+                <DetailRow
+                  label="Fiscal Quarter"
+                  value={transaction.fiscalQuarter}
+                />
+              )}
+            </div>
+          )}
 
         {/* Insight tags */}
         {transaction.insightTags && transaction.insightTags.length > 0 && (

@@ -10,6 +10,8 @@ export default defineConfig(eslintPluginUnicorn.configs['flat/recommended'], {
         checkArrowFunctions: false,
       },
     ],
+
+    'unicorn/prefer-switch': 'off',
     'unicorn/no-document-cookie': 'off',
     'unicorn/empty-brace-spaces': 'off',
     'unicorn/expiring-todo-comments': 'off',

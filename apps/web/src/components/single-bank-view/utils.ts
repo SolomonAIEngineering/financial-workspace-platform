@@ -107,7 +107,7 @@ export function formatDate(dateString: string): string {
     const date = new Date(dateString);
 
     // Check if date is valid
-    if (isNaN(date.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       return 'Invalid date';
     }
 

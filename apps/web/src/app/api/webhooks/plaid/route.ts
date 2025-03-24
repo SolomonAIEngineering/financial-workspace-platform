@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
   const clientIp = req.headers.get('x-forwarded-for') || '';
 
   // Security check: Ensure webhook is coming from Plaid's IP addresses
-  if (!ALLOWED_IPS.includes(clientIp)) {
+  if (!ALLOWED_IPS.has(clientIp)) {
     return NextResponse.json(
       { error: 'Unauthorized IP address' },
       { status: 403 }

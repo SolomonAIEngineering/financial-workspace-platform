@@ -3,7 +3,6 @@ import { logger, schedules, schemaTask } from '@trigger.dev/sdk/v3';
 import { BANK_JOBS } from '../../constants';
 import { bankSyncScheduler } from '../scheduler/bank-scheduler';
 import { generateCronTag } from '@/lib/generate-cron-tag';
-import { prisma } from '@/server/db';
 import { syncConnectionJob as syncConnection } from '../sync/connection';
 import { z } from 'zod';
 

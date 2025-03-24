@@ -342,7 +342,7 @@ export function EnhancedTransactionTimeline({
   const monthlyPattern = useMemo(() => {
     // Use a fixed seed for random values to prevent re-renders causing changes
     const seed = transaction.id
-      ? parseInt(transaction.id.substring(0, 8), 16)
+      ? Number.parseInt(transaction.id.substring(0, 8), 16)
       : 123456;
     const generateRandom = (idx: number) => {
       const x = Math.sin(seed + idx) * 10000;
@@ -372,7 +372,7 @@ export function EnhancedTransactionTimeline({
   const amountHistory = useMemo(() => {
     // Use transaction ID as seed for consistent randomness
     const seed = transaction.id
-      ? parseInt(transaction.id.substring(0, 8), 16)
+      ? Number.parseInt(transaction.id.substring(0, 8), 16)
       : 123456;
 
     return historyDates.slice(0, 6).map((_, i) => {

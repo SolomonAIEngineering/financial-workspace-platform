@@ -1,9 +1,6 @@
-import * as React from 'react';
-
 import { Badge } from '@/components/ui/badge';
 import { Clock } from 'lucide-react';
 import { ProcessingStep } from './processing-step';
-import { cn } from '@/lib/utils';
 
 /**
  * Interface for timing phase data used in the processing time visualization.

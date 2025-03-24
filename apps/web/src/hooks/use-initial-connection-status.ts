@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { SyncStatus } from '@/types/status';
 import { useRealtimeRun } from '@trigger.dev/react-hooks';
 
 /** Props for the useInitialConnectionStatus hook. */

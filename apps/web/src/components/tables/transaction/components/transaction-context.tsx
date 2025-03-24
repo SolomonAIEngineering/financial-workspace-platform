@@ -202,9 +202,9 @@ export function TransactionProvider({
       processedValue =
         typeof value === 'string'
           ? value
-              .split(',')
-              .map((tag) => tag.trim())
-              .filter(Boolean)
+            .split(',')
+            .map((tag) => tag.trim())
+            .filter(Boolean)
           : [];
     } else if (field === 'date') {
       // Handle date values specially
@@ -222,12 +222,12 @@ export function TransactionProvider({
       // Handle amount values specially
       if (typeof value === 'number') {
         // Ensure it's a properly formatted number with 2 decimal places
-        processedValue = parseFloat(value.toFixed(2));
+        processedValue = Number.parseFloat(value.toFixed(2));
       } else if (typeof value === 'string') {
         // Try to convert string to number
-        const parsedValue = parseFloat(value);
-        if (!isNaN(parsedValue)) {
-          processedValue = parseFloat(parsedValue.toFixed(2));
+        const parsedValue = Number.parseFloat(value);
+        if (!Number.isNaN(parsedValue)) {
+          processedValue = Number.parseFloat(parsedValue.toFixed(2));
         } else {
           console.warn('Invalid amount value:', value);
           return; // Don't update if invalid

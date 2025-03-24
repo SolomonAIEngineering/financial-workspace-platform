@@ -143,7 +143,7 @@ function TransactionDateField() {
     }
 
     // Otherwise use the transaction date
-    if (!transaction.date) return undefined;
+    if (!transaction.date) return;
     return transaction.date instanceof Date
       ? transaction.date
       : new Date(transaction.date);
