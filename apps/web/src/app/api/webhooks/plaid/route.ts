@@ -20,12 +20,12 @@ import { z } from 'zod';
  *
  * @see https://plaid.com/docs/api/webhooks/#configuring-webhooks
  */
-const ALLOWED_IPS = [
+const ALLOWED_IPS: Set<string> = new Set([
   '52.21.26.131',
   '52.21.47.157',
   '52.41.247.19',
   '52.88.82.239',
-];
+]);
 
 /**
  * Schema for validating Plaid webhook payloads

@@ -1,8 +1,8 @@
 // Add global CSS for custom scrollbar
 import './timeline-scrollbar.css';
 
+import { AnimatePresence, motion } from 'framer-motion';
 import {
-  AlertCircle,
   ArrowRight,
   BarChart3,
   Calendar,
@@ -11,10 +11,8 @@ import {
   ChevronUp,
   Clock,
   History,
-  RefreshCw,
-  TrendingUp,
+  RefreshCw
 } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   addDays,
@@ -22,10 +20,7 @@ import {
   addWeeks,
   differenceInDays,
   format,
-  isBefore,
-  isSameDay,
-  parseISO,
-  subMonths,
+  parseISO
 } from 'date-fns';
 
 import { RecurringTransactionSchema } from '../schema';

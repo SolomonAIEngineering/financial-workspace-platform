@@ -1,5 +1,3 @@
-import { Badge } from '@/components/ui/badge';
-import { HelpCircle } from 'lucide-react';
 import InfoTooltip from '@/components/ui/info-tooltip';
 import React from 'react';
 import { cn } from '@/lib/utils';

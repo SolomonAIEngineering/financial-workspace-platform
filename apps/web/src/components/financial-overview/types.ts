@@ -1,8 +1,6 @@
 import {
-  AccountStatus,
-  AccountSubtype,
   AccountType,
-  BankAccount,
+  BankAccount
 } from '@solomonai/prisma';
 
 import { z } from 'zod';

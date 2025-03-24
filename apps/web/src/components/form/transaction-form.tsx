@@ -229,8 +229,8 @@ export function TransactionForm({
                         const value =
                           e.target.value === ''
                             ? 0
-                            : parseFloat(e.target.value);
-                        field.onChange(isNaN(value) ? 0 : value);
+                            : Number.parseFloat(e.target.value);
+                        field.onChange(Number.isNaN(value) ? 0 : value);
                       }}
                     />
                   </div>

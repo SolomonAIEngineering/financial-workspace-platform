@@ -1,8 +1,8 @@
 'use client';
 
 import { Button, ButtonProps } from '@/registry/default/potion-ui/button';
-import { CreditCard, Router } from 'lucide-react';
 
+import { CreditCard } from 'lucide-react';
 import { SelectBankAccountsModal } from '../modals/select-bank-accounts-modal';
 import { routes } from '@/lib/navigation/routes';
 import { useState } from 'react';

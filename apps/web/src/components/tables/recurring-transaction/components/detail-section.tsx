@@ -1,6 +1,5 @@
 import {
   Activity,
-  BarChart,
   BarChart2,
   Building2,
   Calendar,
@@ -11,10 +10,9 @@ import {
   FileText,
   History,
   Info,
-  Landmark,
   RepeatIcon,
   Settings,
-  Tag,
+  Tag
 } from 'lucide-react';
 
 import { ChevronDown } from 'lucide-react';
