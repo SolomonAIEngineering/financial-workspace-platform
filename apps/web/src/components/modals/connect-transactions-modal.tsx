@@ -3,10 +3,8 @@
 import {
   AlertCircle,
   Building2,
-  Check,
-  RefreshCw,
   Search,
-  XIcon,
+  XIcon
 } from 'lucide-react';
 import {
   Dialog,
@@ -28,7 +26,6 @@ import { InstitutionDetails } from '../institution/institution-details';
 import { LogEvents } from '@v1/analytics/events';
 import { SelectBankAccountsModal } from './select-bank-accounts-modal';
 import { Skeleton } from '../ui/skeleton';
-import { SyncLogs } from '@/components/sync/sync-logs';
 import { createPlaidLinkTokenAction } from '@/actions/institution/create-link';
 import { exchangePublicTokenAction } from '@/actions/institution/exchange-public-token';
 import { getInstitutionsAction } from '@/actions/institution/get-institution';
@@ -37,7 +34,6 @@ import { track } from '@v1/analytics/client';
 import { useConnectParams } from '@/hooks/use-connect-params';
 import { usePlaidLink } from 'react-plaid-link';
 import { useRouter } from 'next/navigation';
-import { useSyncProgress } from '@/hooks/use-sync-progress';
 
 /** Renders a skeleton loading state for institution search results */
 function SearchSkeleton() {
@@ -269,150 +265,6 @@ function SearchResults({
   );
 }
 
-/** Component to display the transaction sync status */
-function SyncStatusContent({
-  runId,
-  status: initialStatus,
-  onComplete,
-}: {
-  runId?: string;
-  status?: 'idle' | 'syncing' | 'success' | 'error';
-  onComplete: () => void;
-}) {
-  // Use the sync progress hook if we have a runId
-  const {
-    progress,
-    streams,
-    status: syncStatus,
-    error,
-    isLoading,
-  } = useSyncProgress(runId);
-
-  // Use the hook status if available, otherwise use the prop
-  const status = runId ? syncStatus : initialStatus || 'idle';
-
-  return (
-    <div className="flex flex-col items-center justify-center space-y-6 px-4 py-12 text-center">
-      {status === 'syncing' && (
-        <>
-          <div className="relative flex h-20 w-20 items-center justify-center">
-            <RefreshCw className="h-16 w-16 animate-spin text-primary" />
-          </div>
-          <h3 className="text-xl font-semibold">Syncing Your Data</h3>
-
-          {/* Show progress bar if we have progress data */}
-          {progress && typeof progress === 'object' && (
-            <div className="w-full max-w-md">
-              <div className="mb-2 flex justify-between text-sm">
-                <span>
-                  {progress.message || 'Processing your financial data...'}
-                </span>
-                {progress.current !== undefined && progress.total && (
-                  <span>
-                    {Math.round((progress.current / progress.total) * 100)}%
-                  </span>
-                )}
-              </div>
-
-              {progress.current !== undefined && progress.total && (
-                <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                  <div
-                    className="h-full bg-primary transition-all duration-300"
-                    style={{
-                      width: `${(progress.current / progress.total) * 100}%`,
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Use the SyncLogs component to display detailed logs */}
-              {streams && streams.length > 0 && (
-                <div className="mt-4">
-                  <SyncLogs streams={streams} maxHeight="150px" />
-                </div>
-              )}
-            </div>
-          )}
-
-          <p className="max-w-md text-muted-foreground">
-            We're connecting to your financial institution and syncing your
-            transactions, accounts, and balances. This process may take a minute
-            or two.
-          </p>
-        </>
-      )}
-
-      {status === 'success' && (
-        <>
-          <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-            <Check className="h-10 w-10 text-green-600" />
-          </div>
-          <h3 className="text-xl font-semibold">Connection Successful!</h3>
-          <p className="max-w-md text-muted-foreground">
-            Your accounts and transactions have been successfully synced. You
-            can now view your accounts and transactions.
-          </p>
-
-          {/* Show sync logs in success state too */}
-          {streams && streams.length > 0 && (
-            <div className="mt-2 w-full max-w-md">
-              <SyncLogs streams={streams} maxHeight="150px" />
-            </div>
-          )}
-
-          <Button onClick={onComplete} className="mt-4">
-            Go to Accounts
-          </Button>
-        </>
-      )}
-
-      {status === 'error' && (
-        <>
-          <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
-            <AlertCircle className="h-10 w-10 text-red-600" />
-          </div>
-          <h3 className="text-xl font-semibold">Sync Failed</h3>
-          <p className="max-w-md text-muted-foreground">
-            {error?.message ||
-              'We encountered an error while syncing your accounts and transactions. Please try again later or contact support if the issue persists.'}
-          </p>
-
-          {/* Show sync logs in error state for debugging */}
-          {streams && streams.length > 0 && (
-            <div className="mt-2 w-full max-w-md">
-              <SyncLogs
-                streams={streams}
-                maxHeight="150px"
-                showToggle={false}
-              />
-            </div>
-          )}
-
-          <div className="mt-4 flex space-x-4">
-            <Button onClick={() => window.location.reload()} variant="outline">
-              Try Again
-            </Button>
-            <Button onClick={onComplete}>Continue Anyway</Button>
-          </div>
-        </>
-      )}
-
-      {isLoading && status === 'idle' && (
-        <>
-          <div className="relative flex h-20 w-20 items-center justify-center">
-            <RefreshCw className="h-16 w-16 animate-spin text-primary" />
-          </div>
-          <h3 className="text-xl font-semibold">Connecting to Sync Service</h3>
-          <p className="max-w-md text-muted-foreground">
-            We're establishing a connection to the sync service. This should
-            only take a moment...
-          </p>
-        </>
-      )}
-    </div>
-  );
-}
-
 /** Props for the ConnectTransactionsModal component */
 type ConnectTransactionsModalProps = {
   countryCode: string;
@@ -443,7 +295,6 @@ export function ConnectTransactionsModal({
   const [syncStatus, setSyncStatus] = useState<
     'idle' | 'syncing' | 'success' | 'error'
   >('idle');
-  const [isClosingMainModal, setIsClosingMainModal] = useState(false);
 
   // State for the SelectBankAccountsModal
   const [showSelectAccountsModal, setShowSelectAccountsModal] = useState(false);
@@ -483,9 +334,9 @@ export function ConnectTransactionsModal({
       });
 
       // Get the access token and item_id from the exchange response
-      const accessToken = res?.data?.access_token; // 'access-production-44a2eed4-de7a-45cc-9f68-d8e3c9cf7976'; // res?.data?.access_token;
-      const itemId = res?.data?.item_id; // 'kPLLLo7YMAumyL9wRgPQfeVJjjay8BFRRmvpB'; // res?.data?.item_id;
-      const institutionId = metadata.institution?.institution_id; // 'ins_127991'; // metadata.institution?.institution_id;
+      const accessToken = res?.data?.access_token;
+      const itemId = res?.data?.item_id;
+      const institutionId = metadata.institution?.institution_id;
 
       if (!accessToken || !itemId) {
         console.error('Missing required tokens', {
@@ -506,8 +357,6 @@ export function ConnectTransactionsModal({
         teamId: teamId,
       });
 
-      setIsClosingMainModal(true); // Add this state
-
       // First close the current modal
       await setParams({
         step: null,
@@ -520,9 +369,8 @@ export function ConnectTransactionsModal({
       // Small delay to ensure modal is fully closed
       setTimeout(() => {
         // Now show the SelectBankAccountsModal
-        setIsClosingMainModal(false);
         setShowSelectAccountsModal(true);
-      }, 300);
+      }, 50);
 
       // Track analytics event
       track({
@@ -572,28 +420,9 @@ export function ConnectTransactionsModal({
   const handleClearResults = () => setResults([]);
   const resetStep = () => setParams({ step: null });
 
-  // Handle sync completion and redirect to accounts or dashboard
-  const handleSyncComplete = async () => {
-    // Reset sync state
-    setSyncStatus('idle');
-
-    // Clear URL parameters
-    await setParams({
-      step: null,
-      provider: null,
-      token: null,
-      institution_id: null,
-      item_id: null,
-    });
-
-    // Redirect to accounts page or dashboard
-    router.push('/accounts');
-  };
 
   /** Handles the dialog close event */
   const handleOnClose = async () => {
-    console.info('handleOnClose called'); // Debug log
-
     // Clear the step in URL params
     await setParams(
       {
@@ -606,13 +435,9 @@ export function ConnectTransactionsModal({
       }
     );
 
-    console.info('setParams completed'); // Debug log
-
     // Reset local state but don't mess with the DOM
     setSyncStatus('idle');
     setIsOpeningPlaid(false);
-
-    console.info('State reset completed'); // Debug log
   };
 
   /** Fetches institution data based on country code and search query */
@@ -722,16 +547,10 @@ export function ConnectTransactionsModal({
   }, []);
 
   // Variable to control dialog visibility
-  const isDialogOpen =
-    (_isOpenOverride ?? step !== null) &&
-    !isOpeningPlaid &&
-    !isClosingMainModal;
+  const isDialogOpen = (_isOpenOverride ?? step !== null) && !isOpeningPlaid;
 
   // Debug useEffect to track modal state changes
   useEffect(() => {
-    console.info('isDialogOpen changed:', isDialogOpen);
-    console.info('step value:', step);
-
     // Reset isOpeningPlaid if needed when step is null
     if (step === null && isOpeningPlaid) {
       setIsOpeningPlaid(false);
@@ -740,8 +559,6 @@ export function ConnectTransactionsModal({
 
   // Create a wrapped openPlaid function that handles proper modal cleanup
   const handleOpenPlaid = () => {
-    console.info('handleOpenPlaid called'); // Debug log
-
     // Mark that we're opening Plaid to prevent our dialog from showing
     setIsOpeningPlaid(true);
 
@@ -758,87 +575,83 @@ export function ConnectTransactionsModal({
   // Only render the Dialog when it should be visible
   return (
     <>
-      {isDialogOpen && (
-        <Dialog
-          open={isDialogOpen}
-          onOpenChange={(isOpen) => {
-            console.info('Dialog onOpenChange called, isOpen:', isOpen); // Debug log
-            if (!isOpen) {
-              // Use the proper close handler to maintain reopening ability
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) {
+            // Use the proper close handler to maintain reopening ability
+            if (_onCloseOverride) {
+              _onCloseOverride();
+            } else {
+              void handleOnClose();
+            }
+          }
+        }}
+      >
+        <DialogContent className="overflow-hidden border-gray-200 p-0 shadow-xl md:min-h-[60%] md:min-w-[60%] dark:border-gray-800">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
               if (_onCloseOverride) {
                 _onCloseOverride();
               } else {
                 void handleOnClose();
               }
-            }
-          }}
-        >
-          <DialogContent className="overflow-hidden border-gray-200 p-0 shadow-xl md:min-h-[60%] md:min-w-[60%] dark:border-gray-800">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                console.info('Close button clicked'); // Debug log
-                if (_onCloseOverride) {
-                  _onCloseOverride();
-                } else {
-                  void handleOnClose();
-                }
-              }}
-              className="absolute top-2 right-2 z-50 h-7 w-7 rounded-full"
-              aria-label="Close dialog"
-            >
-              <XIcon className="h-4 w-4" />
-            </Button>
+            }}
+            className="absolute top-2 right-2 z-50 h-7 w-7 rounded-full"
+            aria-label="Close dialog"
+          >
+            <XIcon className="h-4 w-4" />
+          </Button>
 
-            {step === 'connect' && (
-              <>
-                <div className="p-6 md:p-8">
-                  <DialogHeader className="mb-4">
-                    <div className="flex items-center justify-between">
-                      <DialogTitle className="text-2xl sm:text-3xl">
-                        Connect your bank
-                      </DialogTitle>
-                    </div>
-                    <DialogDescription>
-                      Connect your financial accounts to import transactions.
-                    </DialogDescription>
-                  </DialogHeader>
+          {step === 'connect' && (
+            <>
+              <div className="p-6 md:p-8">
+                <DialogHeader className="mb-4">
+                  <div className="flex items-center justify-between">
+                    <DialogTitle className="text-2xl sm:text-3xl">
+                      Connect your bank
+                    </DialogTitle>
+                  </div>
+                  <DialogDescription>
+                    Connect your financial accounts to import transactions.
+                  </DialogDescription>
+                </DialogHeader>
 
-                  <SearchBar
-                    query={query}
-                    countryCode={countryCode}
-                    onQueryChange={handleSearchChange}
-                    onCountryChange={handleCountryChange}
-                    onClearResults={handleClearResults}
-                  />
-                </div>
-
-                <SearchResults
-                  loading={loading}
-                  results={results}
-                  openPlaid={handleOpenPlaid}
-                  onSetStepToNull={resetStep}
-                  onImport={() => { }}
-                  onContactUs={() => { }}
+                <SearchBar
+                  query={query}
+                  countryCode={countryCode}
+                  onQueryChange={handleSearchChange}
+                  onCountryChange={handleCountryChange}
+                  onClearResults={handleClearResults}
                 />
-              </>
-            )}
+              </div>
 
-            {(step === 'syncing' || step === 'account') &&
-              !showSelectAccountsModal && (
-                <div className="flex min-h-[400px] flex-col items-center justify-center">
-                  <p className="text-center text-muted-foreground">
-                    Synchronizing with your bank account...
-                  </p>
-                </div>
-              )}
-          </DialogContent>
-        </Dialog>
-      )}
+              <SearchResults
+                loading={loading}
+                results={results}
+                openPlaid={handleOpenPlaid}
+                onSetStepToNull={resetStep}
+                onImport={() => { }}
+                onContactUs={() => { }}
+              />
+            </>
+          )}
+
+          {(step === 'syncing' || step === 'account') &&
+            !showSelectAccountsModal && (
+              <div className="flex min-h-[400px] flex-col items-center justify-center">
+                <p className="text-center text-muted-foreground">
+                  Synchronizing with your bank account...
+                </p>
+              </div>
+            )}
+        </DialogContent>
+      </Dialog>
 
       {/* Render the SelectBankAccountsModal when showSelectAccountsModal is true */}
-      {showSelectAccountsModal && !isDialogOpen && (
+      {showSelectAccountsModal && (
         <SelectBankAccountsModal
           pathname={pathname}
           isOpen={showSelectAccountsModal}

@@ -127,8 +127,8 @@ export function LoadingTransactionsEvent({
         // Check if pathname is valid before attempting navigation
         if (pathname && typeof pathname === 'string') {
           try {
-            // Using replace instead of push to prevent back-button issues
-            router.push(pathname);
+            // Force a full page reload instead of client-side navigation
+            window.location.href = pathname;
 
             // Close modal after navigation starts
             onClose();
