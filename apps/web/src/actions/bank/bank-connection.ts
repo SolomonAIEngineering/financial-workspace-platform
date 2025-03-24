@@ -90,6 +90,5 @@ export const handleBankConnectionAction = authActionClient
       revalidateTag(`bank_connections_${teamId}`);
 
       return event;
-
     }
   );

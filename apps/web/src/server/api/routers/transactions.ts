@@ -297,16 +297,9 @@ export const transactionsRouter = createRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, data } = input;
-      console.log(`[updateTransaction] Starting update for transaction ${id}`, {
-        userId: ctx.userId,
-        dataFields: Object.keys(data),
-      });
 
       try {
         // Check if transaction exists and belongs to user
-        console.log(
-          `[updateTransaction] Checking if transaction exists and belongs to user`
-        );
         const existingTransaction = await prisma.transaction.findUnique({
           where: { id },
           select: {
@@ -315,15 +308,7 @@ export const transactionsRouter = createRouter({
           },
         });
 
-        console.log(`[updateTransaction] Transaction lookup result:`, {
-          found: !!existingTransaction,
-          userId: existingTransaction?.userId,
-          requestUserId: ctx.userId,
-          matches: existingTransaction?.userId === ctx.userId,
-        });
-
         if (!existingTransaction) {
-          console.log(`[updateTransaction] Transaction not found: ${id}`);
           throw new TRPCError({
             code: 'NOT_FOUND',
             message: 'Transaction not found',
@@ -331,9 +316,6 @@ export const transactionsRouter = createRouter({
         }
 
         if (existingTransaction.userId !== ctx.userId) {
-          console.log(
-            `[updateTransaction] User unauthorized: ${ctx.userId} != ${existingTransaction.userId}`
-          );
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'You do not have permission to modify this transaction',
@@ -341,20 +323,8 @@ export const transactionsRouter = createRouter({
         }
 
         const now = new Date();
-        console.log(
-          `[updateTransaction] Starting database transaction for ${id}`
-        );
-
         // Execute in a transaction for atomicity
         return await prisma.$transaction(async (tx) => {
-          console.log(`[updateTransaction] Preparing update with data:`, {
-            transactionId: id,
-            dataKeys: Object.keys(data),
-            dataValues:
-              JSON.stringify(data).substring(0, 200) +
-              (JSON.stringify(data).length > 200 ? '...' : ''),
-          });
-
           try {
             const updatedTransaction = await tx.transaction.update({
               where: { id },
@@ -364,8 +334,6 @@ export const transactionsRouter = createRouter({
                 lastModifiedAt: now,
               },
             });
-
-            console.log(`[updateTransaction] Update successful for ${id}`);
 
             return {
               ...updatedTransaction,

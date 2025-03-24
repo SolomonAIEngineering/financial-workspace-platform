@@ -474,32 +474,18 @@ export function ConnectTransactionsModal({
 
   const onSuccess = async (public_token: string, metadata: any) => {
     try {
-      console.log('Plaid onSuccess called with public_token and metadata:', {
-        public_token_length: public_token?.length,
-        metadata: JSON.stringify(metadata),
-      });
-
       // First set the syncing state for UI feedback
       setSyncStatus('syncing');
 
       // Exchange the public token for an access token
-      console.log('Calling exchangePublicTokenAction...');
-      // const res = await exchangePublicTokenAction({
-      //   publicToken: public_token,
-      // });
-      // console.log('exchangePublicTokenAction response:', res);
+      const res = await exchangePublicTokenAction({
+        publicToken: public_token,
+      });
 
       // Get the access token and item_id from the exchange response
-      const accessToken =
-        'access-production-44a2eed4-de7a-45cc-9f68-d8e3c9cf7976'; // res?.data?.access_token;
-      const itemId = 'kPLLLo7YMAumyL9wRgPQfeVJjjay8BFRRmvpB'; // res?.data?.item_id;
-      const institutionId = 'ins_127991'; // metadata.institution?.institution_id;
-
-      console.log('Using tokens:', {
-        accessToken: accessToken ? 'Present (hidden)' : 'Missing',
-        itemId: itemId ? 'Present (hidden)' : 'Missing',
-        institutionId: institutionId || 'Missing',
-      });
+      const accessToken = res?.data?.access_token; // 'access-production-44a2eed4-de7a-45cc-9f68-d8e3c9cf7976'; // res?.data?.access_token;
+      const itemId = res?.data?.item_id; // 'kPLLLo7YMAumyL9wRgPQfeVJjjay8BFRRmvpB'; // res?.data?.item_id;
+      const institutionId = metadata.institution?.institution_id; // 'ins_127991'; // metadata.institution?.institution_id;
 
       if (!accessToken || !itemId) {
         console.error('Missing required tokens', {
@@ -510,7 +496,6 @@ export function ConnectTransactionsModal({
       }
 
       // Store the data needed for the SelectBankAccountsModal
-      console.log('Setting account selection data...');
       setAccountSelectionData({
         provider: 'plaid',
         ref: itemId,
@@ -522,7 +507,6 @@ export function ConnectTransactionsModal({
       });
 
       setIsClosingMainModal(true); // Add this state
-
 
       // First close the current modal
       await setParams({
@@ -536,10 +520,8 @@ export function ConnectTransactionsModal({
       // Small delay to ensure modal is fully closed
       setTimeout(() => {
         // Now show the SelectBankAccountsModal
-        console.log('Setting showSelectAccountsModal to true');
         setIsClosingMainModal(false);
         setShowSelectAccountsModal(true);
-        console.log('SelectBankAccountsModal should now be visible');
       }, 300);
 
       // Track analytics event
@@ -740,7 +722,10 @@ export function ConnectTransactionsModal({
   }, []);
 
   // Variable to control dialog visibility
-  const isDialogOpen = (_isOpenOverride ?? step !== null) && !isOpeningPlaid && !isClosingMainModal;
+  const isDialogOpen =
+    (_isOpenOverride ?? step !== null) &&
+    !isOpeningPlaid &&
+    !isClosingMainModal;
 
   // Debug useEffect to track modal state changes
   useEffect(() => {
@@ -834,8 +819,8 @@ export function ConnectTransactionsModal({
                   results={results}
                   openPlaid={handleOpenPlaid}
                   onSetStepToNull={resetStep}
-                  onImport={() => { }}
-                  onContactUs={() => { }}
+                  onImport={() => {}}
+                  onContactUs={() => {}}
                 />
               </>
             )}

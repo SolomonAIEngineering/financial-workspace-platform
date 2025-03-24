@@ -25,7 +25,10 @@ export function ConnectTransactionsExample({ userId }: { userId: string }) {
             <p className="mb-4 text-sm text-muted-foreground">
               Basic usage with default settings
             </p>
-            <ConnectTransactionsButton userId={userId} redirectTo={routes.financialOverview()} />
+            <ConnectTransactionsButton
+              userId={userId}
+              redirectTo={routes.financialOverview()}
+            />
           </div>
 
           {/* Custom styling */}

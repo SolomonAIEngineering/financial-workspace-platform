@@ -122,8 +122,8 @@ export const initialSetupJob = schemaTask({
         manualSync: true,
       },
       {
-        delay: "5m",
-      },
+        delay: '5m',
+      }
     );
   },
 });

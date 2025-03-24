@@ -84,16 +84,11 @@ export function SelectBankAccountsButton({
 
   // Function to open the modal
   const handleOpenModal = () => {
-    console.log('Opening SelectBankAccountsModal directly');
     setIsModalOpen(true);
   };
 
   // Function to close the modal
   const handleCloseModal = (syncCompleted?: boolean) => {
-    console.log(
-      'Closing SelectBankAccountsModal, syncCompleted:',
-      syncCompleted
-    );
     setIsModalOpen(false);
   };
 

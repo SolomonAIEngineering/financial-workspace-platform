@@ -31,14 +31,6 @@ export const bankConnectionRouter = createRouter({
     .input(CreateBankConnectionSchema)
     .mutation(async ({ ctx, input }) => {
       try {
-        console.log('[createBankConnection] Starting with input:', JSON.stringify({
-          teamId: input.teamId,
-          institutionId: input.institutionId,
-          provider: input.provider,
-          itemId: input.itemId,
-          accountsCount: input.accounts?.length || 0
-        }));
-
         const {
           teamId,
           institutionId,
@@ -92,7 +84,6 @@ export const bankConnectionRouter = createRouter({
         }
 
         // make sure the team exists
-        console.log('[createBankConnection] Checking team exists:', teamId);
         const team = await prisma.team.findUnique({
           where: {
             id: teamId,
@@ -130,8 +121,6 @@ export const bankConnectionRouter = createRouter({
           },
         };
 
-        console.log('[createBankConnection] Creating/updating bank connection');
-
         // create the bank connection
         const bankConnection = await prisma.bankConnection.upsert({
           where: {
@@ -141,10 +130,6 @@ export const bankConnectionRouter = createRouter({
           create: createData,
         });
 
-        console.log('[createBankConnection] Created bank connection:', bankConnection.id);
-
-        // create the bank accounts
-        console.log('[createBankConnection] Creating bank accounts');
 
         // Filter out accounts without IDs first to avoid null promises
         const validAccounts = accounts.filter(acc => !!acc.account_id);
@@ -186,8 +171,6 @@ export const bankConnectionRouter = createRouter({
                 },
               },
             });
-
-            console.log('[createBankConnection] Created/Updated bank account:', bankAccount.id);
             return bankAccount;
           } catch (err) {
             console.error('[createBankConnection] Error creating/updating bank account:', err);
@@ -196,7 +179,6 @@ export const bankConnectionRouter = createRouter({
         });
 
         await Promise.all(accountPromises);
-        console.log('[createBankConnection] Bank accounts created successfully');
 
         return { connectionId: bankConnection.id, success: true };
       } catch (error) {

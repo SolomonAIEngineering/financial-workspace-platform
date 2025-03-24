@@ -145,26 +145,10 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
                 buttonProps={{
                   variant: 'secondary',
                   size: 'xs',
-                  className: cn('h-6 gap-1 rounded-full px-2 text-xs'),
+                  className: cn('h-6 gap-1 rounded-full px-2 text-xs bg-white border border-gray-200 px-3 py-3'),
                 }}
               />
             </NavItem>
-            <NavItem
-              className="text-xs transition-colors"
-              onClick={() => { }}
-              label="Bank Account"
-              icon={Icons.chrome}
-            >
-              <SelectBankAccountsButton
-                userId={session?.userId ?? ''}
-                teamId={currentUser?.teamId ?? ''}
-                buttonProps={{
-                  variant: 'secondary',
-                  size: 'xs',
-                }}
-              />
-            </NavItem>
-
             <DocumentList />
           </div>
 
@@ -175,12 +159,6 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
               href={routes.editor()}
               icon={Icons.editor}
             />
-
-            {/* <NavItem
-              label="Templates"
-              href="https://pro.platejs.org/docs/templates/potion"
-              icon={Icons.templates}
-            /> */}
 
             {mounted ? (
               <Popover>
