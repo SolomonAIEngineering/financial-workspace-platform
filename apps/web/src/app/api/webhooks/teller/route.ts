@@ -1,9 +1,9 @@
-import { validateTellerSignature } from "@/lib/teller";
-import { prisma } from "@solomonai/prisma";
-import { isAfter, subDays } from "date-fns";
-import { syncConnectionJob } from "@/jobs";
-import { type NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
+import { validateTellerSignature } from '@/lib/teller';
+import { prisma } from '@solomonai/prisma';
+import { isAfter, subDays } from 'date-fns';
+import { syncConnectionJob } from '@/jobs';
+import { type NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 
 const webhookSchema = z.object({
   id: z.string(),
@@ -13,10 +13,10 @@ const webhookSchema = z.object({
   }),
   timestamp: z.string(),
   type: z.enum([
-    "enrollment.disconnected",
-    "transactions.processed",
-    "account.number_verification.processed",
-    "webhook.test",
+    'enrollment.disconnected',
+    'transactions.processed',
+    'account.number_verification.processed',
+    'webhook.test',
   ]),
 });
 
@@ -24,16 +24,18 @@ export async function POST(req: NextRequest) {
   const text = await req.clone().text();
   const body = await req.json();
 
-  const signatureHeader = req.headers.get("teller-signature");
-  const signatureValid = signatureHeader ? validateTellerSignature({
-    signatureHeader,
-    text,
-  }) : false;
+  const signatureHeader = req.headers.get('teller-signature');
+  const signatureValid = signatureHeader
+    ? validateTellerSignature({
+        signatureHeader,
+        text,
+      })
+    : false;
 
   if (!signatureValid) {
     return NextResponse.json(
-      { error: "Invalid webhook signature" },
-      { status: 401 },
+      { error: 'Invalid webhook signature' },
+      { status: 401 }
     );
   }
 
@@ -42,21 +44,21 @@ export async function POST(req: NextRequest) {
 
   if (!result.success) {
     return NextResponse.json(
-      { error: "Invalid webhook payload", details: result.error.issues },
-      { status: 400 },
+      { error: 'Invalid webhook payload', details: result.error.issues },
+      { status: 400 }
     );
   }
 
   const { type, payload } = result.data;
 
-  if (type === "webhook.test") {
+  if (type === 'webhook.test') {
     return NextResponse.json({ success: true });
   }
 
   if (!payload.enrollment_id) {
     return NextResponse.json(
-      { error: "Missing enrollment_id" },
-      { status: 400 },
+      { error: 'Missing enrollment_id' },
+      { status: 400 }
     );
   }
 
@@ -66,21 +68,20 @@ export async function POST(req: NextRequest) {
     },
   });
 
-
   if (!connectionData) {
     return NextResponse.json(
-      { error: "Connection not found" },
-      { status: 404 },
+      { error: 'Connection not found' },
+      { status: 404 }
     );
   }
 
   switch (type) {
-    case "transactions.processed":
+    case 'transactions.processed':
       {
         // Only run manual sync if the connection was created in the last 24 hours
         const manualSync = isAfter(
           new Date(connectionData.createdAt),
-          subDays(new Date(), 1),
+          subDays(new Date(), 1)
         );
 
         await syncConnectionJob.trigger({

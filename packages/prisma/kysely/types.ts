@@ -301,6 +301,7 @@ export type BankConnection = {
   expiryNotificationCount: Generated<number>
   expiresAt: Timestamp | null
   provider: string
+  enrollmentId: string | null
 }
 export type BankConnectionToTeam = {
   A: string

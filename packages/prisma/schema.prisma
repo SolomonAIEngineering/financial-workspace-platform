@@ -319,6 +319,9 @@ model BankConnection {
   expiresAt               DateTime?
   provider String
   team Team[]
+  
+  // teller specific fields
+  enrollmentId String?
 
   @@index([userId])
   @@index([itemId])

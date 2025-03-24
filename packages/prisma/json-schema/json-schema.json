@@ -1060,6 +1060,12 @@
           "items": {
             "$ref": "#/definitions/Team"
           }
+        },
+        "enrollmentId": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
