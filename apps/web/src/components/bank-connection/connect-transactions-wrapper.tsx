@@ -6,12 +6,18 @@ import { ConnectTransactionsModal } from '../modals/connect-transactions-modal';
 import { useConnectParams } from '@/hooks/use-connect-params';
 import { useConnectTransactions } from './connect-transactions-context';
 
+interface ConnectTransactionsWrapperProps {
+  redirectTo: string;
+}
+
 /**
  * A wrapper component that uses the ConnectTransactionsContext to control the
  * ConnectTransactionsModal. This component should be placed at the root of your
  * application or in a layout component.
  */
-export function ConnectTransactionsWrapper() {
+export function ConnectTransactionsWrapper({
+  redirectTo,
+}: ConnectTransactionsWrapperProps) {
   const { isOpen, countryCode, userId, teamId, closeModal } =
     useConnectTransactions();
 
@@ -57,6 +63,7 @@ export function ConnectTransactionsWrapper() {
       teamId={teamId}
       _isOpenOverride={isOpen}
       _onCloseOverride={handleClose}
+      pathname={redirectTo}
     />
   );
 }

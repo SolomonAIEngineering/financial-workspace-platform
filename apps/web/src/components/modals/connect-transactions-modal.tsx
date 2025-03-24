@@ -420,6 +420,7 @@ type ConnectTransactionsModalProps = {
   teamId: string;
   _isOpenOverride?: boolean;
   _onCloseOverride?: () => void;
+  pathname: string;
 };
 
 /**
@@ -432,6 +433,7 @@ export function ConnectTransactionsModal({
   teamId,
   _isOpenOverride,
   _onCloseOverride,
+  pathname,
 }: ConnectTransactionsModalProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -441,6 +443,7 @@ export function ConnectTransactionsModal({
   const [syncStatus, setSyncStatus] = useState<
     'idle' | 'syncing' | 'success' | 'error'
   >('idle');
+  const [isClosingMainModal, setIsClosingMainModal] = useState(false);
 
   // State for the SelectBankAccountsModal
   const [showSelectAccountsModal, setShowSelectAccountsModal] = useState(false);
@@ -518,6 +521,9 @@ export function ConnectTransactionsModal({
         teamId: teamId,
       });
 
+      setIsClosingMainModal(true); // Add this state
+
+
       // First close the current modal
       await setParams({
         step: null,
@@ -531,9 +537,10 @@ export function ConnectTransactionsModal({
       setTimeout(() => {
         // Now show the SelectBankAccountsModal
         console.log('Setting showSelectAccountsModal to true');
+        setIsClosingMainModal(false);
         setShowSelectAccountsModal(true);
         console.log('SelectBankAccountsModal should now be visible');
-      }, 50);
+      }, 300);
 
       // Track analytics event
       track({
@@ -733,7 +740,7 @@ export function ConnectTransactionsModal({
   }, []);
 
   // Variable to control dialog visibility
-  const isDialogOpen = (_isOpenOverride ?? step !== null) && !isOpeningPlaid;
+  const isDialogOpen = (_isOpenOverride ?? step !== null) && !isOpeningPlaid && !isClosingMainModal;
 
   // Debug useEffect to track modal state changes
   useEffect(() => {
@@ -766,86 +773,89 @@ export function ConnectTransactionsModal({
   // Only render the Dialog when it should be visible
   return (
     <>
-      <Dialog
-        open={isDialogOpen}
-        onOpenChange={(isOpen) => {
-          console.info('Dialog onOpenChange called, isOpen:', isOpen); // Debug log
-          if (!isOpen) {
-            // Use the proper close handler to maintain reopening ability
-            if (_onCloseOverride) {
-              _onCloseOverride();
-            } else {
-              void handleOnClose();
-            }
-          }
-        }}
-      >
-        <DialogContent className="overflow-hidden border-gray-200 p-0 shadow-xl md:min-h-[60%] md:min-w-[60%] dark:border-gray-800">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              console.info('Close button clicked'); // Debug log
+      {isDialogOpen && (
+        <Dialog
+          open={isDialogOpen}
+          onOpenChange={(isOpen) => {
+            console.info('Dialog onOpenChange called, isOpen:', isOpen); // Debug log
+            if (!isOpen) {
+              // Use the proper close handler to maintain reopening ability
               if (_onCloseOverride) {
                 _onCloseOverride();
               } else {
                 void handleOnClose();
               }
-            }}
-            className="absolute top-2 right-2 z-50 h-7 w-7 rounded-full"
-            aria-label="Close dialog"
-          >
-            <XIcon className="h-4 w-4" />
-          </Button>
+            }
+          }}
+        >
+          <DialogContent className="overflow-hidden border-gray-200 p-0 shadow-xl md:min-h-[60%] md:min-w-[60%] dark:border-gray-800">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                console.info('Close button clicked'); // Debug log
+                if (_onCloseOverride) {
+                  _onCloseOverride();
+                } else {
+                  void handleOnClose();
+                }
+              }}
+              className="absolute top-2 right-2 z-50 h-7 w-7 rounded-full"
+              aria-label="Close dialog"
+            >
+              <XIcon className="h-4 w-4" />
+            </Button>
 
-          {step === 'connect' && (
-            <>
-              <div className="p-6 md:p-8">
-                <DialogHeader className="mb-4">
-                  <div className="flex items-center justify-between">
-                    <DialogTitle className="text-2xl sm:text-3xl">
-                      Connect your bank
-                    </DialogTitle>
-                  </div>
-                  <DialogDescription>
-                    Connect your financial accounts to import transactions.
-                  </DialogDescription>
-                </DialogHeader>
+            {step === 'connect' && (
+              <>
+                <div className="p-6 md:p-8">
+                  <DialogHeader className="mb-4">
+                    <div className="flex items-center justify-between">
+                      <DialogTitle className="text-2xl sm:text-3xl">
+                        Connect your bank
+                      </DialogTitle>
+                    </div>
+                    <DialogDescription>
+                      Connect your financial accounts to import transactions.
+                    </DialogDescription>
+                  </DialogHeader>
 
-                <SearchBar
-                  query={query}
-                  countryCode={countryCode}
-                  onQueryChange={handleSearchChange}
-                  onCountryChange={handleCountryChange}
-                  onClearResults={handleClearResults}
+                  <SearchBar
+                    query={query}
+                    countryCode={countryCode}
+                    onQueryChange={handleSearchChange}
+                    onCountryChange={handleCountryChange}
+                    onClearResults={handleClearResults}
+                  />
+                </div>
+
+                <SearchResults
+                  loading={loading}
+                  results={results}
+                  openPlaid={handleOpenPlaid}
+                  onSetStepToNull={resetStep}
+                  onImport={() => { }}
+                  onContactUs={() => { }}
                 />
-              </div>
-
-              <SearchResults
-                loading={loading}
-                results={results}
-                openPlaid={handleOpenPlaid}
-                onSetStepToNull={resetStep}
-                onImport={() => {}}
-                onContactUs={() => {}}
-              />
-            </>
-          )}
-
-          {(step === 'syncing' || step === 'account') &&
-            !showSelectAccountsModal && (
-              <div className="flex min-h-[400px] flex-col items-center justify-center">
-                <p className="text-center text-muted-foreground">
-                  Synchronizing with your bank account...
-                </p>
-              </div>
+              </>
             )}
-        </DialogContent>
-      </Dialog>
+
+            {(step === 'syncing' || step === 'account') &&
+              !showSelectAccountsModal && (
+                <div className="flex min-h-[400px] flex-col items-center justify-center">
+                  <p className="text-center text-muted-foreground">
+                    Synchronizing with your bank account...
+                  </p>
+                </div>
+              )}
+          </DialogContent>
+        </Dialog>
+      )}
 
       {/* Render the SelectBankAccountsModal when showSelectAccountsModal is true */}
-      {showSelectAccountsModal && (
+      {showSelectAccountsModal && !isDialogOpen && (
         <SelectBankAccountsModal
+          pathname={pathname}
           isOpen={showSelectAccountsModal}
           onClose={(syncCompleted) => {
             setShowSelectAccountsModal(false);

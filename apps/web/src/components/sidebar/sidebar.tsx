@@ -22,6 +22,7 @@ import { pushModal } from '../modals';
 import { routes } from '@/lib/navigation/routes';
 import { toast } from 'sonner';
 import { useAuthGuard } from '../auth/useAuthGuard';
+import { useCurrentUser } from '../auth/useCurrentUser';
 import { useIsDesktop } from '@/components/providers/tailwind-provider';
 import { useMounted } from '@/registry/default/hooks/use-mounted';
 import { useRouter } from 'next/navigation';
@@ -30,6 +31,7 @@ import { useToggleLeftPanel } from '@/hooks/useResizablePanel';
 
 export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
   const session = useSession();
+  const currentUser = useCurrentUser();
   const router = useRouter();
   const isMobile = !useIsDesktop();
   const trpc = useTRPC();
@@ -106,7 +108,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
           <div className="flex flex-col gap-0.5">
             <NavItem
               className="text-xs font-medium text-muted-foreground/90"
-              onClick={() => {}}
+              onClick={() => { }}
               label={session ? 'Private' : 'Draft'}
             >
               <Button
@@ -124,7 +126,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             </NavItem>
             <NavItem
               className="text-xs transition-colors"
-              onClick={() => {}}
+              onClick={() => { }}
               label="Feedback"
               icon={Icons.alertCircle}
               tooltip="Leave us some feedback"
@@ -133,12 +135,13 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             </NavItem>
             <NavItem
               className="text-xs transition-colors"
-              onClick={() => {}}
+              onClick={() => { }}
               label="Bank Account"
               icon={Icons.chrome}
             >
               <ConnectTransactionsButton
                 userId={session?.userId ?? ''}
+                redirectTo={routes.financialOverview()}
                 buttonProps={{
                   variant: 'secondary',
                   size: 'xs',
@@ -148,13 +151,13 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             </NavItem>
             <NavItem
               className="text-xs transition-colors"
-              onClick={() => {}}
+              onClick={() => { }}
               label="Bank Account"
               icon={Icons.chrome}
             >
               <SelectBankAccountsButton
                 userId={session?.userId ?? ''}
-                teamId={''}
+                teamId={currentUser?.teamId ?? ''}
                 buttonProps={{
                   variant: 'secondary',
                   size: 'xs',

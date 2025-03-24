@@ -56,44 +56,40 @@ export const handleBankConnectionAction = authActionClient
         accounts,
       },
     }) => {
-      try {
-        // get the team from the team id
-        const team = await prisma.team.findUnique({
-          where: {
-            id: teamId,
-          },
-        });
+      // get the team from the team id
+      const team = await prisma.team.findUnique({
+        where: {
+          id: teamId,
+        },
+      });
 
-        if (!team) {
-          throw new Error('Team not found');
-        }
-
-        // create the bank connection
-        const bankConnection = await trpc.bankConnection.createBankConnection({
-          institutionId,
-          accessToken,
-          itemId,
-          userId,
-          teamId,
-          provider,
-          accounts,
-        });
-
-        // Trigger the initial setup job
-        const event = await initialSetupJob.trigger({
-          teamId,
-          connectionId: bankConnection?.connectionId,
-        });
-
-        // revalidate the bank connection
-        revalidateTag(`bank_accounts_${teamId}`);
-        revalidateTag(`bank_accounts_currencies_${teamId}`);
-        revalidateTag(`bank_connections_${teamId}`);
-
-        return event;
-      } catch (error) {
-        console.error('Error setting up bank connection:', error);
-        return null;
+      if (!team) {
+        throw new Error('Team not found');
       }
+
+      // create the bank connection
+      const bankConnection = await trpc.bankConnection.createBankConnection({
+        institutionId,
+        accessToken,
+        itemId,
+        userId,
+        teamId,
+        provider,
+        accounts,
+      });
+
+      // Trigger the initial setup job
+      const event = await initialSetupJob.trigger({
+        teamId,
+        connectionId: bankConnection?.connectionId,
+      });
+
+      // revalidate the bank connection
+      revalidateTag(`bank_accounts_${teamId}`);
+      revalidateTag(`bank_accounts_currencies_${teamId}`);
+      revalidateTag(`bank_connections_${teamId}`);
+
+      return event;
+
     }
   );

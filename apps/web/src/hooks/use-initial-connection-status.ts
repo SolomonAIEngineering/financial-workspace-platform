@@ -55,10 +55,12 @@ export function useInitialConnectionStatus({
   accessToken: initialAccessToken,
 }: UseInitialConnectionStatusProps) {
   const [accessToken, setAccessToken] = useState<string | undefined>(
-    initialAccessToken
+    initialAccessToken,
   );
   const [runId, setRunId] = useState<string | undefined>(initialRunId);
-  const [status, setStatus] = useState<SyncStatus | null>(null);
+  const [status, setStatus] = useState<
+    "FAILED" | "SYNCING" | "COMPLETED" | null
+  >(null);
 
   const { run, error } = useRealtimeRun(runId, {
     enabled: !!runId && !!accessToken,
@@ -69,17 +71,17 @@ export function useInitialConnectionStatus({
     if (initialRunId && initialAccessToken) {
       setAccessToken(initialAccessToken);
       setRunId(initialRunId);
-      setStatus(SyncStatus.SYNCING);
+      setStatus("SYNCING");
     }
   }, [initialRunId, initialAccessToken]);
 
   useEffect(() => {
-    if (error || run?.status === 'FAILED') {
-      setStatus(SyncStatus.FAILED);
+    if (error || run?.status === "FAILED") {
+      setStatus("FAILED");
     }
 
-    if (run?.status === 'COMPLETED') {
-      setStatus(SyncStatus.COMPLETED);
+    if (run?.status === "COMPLETED") {
+      setStatus("COMPLETED");
     }
   }, [error, run]);
 

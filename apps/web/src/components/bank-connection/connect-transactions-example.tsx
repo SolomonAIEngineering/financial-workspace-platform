@@ -3,6 +3,7 @@
 import { ConnectTransactionsButton } from './connect-transactions-button';
 import { ConnectTransactionsProvider } from './connect-transactions-context';
 import { ConnectTransactionsWrapper } from './connect-transactions-wrapper';
+import { routes } from '@/lib/navigation/routes';
 
 /**
  * Example component demonstrating how to use the ConnectTransactionsButton
@@ -24,7 +25,7 @@ export function ConnectTransactionsExample({ userId }: { userId: string }) {
             <p className="mb-4 text-sm text-muted-foreground">
               Basic usage with default settings
             </p>
-            <ConnectTransactionsButton userId={userId} />
+            <ConnectTransactionsButton userId={userId} redirectTo={routes.financialOverview()} />
           </div>
 
           {/* Custom styling */}
@@ -35,6 +36,7 @@ export function ConnectTransactionsExample({ userId }: { userId: string }) {
             </p>
             <ConnectTransactionsButton
               userId={userId}
+              redirectTo={routes.financialOverview()}
               countryCode="CA"
               buttonProps={{
                 variant: 'secondary',
@@ -54,6 +56,7 @@ export function ConnectTransactionsExample({ userId }: { userId: string }) {
             </p>
             <ConnectTransactionsButton
               userId={userId}
+              redirectTo={routes.financialOverview()}
               buttonProps={{
                 variant: 'outline',
                 className: 'border-primary text-primary',
@@ -65,7 +68,7 @@ export function ConnectTransactionsExample({ userId }: { userId: string }) {
         </div>
 
         {/* The modal wrapper component handles rendering the modal */}
-        <ConnectTransactionsWrapper />
+        <ConnectTransactionsWrapper redirectTo={routes.financialOverview()} />
 
         <div className="mt-8 rounded-lg border bg-muted p-4">
           <h3 className="mb-2 text-lg font-medium">Implementation Notes</h3>

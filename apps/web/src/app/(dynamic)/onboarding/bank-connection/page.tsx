@@ -46,6 +46,7 @@ export default async function BankConnectionPage() {
         <BankConnectionForm
           userId={currentUser.id}
           teamId={currentUser.teamId}
+          redirectTo={routes.onboardingComplete()}
         />
       </Card>
     </div>

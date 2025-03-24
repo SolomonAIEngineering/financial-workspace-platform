@@ -3,6 +3,7 @@ import { logger, schedules, schemaTask } from '@trigger.dev/sdk/v3';
 import { BANK_JOBS } from '../../constants';
 import { bankSyncScheduler } from '../scheduler/bank-scheduler';
 import { generateCronTag } from '@/lib/generate-cron-tag';
+import { prisma } from '@/server/db';
 import { syncConnectionJob as syncConnection } from '../sync/connection';
 import { z } from 'zod';
 
@@ -52,8 +53,6 @@ export const initialSetupJob = schemaTask({
   schema: z.object({
     teamId: z.string(),
     connectionId: z.string(),
-    // TODO: Add validation for expected connection types
-    // TODO: Add optional parameters for custom sync preferences
   }),
   maxDuration: 300,
   queue: {
@@ -93,7 +92,7 @@ export const initialSetupJob = schemaTask({
     // TODO: Add flexibility for custom schedule frequencies based on user tier or preferences
 
     // Run initial sync for transactions and balance for the connection
-    await syncConnection.triggerAndWait({
+    const syncResult = await syncConnection.triggerAndWait({
       connectionId,
       manualSync: true,
     });
@@ -105,21 +104,26 @@ export const initialSetupJob = schemaTask({
     // And run once more to ensure all transactions are fetched on the providers side
     // GoCardLess, Teller and Plaid can take up to 3 minutes to fetch all transactions
     // For Teller and Plaid we also listen on the webhook to fetch any new transactions
+    // await syncConnection.trigger(
+    //   {
+    //     connectionId,
+    //     manualSync: true,
+    //   },
+    // );
+
+    // TODO: Add verification that the delayed sync was successfully scheduled
+    // TODO: Add webhook registration and validation for providers that support it
+    // TODO: Add monitoring for initial sync completion with alerts for failures
+
+    // Fetch the connection to get the access token
     await syncConnection.trigger(
       {
         connectionId,
         manualSync: true,
       },
       {
-        delay: '5m',
-      }
+        delay: "5m",
+      },
     );
-
-    // TODO: Add verification that the delayed sync was successfully scheduled
-    // TODO: Add webhook registration and validation for providers that support it
-    // TODO: Add monitoring for initial sync completion with alerts for failures
-
-    // TODO: Return synchronization status and statistics to the caller
-    // TODO: Add user notification upon successful setup completion
   },
 });

@@ -25,6 +25,7 @@ type ConnectTransactionsButtonProps = {
   buttonProps?: Omit<ButtonProps, 'onClick'>;
   children?: React.ReactNode;
   openOnMount?: boolean;
+  redirectTo: string;
 };
 
 /**
@@ -61,6 +62,7 @@ export function ConnectTransactionsButton({
   buttonProps,
   children,
   openOnMount = false,
+  redirectTo,
 }: ConnectTransactionsButtonProps) {
   // Use the context to control the modal
   const { openModal } = useConnectTransactions();
@@ -94,7 +96,7 @@ export function ConnectTransactionsButton({
             The modal wrapper component handles rendering the connect transaction modal and is required for the modal to work 
             Please do not remove this component
       */}
-      <ConnectTransactionsWrapper />
+      <ConnectTransactionsWrapper redirectTo={redirectTo} />
     </>
   );
 }
