@@ -24,10 +24,11 @@ export async function POST(req: NextRequest) {
   const text = await req.clone().text();
   const body = await req.json();
 
-  const signatureValid = validateTellerSignature({
-    signatureHeader: req.headers.get("teller-signature"),
+  const signatureHeader = req.headers.get("teller-signature");
+  const signatureValid = signatureHeader ? validateTellerSignature({
+    signatureHeader,
     text,
-  });
+  }) : false;
 
   if (!signatureValid) {
     return NextResponse.json(
