@@ -659,6 +659,7 @@ export type Team = {
   document_classification: boolean | null
   flags: Generated<string[]>
   created_at: Generated<Timestamp>
+  is_default: Generated<boolean | null>
 }
 export type TrackerEntry = {
   id: string

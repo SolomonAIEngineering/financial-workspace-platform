@@ -1,3 +1,5 @@
+'use server';
+
 import { authActionClient } from '../safe-action';
 import { client } from '@/jobs/client';
 import { manualSyncBankAccountSchema } from './schema';

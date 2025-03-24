@@ -6,7 +6,7 @@ export const manualSyncBankAccountSchema = z.object({
 
 export const reconnectConnectionSchema = z.object({
   connectionId: z.string(),
-  provider: z.enum(["plaid", "teller", "stripe", "gocardless"]),
+  provider: z.enum(['plaid', 'teller', 'stripe', 'gocardless']),
 });
 
 export const bankConnectionSchema = z.object({
@@ -15,7 +15,7 @@ export const bankConnectionSchema = z.object({
   itemId: z.string(),
   userId: z.string(),
   teamId: z.string(),
-  provider: z.enum(["plaid", "teller", "stripe", "gocardless"]),
+  provider: z.enum(['plaid', 'teller', 'stripe', 'gocardless']),
   accounts: z.array(
     z.object({
       account_id: z.string(),
@@ -28,13 +28,12 @@ export const bankConnectionSchema = z.object({
       logo_url: z.string().nullable().optional(),
       expires_at: z.string().nullable().optional(), // EnableBanking & GoCardLess
       type: z.enum([
-        "credit",
-        "depository",
-        "other_asset",
-        "loan",
-        "other_liability",
+        'credit',
+        'depository',
+        'other_asset',
+        'loan',
+        'other_liability',
       ]),
-    }),
+    })
   ),
-
 });

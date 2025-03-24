@@ -471,33 +471,43 @@ export function ConnectTransactionsModal({
 
   const onSuccess = async (public_token: string, metadata: any) => {
     try {
+      console.log('Plaid onSuccess called with public_token and metadata:', {
+        public_token_length: public_token?.length,
+        metadata: JSON.stringify(metadata),
+      });
+
       // First set the syncing state for UI feedback
       setSyncStatus('syncing');
 
       // Exchange the public token for an access token
-      const res = await exchangePublicTokenAction({
-        publicToken: public_token,
-      });
+      console.log('Calling exchangePublicTokenAction...');
+      // const res = await exchangePublicTokenAction({
+      //   publicToken: public_token,
+      // });
+      // console.log('exchangePublicTokenAction response:', res);
 
       // Get the access token and item_id from the exchange response
-      const accessToken = "access-production-44a2eed4-de7a-45cc-9f68-d8e3c9cf7976" // res?.data?.access_token;
-      const itemId = "kPLLLo7YMAumyL9wRgPQfeVJjjay8BFRRmvpB" // res?.data?.item_id;
-      const institutionId = "ins_127991" // metadata.institution?.institution_id;
+      const accessToken =
+        'access-production-44a2eed4-de7a-45cc-9f68-d8e3c9cf7976'; // res?.data?.access_token;
+      const itemId = 'kPLLLo7YMAumyL9wRgPQfeVJjjay8BFRRmvpB'; // res?.data?.item_id;
+      const institutionId = 'ins_127991'; // metadata.institution?.institution_id;
+
+      console.log('Using tokens:', {
+        accessToken: accessToken ? 'Present (hidden)' : 'Missing',
+        itemId: itemId ? 'Present (hidden)' : 'Missing',
+        institutionId: institutionId || 'Missing',
+      });
 
       if (!accessToken || !itemId) {
+        console.error('Missing required tokens', {
+          accessToken: !!accessToken,
+          itemId: !!itemId,
+        });
         throw new Error('Failed to get access token');
       }
 
-      // Set params to move to syncing state
-      await setParams({
-        step: 'syncing',
-        provider: 'plaid',
-        token: accessToken,
-        institution_id: institutionId,
-        item_id: itemId,
-      });
-
       // Store the data needed for the SelectBankAccountsModal
+      console.log('Setting account selection data...');
       setAccountSelectionData({
         provider: 'plaid',
         ref: itemId,
@@ -508,8 +518,22 @@ export function ConnectTransactionsModal({
         teamId: teamId,
       });
 
-      // Show the SelectBankAccountsModal
-      setShowSelectAccountsModal(true);
+      // First close the current modal
+      await setParams({
+        step: null,
+        provider: null,
+        token: null,
+        institution_id: null,
+        item_id: null,
+      });
+
+      // Small delay to ensure modal is fully closed
+      setTimeout(() => {
+        // Now show the SelectBankAccountsModal
+        console.log('Setting showSelectAccountsModal to true');
+        setShowSelectAccountsModal(true);
+        console.log('SelectBankAccountsModal should now be visible');
+      }, 50);
 
       // Track analytics event
       track({
@@ -802,19 +826,20 @@ export function ConnectTransactionsModal({
                 results={results}
                 openPlaid={handleOpenPlaid}
                 onSetStepToNull={resetStep}
-                onImport={() => { }}
-                onContactUs={() => { }}
+                onImport={() => {}}
+                onContactUs={() => {}}
               />
             </>
           )}
 
-          {(step === 'syncing' || step === 'account') && !showSelectAccountsModal && (
-            <div className="flex min-h-[400px] flex-col items-center justify-center">
-              <p className="text-center text-muted-foreground">
-                Synchronizing with your bank account...
-              </p>
-            </div>
-          )}
+          {(step === 'syncing' || step === 'account') &&
+            !showSelectAccountsModal && (
+              <div className="flex min-h-[400px] flex-col items-center justify-center">
+                <p className="text-center text-muted-foreground">
+                  Synchronizing with your bank account...
+                </p>
+              </div>
+            )}
         </DialogContent>
       </Dialog>
 

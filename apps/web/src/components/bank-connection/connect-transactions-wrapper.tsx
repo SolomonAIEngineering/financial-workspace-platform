@@ -12,7 +12,8 @@ import { useConnectTransactions } from './connect-transactions-context';
  * application or in a layout component.
  */
 export function ConnectTransactionsWrapper() {
-  const { isOpen, countryCode, userId, teamId, closeModal } = useConnectTransactions();
+  const { isOpen, countryCode, userId, teamId, closeModal } =
+    useConnectTransactions();
 
   // Get the setParams function from useConnectParams to properly manage modal state
   const { setParams, step } = useConnectParams(countryCode);

@@ -42,9 +42,9 @@ export function formatDate(
  * @returns The initials of the string
  */
 export function getInitials(value: string) {
-  const formatted = value.toUpperCase().replace(/[\s.-]/g, "");
+  const formatted = value.toUpperCase().replace(/[\s.-]/g, '');
 
-  if (formatted.split(" ").length > 1) {
+  if (formatted.split(' ').length > 1) {
     return `${formatted.charAt(0)}${formatted.charAt(1)}`;
   }
 
@@ -86,7 +86,7 @@ type FormatAmountParams = {
 export function formatAmount({
   currency,
   amount,
-  locale = "en-US",
+  locale = 'en-US',
   minimumFractionDigits,
   maximumFractionDigits,
 }: FormatAmountParams) {
@@ -95,7 +95,7 @@ export function formatAmount({
   }
 
   return Intl.NumberFormat(locale, {
-    style: "currency",
+    style: 'currency',
     currency,
     minimumFractionDigits,
     maximumFractionDigits,

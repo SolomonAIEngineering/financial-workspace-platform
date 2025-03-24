@@ -1,1 +1,1 @@
-export * from "./bank-connection";
+export * from './bank-connection';

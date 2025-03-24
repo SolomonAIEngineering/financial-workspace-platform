@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { formatAmount } from "@/lib/utils";
+import { formatAmount } from '@/lib/utils';
 
 type Props = {
-    amount: number;
-    currency: string;
-    maximumFractionDigits?: number;
-    minimumFractionDigits?: number;
-    locale?: string;
+  amount: number;
+  currency: string;
+  maximumFractionDigits?: number;
+  minimumFractionDigits?: number;
+  locale?: string;
 };
 
 /**
@@ -21,17 +21,16 @@ type Props = {
  * @returns The formatted amount
  */
 export function FormatAmount({
-    amount,
-    currency,
+  amount,
+  currency,
+  maximumFractionDigits,
+  minimumFractionDigits,
+  locale,
+}: Props) {
+  return formatAmount({
+    amount: amount,
+    currency: currency,
     maximumFractionDigits,
     minimumFractionDigits,
-    locale,
-}: Props) {
-
-    return formatAmount({
-        amount: amount,
-        currency: currency,
-        maximumFractionDigits,
-        minimumFractionDigits,
-    });
+  });
 }

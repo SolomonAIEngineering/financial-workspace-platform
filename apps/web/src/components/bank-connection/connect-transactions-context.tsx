@@ -45,7 +45,11 @@ export function ConnectTransactionsProvider({
   const [userId, setUserId] = useState(defaultUserId);
   const [teamId, setTeamId] = useState(defaultTeamId);
 
-  const openModal = (newCountryCode?: string, newUserId?: string, newTeamId?: string) => {
+  const openModal = (
+    newCountryCode?: string,
+    newUserId?: string,
+    newTeamId?: string
+  ) => {
     if (newCountryCode) setCountryCode(newCountryCode);
     if (newUserId) setUserId(newUserId);
     if (newTeamId) setTeamId(newTeamId);

@@ -2862,6 +2862,13 @@
           "type": "string",
           "format": "date-time"
         },
+        "isDefault": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
+        },
         "users": {
           "type": "array",
           "items": {

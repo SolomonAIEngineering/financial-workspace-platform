@@ -86,10 +86,13 @@ export const connectionExpirationJob = schemaTask({
 
       const recentlyExpiredDate = addDays(now, -RECENTLY_EXPIRED_DAYS);
 
-
       // Run both queries concurrently for better performance
       // TODO: Implement pagination for database queries to handle large datasets
-      const [criticalConnections, warningConnections, recentlyExpiredConnections] = await Promise.all([
+      const [
+        criticalConnections,
+        warningConnections,
+        recentlyExpiredConnections,
+      ] = await Promise.all([
         // Get connections that are in the critical period (0-3 days until expiration)
         prisma.bankConnection.findMany({
           select: {
@@ -164,7 +167,7 @@ export const connectionExpirationJob = schemaTask({
           1,
           Math.ceil(
             (connection.expiresAt.getTime() - now.getTime()) /
-            (1000 * 60 * 60 * 24)
+              (1000 * 60 * 60 * 24)
           )
         );
 
@@ -204,11 +207,10 @@ export const connectionExpirationJob = schemaTask({
         // TODO: Use consistent day calculation logic with Math.max like in the critical connections
         const daysUntilExpiration = Math.ceil(
           (connection.expiresAt.getTime() - now.getTime()) /
-          (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24)
         );
 
         // TODO: Check if notification was already sent recently to prevent duplicates
-
 
         // TODO: Add validation for successful event sending
         await client.sendEvent({
@@ -251,7 +253,6 @@ export const connectionExpirationJob = schemaTask({
         });
         expiredCount++;
       }
-
 
       logger.info(
         `Connection expiration check completed: ${warningCount} warnings, ${criticalCount} critical notifications sent`

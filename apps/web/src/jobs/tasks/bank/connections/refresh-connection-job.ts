@@ -1,5 +1,6 @@
 import { schemaTask } from '@trigger.dev/sdk/v3';
-import { syncConnectionJob } from '@/jobs/tasks';
+// Import directly from the source file to avoid circular dependency
+import { syncConnectionJob } from '@/jobs/tasks/bank/sync/connection';
 import { z } from 'zod';
 
 /**

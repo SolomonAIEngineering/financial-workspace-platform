@@ -1,8 +1,10 @@
+'use server';
+
 import { authActionClient } from '../safe-action';
 import { bankConnectionSchema } from './schema';
 import { initialSetupJob } from '@/jobs';
 import { prisma } from '@solomonai/prisma';
-import { revalidateTag } from "next/cache";
+import { revalidateTag } from 'next/cache';
 import { trpc } from '@/trpc/server';
 
 /**
@@ -44,11 +46,18 @@ export const handleBankConnectionAction = authActionClient
   .action(
     async ({
       ctx: { user },
-      parsedInput: { accessToken, institutionId, itemId, userId, teamId, provider, accounts },
+      parsedInput: {
+        accessToken,
+        institutionId,
+        itemId,
+        userId,
+        teamId,
+        provider,
+        accounts,
+      },
     }) => {
       try {
-
-        // get the team from the team id 
+        // get the team from the team id
         const team = await prisma.team.findUnique({
           where: {
             id: teamId,
@@ -59,7 +68,7 @@ export const handleBankConnectionAction = authActionClient
           throw new Error('Team not found');
         }
 
-        // create the bank connection 
+        // create the bank connection
         const bankConnection = await trpc.bankConnection.createBankConnection({
           institutionId,
           accessToken,

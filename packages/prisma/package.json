@@ -37,6 +37,7 @@
     "seed": "tsx ./seed-database.ts"
   },
   "dependencies": {
+    "@solomonai/templates": "workspace:*",
     "@ai-sdk/openai": "^1.1.9",
     "@ariakit/react": "0.4.15",
     "@emoji-mart/data": "^1.2.1",

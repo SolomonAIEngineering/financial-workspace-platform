@@ -6,52 +6,52 @@ import { WalletCard } from './wallet-card';
 
 /**
  * Props interface for the AccountDetailsPanel component
- * 
- * @interface AccountDetailsPanelProps
+ *
  * @property {string} userName - The user's first name to display in greeting
- * @property {string} formattedBalance - Pre-formatted balance string with currency symbol
+ * @property {string} formattedBalance - Pre-formatted balance string with
+ *   currency symbol
  * @property {string} cardNumber - The card number to display on wallet card
  * @property {Transaction[]} transactions - Array of transaction data
- * @property {boolean} isLoadingTransactions - Flag indicating if transactions are still loading
+ * @property {boolean} isLoadingTransactions - Flag indicating if transactions
+ *   are still loading
+ * @interface AccountDetailsPanelProps
  */
 interface AccountDetailsPanelProps {
-    userName: string;
-    formattedBalance: string;
-    cardNumber: string;
-    transactions: Transaction[];
-    isLoadingTransactions: boolean;
+  userName: string;
+  formattedBalance: string;
+  cardNumber: string;
+  transactions: Transaction[];
+  isLoadingTransactions: boolean;
 }
 
 /**
- * AccountDetailsPanel component displays personal account information 
- * including greeting, balance, wallet card and recent transactions
- * 
- * @component
+ * AccountDetailsPanel component displays personal account information including
+ * greeting, balance, wallet card and recent transactions
+ *
  * @param {AccountDetailsPanelProps} props - Component props
  * @returns {JSX.Element} Panel with account details and recent transactions
+ * @component
  */
 export function AccountDetailsPanel({
-    userName,
-    formattedBalance,
-    cardNumber,
-    transactions,
-    isLoadingTransactions
+  userName,
+  formattedBalance,
+  cardNumber,
+  transactions,
+  isLoadingTransactions,
 }: AccountDetailsPanelProps) {
-    return (
-        <div className="w-full p-8 overflow-auto no-scrollbar">
-            {/* Greeting */}
-            <Greeting userName={userName} />
+  return (
+    <div className="no-scrollbar w-full overflow-auto p-8">
+      {/* Greeting */}
+      <Greeting userName={userName} />
 
-            {/* Total Balance */}
-            <TotalBalance formattedBalance={formattedBalance} />
+      {/* Total Balance */}
+      <TotalBalance formattedBalance={formattedBalance} />
 
-            {/* My Account */}
-            <WalletCard userName={userName} cardNumber={cardNumber} />
+      {/* My Account */}
+      <WalletCard userName={userName} cardNumber={cardNumber} />
 
-            {/* Recent Transactions */}
-            <RecentTransactions
-                isLoading={isLoadingTransactions}
-            />
-        </div>
-    );
-} 
+      {/* Recent Transactions */}
+      <RecentTransactions isLoading={isLoadingTransactions} />
+    </div>
+  );
+}
