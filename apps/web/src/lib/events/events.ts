@@ -5,5 +5,9 @@ export const LogEvents = {
     channel: 'feedback',
     name: 'feedback.send',
   },
+  ConnectBankCompleted: {
+    channel: 'bank',
+    name: 'bank.connect.completed',
+  },
   // Add other events here
 } as const;

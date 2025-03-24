@@ -144,6 +144,24 @@ export const teamRouter = createRouter({
       return team;
     }),
 
+  // Get the default team for the current user
+  getDefaultTeam: protectedProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx;
+
+    const team = await prisma.team.findFirst({
+      where: {
+        usersOnTeam: {
+          some: {
+            userId,
+          },
+        },
+        isDefault: true,
+      },
+    });
+
+    return team;
+  }),
+
   // Get all teams for the current user
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx;

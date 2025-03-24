@@ -12,7 +12,7 @@ import { useConnectTransactions } from './connect-transactions-context';
  * application or in a layout component.
  */
 export function ConnectTransactionsWrapper() {
-  const { isOpen, countryCode, userId, closeModal } = useConnectTransactions();
+  const { isOpen, countryCode, userId, teamId, closeModal } = useConnectTransactions();
 
   // Get the setParams function from useConnectParams to properly manage modal state
   const { setParams, step } = useConnectParams(countryCode);
@@ -53,6 +53,7 @@ export function ConnectTransactionsWrapper() {
     <ConnectTransactionsModal
       countryCode={countryCode}
       userId={userId}
+      teamId={teamId}
       _isOpenOverride={isOpen}
       _onCloseOverride={handleClose}
     />

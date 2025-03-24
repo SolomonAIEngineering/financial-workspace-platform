@@ -13,6 +13,7 @@ import { prisma } from '@/server/db';
  */
 const WARNING_DAYS = 14;
 const CRITICAL_DAYS = 3;
+const RECENTLY_EXPIRED_DAYS = 2;
 
 // TODO: Add constants for recently expired connections and notification cooldown periods
 // const RECENTLY_EXPIRED_DAYS = 2; // Check connections expired within last 2 days
@@ -83,15 +84,12 @@ export const connectionExpirationJob = schemaTask({
       const criticalDate = addDays(now, CRITICAL_DAYS);
       const warningDate = addDays(now, WARNING_DAYS);
 
-      // TODO: Add handling for recently expired connections
-      // const recentlyExpiredDate = addDays(now, -RECENTLY_EXPIRED_DAYS);
+      const recentlyExpiredDate = addDays(now, -RECENTLY_EXPIRED_DAYS);
 
-      // TODO: Add tracking for recent notifications to prevent duplicates
-      // const notificationCutoff = new Date(now.getTime() - (NOTIFICATION_COOLDOWN_HOURS * 60 * 60 * 1000));
 
       // Run both queries concurrently for better performance
       // TODO: Implement pagination for database queries to handle large datasets
-      const [criticalConnections, warningConnections] = await Promise.all([
+      const [criticalConnections, warningConnections, recentlyExpiredConnections] = await Promise.all([
         // Get connections that are in the critical period (0-3 days until expiration)
         prisma.bankConnection.findMany({
           select: {
@@ -128,18 +126,32 @@ export const connectionExpirationJob = schemaTask({
           },
         }),
 
-        // TODO: Add query for recently expired connections
+        prisma.bankConnection.findMany({
+          select: {
+            id: true,
+            expiresAt: true,
+            institutionName: true,
+            userId: true,
+          },
+          where: {
+            expiresAt: {
+              not: null,
+              lt: recentlyExpiredDate,
+            },
+            status: BankConnectionStatus.ACTIVE,
+          },
+        }),
       ]);
 
       logger.info(
-        `Found ${criticalConnections.length} critical and ${warningConnections.length} warning connections`
+        `Found ${criticalConnections.length} critical and ${warningConnections.length} warning connections and ${recentlyExpiredConnections.length} recently expired connections`
       );
 
       // TODO: Fetch and create lookup for recent notifications to prevent duplicates
 
       let criticalCount = 0;
       let warningCount = 0;
-      // TODO: Add count for expired connection notifications
+      let expiredCount = 0;
 
       // TODO: Create a helper function to handle notification sending with validation, error handling, and deduplication
 
@@ -152,7 +164,7 @@ export const connectionExpirationJob = schemaTask({
           1,
           Math.ceil(
             (connection.expiresAt.getTime() - now.getTime()) /
-              (1000 * 60 * 60 * 24)
+            (1000 * 60 * 60 * 24)
           )
         );
 
@@ -192,14 +204,11 @@ export const connectionExpirationJob = schemaTask({
         // TODO: Use consistent day calculation logic with Math.max like in the critical connections
         const daysUntilExpiration = Math.ceil(
           (connection.expiresAt.getTime() - now.getTime()) /
-            (1000 * 60 * 60 * 24)
+          (1000 * 60 * 60 * 24)
         );
 
         // TODO: Check if notification was already sent recently to prevent duplicates
 
-        // TODO: Verify connection is still in expected state right before sending
-
-        // TODO: Add null handling for institution name
 
         // TODO: Add validation for successful event sending
         await client.sendEvent({
@@ -223,7 +232,26 @@ export const connectionExpirationJob = schemaTask({
         );
       }
 
-      // TODO: Add processing for expired connections
+      // Process recently expired connections
+      for (const connection of recentlyExpiredConnections) {
+        if (!connection.expiresAt) continue;
+
+        await client.sendEvent({
+          name: 'connection-notification',
+          payload: {
+            userId: connection.userId,
+            type: 'connection_expired',
+            title: 'Bank Connection Expired',
+            message: `Your connection to ${connection.institutionName} has expired. Please reconnect to continue using our services.`,
+            data: {
+              connectionId: connection.id,
+              bankName: connection.institutionName,
+            },
+          },
+        });
+        expiredCount++;
+      }
+
 
       logger.info(
         `Connection expiration check completed: ${warningCount} warnings, ${criticalCount} critical notifications sent`
@@ -233,16 +261,14 @@ export const connectionExpirationJob = schemaTask({
         success: true,
         warningCount,
         criticalCount,
-        // TODO: Add expiredCount to the return value
+        expiredCount,
       };
     } catch (error) {
-      // TODO: Add more specific error handling based on error type
       logger.error(`Connection expiration check failed: ${error.message}`);
 
       return {
         success: false,
         error: error.message,
-        // TODO: Add error type information
       };
     }
   },

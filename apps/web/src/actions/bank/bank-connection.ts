@@ -1,6 +1,9 @@
 import { authActionClient } from '../safe-action';
 import { bankConnectionSchema } from './schema';
-import { client } from '@/jobs/client';
+import { initialSetupJob } from '@/jobs';
+import { prisma } from '@solomonai/prisma';
+import { revalidateTag } from "next/cache";
+import { trpc } from '@/trpc/server';
 
 /**
  * @example
@@ -41,31 +44,47 @@ export const handleBankConnectionAction = authActionClient
   .action(
     async ({
       ctx: { user },
-      parsedInput: { accessToken, institutionId, itemId, publicToken, userId },
+      parsedInput: { accessToken, institutionId, itemId, userId, teamId, provider, accounts },
     }) => {
       try {
-        // Trigger the initial setup job
-        await client.sendEvent({
-          name: 'initial-setup',
-          payload: {
-            accessToken,
-            institutionId,
-            itemId,
-            publicToken,
-            userId,
+
+        // get the team from the team id 
+        const team = await prisma.team.findUnique({
+          where: {
+            id: teamId,
           },
         });
 
-        return {
-          success: true,
-          message: 'Bank connection setup initiated',
-        };
+        if (!team) {
+          throw new Error('Team not found');
+        }
+
+        // create the bank connection 
+        const bankConnection = await trpc.bankConnection.createBankConnection({
+          institutionId,
+          accessToken,
+          itemId,
+          userId,
+          teamId,
+          provider,
+          accounts,
+        });
+
+        // Trigger the initial setup job
+        const event = await initialSetupJob.trigger({
+          teamId,
+          connectionId: bankConnection?.connectionId,
+        });
+
+        // revalidate the bank connection
+        revalidateTag(`bank_accounts_${teamId}`);
+        revalidateTag(`bank_accounts_currencies_${teamId}`);
+        revalidateTag(`bank_connections_${teamId}`);
+
+        return event;
       } catch (error) {
         console.error('Error setting up bank connection:', error);
-        return {
-          success: false,
-          error: error.message || 'Failed to set up bank connection',
-        };
+        return null;
       }
     }
   );

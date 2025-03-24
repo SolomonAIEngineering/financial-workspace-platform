@@ -196,6 +196,7 @@
     "kysely": "^0.27.5",
     "lodash": "^4.17.21",
     "loops": "^4.0.0",
+    "lottie-react": "^2.4.1",
     "lucia": "^3.2.2",
     "lucide-react": "^0.469.0",
     "mitt": "^3.0.1",

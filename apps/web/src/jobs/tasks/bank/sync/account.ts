@@ -124,6 +124,16 @@ export const syncAccount = schemaTask({
       manualSync,
     } = payload;
 
+    // Check if bank account exists before proceeding
+    const bankAccount = await prisma.bankAccount.findUnique({
+      where: { id },
+    });
+
+    if (!bankAccount) {
+      logger.error('Bank account not found, cannot sync', { id, accountId });
+      throw new Error(`Bank account with ID ${id} not found in database`);
+    }
+
     // Create a trace for the entire sync operation
     return await logger.trace('sync-bank-account', async (span) => {
       span.setAttribute('accountId', accountId);

@@ -34,3 +34,70 @@ export function formatDate(
 
   return new Intl.DateTimeFormat('en-US', options).format(date);
 }
+
+/**
+ * Returns the initials of a given string
+ *
+ * @param value - The string to get initials from
+ * @returns The initials of the string
+ */
+export function getInitials(value: string) {
+  const formatted = value.toUpperCase().replace(/[\s.-]/g, "");
+
+  if (formatted.split(" ").length > 1) {
+    return `${formatted.charAt(0)}${formatted.charAt(1)}`;
+  }
+
+  if (value.length > 1) {
+    return formatted.charAt(0) + formatted.charAt(1);
+  }
+
+  return formatted.charAt(0);
+}
+
+/**
+ * Formats an amount into a currency string
+ *
+ * @param currency - The currency code
+ * @param amount - The amount to format
+ * @param locale - The locale to format the amount in
+ * @param maximumFractionDigits - The maximum number of fraction digits
+ * @param minimumFractionDigits - The minimum number of fraction digits
+ * @returns The formatted amount
+ */
+type FormatAmountParams = {
+  currency: string;
+  amount: number;
+  locale?: string;
+  maximumFractionDigits?: number;
+  minimumFractionDigits?: number;
+};
+
+/**
+ * Formats an amount into a currency string
+ *
+ * @param currency - The currency code
+ * @param amount - The amount to format
+ * @param locale - The locale to format the amount in
+ * @param maximumFractionDigits - The maximum number of fraction digits
+ * @param minimumFractionDigits - The minimum number of fraction digits
+ * @returns The formatted amount
+ */
+export function formatAmount({
+  currency,
+  amount,
+  locale = "en-US",
+  minimumFractionDigits,
+  maximumFractionDigits,
+}: FormatAmountParams) {
+  if (!currency) {
+    return;
+  }
+
+  return Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    minimumFractionDigits,
+    maximumFractionDigits,
+  }).format(amount);
+}

@@ -7,7 +7,6 @@ import { api, useTRPC } from '@/trpc/react';
 
 import { Button } from '@/registry/default/potion-ui/button';
 import { ConnectTransactionsButton } from '../bank-connection/connect-transactions-button';
-import { ConnectTransactionsWrapper } from '../bank-connection/connect-transactions-wrapper';
 import { DocumentList } from './document-list';
 import { FeedbackForm } from '../editor/feedback-form';
 import { HouseIcon } from 'lucide-react';
@@ -106,7 +105,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
           <div className="flex flex-col gap-0.5">
             <NavItem
               className="text-xs font-medium text-muted-foreground/90"
-              onClick={() => {}}
+              onClick={() => { }}
               label={session ? 'Private' : 'Draft'}
             >
               <Button
@@ -124,7 +123,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             </NavItem>
             <NavItem
               className="text-xs transition-colors"
-              onClick={() => {}}
+              onClick={() => { }}
               label="Feedback"
               icon={Icons.alertCircle}
               tooltip="Leave us some feedback"
@@ -133,7 +132,7 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             </NavItem>
             <NavItem
               className="text-xs transition-colors"
-              onClick={() => {}}
+              onClick={() => { }}
               label="Bank Account"
               icon={Icons.chrome}
             >

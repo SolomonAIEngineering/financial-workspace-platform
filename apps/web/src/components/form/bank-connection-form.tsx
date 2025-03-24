@@ -227,6 +227,7 @@ export function BankConnectionForm({
         <ConnectTransactionsModal
           countryCode="US"
           userId={userId}
+          teamId={teamId}
           _isOpenOverride={showConnectModal}
           _onCloseOverride={() => setShowConnectModal(false)}
         />

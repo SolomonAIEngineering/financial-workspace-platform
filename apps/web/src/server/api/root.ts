@@ -2,6 +2,7 @@ import { createCallerFactory, createRouter } from '@/server/api/trpc';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 import { bankAccountsRouter } from './routers/bank-accounts';
+import { bankConnectionRouter } from './routers/bank-connection';
 import { commentRouter } from './routers/comment';
 import { documentRouter } from './routers/document';
 import { fileRouter } from './routers/file';
@@ -23,6 +24,7 @@ export const appRouter = createRouter({
   version: versionRouter,
   transactions: transactionsRouter,
   recurringTransactions: recurringTransactionsRouter,
+  bankConnection: bankConnectionRouter,
 });
 
 // export type definition of API

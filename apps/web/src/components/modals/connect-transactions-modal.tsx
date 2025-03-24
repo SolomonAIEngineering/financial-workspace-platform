@@ -26,13 +26,13 @@ import { CountrySelector } from '../bank-connection/country-selector';
 import { Input } from '@/registry/default/potion-ui/input';
 import { InstitutionDetails } from '../institution/institution-details';
 import { LogEvents } from '@v1/analytics/events';
+import { SelectBankAccountsModal } from './select-bank-accounts-modal';
 import { Skeleton } from '../ui/skeleton';
 import { SyncLogs } from '@/components/sync/sync-logs';
 import { createPlaidLinkTokenAction } from '@/actions/institution/create-link';
 import { exchangePublicTokenAction } from '@/actions/institution/exchange-public-token';
 import { getInstitutionsAction } from '@/actions/institution/get-institution';
 import { motion } from 'framer-motion';
-import { syncTransactionsAction } from '@/actions/transactions/sync-transactions-action';
 import { track } from '@v1/analytics/client';
 import { useConnectParams } from '@/hooks/use-connect-params';
 import { usePlaidLink } from 'react-plaid-link';
@@ -417,6 +417,7 @@ function SyncStatusContent({
 type ConnectTransactionsModalProps = {
   countryCode: string;
   userId: string;
+  teamId: string;
   _isOpenOverride?: boolean;
   _onCloseOverride?: () => void;
 };
@@ -428,6 +429,7 @@ type ConnectTransactionsModalProps = {
 export function ConnectTransactionsModal({
   countryCode: initialCountryCode,
   userId,
+  teamId,
   _isOpenOverride,
   _onCloseOverride,
 }: ConnectTransactionsModalProps) {
@@ -439,7 +441,18 @@ export function ConnectTransactionsModal({
   const [syncStatus, setSyncStatus] = useState<
     'idle' | 'syncing' | 'success' | 'error'
   >('idle');
-  const [syncRunId, setSyncRunId] = useState<string | null>(null);
+
+  // State for the SelectBankAccountsModal
+  const [showSelectAccountsModal, setShowSelectAccountsModal] = useState(false);
+  const [accountSelectionData, setAccountSelectionData] = useState({
+    provider: '',
+    ref: '',
+    institution_id: '',
+    token: '',
+    itemId: '',
+    userId: '',
+    teamId: '',
+  });
 
   const {
     countryCode,
@@ -467,9 +480,9 @@ export function ConnectTransactionsModal({
       });
 
       // Get the access token and item_id from the exchange response
-      const accessToken = res?.data?.access_token;
-      const itemId = res?.data?.item_id;
-      const institutionId = metadata.institution?.institution_id;
+      const accessToken = "access-production-44a2eed4-de7a-45cc-9f68-d8e3c9cf7976" // res?.data?.access_token;
+      const itemId = "kPLLLo7YMAumyL9wRgPQfeVJjjay8BFRRmvpB" // res?.data?.item_id;
+      const institutionId = "ins_127991" // metadata.institution?.institution_id;
 
       if (!accessToken || !itemId) {
         throw new Error('Failed to get access token');
@@ -484,32 +497,26 @@ export function ConnectTransactionsModal({
         item_id: itemId,
       });
 
-      // Trigger background job to sync transactions, bank accounts, and connections
-      try {
-        const syncResult = await syncTransactionsAction({
-          accessToken,
-          itemId,
-          institutionId,
-          userId,
-        });
+      // Store the data needed for the SelectBankAccountsModal
+      setAccountSelectionData({
+        provider: 'plaid',
+        ref: itemId,
+        institution_id: institutionId,
+        token: accessToken,
+        itemId: itemId,
+        userId: userId,
+        teamId: teamId,
+      });
 
-        // log out the syncResult
-        console.info('syncResult', syncResult);
+      // Show the SelectBankAccountsModal
+      setShowSelectAccountsModal(true);
 
-        // Check if the result has a runId property
-        setSyncRunId(syncResult?.data?.id ?? null);
-
-        // Track analytics event
-        track({
-          event: LogEvents.ConnectBankAuthorized.name,
-          channel: LogEvents.ConnectBankAuthorized.channel,
-          provider: 'plaid',
-        });
-      } catch (syncError) {
-        console.error('Error syncing transactions:', syncError);
-        setSyncStatus('error');
-        throw new Error('Failed to trigger sync job');
-      }
+      // Track analytics event
+      track({
+        event: LogEvents.ConnectBankAuthorized.name,
+        channel: LogEvents.ConnectBankAuthorized.channel,
+        provider: 'plaid',
+      });
     } catch (error) {
       console.error('Error in exchangePublicToken or syncing:', error);
       setSyncStatus('error');
@@ -555,7 +562,6 @@ export function ConnectTransactionsModal({
   // Handle sync completion and redirect to accounts or dashboard
   const handleSyncComplete = async () => {
     // Reset sync state
-    setSyncRunId(null);
     setSyncStatus('idle');
 
     // Clear URL parameters
@@ -735,80 +741,125 @@ export function ConnectTransactionsModal({
 
   // Only render the Dialog when it should be visible
   return (
-    <Dialog
-      open={isDialogOpen}
-      onOpenChange={(isOpen) => {
-        console.info('Dialog onOpenChange called, isOpen:', isOpen); // Debug log
-        if (!isOpen) {
-          // Use the proper close handler to maintain reopening ability
-          if (_onCloseOverride) {
-            _onCloseOverride();
-          } else {
-            void handleOnClose();
-          }
-        }
-      }}
-    >
-      <DialogContent className="overflow-hidden border-gray-200 p-0 shadow-xl md:min-h-[60%] md:min-w-[60%] dark:border-gray-800">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            console.info('Close button clicked'); // Debug log
+    <>
+      <Dialog
+        open={isDialogOpen}
+        onOpenChange={(isOpen) => {
+          console.info('Dialog onOpenChange called, isOpen:', isOpen); // Debug log
+          if (!isOpen) {
+            // Use the proper close handler to maintain reopening ability
             if (_onCloseOverride) {
               _onCloseOverride();
             } else {
               void handleOnClose();
             }
-          }}
-          className="absolute top-2 right-2 z-50 h-7 w-7 rounded-full"
-          aria-label="Close dialog"
-        >
-          <XIcon className="h-4 w-4" />
-        </Button>
+          }
+        }}
+      >
+        <DialogContent className="overflow-hidden border-gray-200 p-0 shadow-xl md:min-h-[60%] md:min-w-[60%] dark:border-gray-800">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              console.info('Close button clicked'); // Debug log
+              if (_onCloseOverride) {
+                _onCloseOverride();
+              } else {
+                void handleOnClose();
+              }
+            }}
+            className="absolute top-2 right-2 z-50 h-7 w-7 rounded-full"
+            aria-label="Close dialog"
+          >
+            <XIcon className="h-4 w-4" />
+          </Button>
 
-        {step === 'connect' && (
-          <>
-            <div className="p-6 md:p-8">
-              <DialogHeader className="mb-4">
-                <div className="flex items-center justify-between">
-                  <DialogTitle className="text-2xl sm:text-3xl">
-                    Connect your bank
-                  </DialogTitle>
-                </div>
-                <DialogDescription>
-                  Connect your financial accounts to import transactions.
-                </DialogDescription>
-              </DialogHeader>
+          {step === 'connect' && (
+            <>
+              <div className="p-6 md:p-8">
+                <DialogHeader className="mb-4">
+                  <div className="flex items-center justify-between">
+                    <DialogTitle className="text-2xl sm:text-3xl">
+                      Connect your bank
+                    </DialogTitle>
+                  </div>
+                  <DialogDescription>
+                    Connect your financial accounts to import transactions.
+                  </DialogDescription>
+                </DialogHeader>
 
-              <SearchBar
-                query={query}
-                countryCode={countryCode}
-                onQueryChange={handleSearchChange}
-                onCountryChange={handleCountryChange}
-                onClearResults={handleClearResults}
+                <SearchBar
+                  query={query}
+                  countryCode={countryCode}
+                  onQueryChange={handleSearchChange}
+                  onCountryChange={handleCountryChange}
+                  onClearResults={handleClearResults}
+                />
+              </div>
+
+              <SearchResults
+                loading={loading}
+                results={results}
+                openPlaid={handleOpenPlaid}
+                onSetStepToNull={resetStep}
+                onImport={() => { }}
+                onContactUs={() => { }}
               />
+            </>
+          )}
+
+          {(step === 'syncing' || step === 'account') && !showSelectAccountsModal && (
+            <div className="flex min-h-[400px] flex-col items-center justify-center">
+              <p className="text-center text-muted-foreground">
+                Synchronizing with your bank account...
+              </p>
             </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
-            <SearchResults
-              loading={loading}
-              results={results}
-              openPlaid={handleOpenPlaid}
-              onSetStepToNull={resetStep}
-              onImport={() => {}}
-              onContactUs={() => {}}
-            />
-          </>
-        )}
+      {/* Render the SelectBankAccountsModal when showSelectAccountsModal is true */}
+      {showSelectAccountsModal && (
+        <SelectBankAccountsModal
+          isOpen={showSelectAccountsModal}
+          onClose={(syncCompleted) => {
+            setShowSelectAccountsModal(false);
 
-        {(step === 'syncing' || step === 'account') && (
-          <SyncStatusContent
-            runId={syncRunId || undefined}
-            status={syncStatus}
-            onComplete={handleSyncComplete}
-          />
-        )}
-      </DialogContent>
-    </Dialog>
+            // Reset the account selection data
+            setAccountSelectionData({
+              provider: '',
+              ref: '',
+              institution_id: '',
+              token: '',
+              itemId: '',
+              userId: '',
+              teamId: '',
+            });
+
+            // If sync was successfully completed, go to accounts page
+            if (syncCompleted) {
+              // Redirect to accounts page or dashboard
+              router.push('/accounts');
+            } else {
+              // If sync was not completed, just reset the URL params
+              void setParams({
+                step: null,
+                provider: null,
+                token: null,
+                institution_id: null,
+                item_id: null,
+              });
+            }
+          }}
+          provider={accountSelectionData.provider}
+          ref={accountSelectionData.ref}
+          institution_id={accountSelectionData.institution_id}
+          token={accountSelectionData.token}
+          itemId={accountSelectionData.itemId}
+          userId={accountSelectionData.userId}
+          teamId={accountSelectionData.teamId}
+        />
+      )}
+    </>
   );
 }
