@@ -1,4 +1,5 @@
-import { Info, Loader2 } from 'lucide-react';
+import { Edit2, Info, Loader2, Save, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   TransactionStatus,
   TransactionStatusMetadata,
@@ -8,42 +9,375 @@ import {
 } from '@/constants/transaction-status';
 import {
   useCompleteTransaction,
+  useUpdateTransaction,
   useUpdateTransactionStatus,
 } from '@/trpc/hooks/transaction-hooks';
 
+import { Button } from '@/registry/default/potion-ui/button';
 import { CurrencyInput } from '@/components/ui/currency-input';
 import { DatePicker } from '@/components/ui/date-picker';
 import { DetailRow } from './detail-row';
 import { EditableDetailRow } from './editable-detail-row';
 import { FieldRenderer } from './field-renderer';
-import React from 'react';
+import { Input } from '@/registry/default/potion-ui/input';
+import { Textarea } from '@/registry/default/potion-ui/textarea';
 import { TransactionSection } from './transaction-section';
+import { cn } from '@/lib/utils';
 import { fieldDescriptions } from './field-descriptions';
 import { sectionDescriptions } from './section-descriptions';
+import { toast } from 'sonner';
 import { useTransactionContext } from './transaction-context';
 
 /**
- * TransactionAmountField Component
- *
- * Responsible for rendering and managing the transaction amount field. The
- * component handles both view and edit modes, providing appropriate UI for
- * each.
- *
- * In view mode:
- *
- * - Displays formatted amount with currency
- * - Shows positive/negative styling based on amount value
- *
- * In edit mode:
- *
- * - Renders a currency input control
- * - Handles amount changes and updates the transaction context
- *
- * @example
- *   <TransactionAmountField />;
- *
- * @returns {JSX.Element} The rendered transaction amount field component
- * @component
+ * InlineEditableField component for editing transaction fields inline
+ */
+interface InlineEditableFieldProps {
+  field: string;
+  label: string;
+  value: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+  isEditing: boolean;
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  inputRef: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
+  icon: React.ReactNode;
+  placeholder: string;
+  tooltip?: string;
+  isTextarea?: boolean;
+  onSave: (field: string, value: string) => Promise<void>;
+  isSaving: boolean;
+}
+
+function InlineEditableField({
+  field,
+  label,
+  value,
+  setValue,
+  isEditing,
+  setIsEditing,
+  inputRef,
+  icon,
+  placeholder,
+  tooltip,
+  isTextarea = false,
+  onSave,
+  isSaving,
+}: InlineEditableFieldProps) {
+  // Handle keydown events
+  const handleKeyDown = async (
+    e: React.KeyboardEvent,
+    field: string,
+    value: string
+  ) => {
+    if (e.key === 'Enter' && !isTextarea) {
+      await onSave(field, value);
+    } else if (e.key === 'Escape') {
+      setIsEditing(false);
+    }
+  };
+
+  return (
+    <div
+      className={cn(
+        'relative mb-2 flex flex-col rounded-xl transition-all duration-300',
+        isEditing
+          ? 'border border-violet-200/40 bg-gradient-to-br from-violet-50/80 to-indigo-50/50 shadow-sm'
+          : 'hover:bg-violet-50/20'
+      )}
+    >
+      <div className="flex items-center justify-between px-3 pt-2">
+        <span
+          className={cn(
+            'text-xs font-medium transition-colors duration-200',
+            isEditing ? 'text-violet-700' : 'text-foreground/70'
+          )}
+          title={tooltip || ''}
+        >
+          {label}
+        </span>
+
+        {!isEditing && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              'h-6 w-6 rounded-full bg-transparent text-muted-foreground/50 transition-all duration-200',
+              'hover:scale-105 hover:bg-violet-100/70 hover:text-violet-700',
+              'focus:ring-2 focus:ring-violet-200 focus:ring-offset-1 focus:outline-none'
+            )}
+            onClick={() => setIsEditing(true)}
+            title="Edit"
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
+
+      {isEditing ? (
+        <div className="px-3 pt-1 pb-3">
+          <div className="relative">
+            {isTextarea ? (
+              <Textarea
+                ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className={cn(
+                  'w-full rounded-lg border-violet-200/60 bg-white/80 text-sm shadow-sm backdrop-blur-sm',
+                  'focus:border-violet-300 focus:ring-2 focus:ring-violet-200/50 focus:ring-offset-0',
+                  'transition-all duration-200 placeholder:text-violet-300',
+                  'min-h-[100px] resize-y'
+                )}
+                placeholder={placeholder}
+                disabled={isSaving}
+              />
+            ) : (
+              <Input
+                ref={inputRef as React.RefObject<HTMLInputElement>}
+                type="text"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                onKeyDown={(e) => handleKeyDown(e, field, value)}
+                className={cn(
+                  'h-9 w-full rounded-lg border-violet-200/60 bg-white/80 pr-16 pl-3 text-sm shadow-sm backdrop-blur-sm',
+                  'focus:border-violet-300 focus:ring-2 focus:ring-violet-200/50 focus:ring-offset-0',
+                  'transition-all duration-200 placeholder:text-violet-300'
+                )}
+                placeholder={placeholder}
+                disabled={isSaving}
+              />
+            )}
+            <div className="absolute top-1 right-1 flex items-center gap-1 rounded-lg bg-white/20 backdrop-blur-sm transition-opacity">
+              <Button
+                size="sm"
+                className={cn(
+                  'h-7 w-7 rounded-lg bg-transparent p-0',
+                  'text-rose-500 hover:bg-rose-50 hover:text-rose-600',
+                  'transition-all duration-200 hover:scale-105',
+                  'focus:ring-2 focus:ring-rose-200 focus:outline-none'
+                )}
+                onClick={() => setIsEditing(false)}
+                disabled={isSaving}
+                title="Cancel"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                size="sm"
+                className={cn(
+                  'h-7 w-7 rounded-lg bg-transparent p-0',
+                  'text-emerald-500 hover:bg-emerald-50 hover:text-emerald-600',
+                  'transition-all duration-200 hover:scale-105',
+                  'focus:ring-2 focus:ring-emerald-200 focus:outline-none'
+                )}
+                onClick={() => onSave(field, value)}
+                disabled={isSaving}
+                title="Save"
+              >
+                <Save
+                  className={cn('h-3.5 w-3.5', isSaving && 'animate-spin')}
+                />
+              </Button>
+            </div>
+          </div>
+          <p className="mt-1 text-xs text-violet-500/70 italic">
+            {isTextarea ? 'Click Save when done' : 'Press Enter to save, Esc to cancel'}
+          </p>
+        </div>
+      ) : (
+        <div
+          className={cn(
+            'group relative cursor-pointer rounded-lg px-3 py-2 text-sm',
+            'transition-all duration-200 hover:bg-violet-50/80',
+            'flex items-center justify-between'
+          )}
+          onClick={() => setIsEditing(true)}
+        >
+          <div className="flex items-center gap-2">
+            {icon}
+            <div className="truncate">
+              {value ? (
+                <span className="font-medium text-foreground/90">{value}</span>
+              ) : (
+                <span className="text-muted-foreground/60 italic">
+                  No {label.toLowerCase()}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="absolute inset-y-0 right-0 flex items-center opacity-0 transition-opacity group-hover:opacity-100">
+            <span className="mr-2 text-xs text-violet-500">Edit</span>
+            <div className="flex h-full items-center rounded-l-full bg-violet-100/80 px-2">
+              <Edit2 className="h-3 w-3 text-violet-500" />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * InlineEditableTransaction Section component
+ */
+function InlineEditableTransaction() {
+  const { transaction, updateTransactionData } = useTransactionContext();
+  const updateTransaction = useUpdateTransaction();
+
+  // State for transaction name editing
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [transactionName, setTransactionName] = useState(
+    transaction.name || ''
+  );
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  // State for transaction description editing
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [transactionDescription, setTransactionDescription] = useState(
+    transaction.description || ''
+  );
+  const descriptionInputRef = useRef<HTMLInputElement>(null);
+
+  // State for transaction notes editing
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [transactionNotes, setTransactionNotes] = useState(
+    transaction.notes || ''
+  );
+  const notesInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Update local state when transaction changes
+  useEffect(() => {
+    setTransactionName(transaction.name || '');
+    setTransactionDescription(transaction.description || '');
+    setTransactionNotes(transaction.notes || '');
+  }, [
+    transaction.name,
+    transaction.description,
+    transaction.notes,
+  ]);
+
+  // Focus input when entering edit mode
+  useEffect(() => {
+    if (isEditingName && nameInputRef.current) {
+      nameInputRef.current.focus();
+    }
+  }, [isEditingName]);
+
+  useEffect(() => {
+    if (isEditingDescription && descriptionInputRef.current) {
+      descriptionInputRef.current.focus();
+    }
+  }, [isEditingDescription]);
+
+  useEffect(() => {
+    if (isEditingNotes && notesInputRef.current) {
+      notesInputRef.current.focus();
+    }
+  }, [isEditingNotes]);
+
+  // Save handler for transaction fields
+  const handleSaveField = async (field: string, value: string) => {
+    if (!transaction.id) return;
+
+    setIsSaving(true);
+    try {
+      // Create update object
+      const updateData = {
+        id: transaction.id,
+        data: {
+          [field]: value,
+        },
+      };
+
+      // Update the transaction
+      updateTransaction.mutate(updateData, {
+        onSuccess: () => {
+          // Update the transaction data via context to reflect the changes locally
+          updateTransactionData({
+            [field]: value,
+          });
+
+          toast.success(
+            `Transaction ${field.toLowerCase()} updated successfully`
+          );
+        },
+        onError: (error) => {
+          console.error(`Failed to update transaction ${field}:`, error);
+          toast.error(`Failed to update transaction ${field}`);
+        },
+        onSettled: () => {
+          setIsSaving(false);
+
+          // Reset all editing states
+          setIsEditingName(false);
+          setIsEditingDescription(false);
+          setIsEditingNotes(false);
+        }
+      });
+    } catch (error) {
+      console.error(`Failed to update transaction ${field}:`, error);
+      toast.error(`Failed to update transaction ${field}`);
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <>
+      <InlineEditableField
+        field="name"
+        label="Name"
+        value={transactionName}
+        setValue={setTransactionName}
+        isEditing={isEditingName}
+        setIsEditing={setIsEditingName}
+        inputRef={nameInputRef}
+        icon={<Info className="h-3.5 w-3.5 text-violet-500/70" />}
+        placeholder="Enter transaction name"
+        tooltip={fieldDescriptions.name}
+        onSave={handleSaveField}
+        isSaving={isSaving}
+      />
+
+      <TransactionAmountField />
+      <TransactionDateField />
+      <TransactionStatusField />
+
+      <InlineEditableField
+        field="description"
+        label="Description"
+        value={transactionDescription}
+        setValue={setTransactionDescription}
+        isEditing={isEditingDescription}
+        setIsEditing={setIsEditingDescription}
+        inputRef={descriptionInputRef}
+        icon={<Info className="h-3.5 w-3.5 text-violet-500/70" />}
+        placeholder="Enter transaction description"
+        tooltip={fieldDescriptions.description}
+        onSave={handleSaveField}
+        isSaving={isSaving}
+      />
+
+      <InlineEditableField
+        field="notes"
+        label="Notes"
+        value={transactionNotes}
+        setValue={setTransactionNotes}
+        isEditing={isEditingNotes}
+        setIsEditing={setIsEditingNotes}
+        inputRef={notesInputRef}
+        icon={<Info className="h-3.5 w-3.5 text-violet-500/70" />}
+        placeholder="Enter transaction notes"
+        tooltip={fieldDescriptions.notes}
+        isTextarea
+        onSave={handleSaveField}
+        isSaving={isSaving}
+      />
+    </>
+  );
+}
+
+/**
+ * TransactionAmountField Component - with inline editing support
  */
 function TransactionAmountField() {
   const {
@@ -52,33 +386,77 @@ function TransactionAmountField() {
     isEditMode,
     handleFieldChange,
     editedValues,
+    updateTransactionData
   } = useTransactionContext();
+  const updateTransaction = useUpdateTransaction();
 
-  /**
-   * Gets the current amount value, either from edited values or original
-   * transaction
-   *
-   * @returns {number} The current transaction amount value
-   */
-  const getAmountValue = () => {
-    return 'amount' in editedValues ? editedValues.amount : transaction.amount;
+  const [isEditing, setIsEditing] = useState(false);
+  const [amountValue, setAmountValue] = useState<number>(transaction.amount);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setAmountValue(transaction.amount);
+  }, [transaction.amount]);
+
+  // Handle keydown events for saving when Enter is pressed
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSave();
+    } else if (e.key === 'Escape') {
+      setAmountValue(transaction.amount);
+      setIsEditing(false);
+    }
   };
 
-  /**
-   * Handles changes to the transaction amount
-   *
-   * @param {number} newAmount - The new amount value
-   */
-  const handleAmountChange = (newAmount: number) => {
-    handleFieldChange('amount', newAmount);
+  const handleSave = async () => {
+    if (!transaction.id) return;
+
+    setIsSaving(true);
+    try {
+      // Create update object
+      const updateData = {
+        id: transaction.id,
+        data: {
+          amount: amountValue,
+        },
+      };
+
+      // Update the transaction
+      updateTransaction.mutate(updateData, {
+        onSuccess: () => {
+          // Update the transaction data via context to reflect the changes locally
+          updateTransactionData({
+            amount: amountValue,
+          });
+
+          toast.success('Transaction amount updated successfully');
+        },
+        onError: (error) => {
+          console.error('Failed to update transaction amount:', error);
+          toast.error('Failed to update transaction amount');
+        },
+        onSettled: () => {
+          setIsSaving(false);
+          setIsEditing(false);
+        }
+      });
+    } catch (error) {
+      console.error('Failed to update transaction amount:', error);
+      toast.error('Failed to update transaction amount');
+      setIsSaving(false);
+    }
   };
 
+  // If we're in the standard edit mode, use the original component
   if (isEditMode) {
     return (
       <EditableDetailRow label="Amount" tooltip={fieldDescriptions.amount}>
         <CurrencyInput
-          value={getAmountValue()}
-          onChange={handleAmountChange}
+          value={amountValue}
+          onChange={(value) => {
+            setAmountValue(value);
+            handleFieldChange('amount', value);
+          }}
           currency={transaction.isoCurrencyCode || 'USD'}
           className="w-full"
           placeholder="Enter transaction amount"
@@ -87,38 +465,120 @@ function TransactionAmountField() {
     );
   }
 
+  // For inline editing
+  if (isEditing) {
+    return (
+      <div className="relative mb-2 flex flex-col rounded-xl border border-violet-200/40 bg-gradient-to-br from-violet-50/80 to-indigo-50/50 shadow-sm">
+        <div className="flex items-center justify-between px-3 pt-2">
+          <span className="text-xs font-medium text-violet-700" title={fieldDescriptions.amount}>
+            Amount
+          </span>
+        </div>
+        <div className="px-3 pt-1 pb-3">
+          <div className="relative">
+            <CurrencyInput
+              value={amountValue}
+              onChange={setAmountValue}
+              onKeyDown={handleKeyDown}
+              currency={transaction.isoCurrencyCode || 'USD'}
+              className="h-9 w-full rounded-lg border-violet-200/60 bg-white/80 pr-16 pl-3 text-sm shadow-sm backdrop-blur-sm focus:border-violet-300 focus:ring-2 focus:ring-violet-200/50 focus:ring-offset-0 transition-all duration-200 placeholder:text-violet-300"
+              placeholder="Enter transaction amount"
+              disabled={isSaving}
+            />
+            <div className="absolute top-1 right-1 flex items-center gap-1 rounded-lg bg-white/20 backdrop-blur-sm transition-opacity">
+              <Button
+                size="sm"
+                className={cn(
+                  'h-7 w-7 rounded-lg bg-transparent p-0',
+                  'text-rose-500 hover:bg-rose-50 hover:text-rose-600',
+                  'transition-all duration-200 hover:scale-105',
+                  'focus:ring-2 focus:ring-rose-200 focus:outline-none'
+                )}
+                onClick={() => {
+                  setAmountValue(transaction.amount);
+                  setIsEditing(false);
+                }}
+                disabled={isSaving}
+                title="Cancel"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                size="sm"
+                className={cn(
+                  'h-7 w-7 rounded-lg bg-transparent p-0',
+                  'text-emerald-500 hover:bg-emerald-50 hover:text-emerald-600',
+                  'transition-all duration-200 hover:scale-105',
+                  'focus:ring-2 focus:ring-emerald-200 focus:outline-none'
+                )}
+                onClick={handleSave}
+                disabled={isSaving}
+                title="Save"
+              >
+                <Save
+                  className={cn('h-3.5 w-3.5', isSaving && 'animate-spin')}
+                />
+              </Button>
+            </div>
+          </div>
+          <p className="mt-1 text-xs text-violet-500/70 italic">
+            Press Enter to save, Esc to cancel
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Normal display mode
   return (
-    <DetailRow
-      label="Amount"
-      value={formatAmount(transaction.amount, transaction.isoCurrencyCode)}
-      tooltip={fieldDescriptions.amount}
-      isAmount
-      amountType={transaction.amount > 0 ? 'positive' : 'negative'}
-    />
+    <div
+      className="relative mb-2 flex flex-col rounded-xl hover:bg-violet-50/20 transition-all duration-300"
+    >
+      <div className="flex items-center justify-between px-3 pt-2">
+        <span className="text-xs font-medium text-foreground/70" title={fieldDescriptions.amount}>
+          Amount
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            'h-6 w-6 rounded-full bg-transparent text-muted-foreground/50 transition-all duration-200',
+            'hover:scale-105 hover:bg-violet-100/70 hover:text-violet-700',
+            'focus:ring-2 focus:ring-violet-200 focus:ring-offset-1 focus:outline-none'
+          )}
+          onClick={() => setIsEditing(true)}
+          title="Edit"
+        >
+          <Edit2 className="h-3 w-3" />
+        </Button>
+      </div>
+      <div
+        className={cn(
+          'group relative cursor-pointer rounded-lg px-3 py-2 text-sm',
+          'transition-all duration-200 hover:bg-violet-50/80',
+          'flex items-center justify-between'
+        )}
+        onClick={() => setIsEditing(true)}
+      >
+        <div className="flex items-center gap-2">
+          <Info className="h-3.5 w-3.5 text-violet-500/70" />
+          <div className={`truncate font-medium ${transaction.amount > 0 ? 'text-green-600' : 'text-red-500'}`}>
+            {formatAmount(transaction.amount, transaction.isoCurrencyCode)}
+          </div>
+        </div>
+        <div className="absolute inset-y-0 right-0 flex items-center opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="mr-2 text-xs text-violet-500">Edit</span>
+          <div className="flex h-full items-center rounded-l-full bg-violet-100/80 px-2">
+            <Edit2 className="h-3 w-3 text-violet-500" />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
 /**
- * TransactionDateField Component
- *
- * Manages the display and editing of transaction dates. Handles date
- * formatting, conversion between string and Date objects, and provides
- * appropriate UI controls based on the current mode.
- *
- * In view mode:
- *
- * - Shows formatted date string
- *
- * In edit mode:
- *
- * - Renders a date picker control
- * - Handles date selections and updates
- *
- * @example
- *   <TransactionDateField />;
- *
- * @returns {JSX.Element} The rendered transaction date field component
- * @component
+ * TransactionDateField Component - with inline editing support
  */
 function TransactionDateField() {
   const {
@@ -127,46 +587,74 @@ function TransactionDateField() {
     isEditMode,
     handleFieldChange,
     editedValues,
+    updateTransactionData
   } = useTransactionContext();
+  const updateTransaction = useUpdateTransaction();
 
-  /**
-   * Converts and retrieves the current date value Handles different date
-   * formats and prioritizes edited values
-   *
-   * @returns {Date | undefined} The current date as a Date object, or undefined
-   *   if no date
-   */
-  const getDateValue = () => {
-    // First check if we have an edited date value
-    if ('date' in editedValues && editedValues.date) {
-      return new Date(editedValues.date);
+  const [isEditing, setIsEditing] = useState(false);
+  const [dateValue, setDateValue] = useState<Date | undefined>(
+    transaction.date ? new Date(transaction.date) : undefined
+  );
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (transaction.date) {
+      setDateValue(new Date(transaction.date));
     }
+  }, [transaction.date]);
 
-    // Otherwise use the transaction date
-    if (!transaction.date) return;
-    return transaction.date instanceof Date
-      ? transaction.date
-      : new Date(transaction.date);
+  const handleSave = async () => {
+    if (!transaction.id || !dateValue) return;
+
+    setIsSaving(true);
+    try {
+      // Create update object - convert Date to ISO string for the API
+      const updateData = {
+        id: transaction.id,
+        data: {
+          date: dateValue.toISOString(), // Convert Date to ISO string format
+        },
+      };
+
+      // Update the transaction
+      updateTransaction.mutate(updateData, {
+        onSuccess: () => {
+          // Update the transaction data via context to reflect the changes locally
+          // The context can handle the Date object directly
+          updateTransactionData({
+            date: dateValue,
+          });
+
+          toast.success('Transaction date updated successfully');
+        },
+        onError: (error) => {
+          console.error('Failed to update transaction date:', error);
+          toast.error(`Failed to update transaction date: ${error.message}`);
+        },
+        onSettled: () => {
+          setIsSaving(false);
+          setIsEditing(false);
+        }
+      });
+    } catch (error) {
+      console.error('Failed to update transaction date:', error);
+      toast.error(`Failed to update transaction date: ${error instanceof Error ? error.message : String(error)}`);
+      setIsSaving(false);
+    }
   };
 
-  /**
-   * Handles changes to the transaction date
-   *
-   * @param {Date | undefined} newDate - The newly selected date
-   */
-  const handleDateChange = (newDate?: Date) => {
-    if (newDate) {
-      // Ensure we're passing a valid date object
-      handleFieldChange('date', newDate);
-    }
-  };
-
+  // If we're in the standard edit mode, use the original component
   if (isEditMode) {
     return (
       <EditableDetailRow label="Date" tooltip={fieldDescriptions.date}>
         <DatePicker
-          date={getDateValue()}
-          onDateChange={handleDateChange}
+          date={dateValue}
+          onDateChange={(date) => {
+            setDateValue(date);
+            if (date) {
+              handleFieldChange('date', date);
+            }
+          }}
           placeholder="Select transaction date"
           className="w-full"
         />
@@ -174,12 +662,115 @@ function TransactionDateField() {
     );
   }
 
+  // For inline editing
+  if (isEditing) {
+    return (
+      <div className="relative mb-2 flex flex-col rounded-xl border border-violet-200/40 bg-gradient-to-br from-violet-50/80 to-indigo-50/50 shadow-sm">
+        <div className="flex items-center justify-between px-3 pt-2">
+          <span className="text-xs font-medium text-violet-700" title={fieldDescriptions.date}>
+            Date
+          </span>
+        </div>
+        <div className="px-3 pt-1 pb-3">
+          <div className="relative">
+            <div className="mb-2">
+              <DatePicker
+                date={dateValue}
+                onDateChange={setDateValue}
+                placeholder="Select transaction date"
+                mode="single"
+                selected={dateValue}
+                className="w-full"
+              />
+            </div>
+            <div className="flex items-center justify-end gap-2 mt-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className={cn(
+                  'h-8 px-3 text-xs rounded-md',
+                  'text-rose-500 hover:bg-rose-50 hover:text-rose-600 border-rose-200',
+                  'transition-all duration-200'
+                )}
+                onClick={() => {
+                  setDateValue(transaction.date ? new Date(transaction.date) : undefined);
+                  setIsEditing(false);
+                }}
+                disabled={isSaving}
+              >
+                <X className="h-3.5 w-3.5 mr-1" />
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className={cn(
+                  'h-8 px-3 text-xs rounded-md',
+                  'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 border-emerald-200',
+                  'transition-all duration-200'
+                )}
+                onClick={handleSave}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                ) : (
+                  <Save className="h-3.5 w-3.5 mr-1" />
+                )}
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Normal display mode
   return (
-    <DetailRow
-      label="Date"
-      value={formatDateTime(transaction.date)}
-      tooltip={fieldDescriptions.date}
-    />
+    <div
+      className="relative mb-2 flex flex-col rounded-xl hover:bg-violet-50/20 transition-all duration-300"
+    >
+      <div className="flex items-center justify-between px-3 pt-2">
+        <span className="text-xs font-medium text-foreground/70" title={fieldDescriptions.date}>
+          Date
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn(
+            'h-6 w-6 rounded-full bg-transparent text-muted-foreground/50 transition-all duration-200',
+            'hover:scale-105 hover:bg-violet-100/70 hover:text-violet-700',
+            'focus:ring-2 focus:ring-violet-200 focus:ring-offset-1 focus:outline-none'
+          )}
+          onClick={() => setIsEditing(true)}
+          title="Edit"
+        >
+          <Edit2 className="h-3 w-3" />
+        </Button>
+      </div>
+      <div
+        className={cn(
+          'group relative cursor-pointer rounded-lg px-3 py-2 text-sm',
+          'transition-all duration-200 hover:bg-violet-50/80',
+          'flex items-center justify-between'
+        )}
+        onClick={() => setIsEditing(true)}
+      >
+        <div className="flex items-center gap-2">
+          <Info className="h-3.5 w-3.5 text-violet-500/70" />
+          <div className="truncate font-medium text-foreground/90">
+            {formatDateTime(transaction.date)}
+          </div>
+        </div>
+        <div className="absolute inset-y-0 right-0 flex items-center opacity-0 transition-opacity group-hover:opacity-100">
+          <span className="mr-2 text-xs text-violet-500">Edit</span>
+          <div className="flex h-full items-center rounded-l-full bg-violet-100/80 px-2">
+            <Edit2 className="h-3 w-3 text-violet-500" />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -500,31 +1091,11 @@ function TransactionStatusField() {
  * TransactionInfoSection Component
  *
  * The main container component for displaying transaction information.
- * Organizes and renders various transaction field components in a collapsible
- * section.
- *
- * Features:
- *
- * - Collapsible section with icon and tooltip
- * - Organized display of transaction details
- * - Default open state for immediate visibility
- * - Composition of specialized field components
- *
- * Field components include:
- *
- * - TransactionIdField: Displays the transaction ID
- * - FieldRenderer: Renders generic fields like name, description, notes
- * - TransactionAmountField: Handles transaction amount with currency
- * - TransactionDateField: Manages transaction date
- * - TransactionStatusField: Handles transaction status
- *
- * @example
- *   <TransactionInfoSection />;
- *
- * @returns {JSX.Element} The rendered transaction information section
- * @component
+ * Now with inline editing capabilities.
  */
 export function TransactionInfoSection() {
+  const { isEditMode } = useTransactionContext();
+
   return (
     <TransactionSection
       title="Transaction Information"
@@ -533,12 +1104,20 @@ export function TransactionInfoSection() {
       tooltip={sectionDescriptions.transactionInformation}
     >
       <div className="space-y-1">
-        <FieldRenderer field="name" label="Name" />
-        <TransactionAmountField />
-        <TransactionDateField />
-        <TransactionStatusField />
-        <FieldRenderer field="description" label="Description" />
-        <FieldRenderer field="notes" label="Notes" isTextarea={true} />
+        {isEditMode ? (
+          <>
+            <FieldRenderer field="name" label="Name" />
+            <TransactionAmountField />
+            <TransactionDateField />
+            <TransactionStatusField />
+            <FieldRenderer field="description" label="Description" />
+            <FieldRenderer field="notes" label="Notes" isTextarea={true} />
+          </>
+        ) : (
+          <>
+            <InlineEditableTransaction />
+          </>
+        )}
       </div>
     </TransactionSection>
   );
