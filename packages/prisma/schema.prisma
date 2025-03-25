@@ -154,11 +154,14 @@ model User {
 
   transactionsAssignedByMe Transaction[] @relation("AssignedByTransactions")
   transactionsAssignedToMe Transaction[] @relation("AssignedTransactions")
-
+  subscriptions        Subscription[]
+  invoices Invoice[]
+  ownedPendingTeams    TeamPending[]
+  ownedTeams           Team[] @relation("OwnedTeams")
   @@index([username])
   @@index([email])
   @@index([organizationName])
-  invoices Invoice[]
+
 }
 
 model Document {
@@ -947,6 +950,18 @@ enum SpendingTimeframe {
   CUSTOM
 }
 
+model TeamPending {
+  id          String      @id @default(cuid())
+  name        String
+  url         String   @unique
+  createdAt   DateTime @default(now())
+  customerId  String   @unique
+  ownerUserId String
+
+  owner User @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+}
+
+
 // New models from database schema
 
 model Team {
@@ -963,7 +978,7 @@ model Team {
   flags                  String[]  @default([])
   createdAt              DateTime  @default(now()) @map("created_at")
   isDefault              Boolean?  @default(false) @map("is_default")
-  
+  stripeCustomerId       String?   @map("stripe_customer_id")
   // Relations
   users                 User[]
   usersOnTeam           UsersOnTeam[]
@@ -981,6 +996,7 @@ model Team {
   trackerReports        TrackerReport[]
   bankConnections       BankConnection[]
   transactions          Transaction[]
+  subscription Subscription?
 
   @@map("teams")
   UserInvite UserInvite[]
@@ -989,6 +1005,7 @@ model Team {
   InvoiceTemplate InvoiceTemplate[]
   TrackerEntry TrackerEntry[]
   TrackerProjectTag TrackerProjectTag[]
+  User User[] @relation("OwnedTeams")
 }
 
 model UsersOnTeam {
@@ -1462,4 +1479,28 @@ enum TransactionFrequency {
   ANNUALLY
   IRREGULAR
   UNKNOWN
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  PAST_DUE
+  INACTIVE
+}
+
+model Subscription {
+  id                String                @id @default(cuid())
+  status            SubscriptionStatus @default(INACTIVE)
+  planId            String             @unique
+  priceId           String
+  periodEnd         DateTime?
+  userId            String?
+  teamId            String?               @unique
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  cancelAtPeriodEnd Boolean            @default(false)
+
+  team Team? @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

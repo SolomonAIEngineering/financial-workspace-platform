@@ -1,0 +1,58 @@
+import type { TLimitsSchema } from './schema'
+
+export const FREE_PLAN_LIMITS: TLimitsSchema = {
+  documents: 5,
+  recipients: 10,
+  directTemplates: 3,
+  teams: 2,
+  teamMembers: 5,
+  storageGb: 2,
+  reports: 5,
+  invoices: 20,
+  bankAccounts: 3,
+  integrations: 1,
+  apiRequestsPerDay: 100,
+  maxFileSizeMb: 10,
+  apps: 3,
+  transactionHistoryDays: 90,
+  customCategories: 10,
+  trackerProjects: 2,
+}
+
+export const TEAM_PLAN_LIMITS: TLimitsSchema = {
+  documents: Infinity,
+  recipients: Infinity,
+  directTemplates: Infinity,
+  teams: 10,
+  teamMembers: 25,
+  storageGb: 50,
+  reports: 100,
+  invoices: 500,
+  bankAccounts: 20,
+  integrations: 10,
+  apiRequestsPerDay: 5000,
+  maxFileSizeMb: 100,
+  apps: 25,
+  transactionHistoryDays: 730,
+  customCategories: 50,
+  trackerProjects: 25,
+}
+
+export const SELFHOSTED_PLAN_LIMITS: TLimitsSchema = {
+  documents: Infinity,
+  recipients: Infinity,
+  directTemplates: Infinity,
+  teams: Infinity,
+  teamMembers: Infinity,
+  storageGb: Infinity,
+  reports: Infinity,
+  invoices: Infinity,
+  bankAccounts: Infinity,
+  integrations: Infinity,
+  apiRequestsPerDay: Infinity,
+  maxFileSizeMb: 1000,
+  apps: Infinity,
+  transactionHistoryDays: 3650,
+  customCategories: Infinity,
+  trackerProjects: Infinity,
+}
