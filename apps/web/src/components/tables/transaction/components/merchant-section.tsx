@@ -83,14 +83,20 @@ export function MerchantSection() {
 
     setIsSaving(true);
     try {
-
       // Create update object with all the current merchant fields
       // This ensures we send complete merchant data to the API
       const updateData = {
         id: transaction.id,
-        merchantName: field === 'merchantName' ? value : transaction.merchantName || '',
-        merchantCategory: field === 'merchantCategory' ? value : transaction.merchantCategory || '',
-        merchantWebsite: field === 'merchantWebsite' ? value : transaction.merchantWebsite || '',
+        merchantName:
+          field === 'merchantName' ? value : transaction.merchantName || '',
+        merchantCategory:
+          field === 'merchantCategory'
+            ? value
+            : transaction.merchantCategory || '',
+        merchantWebsite:
+          field === 'merchantWebsite'
+            ? value
+            : transaction.merchantWebsite || '',
         merchantId: transaction.merchantId || undefined,
         merchantPhone: transaction.merchantPhone || undefined,
         merchantAddress: transaction.merchantAddress || undefined,
@@ -100,7 +106,6 @@ export function MerchantSection() {
         merchantCountry: transaction.merchantCountry || undefined,
         merchantLogoUrl: transaction.merchantLogoUrl || undefined,
       };
-
 
       // Use the specialized merchant update hook
       updateTransactionMerchant.mutate(updateData, {
@@ -125,7 +130,7 @@ export function MerchantSection() {
           setIsEditingName(false);
           setIsEditingCategory(false);
           setIsEditingWebsite(false);
-        }
+        },
       });
 
       // Verify the transaction object after update
@@ -401,24 +406,24 @@ export function MerchantSection() {
             transaction.merchantState ||
             transaction.merchantZip ||
             transaction.merchantCountry) && (
-              <div className="mt-2 border-t border-border/20 pt-2">
-                <SubheadingWithTooltip
-                  label="Merchant Address"
-                  tooltip="Physical address of the merchant or business"
+            <div className="mt-2 border-t border-border/20 pt-2">
+              <SubheadingWithTooltip
+                label="Merchant Address"
+                tooltip="Physical address of the merchant or business"
+              />
+              <FieldRenderer field="merchantAddress" label="Street" />
+              <FieldRenderer field="merchantCity" label="City" />
+              <FieldRenderer field="merchantState" label="State" />
+              <FieldRenderer field="merchantZip" label="ZIP" />
+              {transaction.merchantCountry && (
+                <DetailRow
+                  label="Country"
+                  value={transaction.merchantCountry}
+                  tooltip={fieldDescriptions.merchantCountry}
                 />
-                <FieldRenderer field="merchantAddress" label="Street" />
-                <FieldRenderer field="merchantCity" label="City" />
-                <FieldRenderer field="merchantState" label="State" />
-                <FieldRenderer field="merchantZip" label="ZIP" />
-                {transaction.merchantCountry && (
-                  <DetailRow
-                    label="Country"
-                    value={transaction.merchantCountry}
-                    tooltip={fieldDescriptions.merchantCountry}
-                  />
-                )}
-              </div>
-            )}
+              )}
+            </div>
+          )}
         </div>
       </div>
     </TransactionSection>

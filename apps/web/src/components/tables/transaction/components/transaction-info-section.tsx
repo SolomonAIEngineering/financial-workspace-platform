@@ -28,9 +28,7 @@ import { sectionDescriptions } from './section-descriptions';
 import { toast } from 'sonner';
 import { useTransactionContext } from './transaction-context';
 
-/**
- * InlineEditableField component for editing transaction fields inline
- */
+/** InlineEditableField component for editing transaction fields inline */
 interface InlineEditableFieldProps {
   field: string;
   label: string;
@@ -179,7 +177,9 @@ function InlineEditableField({
             </div>
           </div>
           <p className="mt-1 text-xs text-violet-500/70 italic">
-            {isTextarea ? 'Click Save when done' : 'Press Enter to save, Esc to cancel'}
+            {isTextarea
+              ? 'Click Save when done'
+              : 'Press Enter to save, Esc to cancel'}
           </p>
         </div>
       ) : (
@@ -215,9 +215,7 @@ function InlineEditableField({
   );
 }
 
-/**
- * InlineEditableTransaction Section component
- */
+/** InlineEditableTransaction Section component */
 function InlineEditableTransaction() {
   const { transaction, updateTransactionData } = useTransactionContext();
   const updateTransaction = useUpdateTransaction();
@@ -250,11 +248,7 @@ function InlineEditableTransaction() {
     setTransactionName(transaction.name || '');
     setTransactionDescription(transaction.description || '');
     setTransactionNotes(transaction.notes || '');
-  }, [
-    transaction.name,
-    transaction.description,
-    transaction.notes,
-  ]);
+  }, [transaction.name, transaction.description, transaction.notes]);
 
   // Focus input when entering edit mode
   useEffect(() => {
@@ -312,7 +306,7 @@ function InlineEditableTransaction() {
           setIsEditingName(false);
           setIsEditingDescription(false);
           setIsEditingNotes(false);
-        }
+        },
       });
     } catch (error) {
       console.error(`Failed to update transaction ${field}:`, error);
@@ -330,7 +324,7 @@ function InlineEditableTransaction() {
         setValue={setTransactionName}
         isEditing={isEditingName}
         setIsEditing={setIsEditingName}
-        inputRef={nameInputRef}
+        inputRef={nameInputRef as React.RefObject<HTMLInputElement | HTMLTextAreaElement>}
         icon={<Info className="h-3.5 w-3.5 text-violet-500/70" />}
         placeholder="Enter transaction name"
         tooltip={fieldDescriptions.name}
@@ -349,7 +343,7 @@ function InlineEditableTransaction() {
         setValue={setTransactionDescription}
         isEditing={isEditingDescription}
         setIsEditing={setIsEditingDescription}
-        inputRef={descriptionInputRef}
+        inputRef={descriptionInputRef as React.RefObject<HTMLInputElement | HTMLTextAreaElement>}
         icon={<Info className="h-3.5 w-3.5 text-violet-500/70" />}
         placeholder="Enter transaction description"
         tooltip={fieldDescriptions.description}
@@ -364,7 +358,7 @@ function InlineEditableTransaction() {
         setValue={setTransactionNotes}
         isEditing={isEditingNotes}
         setIsEditing={setIsEditingNotes}
-        inputRef={notesInputRef}
+        inputRef={notesInputRef as React.RefObject<HTMLTextAreaElement>}
         icon={<Info className="h-3.5 w-3.5 text-violet-500/70" />}
         placeholder="Enter transaction notes"
         tooltip={fieldDescriptions.notes}
@@ -376,9 +370,7 @@ function InlineEditableTransaction() {
   );
 }
 
-/**
- * TransactionAmountField Component - with inline editing support
- */
+/** TransactionAmountField Component - with inline editing support */
 function TransactionAmountField() {
   const {
     transaction,
@@ -386,7 +378,7 @@ function TransactionAmountField() {
     isEditMode,
     handleFieldChange,
     editedValues,
-    updateTransactionData
+    updateTransactionData,
   } = useTransactionContext();
   const updateTransaction = useUpdateTransaction();
 
@@ -438,7 +430,7 @@ function TransactionAmountField() {
         onSettled: () => {
           setIsSaving(false);
           setIsEditing(false);
-        }
+        },
       });
     } catch (error) {
       console.error('Failed to update transaction amount:', error);
@@ -470,7 +462,10 @@ function TransactionAmountField() {
     return (
       <div className="relative mb-2 flex flex-col rounded-xl border border-violet-200/40 bg-gradient-to-br from-violet-50/80 to-indigo-50/50 shadow-sm">
         <div className="flex items-center justify-between px-3 pt-2">
-          <span className="text-xs font-medium text-violet-700" title={fieldDescriptions.amount}>
+          <span
+            className="text-xs font-medium text-violet-700"
+            title={fieldDescriptions.amount}
+          >
             Amount
           </span>
         </div>
@@ -481,7 +476,7 @@ function TransactionAmountField() {
               onChange={setAmountValue}
               onKeyDown={handleKeyDown}
               currency={transaction.isoCurrencyCode || 'USD'}
-              className="h-9 w-full rounded-lg border-violet-200/60 bg-white/80 pr-16 pl-3 text-sm shadow-sm backdrop-blur-sm focus:border-violet-300 focus:ring-2 focus:ring-violet-200/50 focus:ring-offset-0 transition-all duration-200 placeholder:text-violet-300"
+              className="h-9 w-full rounded-lg border-violet-200/60 bg-white/80 pr-16 pl-3 text-sm shadow-sm backdrop-blur-sm transition-all duration-200 placeholder:text-violet-300 focus:border-violet-300 focus:ring-2 focus:ring-violet-200/50 focus:ring-offset-0"
               placeholder="Enter transaction amount"
               disabled={isSaving}
             />
@@ -531,11 +526,12 @@ function TransactionAmountField() {
 
   // Normal display mode
   return (
-    <div
-      className="relative mb-2 flex flex-col rounded-xl hover:bg-violet-50/20 transition-all duration-300"
-    >
+    <div className="relative mb-2 flex flex-col rounded-xl transition-all duration-300 hover:bg-violet-50/20">
       <div className="flex items-center justify-between px-3 pt-2">
-        <span className="text-xs font-medium text-foreground/70" title={fieldDescriptions.amount}>
+        <span
+          className="text-xs font-medium text-foreground/70"
+          title={fieldDescriptions.amount}
+        >
           Amount
         </span>
         <Button
@@ -562,7 +558,9 @@ function TransactionAmountField() {
       >
         <div className="flex items-center gap-2">
           <Info className="h-3.5 w-3.5 text-violet-500/70" />
-          <div className={`truncate font-medium ${transaction.amount > 0 ? 'text-green-600' : 'text-red-500'}`}>
+          <div
+            className={`truncate font-medium ${transaction.amount > 0 ? 'text-green-600' : 'text-red-500'}`}
+          >
             {formatAmount(transaction.amount, transaction.isoCurrencyCode)}
           </div>
         </div>
@@ -577,9 +575,7 @@ function TransactionAmountField() {
   );
 }
 
-/**
- * TransactionDateField Component - with inline editing support
- */
+/** TransactionDateField Component - with inline editing support */
 function TransactionDateField() {
   const {
     transaction,
@@ -587,7 +583,7 @@ function TransactionDateField() {
     isEditMode,
     handleFieldChange,
     editedValues,
-    updateTransactionData
+    updateTransactionData,
   } = useTransactionContext();
   const updateTransaction = useUpdateTransaction();
 
@@ -634,11 +630,13 @@ function TransactionDateField() {
         onSettled: () => {
           setIsSaving(false);
           setIsEditing(false);
-        }
+        },
       });
     } catch (error) {
       console.error('Failed to update transaction date:', error);
-      toast.error(`Failed to update transaction date: ${error instanceof Error ? error.message : String(error)}`);
+      toast.error(
+        `Failed to update transaction date: ${error instanceof Error ? error.message : String(error)}`
+      );
       setIsSaving(false);
     }
   };
@@ -667,7 +665,10 @@ function TransactionDateField() {
     return (
       <div className="relative mb-2 flex flex-col rounded-xl border border-violet-200/40 bg-gradient-to-br from-violet-50/80 to-indigo-50/50 shadow-sm">
         <div className="flex items-center justify-between px-3 pt-2">
-          <span className="text-xs font-medium text-violet-700" title={fieldDescriptions.date}>
+          <span
+            className="text-xs font-medium text-violet-700"
+            title={fieldDescriptions.date}
+          >
             Date
           </span>
         </div>
@@ -678,44 +679,44 @@ function TransactionDateField() {
                 date={dateValue}
                 onDateChange={setDateValue}
                 placeholder="Select transaction date"
-                mode="single"
-                selected={dateValue}
                 className="w-full"
               />
             </div>
-            <div className="flex items-center justify-end gap-2 mt-2">
+            <div className="mt-2 flex items-center justify-end gap-2">
               <Button
                 size="sm"
                 variant="outline"
                 className={cn(
-                  'h-8 px-3 text-xs rounded-md',
-                  'text-rose-500 hover:bg-rose-50 hover:text-rose-600 border-rose-200',
+                  'h-8 rounded-md px-3 text-xs',
+                  'border-rose-200 text-rose-500 hover:bg-rose-50 hover:text-rose-600',
                   'transition-all duration-200'
                 )}
                 onClick={() => {
-                  setDateValue(transaction.date ? new Date(transaction.date) : undefined);
+                  setDateValue(
+                    transaction.date ? new Date(transaction.date) : undefined
+                  );
                   setIsEditing(false);
                 }}
                 disabled={isSaving}
               >
-                <X className="h-3.5 w-3.5 mr-1" />
+                <X className="mr-1 h-3.5 w-3.5" />
                 Cancel
               </Button>
               <Button
                 size="sm"
                 variant="outline"
                 className={cn(
-                  'h-8 px-3 text-xs rounded-md',
-                  'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 border-emerald-200',
+                  'h-8 rounded-md px-3 text-xs',
+                  'border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700',
                   'transition-all duration-200'
                 )}
                 onClick={handleSave}
                 disabled={isSaving}
               >
                 {isSaving ? (
-                  <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                  <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
                 ) : (
-                  <Save className="h-3.5 w-3.5 mr-1" />
+                  <Save className="mr-1 h-3.5 w-3.5" />
                 )}
                 Save
               </Button>
@@ -728,11 +729,12 @@ function TransactionDateField() {
 
   // Normal display mode
   return (
-    <div
-      className="relative mb-2 flex flex-col rounded-xl hover:bg-violet-50/20 transition-all duration-300"
-    >
+    <div className="relative mb-2 flex flex-col rounded-xl transition-all duration-300 hover:bg-violet-50/20">
       <div className="flex items-center justify-between px-3 pt-2">
-        <span className="text-xs font-medium text-foreground/70" title={fieldDescriptions.date}>
+        <span
+          className="text-xs font-medium text-foreground/70"
+          title={fieldDescriptions.date}
+        >
           Date
         </span>
         <Button
@@ -1090,8 +1092,8 @@ function TransactionStatusField() {
 /**
  * TransactionInfoSection Component
  *
- * The main container component for displaying transaction information.
- * Now with inline editing capabilities.
+ * The main container component for displaying transaction information. Now with
+ * inline editing capabilities.
  */
 export function TransactionInfoSection() {
   const { isEditMode } = useTransactionContext();

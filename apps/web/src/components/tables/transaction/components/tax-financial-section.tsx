@@ -16,9 +16,7 @@ import { toast } from 'sonner';
 import { useTransactionContext } from './transaction-context';
 import { useUpdateTransaction } from '@/trpc/hooks/transaction-hooks';
 
-/**
- * ToggleProperty - A simple property toggle component
- */
+/** ToggleProperty - A simple property toggle component */
 function ToggleProperty({
   label,
   field,
@@ -39,7 +37,7 @@ function ToggleProperty({
       <div className="flex items-center space-x-2">
         <Label
           htmlFor={`toggle-${field}`}
-          className="text-sm font-medium cursor-pointer"
+          className="cursor-pointer text-sm font-medium"
           title={tooltip}
         >
           {label}
@@ -66,7 +64,8 @@ function ToggleProperty({
  * information, including tax status, amounts, rates, and business information.
  */
 export function TaxFinancialSection() {
-  const { transaction, isEditMode, updateTransactionData } = useTransactionContext();
+  const { transaction, isEditMode, updateTransactionData } =
+    useTransactionContext();
   const updateTransaction = useUpdateTransaction();
   const [updatingField, setUpdatingField] = useState<string | null>(null);
 
@@ -93,23 +92,22 @@ export function TaxFinancialSection() {
     const updateData = {
       id: transaction.id,
       data: {
-        [field]: value
-      }
+        [field]: value,
+      },
     };
 
-    console.log(`[TaxFinancialSection] Updating ${field} to ${value}`, updateData);
 
     // Update transaction
     updateTransaction.mutate(updateData, {
       onSuccess: (data) => {
-        console.log(`[TaxFinancialSection] Update success:`, data);
-
         // Update local transaction state with the new value
         updateTransactionData({
-          [field]: value
+          [field]: value,
         });
 
-        toast.success(`${field.replace(/([A-Z])/g, ' $1').toLowerCase()} updated`);
+        toast.success(
+          `${field.replace(/([A-Z])/g, ' $1').toLowerCase()} updated`
+        );
       },
       onError: (error) => {
         console.error(`[TaxFinancialSection] Update error:`, error);
@@ -117,21 +115,9 @@ export function TaxFinancialSection() {
       },
       onSettled: () => {
         setUpdatingField(null);
-      }
+      },
     });
   };
-
-  // Debug log to check if values are actually present in the transaction object
-  useEffect(() => {
-    console.log(`[TaxFinancialSection] Transaction state:`, {
-      taxDeductible: transaction.taxDeductible,
-      taxExempt: transaction.taxExempt,
-      reimbursable: transaction.reimbursable,
-      excludeFromBudget: transaction.excludeFromBudget,
-      plannedExpense: transaction.plannedExpense,
-      discretionary: transaction.discretionary,
-    });
-  }, [transaction]);
 
   // Helper to render toggle fields
   const renderToggleField = (label: string, field: string) => (
@@ -191,12 +177,12 @@ export function TaxFinancialSection() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-            {renderToggleField("Tax Deductible", "taxDeductible")}
-            {renderToggleField("Tax Exempt", "taxExempt")}
-            {renderToggleField("Exclude from Budget", "excludeFromBudget")}
-            {renderToggleField("Reimbursable", "reimbursable")}
-            {renderToggleField("Planned Expense", "plannedExpense")}
-            {renderToggleField("Discretionary", "discretionary")}
+            {renderToggleField('Tax Deductible', 'taxDeductible')}
+            {renderToggleField('Tax Exempt', 'taxExempt')}
+            {renderToggleField('Exclude from Budget', 'excludeFromBudget')}
+            {renderToggleField('Reimbursable', 'reimbursable')}
+            {renderToggleField('Planned Expense', 'plannedExpense')}
+            {renderToggleField('Discretionary', 'discretionary')}
           </div>
         )}
 

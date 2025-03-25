@@ -21,9 +21,7 @@ import { toast } from 'sonner';
 import { useTransactionContext } from './transaction-context';
 import { useUpdateTransactionCategory } from '@/trpc/hooks/transaction-hooks';
 
-/**
- * CategorySelectionMenu - Component for the category dropdown menu
- */
+/** CategorySelectionMenu - Component for the category dropdown menu */
 interface CategorySelectionMenuProps {
   currentCategory: string | null;
   updatingCategory: string | null;
@@ -37,7 +35,7 @@ function CategorySelectionMenu({
   updatingCategory,
   onCategorySelect,
   menuLabel,
-  options
+  options,
 }: CategorySelectionMenuProps) {
   // Group options by first letter
   const groups: Record<string, React.ReactNode[]> = {};
@@ -53,14 +51,18 @@ function CategorySelectionMenu({
         key={category}
         onClick={() => onCategorySelect(category)}
         disabled={updatingCategory !== null}
-        className={`mb-1 flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 transition-colors ${category === currentCategory
-          ? 'bg-primary/10 font-medium text-primary-foreground/90'
-          : 'hover:bg-accent/50'
-          }`}
+        className={`mb-1 flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 transition-colors ${
+          category === currentCategory
+            ? 'bg-primary/10 font-medium text-primary-foreground/90'
+            : 'hover:bg-accent/50'
+        }`}
       >
         <div
-          className={`flex h-7 w-7 items-center justify-center rounded-full border bg-background shadow-sm ${category === currentCategory ? 'border-primary/30' : 'border-border/30'
-            } ${updatingCategory === category ? 'animate-pulse' : ''}`}
+          className={`flex h-7 w-7 items-center justify-center rounded-full border bg-background shadow-sm ${
+            category === currentCategory
+              ? 'border-primary/30'
+              : 'border-border/30'
+          } ${updatingCategory === category ? 'animate-pulse' : ''}`}
         >
           {updatingCategory === category ? (
             <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -90,9 +92,7 @@ function CategorySelectionMenu({
   );
 }
 
-/**
- * CategoryField - Reusable component for category-related fields
- */
+/** CategoryField - Reusable component for category-related fields */
 interface CategoryFieldProps {
   fieldName: string;
   label: string;
@@ -114,7 +114,7 @@ function CategoryField({
   options,
   isEditMode,
   selectOptions,
-  badgeType
+  badgeType,
 }: CategoryFieldProps) {
   if (isEditMode) {
     // In edit mode, use the standard FieldRenderer with select options
@@ -211,7 +211,8 @@ function CategoryField({
 }
 
 /**
- * CategorySelector - Component for selecting and displaying the main transaction category
+ * CategorySelector - Component for selecting and displaying the main
+ * transaction category
  */
 interface CategorySelectorProps {
   category: keyof typeof categoryColors | null;
@@ -242,9 +243,7 @@ function CategorySelector({
   );
 }
 
-/**
- * BudgetCategoryFields - Component for budget-related category fields
- */
+/** BudgetCategoryFields - Component for budget-related category fields */
 function BudgetCategoryFields() {
   return (
     <>
@@ -255,9 +254,7 @@ function BudgetCategoryFields() {
   );
 }
 
-/**
- * FiscalPeriodSection - Component for fiscal period information
- */
+/** FiscalPeriodSection - Component for fiscal period information */
 interface FiscalPeriodSectionProps {
   fiscalYear?: string | number | null;
   fiscalMonth?: string | number | null;
@@ -279,8 +276,12 @@ function FiscalPeriodSection({
         label="Fiscal Period"
         tooltip="Financial period to which this transaction belongs"
       />
-      {fiscalYear && <DetailRow label="Fiscal Year" value={String(fiscalYear)} />}
-      {fiscalMonth && <DetailRow label="Fiscal Month" value={String(fiscalMonth)} />}
+      {fiscalYear && (
+        <DetailRow label="Fiscal Year" value={String(fiscalYear)} />
+      )}
+      {fiscalMonth && (
+        <DetailRow label="Fiscal Month" value={String(fiscalMonth)} />
+      )}
       {fiscalQuarter && (
         <DetailRow label="Fiscal Quarter" value={String(fiscalQuarter)} />
       )}
@@ -288,9 +289,7 @@ function FiscalPeriodSection({
   );
 }
 
-/**
- * TagsAndLabelsSection - Component for displaying tags and labels
- */
+/** TagsAndLabelsSection - Component for displaying tags and labels */
 interface TagsAndLabelsSectionProps {
   insightTags?: string[] | null;
   labels?: string[] | null;
@@ -303,10 +302,7 @@ function TagsAndLabelsSection({
   return (
     <>
       {insightTags && insightTags.length > 0 && (
-        <DetailRow
-          label="Insight Tags"
-          value={insightTags.join(', ')}
-        />
+        <DetailRow label="Insight Tags" value={insightTags.join(', ')} />
       )}
 
       {labels && labels.length > 0 && (
