@@ -1,10 +1,9 @@
 import * as Plot from '@observablehq/plot'
 import * as d3 from 'd3'
 
-import { SchemasType, schemas } from './types'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { GeistMono } from 'geist/font/mono'
+import { SchemasType } from './types'
 import { getValueFormatter } from './utils'
 
 const getTicks = (timestamps: Date[], maxTicks: number = 10): Date[] => {

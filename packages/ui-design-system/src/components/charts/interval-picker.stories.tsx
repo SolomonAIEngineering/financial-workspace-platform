@@ -1,10 +1,9 @@
 // Import the component directly
 import * as IntervalPickerFile from './interval-picker';
 
-import { Meta, StoryObj } from '@storybook/react';
-
 import React from 'react';
 import { SchemasType } from './types';
+import { StoryObj } from '@storybook/react';
 import { useState } from 'react';
 
 // Get the default export component
