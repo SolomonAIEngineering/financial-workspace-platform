@@ -1,10 +1,8 @@
 import { Calendar, CreditCard, DollarSign, Store } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 
-import React from 'react';
 import { StatusBadge } from './status-badge';
 import { cn } from '@/lib/utils';
-import { formatAmount } from '../utils/transaction-formatters';
 import { formatCurrency } from '../utils/format-utils';
 
 /** Status mapping for transaction status to StatusBadge status type */

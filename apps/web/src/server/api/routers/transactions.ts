@@ -297,31 +297,18 @@ export const transactionsRouter = createRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, data } = input;
-      console.log(`[updateTransaction] Starting update for transaction ${id}`, {
-        userId: ctx.userId,
-        dataFields: Object.keys(data)
-      });
 
       try {
         // Check if transaction exists and belongs to user
-        console.log(`[updateTransaction] Checking if transaction exists and belongs to user`);
         const existingTransaction = await prisma.transaction.findUnique({
           where: { id },
           select: {
             id: true,
             userId: true,
-          }
-        });
-
-        console.log(`[updateTransaction] Transaction lookup result:`, {
-          found: !!existingTransaction,
-          userId: existingTransaction?.userId,
-          requestUserId: ctx.userId,
-          matches: existingTransaction?.userId === ctx.userId
+          },
         });
 
         if (!existingTransaction) {
-          console.log(`[updateTransaction] Transaction not found: ${id}`);
           throw new TRPCError({
             code: 'NOT_FOUND',
             message: 'Transaction not found',
@@ -329,7 +316,6 @@ export const transactionsRouter = createRouter({
         }
 
         if (existingTransaction.userId !== ctx.userId) {
-          console.log(`[updateTransaction] User unauthorized: ${ctx.userId} != ${existingTransaction.userId}`);
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'You do not have permission to modify this transaction',
@@ -337,16 +323,8 @@ export const transactionsRouter = createRouter({
         }
 
         const now = new Date();
-        console.log(`[updateTransaction] Starting database transaction for ${id}`);
-
         // Execute in a transaction for atomicity
         return await prisma.$transaction(async (tx) => {
-          console.log(`[updateTransaction] Preparing update with data:`, {
-            transactionId: id,
-            dataKeys: Object.keys(data),
-            dataValues: JSON.stringify(data).substring(0, 200) + (JSON.stringify(data).length > 200 ? '...' : '')
-          });
-
           try {
             const updatedTransaction = await tx.transaction.update({
               where: { id },
@@ -357,15 +335,16 @@ export const transactionsRouter = createRouter({
               },
             });
 
-            console.log(`[updateTransaction] Update successful for ${id}`);
-
             return {
               ...updatedTransaction,
               updated: true,
-              timestamp: now
+              timestamp: now,
             };
           } catch (txError) {
-            console.error(`[updateTransaction] Error during transaction update:`, txError);
+            console.error(
+              `[updateTransaction] Error during transaction update:`,
+              txError
+            );
             throw txError; // Re-throw to be caught by the outer try/catch
           }
         });
@@ -373,7 +352,7 @@ export const transactionsRouter = createRouter({
         if (error instanceof TRPCError) {
           console.error(`[updateTransaction] TRPC Error:`, {
             code: error.code,
-            message: error.message
+            message: error.message,
           });
           throw error;
         }
@@ -381,7 +360,7 @@ export const transactionsRouter = createRouter({
         console.error(`[updateTransaction] Unexpected error for ${id}:`, {
           error: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined,
-          data: Object.keys(data)
+          data: Object.keys(data),
         });
 
         throw new TRPCError({
@@ -758,7 +737,7 @@ export const transactionsRouter = createRouter({
 
         // Check if this tag already exists (case-insensitive)
         const isDuplicate = updatedTags.some(
-          existingTag => existingTag.toLowerCase() === tag.toLowerCase()
+          (existingTag) => existingTag.toLowerCase() === tag.toLowerCase()
         );
 
         // Only add if it's not a duplicate
@@ -996,8 +975,8 @@ export const transactionsRouter = createRouter({
           select: {
             id: true,
             userId: true,
-            assigneeId: true
-          }
+            assigneeId: true,
+          },
         });
 
         if (!existingTransaction) {
@@ -1026,7 +1005,8 @@ export const transactionsRouter = createRouter({
           if (!teamMember) {
             throw new TRPCError({
               code: 'BAD_REQUEST',
-              message: 'Invalid team member: User is not part of the specified team',
+              message:
+                'Invalid team member: User is not part of the specified team',
             });
           }
         }
@@ -1049,7 +1029,7 @@ export const transactionsRouter = createRouter({
           return {
             ...fullTransaction,
             unchanged: true,
-            message: 'No changes were needed'
+            message: 'No changes were needed',
           };
         }
 
@@ -1084,7 +1064,7 @@ export const transactionsRouter = createRouter({
           return {
             ...updatedTransaction,
             updated: true,
-            timestamp: now
+            timestamp: now,
           };
         });
       } catch (error) {
@@ -1345,11 +1325,13 @@ export const transactionsRouter = createRouter({
 
       // Get existing tags from the transaction
       const existingTags = existingTransaction.tags || [];
-      const lowerCaseExistingTags = new Set(existingTags.map(tag => tag.toLowerCase()));
+      const lowerCaseExistingTags = new Set(
+        existingTags.map((tag) => tag.toLowerCase())
+      );
 
       // Only add tags that don't already exist (case-insensitive)
       const tagsToAdd = uniqueInputTags.filter(
-        tag => !lowerCaseExistingTags.has(tag.toLowerCase())
+        (tag) => !lowerCaseExistingTags.has(tag.toLowerCase())
       );
 
       // Combine existing tags with new unique tags
@@ -1404,7 +1386,9 @@ export const transactionsRouter = createRouter({
         // Implement notification logic here
       }
 
-      console.warn('The assignTransaction endpoint is deprecated. Please use updateAssignedTo instead.');
+      console.warn(
+        'The assignTransaction endpoint is deprecated. Please use updateAssignedTo instead.'
+      );
       return updatedTransaction;
     }),
 
@@ -1429,7 +1413,7 @@ export const transactionsRouter = createRouter({
         select: { id: true, tags: true },
       });
 
-      const existingIds = existingTransactions.map(tx => tx.id);
+      const existingIds = existingTransactions.map((tx) => tx.id);
 
       if (existingIds.length !== transactionIds.length) {
         throw new TRPCError({
@@ -1451,7 +1435,7 @@ export const transactionsRouter = createRouter({
 
               // Check if this tag already exists (case-insensitive)
               const isDuplicate = newTags.some(
-                existingTag => existingTag.toLowerCase() === tag.toLowerCase()
+                (existingTag) => existingTag.toLowerCase() === tag.toLowerCase()
               );
 
               // Only add if it's not a duplicate
@@ -1461,7 +1445,7 @@ export const transactionsRouter = createRouter({
             }
           } else if (operation === 'add') {
             // Add tags without duplicates (case-insensitive)
-            const currentTags = tx.tags as string[] || [];
+            const currentTags = (tx.tags as string[]) || [];
 
             newTags = [...currentTags];
 
@@ -1471,7 +1455,7 @@ export const transactionsRouter = createRouter({
 
               // Check if this tag already exists in the current tags (case-insensitive)
               const isDuplicate = newTags.some(
-                existingTag => existingTag.toLowerCase() === tag.toLowerCase()
+                (existingTag) => existingTag.toLowerCase() === tag.toLowerCase()
               );
 
               // Only add if it's not a duplicate
@@ -1481,13 +1465,15 @@ export const transactionsRouter = createRouter({
             }
           } else if (operation === 'remove') {
             // Remove specified tags (case-insensitive)
-            const currentTags = tx.tags as string[] || [];
+            const currentTags = (tx.tags as string[]) || [];
 
             // Keep tags that don't match any in the remove list (case-insensitive)
-            newTags = currentTags.filter(currentTag =>
-              !tags.some(tagToRemove =>
-                tagToRemove.toLowerCase() === currentTag.toLowerCase()
-              )
+            newTags = currentTags.filter(
+              (currentTag) =>
+                !tags.some(
+                  (tagToRemove) =>
+                    tagToRemove.toLowerCase() === currentTag.toLowerCase()
+                )
             );
           }
 
@@ -1530,8 +1516,10 @@ export const transactionsRouter = createRouter({
           select: { id: true },
         });
 
-        const existingIds = existingTransactions.map(tx => tx.id);
-        const missingIds = transactionIds.filter(id => !existingIds.includes(id));
+        const existingIds = existingTransactions.map((tx) => tx.id);
+        const missingIds = transactionIds.filter(
+          (id) => !existingIds.includes(id)
+        );
 
         if (existingIds.length !== transactionIds.length) {
           throw new TRPCError({
@@ -1553,7 +1541,8 @@ export const transactionsRouter = createRouter({
           if (!teamMember) {
             throw new TRPCError({
               code: 'BAD_REQUEST',
-              message: 'Invalid team member: User is not part of the specified team',
+              message:
+                'Invalid team member: User is not part of the specified team',
             });
           }
         }
@@ -1583,7 +1572,7 @@ export const transactionsRouter = createRouter({
               amount: true,
               date: true,
               assigneeId: true,
-              assignedAt: true
+              assignedAt: true,
             },
           });
 
@@ -1596,7 +1585,7 @@ export const transactionsRouter = createRouter({
             count: updateResult.count,
             success: true,
             updatedTransactions,
-            timestamp: now
+            timestamp: now,
           };
         });
       } catch (error) {

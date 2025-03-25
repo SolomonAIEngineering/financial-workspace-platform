@@ -1,3 +1,5 @@
+'use server';
+
 import { authActionClient } from '../safe-action';
 import { revalidatePath } from 'next/cache';
 import { trpc } from '@/trpc/server';

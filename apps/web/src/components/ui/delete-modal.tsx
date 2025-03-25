@@ -4,14 +4,12 @@ import * as React from 'react';
 
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 } from '@/components/ui/alert-dialog';
 import { Button, ButtonProps } from '@/registry/default/potion-ui/button';
 import { Check, ShieldAlert, Trash, XCircle } from 'lucide-react';
@@ -217,8 +215,8 @@ export function DeleteModal({
               className={cn(
                 '',
                 confirmationText &&
-                  confirmationText !== confirmationWord &&
-                  'border-destructive'
+                confirmationText !== confirmationWord &&
+                'border-destructive'
               )}
               placeholder={`Type ${confirmationWord} here`}
               autoFocus

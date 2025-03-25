@@ -12,6 +12,7 @@ import { ConnectTransactionsButton } from '../bank-connection/connect-transactio
 import { ConnectTransactionsModal } from '@/components/modals/connect-transactions-modal';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { routes } from '@/lib/navigation/routes';
 import { skipBankConnection } from '@/actions/bank/skip-bank-connection';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -20,11 +21,13 @@ import { useState } from 'react';
 interface BankConnectionFormProps {
   userId: string;
   teamId: string;
+  redirectTo?: string;
 }
 
 export function BankConnectionForm({
   userId,
   teamId,
+  redirectTo = routes.onboardingComplete(),
 }: BankConnectionFormProps) {
   const router = useRouter();
   const [isSkipping, setIsSkipping] = useState(false);
@@ -71,7 +74,9 @@ export function BankConnectionForm({
 
       // Add small delay to ensure toast is visible
       setTimeout(() => {
-        router.push('/onboarding/complete');
+        // NOTE: this redirect to will always be onboarding/complete
+        // because we want to redirect to the complete page after skipping
+        router.push(redirectTo);
       }, 1500);
     } catch (error) {
       console.error('Failed to skip bank connection:', error);
@@ -170,6 +175,7 @@ export function BankConnectionForm({
                     whileTap={{ scale: 0.98 }}
                   >
                     <ConnectTransactionsButton
+                      redirectTo={redirectTo}
                       userId={userId}
                       buttonProps={{
                         size: 'default',
@@ -227,8 +233,10 @@ export function BankConnectionForm({
         <ConnectTransactionsModal
           countryCode="US"
           userId={userId}
+          teamId={teamId}
           _isOpenOverride={showConnectModal}
           _onCloseOverride={() => setShowConnectModal(false)}
+          pathname={redirectTo}
         />
       )}
     </>

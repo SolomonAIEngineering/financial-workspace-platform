@@ -1060,6 +1060,12 @@
           "items": {
             "$ref": "#/definitions/Team"
           }
+        },
+        "enrollmentId": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -2861,6 +2867,13 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "isDefault": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
         },
         "users": {
           "type": "array",

@@ -1,6 +1,6 @@
-import { fixupConfigRules } from '@eslint/compat';
-
 import { compat, defineConfig } from '../utils.js';
+
+import { fixupConfigRules } from '@eslint/compat';
 
 export default defineConfig(
   ...fixupConfigRules(compat.extends('plugin:react/recommended')),
@@ -15,7 +15,7 @@ export default defineConfig(
 
       'jsx-a11y/click-events-have-key-events': 'off',
       'jsx-a11y/heading-has-content': 'off',
-
+      'jsx-a11y/no-noninteractive-tabindex': 'off',
       'jsx-a11y/html-has-lang': 'off',
       'jsx-a11y/interactive-supports-focus': 'off',
       'jsx-a11y/media-has-caption': 'off',

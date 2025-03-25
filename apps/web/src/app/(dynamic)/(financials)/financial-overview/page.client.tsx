@@ -8,18 +8,15 @@ import {
   BankAccountDetail,
   BankAccountsHeader,
   BankAccountsList,
-  WelcomeHeader,
   animationStyles,
   convertBankAccountsToCardData,
 } from '@/components/financial-overview';
 import { AccountType, BankAccount } from '@solomonai/prisma';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/registry/default/potion-ui/button';
 import { ConnectTransactionsButton } from '@/components/bank-connection/connect-transactions-button';
-import { CreditCard } from 'lucide-react';
-import { PlusCircleIcon } from '@heroicons/react/24/outline';
 import React from 'react';
+import { routes } from '@/lib/navigation/routes';
 import { useCurrentUser } from '@/components/auth/useCurrentUser';
 
 // Add CSS to hide scrollbars
@@ -108,6 +105,7 @@ export default function FinancialOverviewClient({
                   <div className="group relative">
                     <div className="absolute -inset-0.5 animate-pulse rounded-lg bg-primary opacity-60 blur transition duration-1000 group-hover:opacity-100 group-hover:duration-200"></div>
                     <ConnectTransactionsButton
+                      redirectTo={routes.financialOverview()}
                       userId={user?.id ?? ''}
                       buttonProps={{
                         size: 'lg',

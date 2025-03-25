@@ -301,6 +301,7 @@ export type BankConnection = {
   expiryNotificationCount: Generated<number>
   expiresAt: Timestamp | null
   provider: string
+  enrollmentId: string | null
 }
 export type BankConnectionToTeam = {
   A: string
@@ -659,6 +660,7 @@ export type Team = {
   document_classification: boolean | null
   flags: Generated<string[]>
   created_at: Generated<Timestamp>
+  is_default: Generated<boolean | null>
 }
 export type TrackerEntry = {
   id: string

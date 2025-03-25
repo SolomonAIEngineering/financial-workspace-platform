@@ -19,4 +19,4 @@ export { TopCategories } from './top-categories';
 
 // Types and utils
 export * from './types';
-export * from './utils'; 
+export * from './utils';

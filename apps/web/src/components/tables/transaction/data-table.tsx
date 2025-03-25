@@ -426,7 +426,8 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
         <div
           className={cn(
             'flex max-w-full flex-1 flex-col border-gray-300 md:p-[2%]',
-            showFilterSidebar && 'group-data-[expanded=true]/controls:sm:max-w-[calc(100vw_-_208px)] group-data-[expanded=true]/controls:md:max-w-[calc(100vw_-_288px)]'
+            showFilterSidebar &&
+              'group-data-[expanded=true]/controls:sm:max-w-[calc(100vw_-_208px)] group-data-[expanded=true]/controls:md:max-w-[calc(100vw_-_288px)]'
           )}
         >
           <div
@@ -515,9 +516,9 @@ export function DataTable<TData, TValue, TMeta = Record<string, unknown>>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
                           {header.column.getCanResize() && (
                             <div
                               onDoubleClick={() => header.column.resetSize()}

@@ -1,8 +1,5 @@
-import * as React from 'react';
-
 import { Calendar, Clock, Edit, RotateCcw } from 'lucide-react';
 
-import { cn } from '@/lib/utils';
 import { formatDate } from './utils';
 
 interface TransactionMetadataProps {

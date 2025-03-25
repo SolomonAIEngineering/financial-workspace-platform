@@ -1,7 +1,6 @@
-import { ArrowRight, Cuboid } from 'lucide-react';
-import { Button, LinkButton } from '@/registry/default/potion-ui/button';
-
+import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
+import { LinkButton } from '@/registry/default/potion-ui/button';
 import { redirect } from 'next/navigation';
 import { routes } from '@/lib/navigation/routes';
 import { trpc } from '@/trpc/server';

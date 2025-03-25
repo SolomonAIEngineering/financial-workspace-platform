@@ -170,6 +170,7 @@ export interface BankConnection {
   expiryNotificationCount: number;
   expiresAt: Date| null;
   provider: string;
+  enrollmentId: string| null;
 }
 
 export interface BankAccount {
@@ -476,6 +477,7 @@ export interface Team {
   documentClassification: boolean| null;
   flags: string[];
   createdAt: Date;
+  isDefault: boolean| null;
 }
 
 export interface UsersOnTeam {

@@ -1,17 +1,14 @@
-import { ConnectTransactionsProvider } from '@/components/bank-connection/connect-transactions-context';
 import { ReactNode } from 'react';
-import { trpc } from '@/trpc/server';
+import { WithUserAndTeamConnectBankProvider } from '@/components/providers/with-user-team-connect-bank-provider';
 
 export default async function BankConnectionLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  const currentUser = (await trpc.layout.app()).currentUser;
-
   return (
-    <ConnectTransactionsProvider defaultUserId={currentUser.id as string}>
+    <WithUserAndTeamConnectBankProvider>
       {children}
-    </ConnectTransactionsProvider>
+    </WithUserAndTeamConnectBankProvider>
   );
 }

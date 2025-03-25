@@ -51,12 +51,10 @@ export function SyncStatus({ bankAccount }: SyncStatusProps) {
         connectionId: bankAccount.bankConnectionId,
       });
 
-      if (result?.data?.success) {
-        setSyncResult({
-          success: true,
-          message: 'Sync started',
-        });
-      }
+      setSyncResult({
+        success: true,
+        message: 'Sync started',
+      });
     } catch (error) {
       setSyncResult({
         success: false,

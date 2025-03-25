@@ -5,7 +5,6 @@ import {
   useUpdateTransactionCategory,
 } from '@/trpc/hooks/transaction-hooks';
 
-import { TransactionCategory } from '@solomonai/prisma/client';
 import { Transaction as TransactionData } from '@solomonai/prisma/client';
 import { api } from '@/trpc/react';
 import { formatDate } from './utils';
@@ -140,8 +139,6 @@ export function TransactionProvider({
 
   // Function to update transaction data locally (without saving to the server)
   const updateTransactionData = (updatedData: Partial<TransactionData>) => {
-    console.log('[updateTransactionData] Input data:', updatedData);
-
     // Process the data to ensure dates are properly formatted for the API
     const processedData = Object.entries(updatedData).reduce(
       (acc, [key, value]) => {
@@ -156,8 +153,6 @@ export function TransactionProvider({
       {} as Record<string, any>
     );
 
-    console.log('[updateTransactionData] Processed data:', processedData);
-
     // Update the local state
     setTransaction((current) => ({
       ...current,
@@ -167,10 +162,6 @@ export function TransactionProvider({
 
     // If there's an onUpdate callback, call it with the processed data
     if (onUpdate) {
-      console.log(
-        '[updateTransactionData] Calling onUpdate with:',
-        processedData
-      );
       onUpdate(processedData);
     }
   };
@@ -210,9 +201,9 @@ export function TransactionProvider({
       processedValue =
         typeof value === 'string'
           ? value
-              .split(',')
-              .map((tag) => tag.trim())
-              .filter(Boolean)
+            .split(',')
+            .map((tag) => tag.trim())
+            .filter(Boolean)
           : [];
     } else if (field === 'date') {
       // Handle date values specially
@@ -230,12 +221,12 @@ export function TransactionProvider({
       // Handle amount values specially
       if (typeof value === 'number') {
         // Ensure it's a properly formatted number with 2 decimal places
-        processedValue = parseFloat(value.toFixed(2));
+        processedValue = Number.parseFloat(value.toFixed(2));
       } else if (typeof value === 'string') {
         // Try to convert string to number
-        const parsedValue = parseFloat(value);
-        if (!isNaN(parsedValue)) {
-          processedValue = parseFloat(parsedValue.toFixed(2));
+        const parsedValue = Number.parseFloat(value);
+        if (!Number.isNaN(parsedValue)) {
+          processedValue = Number.parseFloat(parsedValue.toFixed(2));
         } else {
           console.warn('Invalid amount value:', value);
           return; // Don't update if invalid

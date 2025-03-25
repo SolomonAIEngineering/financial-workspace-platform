@@ -1,4 +1,6 @@
 import { schemaTask } from '@trigger.dev/sdk/v3';
+// Import directly from the source file to avoid circular dependency
+import { syncConnectionJob } from '@/jobs/tasks/bank/sync/connection';
 import { z } from 'zod';
 
 /**
@@ -214,6 +216,11 @@ export const refreshConnectionJob = schemaTask({
     //     throw error;
     //   }
     // },
+
+    await syncConnectionJob.trigger({
+      connectionId,
+      manualSync: true,
+    });
 
     // TODO: Remove placeholder return and implement actual refresh logic
     return {

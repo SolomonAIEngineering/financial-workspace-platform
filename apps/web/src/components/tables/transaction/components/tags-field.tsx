@@ -1,13 +1,12 @@
 import { Loader2, X } from 'lucide-react';
-import React, { useState } from 'react';
 
 import { Badge } from '@/components/ui/badge';
-import { DetailRow } from './detail-row';
 import { EditableDetailRow } from './editable-detail-row';
 import { api } from '@/trpc/react';
 import { fieldDescriptions } from './field-descriptions';
 import { toast } from 'sonner';
 import { useRemoveTransactionTag } from '@/trpc/hooks/transaction-hooks';
+import { useState } from 'react';
 import { useTransactionContext } from './transaction-context';
 
 /**

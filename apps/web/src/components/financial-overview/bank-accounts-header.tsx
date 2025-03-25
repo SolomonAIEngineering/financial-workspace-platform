@@ -1,5 +1,6 @@
 import { ConnectTransactionsButton } from '@/components/bank-connection/connect-transactions-button';
 import React from 'react';
+import { routes } from '@/lib/navigation/routes';
 
 /** Props for the BankAccountsHeader component */
 interface BankAccountsHeaderProps {
@@ -24,6 +25,7 @@ export const BankAccountsHeader: React.FC<BankAccountsHeaderProps> = ({
     </div>
 
     <ConnectTransactionsButton
+      redirectTo={routes.financialOverview()}
       userId={userId}
       buttonProps={{
         variant: 'secondary',

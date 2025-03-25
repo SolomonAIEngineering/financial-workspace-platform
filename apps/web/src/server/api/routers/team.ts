@@ -144,6 +144,24 @@ export const teamRouter = createRouter({
       return team;
     }),
 
+  // Get the default team for the current user
+  getDefaultTeam: protectedProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx;
+
+    const team = await prisma.team.findFirst({
+      where: {
+        usersOnTeam: {
+          some: {
+            userId,
+          },
+        },
+        isDefault: true,
+      },
+    });
+
+    return team;
+  }),
+
   // Get all teams for the current user
   getAll: protectedProcedure.query(async ({ ctx }) => {
     const { userId } = ctx;
@@ -869,116 +887,122 @@ export const teamRouter = createRouter({
     }),
 
   // Get team members
-  getMembers: protectedProcedure
-    .query(async ({ ctx }) => {
-      try {
-        // Fetch teams the user belongs to
-        const userTeams = await prisma.usersOnTeam.findMany({
-          where: { userId: ctx.userId },
-          select: { teamId: true },
-        });
+  getMembers: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      // Fetch teams the user belongs to
+      const userTeams = await prisma.usersOnTeam.findMany({
+        where: { userId: ctx.userId },
+        select: { teamId: true },
+      });
 
-        if (!userTeams.length) {
-          return [];
-        }
-
-        const teamIds = userTeams.map(team => team.teamId);
-
-        // Get all members from the user's teams
-        const teamMembers = await prisma.usersOnTeam.findMany({
-          where: {
-            teamId: { in: teamIds }
-          },
-          select: {
-            id: true,
-            role: true,
-            user: {
-              select: {
-                id: true,
-                name: true,
-                firstName: true,
-                lastName: true,
-                profileImageUrl: true,
-                email: true,
-              }
-            }
-          }
-        });
-
-        // Transform to expected format
-        return teamMembers.map(member => ({
-          id: member.user.id,
-          name: member.user.name || `${member.user.firstName || ''} ${member.user.lastName || ''}`.trim() || member.user.email || 'Unknown User',
-          avatar: member.user.profileImageUrl,
-          role: member.role,
-        }));
-      } catch (error) {
-        console.error('Failed to fetch team members:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch team members',
-        });
+      if (!userTeams.length) {
+        return [];
       }
-    }),
+
+      const teamIds = userTeams.map((team) => team.teamId);
+
+      // Get all members from the user's teams
+      const teamMembers = await prisma.usersOnTeam.findMany({
+        where: {
+          teamId: { in: teamIds },
+        },
+        select: {
+          id: true,
+          role: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              firstName: true,
+              lastName: true,
+              profileImageUrl: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      // Transform to expected format
+      return teamMembers.map((member) => ({
+        id: member.user.id,
+        name:
+          member.user.name ||
+          `${member.user.firstName || ''} ${member.user.lastName || ''}`.trim() ||
+          member.user.email ||
+          'Unknown User',
+        avatar: member.user.profileImageUrl,
+        role: member.role,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch team members:', error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to fetch team members',
+      });
+    }
+  }),
 
   // Get team members with team information
-  getMembersWithTeams: protectedProcedure
-    .query(async ({ ctx }) => {
-      try {
-        // Fetch teams the user belongs to
-        const userTeams = await prisma.usersOnTeam.findMany({
-          where: { userId: ctx.userId },
-          select: { teamId: true },
-        });
+  getMembersWithTeams: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      // Fetch teams the user belongs to
+      const userTeams = await prisma.usersOnTeam.findMany({
+        where: { userId: ctx.userId },
+        select: { teamId: true },
+      });
 
-        if (!userTeams.length) {
-          return [];
-        }
-
-        const teamIds = userTeams.map(team => team.teamId);
-
-        // Get all members from the user's teams - include team information
-        const teamMembers = await prisma.usersOnTeam.findMany({
-          where: {
-            teamId: { in: teamIds }
-          },
-          select: {
-            id: true,
-            role: true,
-            team: {
-              select: {
-                id: true,
-                name: true,
-              }
-            },
-            user: {
-              select: {
-                id: true,
-                name: true,
-                firstName: true,
-                lastName: true,
-                profileImageUrl: true,
-                email: true,
-              }
-            }
-          }
-        });
-
-        // Transform to expected format with team information
-        return teamMembers.map(member => ({
-          id: member.user.id,
-          name: member.user.name || `${member.user.firstName || ''} ${member.user.lastName || ''}`.trim() || member.user.email || 'Unknown User',
-          avatar: member.user.profileImageUrl,
-          role: member.role,
-          teamId: member.team.id,
-          teamName: member.team.name,
-        }));
-      } catch (error) {
-        console.error('Failed to fetch team members with teams:', error);
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to fetch team members with teams',
-        });
+      if (!userTeams.length) {
+        return [];
       }
-    }),
+
+      const teamIds = userTeams.map((team) => team.teamId);
+
+      // Get all members from the user's teams - include team information
+      const teamMembers = await prisma.usersOnTeam.findMany({
+        where: {
+          teamId: { in: teamIds },
+        },
+        select: {
+          id: true,
+          role: true,
+          team: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              name: true,
+              firstName: true,
+              lastName: true,
+              profileImageUrl: true,
+              email: true,
+            },
+          },
+        },
+      });
+
+      // Transform to expected format with team information
+      return teamMembers.map((member) => ({
+        id: member.user.id,
+        name:
+          member.user.name ||
+          `${member.user.firstName || ''} ${member.user.lastName || ''}`.trim() ||
+          member.user.email ||
+          'Unknown User',
+        avatar: member.user.profileImageUrl,
+        role: member.role,
+        teamId: member.team.id,
+        teamName: member.team.name,
+      }));
+    } catch (error) {
+      console.error('Failed to fetch team members with teams:', error);
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to fetch team members with teams',
+      });
+    }
+  }),
 });

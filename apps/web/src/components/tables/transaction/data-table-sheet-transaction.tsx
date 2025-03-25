@@ -2,15 +2,13 @@
 
 import * as React from 'react';
 
-import { AlertCircle, Trash2 } from 'lucide-react';
 import {
   useDeleteTransaction,
   useUpdateTransaction,
 } from '@/trpc/hooks/transaction-hooks';
 
-import { Button } from '@/registry/default/potion-ui/button';
+import { AlertCircle } from 'lucide-react';
 import type { ColumnSchema } from './schema';
-import { DeleteModal } from '@/components/ui/delete-modal';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { TransactionDetails } from './components/transaction-details';
 import { api } from '@/trpc/react';

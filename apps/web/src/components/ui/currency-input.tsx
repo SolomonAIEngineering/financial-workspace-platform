@@ -84,14 +84,14 @@ export function CurrencyInput({
     setDisplayValue(sanitized);
 
     // Convert to a number and call onChange
-    const numericValue = parseFloat(sanitized) || 0;
+    const numericValue = Number.parseFloat(sanitized) || 0;
     onChange(numericValue);
   };
 
   // Format for display when input loses focus
   const handleBlur = () => {
     // Parse value and ensure it's a number
-    const numericValue = parseFloat(displayValue) || 0;
+    const numericValue = Number.parseFloat(displayValue) || 0;
 
     // Format the value for display
     const formatted = formatter.format(numericValue);
