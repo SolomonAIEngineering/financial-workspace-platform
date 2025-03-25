@@ -301,6 +301,7 @@ export type BankConnection = {
   expiryNotificationCount: Generated<number>
   expiresAt: Timestamp | null
   provider: string
+  enrollmentId: string | null
 }
 export type BankConnectionToTeam = {
   A: string
@@ -660,6 +661,7 @@ export type Team = {
   document_classification: boolean | null
   flags: Generated<string[]>
   created_at: Generated<Timestamp>
+  is_default: Generated<boolean | null>
 }
 export type TrackerEntry = {
   id: string
@@ -709,6 +711,7 @@ export type Transaction = {
   id: string
   userId: string
   bankAccountId: string
+  teamId: string | null
   plaidTransactionId: string | null
   amount: number
   isoCurrencyCode: string | null
@@ -731,6 +734,9 @@ export type Transaction = {
   merchantState: string | null
   merchantZip: string | null
   merchantCountry: string | null
+  assigneeId: string | null
+  assignedAt: Timestamp | null
+  assignedById: string | null
   location: unknown | null
   latitude: number | null
   longitude: number | null

@@ -5,7 +5,7 @@ import {
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { APITransactionListParams } from '@solomon-ai/workspace-financial-backend-sdk/resources/index.js';
-import { AccountType } from '@/server/types/index';
+import { AccountType } from '@solomonai/prisma';
 import { engine as client } from '@/lib/engine';
 import { parseAPIError } from '@/jobs/utils/parse-error';
 import { prisma } from '@/server/db';
@@ -123,6 +123,16 @@ export const syncAccount = schemaTask({
       provider,
       manualSync,
     } = payload;
+
+    // Check if bank account exists before proceeding
+    const bankAccount = await prisma.bankAccount.findUnique({
+      where: { id },
+    });
+
+    if (!bankAccount) {
+      logger.error('Bank account not found, cannot sync', { id, accountId });
+      throw new Error(`Bank account with ID ${id} not found in database`);
+    }
 
     // Create a trace for the entire sync operation
     return await logger.trace('sync-bank-account', async (span) => {

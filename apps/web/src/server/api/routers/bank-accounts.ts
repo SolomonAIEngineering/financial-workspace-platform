@@ -12,7 +12,7 @@ import {
   removeItem,
 } from '@/server/services/plaid';
 
-import { BankAccount } from '@/server/types/prisma';
+import { BankAccount } from '@solomonai/prisma';
 import { ResourceType } from '@/server/services/payment-tier';
 import { TRPCError } from '@trpc/server';
 import { TransactionCategory } from '@solomonai/prisma/client';
@@ -567,9 +567,9 @@ export const bankAccountsRouter = createRouter({
         const monthlyAvgSpending =
           monthlySpendings.length > 0
             ? monthlySpendings.reduce(
-              (acc, curr) => acc + Number.parseFloat(curr.total_amount),
-              0
-            ) / monthlySpendings.length
+                (acc, curr) => acc + Number.parseFloat(curr.total_amount),
+                0
+              ) / monthlySpendings.length
             : 0;
 
         return {
@@ -769,14 +769,14 @@ export const bankAccountsRouter = createRouter({
             bank: isManual
               ? null
               : {
-                id: account.bankConnectionId,
-                name:
-                  account.bankConnection?.institutionName || 'Unknown Bank',
-                logo: account.bankConnection?.logo || null,
-                provider: 'plaid', // Could be extended to support other providers
-                status: account.bankConnection?.status || 'ACTIVE',
-                expires_at: account.bankConnection?.consentExpiresAt || null,
-              },
+                  id: account.bankConnectionId,
+                  name:
+                    account.bankConnection?.institutionName || 'Unknown Bank',
+                  logo: account.bankConnection?.logo || null,
+                  provider: 'plaid', // Could be extended to support other providers
+                  status: account.bankConnection?.status || 'ACTIVE',
+                  expires_at: account.bankConnection?.consentExpiresAt || null,
+                },
           };
         });
 
@@ -788,6 +788,53 @@ export const bankAccountsRouter = createRouter({
           cause: error,
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to fetch team bank accounts',
+        });
+      }
+    }),
+
+  /** Get a single bank account by ID */
+  getById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }): Promise<BankAccount | null> => {
+      try {
+        // Get the authenticated user ID
+        const { userId } = ctx;
+
+        // Fetch the bank account from the database
+        const bankAccount = await prisma.bankAccount.findFirst({
+          where: {
+            id: input.id,
+            userId,
+            deletedAt: null,
+            status: 'ACTIVE',
+          },
+          include: {
+            bankConnection: {
+              select: {
+                institutionName: true,
+                logo: true,
+                primaryColor: true,
+              },
+            },
+          },
+        });
+
+        if (!bankAccount) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Bank account not found',
+          });
+        }
+
+        // Return the account with the format expected by the frontend
+        return bankAccount as unknown as BankAccount;
+      } catch (error) {
+        console.error('Error fetching bank account:', error);
+
+        throw new TRPCError({
+          cause: error,
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch bank account',
         });
       }
     }),

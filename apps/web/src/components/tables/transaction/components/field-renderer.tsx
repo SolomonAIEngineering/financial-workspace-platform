@@ -20,6 +20,9 @@ export interface FieldRendererProps {
   badgeType?: string;
   href?: string;
   suffix?: string;
+  interactive?: boolean;
+  onClick?: () => void;
+  hoverText?: string;
 }
 
 /**
@@ -45,6 +48,9 @@ export function FieldRenderer({
   badgeType,
   href,
   suffix,
+  interactive = false,
+  onClick,
+  hoverText,
 }: FieldRendererProps) {
   const {
     transaction,
@@ -103,6 +109,9 @@ export function FieldRenderer({
         isBadge={isBadge}
         badgeType={badgeType}
         href={href}
+        interactive={interactive}
+        onClick={onClick}
+        hoverText={hoverText}
       />
     );
   }

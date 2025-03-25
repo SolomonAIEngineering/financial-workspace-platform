@@ -9,6 +9,7 @@ import { ConnectTransactionsButton } from '../bank-connection/connect-transactio
 import { Icons } from '@/components/ui/icons';
 import { InfoTooltip } from '@/components/ui/info-tooltip';
 import { cn } from '@/lib/utils';
+import { routes } from '@/lib/navigation/routes';
 
 interface BankAccountSettingsProps {
   userId: string;
@@ -109,6 +110,7 @@ export function BankAccountSettings({ userId }: BankAccountSettingsProps) {
               </div>
               <ConnectTransactionsButton
                 userId={userId}
+                redirectTo={routes.financialOverview()}
                 buttonProps={{
                   variant: 'secondary',
                   size: 'sm',

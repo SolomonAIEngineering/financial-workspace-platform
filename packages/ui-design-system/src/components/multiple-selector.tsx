@@ -2,13 +2,13 @@
 
 import * as React from 'react'
 
-import { Command, CommandGroup, CommandItem, CommandList } from './command'
 import { Command as CommandPrimitive, useCommandState } from 'cmdk'
 import { forwardRef, useEffect } from 'react'
+import { Command, CommandGroup, CommandItem, CommandList } from './command'
 
-import { Badge } from './badge'
 import { X } from 'lucide-react'
 import { cn } from '../utils'
+import { Badge } from './badge'
 
 export interface Option {
   value: string
@@ -559,7 +559,7 @@ const MultipleSelector = React.forwardRef<
                   disabled ||
                   selected.length < 1 ||
                   selected.filter((s) => s.fixed).length === selected.length) &&
-                'hidden',
+                  'hidden',
               )}
             >
               <X className="text-muted-foreground hover:text-foreground size-4" />
@@ -618,10 +618,12 @@ const MultipleSelector = React.forwardRef<
                             className={cn(
                               'w-full cursor-pointer',
                               option.disable &&
-                              'text-muted-foreground cursor-default',
+                                'text-muted-foreground cursor-default',
                             )}
                           >
-                            {renderOption ? (renderOption(option) as any) : option.label}
+                            {renderOption
+                              ? (renderOption(option) as any)
+                              : option.label}
                           </CommandItem>
                         )
                       })}

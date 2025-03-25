@@ -2,15 +2,13 @@
 
 import * as React from 'react';
 
-import { AlertCircle, Trash2 } from 'lucide-react';
 import {
   useDeleteTransaction,
   useUpdateTransaction,
 } from '@/trpc/hooks/transaction-hooks';
 
-import { Button } from '@/registry/default/potion-ui/button';
+import { AlertCircle } from 'lucide-react';
 import type { ColumnSchema } from './schema';
-import { DeleteModal } from '@/components/ui/delete-modal';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { TransactionDetails } from './components/transaction-details';
 import { api } from '@/trpc/react';
@@ -117,17 +115,22 @@ export function TransactionSheetDetails({
   const handleUpdateTransaction = (updatedData: any) => {
     if (!transaction?.id) return;
 
+    console.log('handleUpdateTransaction received:', updatedData);
+
     // Format the data properly for the API
     const apiData = { ...updatedData };
+    console.log('apiData prepared for mutation:', apiData);
 
     // Log the formatted data and the full request
     const updateRequest = {
       id: transaction.id,
       data: apiData,
     };
+    console.log('Update request being sent to mutation:', updateRequest);
 
     updateTransaction.mutate(updateRequest, {
       onSuccess: (data) => {
+        console.log('Transaction update successful:', data);
         // Invalidate queries to refetch data
         void trpc.transactions.getTransactions.invalidate();
         void trpc.transactions.getTransaction.invalidate({
@@ -166,38 +169,14 @@ export function TransactionSheetDetails({
     <>
       <ScrollArea className="scrollbar-hide h-full">
         <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-end px-4">
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => setIsDeleteDialogOpen(true)}
-              className="flex items-center gap-1"
-            >
-              <Trash2 className="h-4 w-4" />
-              Delete
-            </Button>
-          </div>
           <TransactionDetails
             transaction={transaction as any}
             onUpdate={handleUpdateTransaction}
+            onDelete={handleDeleteTransaction}
             key={`${transaction.id}-${updateCounter}`}
           />
         </div>
       </ScrollArea>
-
-      {/* Enhanced DeleteModal with double confirmation */}
-      <DeleteModal
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        title="Delete Transaction"
-        description="Are you sure you want to delete this transaction? This action cannot be undone."
-        secondStageTitle="Confirm Transaction Deletion"
-        secondStageDescription={`This will permanently delete the transaction "${transaction.name || 'Unknown'}" with an amount of ${transaction.amount ? `$${transaction.amount}` : 'unknown amount'}. This action cannot be reversed.`}
-        confirmText="Proceed"
-        finalConfirmText="Permanently Delete"
-        confirmationWord="DELETE"
-        onConfirm={handleDeleteTransaction}
-      />
     </>
   );
 }

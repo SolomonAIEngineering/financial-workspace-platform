@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { BankAccount } from '@/server/types/prisma';
+import { BankAccount } from '@solomonai/prisma';
 // Import from the existing account-connection directory
 import { BankConnections } from '@/components/bank-connection/bank-connections-list';
 import { ManualAccounts } from '@/components/bank-account/manual-accounts';
@@ -63,8 +63,9 @@ interface APIBankAccount {
   id: string;
   name: string;
   type: string;
-  balance: number;
-  currency: string;
+  availableBalance?: number;
+  currentBalance?: number;
+  isoCurrencyCode?: string;
   enabled: boolean;
   manual: boolean;
   bank?: {
@@ -138,15 +139,19 @@ export function BankAccountList() {
           };
         }
 
-        // Add this account to the bank group
+        // Add this account to the bank group using the correct schema properties
         bankMap[bankId].accounts.push({
           id: item.id,
           name: item.name,
           type: item.type,
-          balance: item.balance || 0,
-          currency: item.currency || 'USD',
+          subtype: item.subtype,
+          availableBalance: item.availableBalance,
+          currentBalance: item.currentBalance,
+          isoCurrencyCode: item.isoCurrencyCode || 'USD',
           enabled: item.enabled,
-        } as any);
+          status: item.status,
+          // Add other properties from BankAccount schema as needed
+        } as BankAccount);
       }
 
       // Convert the map to an array

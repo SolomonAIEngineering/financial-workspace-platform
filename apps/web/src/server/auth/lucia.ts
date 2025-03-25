@@ -89,5 +89,5 @@ declare module 'lucia' {
   }
 }
 interface DatabaseSessionAttributes
-  extends Pick<Session, 'ip_address' | 'user_agent'> { }
-interface DatabaseUserAttributes extends PrismaUser { }
+  extends Pick<Session, 'ip_address' | 'user_agent'> {}
+interface DatabaseUserAttributes extends PrismaUser {}

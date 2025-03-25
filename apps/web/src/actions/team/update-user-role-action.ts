@@ -1,3 +1,5 @@
+'use server';
+
 import { TeamRole } from '@solomonai/prisma/client';
 import { authActionClient } from '../safe-action';
 import { revalidatePath } from 'next/cache';

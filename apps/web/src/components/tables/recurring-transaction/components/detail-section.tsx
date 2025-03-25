@@ -1,6 +1,5 @@
 import {
   Activity,
-  BarChart,
   BarChart2,
   Building2,
   Calendar,
@@ -11,7 +10,6 @@ import {
   FileText,
   History,
   Info,
-  Landmark,
   RepeatIcon,
   Settings,
   Tag,

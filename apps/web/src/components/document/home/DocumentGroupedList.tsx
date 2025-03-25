@@ -1,12 +1,10 @@
-import React from 'react';
-
-import type { Document, User } from '@/server/types/index';
-
-import { motion } from 'framer-motion';
+import type { Document, User } from '@solomonai/prisma';
 
 import { DocumentCard } from './DocumentCard';
 import { DocumentSection } from './DocumentSection';
 import { EmptyDocumentState } from './EmptyDocumentState';
+import React from 'react';
+import { motion } from 'framer-motion';
 
 /**
  * Props for the DocumentGroupedList component

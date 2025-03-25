@@ -28,24 +28,15 @@ import type { Value } from '@udecode/plate';
 export const basicNoteTemplate: Value = [
   {
     type: 'p',
-    children: [
-      { text: 'Transaction Purpose: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Transaction Purpose: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Additional Details: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Additional Details: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Follow-up Actions: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Follow-up Actions: ', bold: true }, { text: '' }],
   },
 ];
 
@@ -53,31 +44,19 @@ export const basicNoteTemplate: Value = [
 export const businessExpenseTemplate: Value = [
   {
     type: 'p',
-    children: [
-      { text: 'Business Purpose: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Business Purpose: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Category: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Category: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Attendees: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Attendees: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Tax Deductible: ', bold: true },
-      { text: 'Yes/No' },
-    ],
+    children: [{ text: 'Tax Deductible: ', bold: true }, { text: 'Yes/No' }],
   },
   {
     type: 'p',
@@ -92,38 +71,23 @@ export const businessExpenseTemplate: Value = [
 export const clientTransactionTemplate: Value = [
   {
     type: 'p',
-    children: [
-      { text: 'Client/Customer: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Client/Customer: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Project: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Project: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Invoice #: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Invoice #: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Payment Status: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Payment Status: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Notes: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Notes: ', bold: true }, { text: '' }],
   },
 ];
 
@@ -138,17 +102,11 @@ export const recurringTransactionTemplate: Value = [
   },
   {
     type: 'p',
-    children: [
-      { text: 'Subscription Name: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Subscription Name: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Next Payment Date: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Next Payment Date: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
@@ -159,17 +117,11 @@ export const recurringTransactionTemplate: Value = [
   },
   {
     type: 'p',
-    children: [
-      { text: 'Renewal Notes: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Renewal Notes: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Budget Category: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Budget Category: ', bold: true }, { text: '' }],
   },
 ];
 
@@ -184,38 +136,23 @@ export const disputeDocumentationTemplate: Value = [
   },
   {
     type: 'p',
-    children: [
-      { text: 'Date Reported: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Date Reported: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Reported To: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Reported To: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Case/Reference Number: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Case/Reference Number: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Issue Description: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Issue Description: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
-    children: [
-      { text: 'Resolution Steps Taken: ', bold: true },
-      { text: '' },
-    ],
+    children: [{ text: 'Resolution Steps Taken: ', bold: true }, { text: '' }],
   },
   {
     type: 'p',
@@ -236,10 +173,26 @@ export const disputeDocumentationTemplate: Value = [
 // Template options for the dropdown
 export const NOTE_TEMPLATES = [
   { label: 'Basic Note', value: 'basic', template: basicNoteTemplate },
-  { label: 'Business Expense', value: 'business', template: businessExpenseTemplate },
-  { label: 'Client Transaction', value: 'client', template: clientTransactionTemplate },
-  { label: 'Recurring Transaction', value: 'recurring', template: recurringTransactionTemplate },
-  { label: 'Dispute Documentation', value: 'dispute', template: disputeDocumentationTemplate },
+  {
+    label: 'Business Expense',
+    value: 'business',
+    template: businessExpenseTemplate,
+  },
+  {
+    label: 'Client Transaction',
+    value: 'client',
+    template: clientTransactionTemplate,
+  },
+  {
+    label: 'Recurring Transaction',
+    value: 'recurring',
+    template: recurringTransactionTemplate,
+  },
+  {
+    label: 'Dispute Documentation',
+    value: 'dispute',
+    template: disputeDocumentationTemplate,
+  },
 ];
 ```
 
@@ -266,7 +219,7 @@ import {
 } from '@/registry/default/potion-ui/dialog';
 import { Button } from '@/registry/default/potion-ui/button';
 import { Editor, EditorContainer } from '@/registry/default/potion-ui/editor';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -294,13 +247,13 @@ export function TransactionNoteModal({
   onSuccess,
 }: TransactionNoteModalProps) {
   // Convert notes string to initial Plate editor value
-  const initialValue = initialNotes 
-    ? [{ type: 'p', children: [{ text: initialNotes }] }] 
+  const initialValue = initialNotes
+    ? [{ type: 'p', children: [{ text: initialNotes }] }]
     : [{ type: 'p', children: [{ text: '' }] }];
-    
+
   const [currentValue, setCurrentValue] = useState<Value>(initialValue);
   const updateTransaction = useUpdateTransaction();
-  
+
   // Create editor instance with the current value
   const editor = useCreateEditor({
     id: `transaction-notes-${transactionId}`,
@@ -310,10 +263,10 @@ export function TransactionNoteModal({
   // Reset editor value when modal opens with new transaction
   useEffect(() => {
     if (isOpen) {
-      const newValue = initialNotes 
-        ? [{ type: 'p', children: [{ text: initialNotes }] }] 
+      const newValue = initialNotes
+        ? [{ type: 'p', children: [{ text: initialNotes }] }]
         : [{ type: 'p', children: [{ text: '' }] }];
-      
+
       setCurrentValue(newValue);
     }
   }, [isOpen, initialNotes]);
@@ -333,8 +286,8 @@ export function TransactionNoteModal({
   // Convert editor value to plain text for storage
   const getPlainTextFromValue = (value: Value): string => {
     return value
-      .map(node => 
-        'children' in node 
+      .map(node =>
+        'children' in node
           ? node.children
               .map(child => 'text' in child ? child.text : '')
               .join('')
@@ -346,7 +299,7 @@ export function TransactionNoteModal({
 
   const handleSave = () => {
     if (!transactionId) return;
-    
+
     // Convert rich text value to plain text for storage
     const plainTextNotes = getPlainTextFromValue(currentValue);
 
@@ -406,8 +359,8 @@ export function TransactionNoteModal({
             }}
           >
             <EditorContainer className="min-h-[200px] border border-input rounded-md">
-              <Editor 
-                variant="comment" 
+              <Editor
+                variant="comment"
                 placeholder="Enter notes about this transaction..."
               />
             </EditorContainer>
@@ -422,7 +375,7 @@ export function TransactionNoteModal({
           >
             Cancel
           </Button>
-          <Button 
+          <Button
             onClick={handleSave}
             disabled={updateTransaction.isPending}
           >
@@ -469,7 +422,7 @@ export function TransactionInfoSection() {
         <TransactionDateField />
         <TransactionStatusField />
         <FieldRenderer field="description" label="Description" />
-        
+
         {/* Custom Notes field with edit button */}
         <div className="mb-1 flex flex-col space-y-1">
           <div className="flex items-center justify-between">
@@ -493,7 +446,7 @@ export function TransactionInfoSection() {
               )}
             </Button>
           </div>
-          
+
           {transaction.notes ? (
             <div className="whitespace-pre-wrap rounded-md bg-muted/50 p-2 text-sm">
               {transaction.notes}
@@ -593,4 +546,4 @@ export const transactionSchema = z.object({
 6. Implement note collaboration features for team accounts
 7. Add support for tagging users in notes for team accounts
 8. Implement note categorization or tagging system
-9. Add note search functionality 
+9. Add note search functionality

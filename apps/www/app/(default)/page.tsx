@@ -10,9 +10,9 @@ import Features02 from '@/components/features-02'
 import Features03 from '@/components/features-03'
 import Features04 from '@/components/features-04'
 import Hero from '@/components/hero'
-import Pricing from './pricing-section'
 import Testimonials from '@/components/testimonials'
 import TestimonialsCarousel from '@/components/testimonials-carousel'
+import Pricing from './pricing-section'
 
 export default function Home() {
   return (

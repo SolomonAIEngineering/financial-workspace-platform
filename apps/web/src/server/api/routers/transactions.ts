@@ -33,6 +33,28 @@ const transactionSchema = z.object({
   category: z.nativeEnum(TransactionCategory).optional(),
   paymentMethod: z.string().optional(),
   tags: z.array(z.string()).optional(),
+
+  // Tax & Financial Information
+  taxDeductible: z.boolean().optional(),
+  taxExempt: z.boolean().optional(),
+  taxAmount: z.number().optional(),
+  taxRate: z.number().optional(),
+  taxCategory: z.string().optional(),
+  vatAmount: z.number().optional(),
+  vatRate: z.number().optional(),
+
+  // Additional financial flags
+  excludeFromBudget: z.boolean().optional(),
+  reimbursable: z.boolean().optional(),
+  plannedExpense: z.boolean().optional(),
+  discretionary: z.boolean().optional(),
+
+  // Business information
+  businessPurpose: z.string().optional(),
+  costCenter: z.string().optional(),
+  projectCode: z.string().optional(),
+  cashFlowCategory: z.string().optional(),
+  cashFlowType: z.string().optional(),
 });
 
 // Batch transaction schema
@@ -296,29 +318,79 @@ export const transactionsRouter = createRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Check if transaction exists and belongs to user
-      const existingTransaction = await prisma.transaction.findUnique({
-        where: { id: input.id },
-      });
+      const { id, data } = input;
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      try {
+        // Check if transaction exists and belongs to user
+        const existingTransaction = await prisma.transaction.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            userId: true,
+          },
+        });
+
+        if (!existingTransaction) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Transaction not found',
+          });
+        }
+
+        if (existingTransaction.userId !== ctx.userId) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'You do not have permission to modify this transaction',
+          });
+        }
+
+        const now = new Date();
+        // Execute in a transaction for atomicity
+        return await prisma.$transaction(async (tx) => {
+          try {
+            const updatedTransaction = await tx.transaction.update({
+              where: { id },
+              data: {
+                ...data,
+                isModified: true,
+                lastModifiedAt: now,
+              },
+            });
+
+            return {
+              ...updatedTransaction,
+              updated: true,
+              timestamp: now,
+            };
+          } catch (txError) {
+            console.error(
+              `[updateTransaction] Error during transaction update:`,
+              txError
+            );
+            throw txError; // Re-throw to be caught by the outer try/catch
+          }
+        });
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          console.error(`[updateTransaction] TRPC Error:`, {
+            code: error.code,
+            message: error.message,
+          });
+          throw error;
+        }
+
+        console.error(`[updateTransaction] Unexpected error for ${id}:`, {
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+          data: Object.keys(data),
+        });
+
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Transaction not found',
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update transaction',
+          cause: error,
         });
       }
-
-      // Update transaction
-      const updatedTransaction = await prisma.transaction.update({
-        where: { id: input.id },
-        data: {
-          ...input.data,
-          isModified: true,
-          lastModifiedAt: new Date(),
-        },
-      });
-
-      return updatedTransaction;
     }),
 
   // DELETE /api/transactions/:id - Delete a transaction
@@ -677,10 +749,24 @@ export const transactionsRouter = createRouter({
         });
       }
 
-      // Merge existing tags with new tags (remove duplicates)
-      const updatedTags = [
-        ...new Set([...existingTransaction.tags, ...input.tags]),
-      ];
+      // Start with existing tags
+      const currentTags = existingTransaction.tags || [];
+      const updatedTags = [...currentTags];
+
+      // Process each new tag to add
+      for (const tag of input.tags) {
+        if (tag.trim() === '') continue; // Skip empty tags
+
+        // Check if this tag already exists (case-insensitive)
+        const isDuplicate = updatedTags.some(
+          (existingTag) => existingTag.toLowerCase() === tag.toLowerCase()
+        );
+
+        // Only add if it's not a duplicate
+        if (!isDuplicate) {
+          updatedTags.push(tag);
+        }
+      }
 
       // Update transaction with new tags
       const updatedTransaction = await prisma.transaction.update({
@@ -716,9 +802,10 @@ export const transactionsRouter = createRouter({
         });
       }
 
-      // Remove tag from transaction
+      // Case-insensitive tag removal
+      const tagToRemove = input.tag.toLowerCase();
       const updatedTags = existingTransaction.tags.filter(
-        (tag) => tag !== input.tag
+        (tag) => tag.toLowerCase() !== tagToRemove
       );
 
       // Update transaction with new tags
@@ -890,48 +977,131 @@ export const transactionsRouter = createRouter({
       return updatedTransaction;
     }),
 
-  // PUT /api/transactions/:id/assign - Assign a transaction to a specific user
-  assignTransaction: protectedProcedure
+  // PUT /api/transactions/:id/assigned-to - Update who a transaction is assigned to
+  updateAssignedTo: protectedProcedure
     .input(
       z.object({
         id: z.string(),
-        assignedToUserId: z.string(),
-        notifyUser: z.boolean().default(false),
+        assignedTo: z.string().nullable(),
+        teamId: z.string().optional(),
+        notifyAssignee: z.boolean().default(false),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // Check if transaction exists and belongs to user
-      const existingTransaction = await prisma.transaction.findUnique({
-        where: { id: input.id },
-      });
+      const { id, assignedTo, teamId, notifyAssignee } = input;
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      try {
+        // Check if transaction exists and belongs to user
+        const existingTransaction = await prisma.transaction.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            userId: true,
+            assigneeId: true,
+          },
+        });
+
+        if (!existingTransaction) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Transaction not found',
+          });
+        }
+
+        if (existingTransaction.userId !== ctx.userId) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'You do not have permission to modify this transaction',
+          });
+        }
+
+        // If assigning to someone, verify they are a team member
+        if (assignedTo && teamId) {
+          const teamMember = await prisma.usersOnTeam.findFirst({
+            where: {
+              userId: assignedTo,
+              teamId: teamId,
+            },
+          });
+
+          if (!teamMember) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message:
+                'Invalid team member: User is not part of the specified team',
+            });
+          }
+        }
+
+        // If nothing is changing, return early with the existing transaction
+        if (existingTransaction.assigneeId === assignedTo) {
+          const fullTransaction = await prisma.transaction.findUnique({
+            where: { id },
+            include: {
+              bankAccount: {
+                select: {
+                  name: true,
+                  type: true,
+                  subtype: true,
+                },
+              },
+            },
+          });
+
+          return {
+            ...fullTransaction,
+            unchanged: true,
+            message: 'No changes were needed',
+          };
+        }
+
+        const now = new Date();
+
+        // Execute in a transaction for atomicity
+        return await prisma.$transaction(async (tx) => {
+          // Update transaction with new assignment
+          const updatedTransaction = await tx.transaction.update({
+            where: { id },
+            data: {
+              assigneeId: assignedTo,
+              assignedAt: assignedTo ? now : null,
+              lastModifiedAt: now,
+            },
+            include: {
+              bankAccount: {
+                select: {
+                  name: true,
+                  type: true,
+                  subtype: true,
+                },
+              },
+            },
+          });
+
+          // TODO: Handle notification if needed
+          if (notifyAssignee && assignedTo) {
+            // Implement notification logic here or queue a background job
+          }
+
+          return {
+            ...updatedTransaction,
+            updated: true,
+            timestamp: now,
+          };
+        });
+      } catch (error) {
+        // Handle any errors that weren't explicitly caught
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        console.error('Error updating transaction assignment:', error);
         throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Transaction not found',
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update transaction assignment',
+          cause: error,
         });
       }
-
-      // TODO: Verify the assignedToUserId has appropriate permissions
-      // This would typically involve checking team memberships or permissions
-
-      // Update transaction with assignment
-      const updatedTransaction = await prisma.transaction.update({
-        where: { id: input.id },
-        data: {
-          // We would need to add these fields to the Transaction model
-          // assignedToUserId: input.assignedToUserId,
-          // assignedAt: new Date(),
-          lastModifiedAt: new Date(),
-        },
-      });
-
-      // TODO: If notifyUser is true, send notification to assigned user
-      if (input.notifyUser) {
-        // Implement notification logic here
-      }
-
-      return updatedTransaction;
     }),
 
   // PUT /api/transactions/:id/notes - Add or update notes for a transaction
@@ -1131,5 +1301,327 @@ export const transactionsRouter = createRouter({
         count: result.count,
         updatedTransactions: existingIds,
       };
+    }),
+
+  // PUT /api/transactions/:id/tags - Update the tags of a transaction
+  updateTags: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        tags: z.array(z.string()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Check if transaction exists and belongs to user
+      const existingTransaction = await prisma.transaction.findUnique({
+        where: { id: input.id },
+        select: {
+          tags: true,
+          userId: true,
+        },
+      });
+
+      if (!existingTransaction) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Transaction not found',
+        });
+      }
+
+      // Handle case-insensitive duplicates among input tags
+      const uniqueInputTags: string[] = [];
+      const lowerCaseInputTags = new Set<string>();
+
+      // Process each input tag, keeping only the first occurrence (case-insensitive)
+      for (const tag of input.tags) {
+        if (tag.trim() === '') continue; // Skip empty tags
+
+        const lowerCaseTag = tag.toLowerCase();
+
+        // Check if this tag already exists in our input (case-insensitive)
+        if (!lowerCaseInputTags.has(lowerCaseTag)) {
+          uniqueInputTags.push(tag);
+          lowerCaseInputTags.add(lowerCaseTag);
+        }
+      }
+
+      // Get existing tags from the transaction
+      const existingTags = existingTransaction.tags || [];
+      const lowerCaseExistingTags = new Set(
+        existingTags.map((tag) => tag.toLowerCase())
+      );
+
+      // Only add tags that don't already exist (case-insensitive)
+      const tagsToAdd = uniqueInputTags.filter(
+        (tag) => !lowerCaseExistingTags.has(tag.toLowerCase())
+      );
+
+      // Combine existing tags with new unique tags
+      const updatedTags = [...existingTags, ...tagsToAdd];
+
+      // Update transaction with combined tags
+      const updatedTransaction = await prisma.transaction.update({
+        where: { id: input.id },
+        data: {
+          tags: updatedTags,
+          lastModifiedAt: new Date(),
+        },
+      });
+
+      return updatedTransaction;
+    }),
+
+  // PUT /api/transactions/:id/assign - Assign a transaction to a specific user (DEPRECATED)
+  assignTransaction: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        assignedToUserId: z.string(),
+        notifyUser: z.boolean().default(false),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Check if transaction exists and belongs to user
+      const existingTransaction = await prisma.transaction.findUnique({
+        where: { id: input.id },
+      });
+
+      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Transaction not found',
+        });
+      }
+
+      // Update transaction with assignment
+      const updatedTransaction = await prisma.transaction.update({
+        where: { id: input.id },
+        data: {
+          assigneeId: input.assignedToUserId,
+          assignedAt: new Date(),
+          lastModifiedAt: new Date(),
+        },
+      });
+
+      // TODO: If notifyUser is true, send notification to assigned user
+      if (input.notifyUser) {
+        // Implement notification logic here
+      }
+
+      console.warn(
+        'The assignTransaction endpoint is deprecated. Please use updateAssignedTo instead.'
+      );
+      return updatedTransaction;
+    }),
+
+  // Bulk update transaction tags
+  bulkUpdateTags: protectedProcedure
+    .input(
+      z.object({
+        transactionIds: z.array(z.string()),
+        tags: z.array(z.string()),
+        operation: z.enum(['add', 'remove', 'replace']),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { transactionIds, tags, operation } = input;
+
+      // Verify user has access to all transactions
+      const existingTransactions = await prisma.transaction.findMany({
+        where: {
+          id: { in: transactionIds },
+          userId: ctx.userId,
+        },
+        select: { id: true, tags: true },
+      });
+
+      const existingIds = existingTransactions.map((tx) => tx.id);
+
+      if (existingIds.length !== transactionIds.length) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'One or more transactions not found or unauthorized',
+        });
+      }
+
+      // Process each transaction based on the operation
+      const updates = await Promise.all(
+        existingTransactions.map(async (tx) => {
+          let newTags: string[] = [];
+
+          if (operation === 'replace') {
+            // First clean up the input tags (handle duplicates case-insensitively)
+            newTags = [];
+            for (const tag of tags) {
+              if (tag.trim() === '') continue; // Skip empty tags
+
+              // Check if this tag already exists (case-insensitive)
+              const isDuplicate = newTags.some(
+                (existingTag) => existingTag.toLowerCase() === tag.toLowerCase()
+              );
+
+              // Only add if it's not a duplicate
+              if (!isDuplicate) {
+                newTags.push(tag);
+              }
+            }
+          } else if (operation === 'add') {
+            // Add tags without duplicates (case-insensitive)
+            const currentTags = (tx.tags as string[]) || [];
+
+            newTags = [...currentTags];
+
+            // Process each tag from the input
+            for (const tag of tags) {
+              if (tag.trim() === '') continue; // Skip empty tags
+
+              // Check if this tag already exists in the current tags (case-insensitive)
+              const isDuplicate = newTags.some(
+                (existingTag) => existingTag.toLowerCase() === tag.toLowerCase()
+              );
+
+              // Only add if it's not a duplicate
+              if (!isDuplicate) {
+                newTags.push(tag);
+              }
+            }
+          } else if (operation === 'remove') {
+            // Remove specified tags (case-insensitive)
+            const currentTags = (tx.tags as string[]) || [];
+
+            // Keep tags that don't match any in the remove list (case-insensitive)
+            newTags = currentTags.filter(
+              (currentTag) =>
+                !tags.some(
+                  (tagToRemove) =>
+                    tagToRemove.toLowerCase() === currentTag.toLowerCase()
+                )
+            );
+          }
+
+          return prisma.transaction.update({
+            where: { id: tx.id },
+            data: {
+              tags: newTags,
+              lastModifiedAt: new Date(),
+            },
+          });
+        })
+      );
+
+      return {
+        count: updates.length,
+        success: true,
+      };
+    }),
+
+  // Bulk update transaction assigned users
+  bulkUpdateAssignedTo: protectedProcedure
+    .input(
+      z.object({
+        transactionIds: z.array(z.string()).min(1).max(500),
+        assignedTo: z.string().nullable(),
+        teamId: z.string().optional(),
+        notifyAssignees: z.boolean().default(false),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { transactionIds, assignedTo, teamId, notifyAssignees } = input;
+
+      try {
+        // Verify user has access to all transactions
+        const existingTransactions = await prisma.transaction.findMany({
+          where: {
+            id: { in: transactionIds },
+            userId: ctx.userId,
+          },
+          select: { id: true },
+        });
+
+        const existingIds = existingTransactions.map((tx) => tx.id);
+        const missingIds = transactionIds.filter(
+          (id) => !existingIds.includes(id)
+        );
+
+        if (existingIds.length !== transactionIds.length) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: `${missingIds.length} transaction(s) not found or unauthorized`,
+            cause: { missingIds },
+          });
+        }
+
+        // If assigning to someone, verify they are a team member (if team feature is implemented)
+        if (assignedTo && teamId) {
+          const teamMember = await prisma.usersOnTeam.findFirst({
+            where: {
+              userId: assignedTo,
+              teamId: teamId,
+            },
+          });
+
+          if (!teamMember) {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message:
+                'Invalid team member: User is not part of the specified team',
+            });
+          }
+        }
+
+        // Execute all operations in a transaction for atomicity
+        const now = new Date();
+
+        return await prisma.$transaction(async (tx) => {
+          // Bulk update all transactions
+          const updateResult = await tx.transaction.updateMany({
+            where: {
+              id: { in: existingIds },
+            },
+            data: {
+              assignedAt: assignedTo ? now : null,
+              assigneeId: assignedTo,
+              lastModifiedAt: now,
+            },
+          });
+
+          // Get updated transactions with basic info for the response
+          const updatedTransactions = await tx.transaction.findMany({
+            where: { id: { in: existingIds } },
+            select: {
+              id: true,
+              name: true,
+              amount: true,
+              date: true,
+              assigneeId: true,
+              assignedAt: true,
+            },
+          });
+
+          // TODO: If notifyAssignees is true, queue notifications
+          if (notifyAssignees && assignedTo) {
+            // Implement notification logic here or queue a background job
+          }
+
+          return {
+            count: updateResult.count,
+            success: true,
+            updatedTransactions,
+            timestamp: now,
+          };
+        });
+      } catch (error) {
+        // Handle any errors that weren't explicitly caught
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        console.error('Error in bulkUpdateAssignedTo:', error);
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update transaction assignments',
+          cause: error,
+        });
+      }
     }),
 });

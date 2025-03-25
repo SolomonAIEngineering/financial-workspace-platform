@@ -276,8 +276,8 @@ export const seedDatabase = async () => {
             invoiceId: paidInvoice.id,
             name: 'Consulting Services',
             quantity: 10,
-            price: 100.0
-          }
+            price: 100.0,
+          },
         })
 
         // Create unpaid invoice
@@ -353,8 +353,8 @@ export const seedDatabase = async () => {
             invoiceId: unpaidInvoice.id,
             name: 'Web Development',
             quantity: 20,
-            price: 100.0
-          }
+            price: 100.0,
+          },
         })
 
         // Create draft invoice
@@ -430,8 +430,8 @@ export const seedDatabase = async () => {
             invoiceId: draftInvoice.id,
             name: 'UI/UX Design',
             quantity: 15,
-            price: 100.0
-          }
+            price: 100.0,
+          },
         })
       }
     }

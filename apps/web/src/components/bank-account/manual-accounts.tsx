@@ -2,7 +2,6 @@
 
 import { Button } from '@/registry/default/potion-ui/button';
 import { ManualAccountsProps } from './bank-account-list';
-import React from 'react';
 import { useConnectParams } from '@/hooks/use-connect-params';
 
 /**

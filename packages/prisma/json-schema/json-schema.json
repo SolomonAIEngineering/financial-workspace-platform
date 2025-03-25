@@ -490,7 +490,19 @@
             "$ref": "#/definitions/App"
           }
         },
-        "Invoice": {
+        "transactionsAssignedByMe": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "transactionsAssignedToMe": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
+          }
+        },
+        "invoices": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Invoice"
@@ -1048,6 +1060,12 @@
           "items": {
             "$ref": "#/definitions/Team"
           }
+        },
+        "enrollmentId": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -1424,6 +1442,16 @@
         "bankAccount": {
           "$ref": "#/definitions/BankAccount"
         },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "plaidTransactionId": {
           "type": [
             "string",
@@ -1562,6 +1590,33 @@
           "type": [
             "string",
             "null"
+          ]
+        },
+        "assignee": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "assignedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "assignedBy": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
         "location": {
@@ -2825,6 +2880,13 @@
           "type": "string",
           "format": "date-time"
         },
+        "isDefault": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "default": false
+        },
         "users": {
           "type": "array",
           "items": {
@@ -2913,6 +2975,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/BankConnection"
+          }
+        },
+        "transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Transaction"
           }
         },
         "UserInvite": {

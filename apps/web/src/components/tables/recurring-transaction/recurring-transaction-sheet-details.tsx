@@ -2,22 +2,18 @@
 
 import {
   DetailRow,
-  StatusBadge,
   TransactionSection,
   formatAmount,
   formatFrequency,
-  formatImportanceLevel,
   formatTruncatedId,
   getImportanceBadgeType,
-  getStatusBadgeType,
 } from './components';
-import { format, parseISO } from 'date-fns';
 
 import { AlertCircle } from 'lucide-react';
 import { EnhancedTransactionTimeline } from './components/enhanced-transaction-timeline';
-import React from 'react';
 import type { RecurringTransactionSchema } from './schema';
 import { TransactionHeader } from './components/transaction-header';
+import { format } from 'date-fns';
 import { useDataTable } from '@/components/data-table/data-table-provider';
 
 /**

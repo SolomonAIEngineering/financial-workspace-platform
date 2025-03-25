@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Download, Edit, Share2 } from 'lucide-react';
+import { Download, Edit, Share2, Tag } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -10,6 +10,7 @@ import {
 
 import { Button } from '@/registry/default/potion-ui/button';
 import { cn } from '@/lib/utils';
+import { useTransactionContext } from './transaction-context';
 
 interface TransactionActionsProps {
   onEdit?: () => void;
@@ -24,6 +25,8 @@ export function TransactionActions({
   onShare,
   className,
 }: TransactionActionsProps) {
+  const { enterEditModeForCategory } = useTransactionContext();
+
   return (
     <div
       className={cn(
@@ -33,6 +36,26 @@ export function TransactionActions({
         className
       )}
     >
+      {/* Category Update Button */}
+      <TooltipProvider>
+        <Tooltip delayDuration={300}>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className="group flex items-center gap-1.5 overflow-hidden transition-all duration-300 hover:border-green-200 hover:bg-green-50 hover:text-green-600 dark:hover:border-green-800 dark:hover:bg-green-950/30 dark:hover:text-green-400"
+              onClick={() => enterEditModeForCategory()}
+            >
+              <Tag className="h-3.5 w-3.5 transition-transform duration-300 group-hover:scale-110" />
+              <span className="font-medium">Update Category</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="text-xs">
+            Update transaction category
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       {onEdit && (
         <TooltipProvider>
           <Tooltip delayDuration={300}>

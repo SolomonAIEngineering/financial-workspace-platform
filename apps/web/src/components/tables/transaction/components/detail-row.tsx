@@ -7,7 +7,6 @@ import {
   TooltipTrigger,
 } from '@/registry/default/potion-ui/tooltip';
 
-import { Badge } from '@/components/ui/badge';
 import { HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

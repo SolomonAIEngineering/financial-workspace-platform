@@ -7,7 +7,6 @@ import { api, useTRPC } from '@/trpc/react';
 
 import { Button } from '@/registry/default/potion-ui/button';
 import { ConnectTransactionsButton } from '../bank-connection/connect-transactions-button';
-import { ConnectTransactionsWrapper } from '../bank-connection/connect-transactions-wrapper';
 import { DocumentList } from './document-list';
 import { FeedbackForm } from '../editor/feedback-form';
 import { HouseIcon } from 'lucide-react';
@@ -22,6 +21,7 @@ import { pushModal } from '../modals';
 import { routes } from '@/lib/navigation/routes';
 import { toast } from 'sonner';
 import { useAuthGuard } from '../auth/useAuthGuard';
+import { useCurrentUser } from '../auth/useCurrentUser';
 import { useIsDesktop } from '@/components/providers/tailwind-provider';
 import { useMounted } from '@/registry/default/hooks/use-mounted';
 import { useRouter } from 'next/navigation';
@@ -30,6 +30,7 @@ import { useToggleLeftPanel } from '@/hooks/useResizablePanel';
 
 export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
   const session = useSession();
+  const currentUser = useCurrentUser();
   const router = useRouter();
   const isMobile = !useIsDesktop();
   const trpc = useTRPC();
@@ -139,14 +140,16 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
             >
               <ConnectTransactionsButton
                 userId={session?.userId ?? ''}
+                redirectTo={routes.financialOverview()}
                 buttonProps={{
                   variant: 'secondary',
                   size: 'xs',
-                  className: cn('h-6 gap-1 rounded-full px-2 text-xs'),
+                  className: cn(
+                    'h-6 gap-1 rounded-full px-2 text-xs bg-white border border-gray-200 px-3 py-3'
+                  ),
                 }}
               />
             </NavItem>
-
             <DocumentList />
           </div>
 
@@ -157,12 +160,6 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
               href={routes.editor()}
               icon={Icons.editor}
             />
-
-            {/* <NavItem
-              label="Templates"
-              href="https://pro.platejs.org/docs/templates/potion"
-              icon={Icons.templates}
-            /> */}
 
             {mounted ? (
               <Popover>
@@ -237,13 +234,6 @@ export function Sidebar({ ...props }: React.HTMLAttributes<HTMLElement>) {
           />
         </div>
       </div>
-
-      {/* 
-          NOTE: 
-            The modal wrapper component handles rendering the connect transaction modal and is required for the modal to work 
-            Please do not remove this component
-      */}
-      <ConnectTransactionsWrapper />
     </aside>
   );
 }

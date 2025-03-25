@@ -1,8 +1,9 @@
+'use server';
+
 import { authActionClient } from '../safe-action';
-import { client } from '@/jobs/client';
 import { manualSyncBankAccountSchema } from './schema';
-import { prisma } from '@/server/db';
 import { revalidatePath } from 'next/cache';
+import { syncConnectionJob } from '@/jobs';
 
 /**
  * @example
@@ -36,63 +37,17 @@ export const manualSyncBankAccountAction = authActionClient
   .action(async ({ ctx: { user }, parsedInput: { connectionId } }) => {
     try {
       // Get the connection details tied to the respective connection id
-      const connection = await prisma.bankConnection.findUnique({
-        select: {
-          accessToken: true,
-          id: true,
-          userId: true,
-        },
-        where: { id: connectionId },
+      const event = await syncConnectionJob.trigger({
+        connectionId,
+        manualSync: true,
       });
-
-      if (!connection) {
-        return {
-          success: false,
-          error: 'Connection not found',
-        };
-      }
-
-      // Get all accounts for this connection
-      const accounts = await prisma.bankAccount.findMany({
-        select: {
-          id: true,
-        },
-        where: {
-          bankConnectionId: connectionId,
-        },
-      });
-
-      // Trigger sync for each account with increasing delays
-      let delayCounter = 0;
-
-      for (const account of accounts) {
-        await client.sendEvent({
-          context: {
-            delaySeconds: delayCounter * 5, // 5 second delay between accounts
-          },
-          name: 'sync-account',
-          payload: {
-            accessToken: connection.accessToken,
-            bankAccountId: account.id,
-            manualSync: true, // Flag as manual sync
-            userId: connection.userId,
-          },
-        });
-        delayCounter++;
-      }
 
       // Revalidate the accounts page to show updated status
       revalidatePath('/accounts');
 
-      return {
-        success: true,
-        message: `Sync started for ${accounts.length} accounts`,
-      };
+      return event;
     } catch (error) {
       console.error('Error syncing transactions:', error);
-      return {
-        success: false,
-        error: error.message || 'Failed to sync transactions',
-      };
+      return null;
     }
   });

@@ -3,14 +3,11 @@ import {
   Calendar,
   CheckCircle2,
   ChevronDown,
-  CircleDollarSign,
   Clock,
   CreditCard,
   PauseCircle,
   TrendingDown,
   TrendingUp,
-  User,
-  Zap,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
@@ -101,7 +98,7 @@ export function TransactionHeader({
     ? Math.max(
         0,
         Math.ceil(
-          (new Date(nextExecutionDate).getTime() - new Date().getTime()) /
+          (new Date(nextExecutionDate).getTime() - Date.now()) /
             (1000 * 60 * 60 * 24)
         )
       )

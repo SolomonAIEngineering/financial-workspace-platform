@@ -21,7 +21,8 @@ console.info('Financial Engine SDK Configuration:', {
 export const engine = new FinancialEngine({
   bearerToken: process.env.API_SECRET_KEY ?? 'SOLOMONAI',
   defaultHeaders: {
-    'x-api-key': process.env.API_SECRET_KEY ?? 'SOLOMONAI',
+    'X-API-Key': process.env.API_SECRET_KEY ?? 'SOLOMONAI',
+
     Authorization: `Bearer ${process.env.API_SECRET_KEY ?? 'SOLOMONAI'}`,
   },
   baseURL:

@@ -1,8 +1,8 @@
+import { Prisma, Transaction } from '@solomonai/prisma/client';
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { EnrichmentService } from '@/jobs/utils/transaction-enrichment';
 import Papa from 'papaparse';
-import { Prisma } from '@solomonai/prisma/client';
 import { getFileContent } from '@/lib/uploadthing';
 import { mapTransactions } from '@solomonai/import/mappings';
 import { prisma } from '@/server/db';
@@ -393,7 +393,9 @@ export const importAndEnrichTransactions = schemaTask({
              */
             async (batch) => {
               const enrichedBatch =
-                await enrichmentService.batchEnrichTransactions(batch);
+                await enrichmentService.batchEnrichTransactions(
+                  batch as unknown as Transaction[]
+                );
               return enrichedBatch;
             }
           );

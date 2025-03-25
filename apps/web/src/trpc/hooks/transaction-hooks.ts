@@ -1,7 +1,6 @@
 import { DEFAULT_QUERY_OPTIONS, QueryOptions } from './query-options';
 import { api, useTRPC } from '@/trpc/react';
 
-import { Transaction } from '@/server/types/index';
 import { mergeDefined } from '@/lib/mergeDefined';
 import { produce } from 'immer';
 import { toast } from 'sonner';
@@ -377,18 +376,18 @@ export function useUpdateTransactionMerchant() {
 
       // Update transaction with new merchant details
       trpc.transactions.getTransaction.setData({ id: input.id }, (old) =>
-        produce(old, (draft: Transaction) => {
+        produce(old, (draft) => {
           if (!draft) return draft;
 
           return {
             ...draft,
             merchantName: input.merchantName,
-            merchantId: input.merchantId,
-            merchantLogoUrl: input.merchantLogoUrl,
-            merchantCategory: input.merchantCategory,
-            merchantWebsite: input.merchantWebsite,
-            merchantPhone: input.merchantPhone,
-            merchantAddress: input.merchantAddress,
+            merchantId: input.merchantId || null,
+            merchantLogoUrl: input.merchantLogoUrl || null,
+            merchantCategory: input.merchantCategory || null,
+            merchantWebsite: input.merchantWebsite || null,
+            merchantPhone: input.merchantPhone || null,
+            merchantAddress: input.merchantAddress || null,
           };
         })
       );

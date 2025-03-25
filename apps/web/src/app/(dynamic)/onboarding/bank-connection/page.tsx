@@ -6,7 +6,6 @@ import {
 } from '@/components/ui/card';
 
 import { BankConnectionForm } from '@/components/form/bank-connection-form';
-import { ConnectTransactionsWrapper } from '@/components/bank-connection/connect-transactions-wrapper';
 import { redirect } from 'next/navigation';
 import { routes } from '@/lib/navigation/routes';
 import { trpc } from '@/trpc/server';
@@ -47,8 +46,8 @@ export default async function BankConnectionPage() {
         <BankConnectionForm
           userId={currentUser.id}
           teamId={currentUser.teamId}
+          redirectTo={routes.onboardingComplete()}
         />
-        <ConnectTransactionsWrapper />
       </Card>
     </div>
   );

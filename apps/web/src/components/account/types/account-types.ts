@@ -4,7 +4,7 @@
  * @file Account Types
  */
 
-import { TeamRole } from '@/server/types/prisma';
+import { TeamRole } from '@solomonai/prisma';
 
 /**
  * Props for the AccountInformation component

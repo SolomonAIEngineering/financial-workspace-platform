@@ -1,7 +1,7 @@
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import React, { useState } from 'react';
 
-import type { Document } from '@/server/types/index';
+import type { Document } from '@solomonai/prisma';
 import { WithSkeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 

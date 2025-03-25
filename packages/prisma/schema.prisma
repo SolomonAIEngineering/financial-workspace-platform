@@ -4,6 +4,14 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-3.0.x"] //  "debian-openssl-3.0.x" for google functions
 }
 
+generator zod {
+  provider         = "zod-prisma-types"
+  createInputTypes = false
+  writeBarrelFiles = true
+  useMultipleFiles = true
+}
+
+
 generator jsonSchema {
   provider              = "npx prisma-json-schema-generator"
   includeRequiredFields = "true"
@@ -22,7 +30,7 @@ generator kysely {
 
 generator types {
   provider = "npx prisma-type-generator"
-  output   = "../src/server/types"
+  output   = "./server"
 }
 
 model Session {
@@ -144,10 +152,13 @@ model User {
   trackerReports      TrackerReport[]
   apps                App[]
 
+  transactionsAssignedByMe Transaction[] @relation("AssignedByTransactions")
+  transactionsAssignedToMe Transaction[] @relation("AssignedTransactions")
+
   @@index([username])
   @@index([email])
   @@index([organizationName])
-  Invoice Invoice[]
+  invoices Invoice[]
 }
 
 model Document {
@@ -316,6 +327,9 @@ model BankConnection {
   expiresAt               DateTime?
   provider String
   team Team[]
+  
+  // teller specific fields
+  enrollmentId String?
 
   @@index([userId])
   @@index([itemId])
@@ -425,6 +439,10 @@ model Transaction {
   bankAccountId    String
   bankAccount      BankAccount    @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
 
+  // Team that owns this transaction (derived from the bank account)
+  teamId           String?
+  team             Team?          @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
   // Transaction details
   plaidTransactionId String?  @unique // Plaid's transaction ID (null for manual transactions)
   amount             Float
@@ -452,6 +470,13 @@ model Transaction {
   merchantState      String?
   merchantZip        String?
   merchantCountry    String?
+
+  // Assignment to team member
+  assigneeId         String? // ID of the user (team member) assigned to this transaction  
+  assignee           User?   @relation("AssignedTransactions", fields: [assigneeId], references: [id], onDelete: SetNull)
+  assignedAt         DateTime? // When the transaction was assigned
+  assignedById       String? // ID of the user who performed the assignment
+  assignedBy         User?   @relation("AssignedByTransactions", fields: [assignedById], references: [id], onDelete: SetNull)
 
   // Location data
   location Json? // Stores address, city, region, postal code, country, lat/long
@@ -606,6 +631,8 @@ model Transaction {
   @@index([dateYear, dateMonth]) // For monthly reports
   @@index([excludeFromBudget]) // For budget calculations
   @@index([recurringTransactionId])
+  @@index([teamId])
+  @@index([assigneeId])
   
   @@map("transactions")
 }
@@ -938,6 +965,7 @@ model Team {
   documentClassification Boolean?  @map("document_classification")
   flags                  String[]  @default([])
   createdAt              DateTime  @default(now()) @map("created_at")
+  isDefault              Boolean?  @default(false) @map("is_default")
   
   // Relations
   users                 User[]
@@ -955,6 +983,7 @@ model Team {
   trackerProjects       TrackerProject[]
   trackerReports        TrackerReport[]
   bankConnections       BankConnection[]
+  transactions          Transaction[]
 
   @@map("teams")
   UserInvite UserInvite[]
