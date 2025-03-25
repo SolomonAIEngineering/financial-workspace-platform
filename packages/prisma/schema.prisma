@@ -4,6 +4,14 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-3.0.x"] //  "debian-openssl-3.0.x" for google functions
 }
 
+generator zod {
+  provider         = "zod-prisma-types"
+  createInputTypes = false
+  writeBarrelFiles = true
+  useMultipleFiles = true
+}
+
+
 generator jsonSchema {
   provider              = "npx prisma-json-schema-generator"
   includeRequiredFields = "true"
