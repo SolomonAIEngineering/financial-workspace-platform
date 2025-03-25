@@ -5,6 +5,7 @@
  * This file initializes and exports the database clients used throughout the application:
  * 1. A standard Prisma client for type-safe database access
  * 2. A Kysely-extended Prisma client for advanced query capabilities
+ * 3. A standard Kysely instance for direct query builder access
  *
  * The file uses the 'remember' utility to ensure singleton instances of these clients,
  * preventing connection pool exhaustion in serverless environments.
@@ -24,6 +25,12 @@ import kyselyExtension from 'prisma-extension-kysely'
 import { getDatabaseUrl } from './helper'
 import { remember } from './utils/remember'
 
+/**
+ * JSON schema definition for the database
+ *
+ * This exports the database schema in JSON Schema format, which can be
+ * used for validation, documentation, or schema-aware tools.
+ */
 export const jsonSchema = require('../prisma/json-schema/json-schema.json')
 
 /**
@@ -100,5 +107,31 @@ export const kyselyPrisma = remember('kyselyPrisma', () =>
  *   .execute();
  */
 export { sql } from 'kysely'
-// Export Prisma types
+
+/**
+ * Re-export of all types from Prisma client
+ *
+ * This provides access to all generated Prisma types without requiring
+ * direct imports from @prisma/client in consuming code.
+ */
 export * from '@prisma/client'
+
+/**
+ * Re-export of the PostgreSQL connection pool
+ *
+ * This provides direct access to the underlying PostgreSQL connection pool
+ * for advanced use cases that require raw database access.
+ *
+ * @see ./database.ts for implementation details
+ */
+export { pgPool } from './database'
+
+/**
+ * Re-export of the Kysely database client
+ *
+ * This provides direct access to the standalone Kysely query builder
+ * for cases where the Prisma-extended Kysely client is not needed.
+ *
+ * @see ./kysely-db.ts for implementation details
+ */
+export { db } from './kysely-db'
