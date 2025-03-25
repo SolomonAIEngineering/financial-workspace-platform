@@ -110,7 +110,7 @@ export function AssignmentSection() {
         {/* Current Assignment */}
         {transaction.assigneeId && teamMembers && (
           <div className="relative overflow-hidden rounded-xl border border-violet-200/50 bg-gradient-to-br from-violet-50/80 to-violet-50/30 p-4 shadow-sm backdrop-blur-sm">
-            <div className="absolute -top-12 -right-12 h-24 w-24 rounded-full bg-violet-200/20 blur-2xl"></div>
+            <div className="absolute -top-12 -right-12 h-24 w-24 rounded-full bg-background"></div>
             <div className="relative">
               <p className="mb-3 flex items-center text-sm font-medium text-violet-700">
                 <User className="mr-1.5 h-4 w-4 text-violet-600" />
@@ -153,7 +153,7 @@ export function AssignmentSection() {
                         )}
                       </div>
                     </div>
-                    <Badge className="ml-auto border border-violet-200/50 bg-violet-500/15 px-2.5 py-1 text-violet-700">
+                    <Badge className="ml-auto border border-violet-200/50 bg-background px-2.5 py-1 text-sm text-violet-700">
                       Assigned
                     </Badge>
                   </div>

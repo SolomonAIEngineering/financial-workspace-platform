@@ -33,6 +33,28 @@ const transactionSchema = z.object({
   category: z.nativeEnum(TransactionCategory).optional(),
   paymentMethod: z.string().optional(),
   tags: z.array(z.string()).optional(),
+
+  // Tax & Financial Information
+  taxDeductible: z.boolean().optional(),
+  taxExempt: z.boolean().optional(),
+  taxAmount: z.number().optional(),
+  taxRate: z.number().optional(),
+  taxCategory: z.string().optional(),
+  vatAmount: z.number().optional(),
+  vatRate: z.number().optional(),
+
+  // Additional financial flags
+  excludeFromBudget: z.boolean().optional(),
+  reimbursable: z.boolean().optional(),
+  plannedExpense: z.boolean().optional(),
+  discretionary: z.boolean().optional(),
+
+  // Business information
+  businessPurpose: z.string().optional(),
+  costCenter: z.string().optional(),
+  projectCode: z.string().optional(),
+  cashFlowCategory: z.string().optional(),
+  cashFlowType: z.string().optional(),
 });
 
 // Batch transaction schema

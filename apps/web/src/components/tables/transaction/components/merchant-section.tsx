@@ -12,10 +12,12 @@ import { fieldDescriptions } from './field-descriptions';
 import { sectionDescriptions } from './section-descriptions';
 import { toast } from 'sonner';
 import { useTransactionContext } from './transaction-context';
+import { useUpdateTransactionMerchant } from '@/trpc/hooks/transaction-hooks';
 
 /** MerchantSection component displays merchant information about a transaction. */
 export function MerchantSection() {
   const { transaction, updateTransactionData } = useTransactionContext();
+  const updateTransactionMerchant = useUpdateTransactionMerchant();
 
   // State for merchant name editing
   const [isEditingName, setIsEditingName] = useState(false);
@@ -81,23 +83,60 @@ export function MerchantSection() {
 
     setIsSaving(true);
     try {
-      // Update the transaction data via context
-      updateTransactionData({
-        [field]: value,
+      // Create update object with all the current merchant fields
+      // This ensures we send complete merchant data to the API
+      const updateData = {
+        id: transaction.id,
+        merchantName:
+          field === 'merchantName' ? value : transaction.merchantName || '',
+        merchantCategory:
+          field === 'merchantCategory'
+            ? value
+            : transaction.merchantCategory || '',
+        merchantWebsite:
+          field === 'merchantWebsite'
+            ? value
+            : transaction.merchantWebsite || '',
+        merchantId: transaction.merchantId || undefined,
+        merchantPhone: transaction.merchantPhone || undefined,
+        merchantAddress: transaction.merchantAddress || undefined,
+        merchantCity: transaction.merchantCity || undefined,
+        merchantState: transaction.merchantState || undefined,
+        merchantZip: transaction.merchantZip || undefined,
+        merchantCountry: transaction.merchantCountry || undefined,
+        merchantLogoUrl: transaction.merchantLogoUrl || undefined,
+      };
+
+      // Use the specialized merchant update hook
+      updateTransactionMerchant.mutate(updateData, {
+        onSuccess: () => {
+          // Update the transaction data via context to reflect the changes locally
+          updateTransactionData({
+            [field]: value,
+          });
+
+          toast.success(
+            `Merchant ${field.replace('merchant', '').toLowerCase()} updated successfully`
+          );
+        },
+        onError: (error) => {
+          console.error(`Failed to update merchant ${field}:`, error);
+          toast.error(`Failed to update merchant ${field}`);
+        },
+        onSettled: () => {
+          setIsSaving(false);
+
+          // Reset all editing states
+          setIsEditingName(false);
+          setIsEditingCategory(false);
+          setIsEditingWebsite(false);
+        },
       });
 
-      toast.success(
-        `Merchant ${field.replace('merchant', '').toLowerCase()} updated successfully`
-      );
-
-      // Reset all editing states
-      setIsEditingName(false);
-      setIsEditingCategory(false);
-      setIsEditingWebsite(false);
+      // Verify the transaction object after update
     } catch (error) {
       console.error(`Failed to update merchant ${field}:`, error);
       toast.error(`Failed to update merchant ${field}`);
-    } finally {
       setIsSaving(false);
     }
   };

@@ -1,13 +1,61 @@
 import * as React from 'react';
 
+import { Check, Loader2, Receipt, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
 import { DetailRow } from './detail-row';
 import { FieldRenderer } from './field-renderer';
-import { PropertiesGrid } from './properties-grid';
-import { Receipt } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 import { SubheadingWithTooltip } from './subheading-with-tooltip';
+import { Switch } from '@/components/ui/switch';
 import { TransactionSection } from './transaction-section';
+import { cn } from '@/lib/utils';
+import { fieldDescriptions } from './field-descriptions';
 import { sectionDescriptions } from './section-descriptions';
+import { toast } from 'sonner';
 import { useTransactionContext } from './transaction-context';
+import { useUpdateTransaction } from '@/trpc/hooks/transaction-hooks';
+
+/** ToggleProperty - A simple property toggle component */
+function ToggleProperty({
+  label,
+  field,
+  value,
+  onChange,
+  isDisabled = false,
+  tooltip,
+}: {
+  label: string;
+  field: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+  isDisabled?: boolean;
+  tooltip?: string;
+}) {
+  return (
+    <div className="flex flex-row items-center justify-between space-x-2 rounded-md border border-border/40 bg-background/60 px-3 py-2 shadow-sm transition-all hover:border-primary/20 hover:bg-background/80">
+      <div className="flex items-center space-x-2">
+        <Label
+          htmlFor={`toggle-${field}`}
+          className="cursor-pointer text-sm font-medium"
+          title={tooltip}
+        >
+          {label}
+          {isDisabled && (
+            <Loader2 className="ml-2 inline h-3.5 w-3.5 animate-spin text-primary" />
+          )}
+        </Label>
+      </div>
+      <Switch
+        id={`toggle-${field}`}
+        checked={value}
+        onCheckedChange={onChange}
+        disabled={isDisabled}
+        className="data-[state=checked]:bg-primary"
+      />
+    </div>
+  );
+}
 
 /**
  * TaxFinancialSection - Displays transaction tax and financial details
@@ -16,7 +64,10 @@ import { useTransactionContext } from './transaction-context';
  * information, including tax status, amounts, rates, and business information.
  */
 export function TaxFinancialSection() {
-  const { transaction, isEditMode } = useTransactionContext();
+  const { transaction, isEditMode, updateTransactionData } =
+    useTransactionContext();
+  const updateTransaction = useUpdateTransaction();
+  const [updatingField, setUpdatingField] = useState<string | null>(null);
 
   // Helper function to format currency amounts
   const formatAmount = (amount: number, currency?: string | null) => {
@@ -26,21 +77,71 @@ export function TaxFinancialSection() {
     }).format(amount);
   };
 
+  // Always keep the section open by setting defaultOpen to true
+  // This ensures the section stays open regardless of toggle changes
+  const sectionDefaultOpen = true;
+
+  // Handle toggle changes
+  const handleToggle = (field: string, value: boolean) => {
+    if (!transaction.id || updatingField) return;
+
+    // Set updating state
+    setUpdatingField(field);
+
+    // Create update object
+    const updateData = {
+      id: transaction.id,
+      data: {
+        [field]: value,
+      },
+    };
+
+
+    // Update transaction
+    updateTransaction.mutate(updateData, {
+      onSuccess: (data) => {
+        // Update local transaction state with the new value
+        updateTransactionData({
+          [field]: value,
+        });
+
+        toast.success(
+          `${field.replace(/([A-Z])/g, ' $1').toLowerCase()} updated`
+        );
+      },
+      onError: (error) => {
+        console.error(`[TaxFinancialSection] Update error:`, error);
+        toast.error(`Failed to update: ${error.message}`);
+      },
+      onSettled: () => {
+        setUpdatingField(null);
+      },
+    });
+  };
+
+  // Helper to render toggle fields
+  const renderToggleField = (label: string, field: string) => (
+    <ToggleProperty
+      key={field}
+      label={label}
+      field={field}
+      value={Boolean(transaction[field as keyof typeof transaction])}
+      onChange={(value) => handleToggle(field, value)}
+      isDisabled={updatingField === field}
+      tooltip={fieldDescriptions[field as keyof typeof fieldDescriptions]}
+    />
+  );
+
   return (
     <TransactionSection
       title="Tax & Financial"
       icon={<Receipt className="h-4 w-4" />}
-      defaultOpen={
-        !!(
-          transaction.taxDeductible ||
-          transaction.vatAmount ||
-          transaction.taxAmount
-        )
-      }
+      defaultOpen={sectionDefaultOpen}
+      className="!border-violet-100"
       tooltip={sectionDescriptions.taxFinancial}
     >
-      <div className="space-y-1">
-        {/* Tax information */}
+      <div className="space-y-4">
+        {/* Tax information toggles */}
         {isEditMode ? (
           <div className="mb-4 grid grid-cols-2 gap-2">
             <FieldRenderer
@@ -75,14 +176,14 @@ export function TaxFinancialSection() {
             />
           </div>
         ) : (
-          <PropertiesGrid
-            taxDeductible={transaction.taxDeductible}
-            taxExempt={transaction.taxExempt}
-            reimbursable={transaction.reimbursable}
-            excludeFromBudget={transaction.excludeFromBudget}
-            plannedExpense={transaction.plannedExpense}
-            discretionary={transaction.discretionary}
-          />
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            {renderToggleField('Tax Deductible', 'taxDeductible')}
+            {renderToggleField('Tax Exempt', 'taxExempt')}
+            {renderToggleField('Exclude from Budget', 'excludeFromBudget')}
+            {renderToggleField('Reimbursable', 'reimbursable')}
+            {renderToggleField('Planned Expense', 'plannedExpense')}
+            {renderToggleField('Discretionary', 'discretionary')}
+          </div>
         )}
 
         <div className="mt-2 border-t border-border/20 pt-2">
