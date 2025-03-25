@@ -7,7 +7,7 @@ import {
   CreditCard,
   PauseCircle,
   TrendingDown,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { format, parseISO } from 'date-fns';
@@ -96,12 +96,12 @@ export function TransactionHeader({
   // Days left calculation
   const daysLeft = nextExecutionDate
     ? Math.max(
-      0,
-      Math.ceil(
-        (new Date(nextExecutionDate).getTime() - Date.now()) /
-        (1000 * 60 * 60 * 24)
+        0,
+        Math.ceil(
+          (new Date(nextExecutionDate).getTime() - Date.now()) /
+            (1000 * 60 * 60 * 24)
+        )
       )
-    )
     : null;
 
   // Determine color for status indicator - all using blue colors

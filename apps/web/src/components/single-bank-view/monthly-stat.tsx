@@ -47,10 +47,11 @@ export function MonthlyStats({ stats }: MonthlyStatsProps) {
           Net Change
         </p>
         <h4
-          className={`text-2xl font-semibold ${Number.parseFloat(stats.netChange.replace(/[^0-9.-]+/g, '')) >= 0
+          className={`text-2xl font-semibold ${
+            Number.parseFloat(stats.netChange.replace(/[^0-9.-]+/g, '')) >= 0
               ? 'text-green-600 dark:text-green-400'
               : 'text-red-600 dark:text-red-400'
-            }`}
+          }`}
         >
           {stats.netChange}
         </h4>

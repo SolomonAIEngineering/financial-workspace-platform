@@ -201,9 +201,9 @@ export function TransactionProvider({
       processedValue =
         typeof value === 'string'
           ? value
-            .split(',')
-            .map((tag) => tag.trim())
-            .filter(Boolean)
+              .split(',')
+              .map((tag) => tag.trim())
+              .filter(Boolean)
           : [];
     } else if (field === 'date') {
       // Handle date values specially

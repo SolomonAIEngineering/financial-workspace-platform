@@ -11,7 +11,7 @@ import {
   ChevronUp,
   Clock,
   History,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
@@ -20,7 +20,7 @@ import {
   addWeeks,
   differenceInDays,
   format,
-  parseISO
+  parseISO,
 } from 'date-fns';
 
 import { RecurringTransactionSchema } from '../schema';
