@@ -49,6 +49,11 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
+  },
   "dependencies": {
     "@ai-sdk/openai": "^1.1.9",
     "@ariakit/react": "0.4.15",
@@ -340,10 +345,5 @@
   },
   "trigger.dev": {
     "endpointId": "web"
-  },
-  "eslintConfig": {
-    "extends": [
-      "plugin:storybook/recommended"
-    ]
   }
 }

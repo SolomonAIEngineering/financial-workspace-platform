@@ -279,25 +279,25 @@ export function CategorizationSection() {
         {(transaction.fiscalYear ||
           transaction.fiscalMonth ||
           transaction.fiscalQuarter) && (
-            <div className="mt-2 border-t border-border/20 pt-2">
-              <SubheadingWithTooltip
-                label="Fiscal Period"
-                tooltip="Financial period to which this transaction belongs"
+          <div className="mt-2 border-t border-border/20 pt-2">
+            <SubheadingWithTooltip
+              label="Fiscal Period"
+              tooltip="Financial period to which this transaction belongs"
+            />
+            {transaction.fiscalYear && (
+              <DetailRow label="Fiscal Year" value={transaction.fiscalYear} />
+            )}
+            {transaction.fiscalMonth && (
+              <DetailRow label="Fiscal Month" value={transaction.fiscalMonth} />
+            )}
+            {transaction.fiscalQuarter && (
+              <DetailRow
+                label="Fiscal Quarter"
+                value={transaction.fiscalQuarter}
               />
-              {transaction.fiscalYear && (
-                <DetailRow label="Fiscal Year" value={transaction.fiscalYear} />
-              )}
-              {transaction.fiscalMonth && (
-                <DetailRow label="Fiscal Month" value={transaction.fiscalMonth} />
-              )}
-              {transaction.fiscalQuarter && (
-                <DetailRow
-                  label="Fiscal Quarter"
-                  value={transaction.fiscalQuarter}
-                />
-              )}
-            </div>
-          )}
+            )}
+          </div>
+        )}
 
         {/* Insight tags */}
         {transaction.insightTags && transaction.insightTags.length > 0 && (

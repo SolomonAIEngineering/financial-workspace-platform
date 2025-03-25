@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  AlertCircle,
-  Building2,
-  Search,
-  XIcon
-} from 'lucide-react';
+import { AlertCircle, Building2, Search, XIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -420,7 +415,6 @@ export function ConnectTransactionsModal({
   const handleClearResults = () => setResults([]);
   const resetStep = () => setParams({ step: null });
 
-
   /** Handles the dialog close event */
   const handleOnClose = async () => {
     // Clear the step in URL params
@@ -633,8 +627,8 @@ export function ConnectTransactionsModal({
                 results={results}
                 openPlaid={handleOpenPlaid}
                 onSetStepToNull={resetStep}
-                onImport={() => { }}
-                onContactUs={() => { }}
+                onImport={() => {}}
+                onContactUs={() => {}}
               />
             </>
           )}

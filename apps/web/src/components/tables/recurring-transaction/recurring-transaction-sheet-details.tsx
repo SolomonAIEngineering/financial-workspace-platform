@@ -6,7 +6,7 @@ import {
   formatAmount,
   formatFrequency,
   formatTruncatedId,
-  getImportanceBadgeType
+  getImportanceBadgeType,
 } from './components';
 
 import { AlertCircle } from 'lucide-react';
@@ -318,8 +318,8 @@ export function RecurringTransactionSheetDetails() {
                   ?.includes('success')
                   ? 'success'
                   : transaction.lastExecutionStatus
-                    ?.toLowerCase()
-                    ?.includes('fail')
+                        ?.toLowerCase()
+                        ?.includes('fail')
                     ? 'error'
                     : 'info'
               }

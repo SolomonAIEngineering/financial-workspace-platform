@@ -1,7 +1,4 @@
-import {
-  AccountType,
-  BankAccount
-} from '@solomonai/prisma';
+import { AccountType, BankAccount } from '@solomonai/prisma';
 
 import { z } from 'zod';
 

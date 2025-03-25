@@ -12,7 +12,7 @@ import {
   Info,
   RepeatIcon,
   Settings,
-  Tag
+  Tag,
 } from 'lucide-react';
 
 import { ChevronDown } from 'lucide-react';

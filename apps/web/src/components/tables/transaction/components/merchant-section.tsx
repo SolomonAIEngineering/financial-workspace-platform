@@ -367,24 +367,24 @@ export function MerchantSection() {
             transaction.merchantState ||
             transaction.merchantZip ||
             transaction.merchantCountry) && (
-              <div className="mt-2 border-t border-border/20 pt-2">
-                <SubheadingWithTooltip
-                  label="Merchant Address"
-                  tooltip="Physical address of the merchant or business"
+            <div className="mt-2 border-t border-border/20 pt-2">
+              <SubheadingWithTooltip
+                label="Merchant Address"
+                tooltip="Physical address of the merchant or business"
+              />
+              <FieldRenderer field="merchantAddress" label="Street" />
+              <FieldRenderer field="merchantCity" label="City" />
+              <FieldRenderer field="merchantState" label="State" />
+              <FieldRenderer field="merchantZip" label="ZIP" />
+              {transaction.merchantCountry && (
+                <DetailRow
+                  label="Country"
+                  value={transaction.merchantCountry}
+                  tooltip={fieldDescriptions.merchantCountry}
                 />
-                <FieldRenderer field="merchantAddress" label="Street" />
-                <FieldRenderer field="merchantCity" label="City" />
-                <FieldRenderer field="merchantState" label="State" />
-                <FieldRenderer field="merchantZip" label="ZIP" />
-                {transaction.merchantCountry && (
-                  <DetailRow
-                    label="Country"
-                    value={transaction.merchantCountry}
-                    tooltip={fieldDescriptions.merchantCountry}
-                  />
-                )}
-              </div>
-            )}
+              )}
+            </div>
+          )}
         </div>
       </div>
     </TransactionSection>
