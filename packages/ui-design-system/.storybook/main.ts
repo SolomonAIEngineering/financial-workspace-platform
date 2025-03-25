@@ -1,6 +1,7 @@
 import { dirname, join } from 'path'
 
 import type { StorybookConfig } from '@storybook/react-vite'
+import type { UserConfig } from 'vite'
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -26,13 +27,42 @@ const config: StorybookConfig = {
     autodocs: 'tag',
   },
   viteFinal: async (config) => {
-    if (config.resolve) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@': '/src',
+    const finalConfig: UserConfig = {
+      ...config,
+      resolve: {
+        ...config.resolve,
+        alias: {
+          ...config.resolve?.alias,
+          '@': '/src',
+        },
+      },
+      optimizeDeps: {
+        ...config.optimizeDeps,
+        exclude: [
+          ...(config.optimizeDeps?.exclude || []),
+          'geist'
+        ],
+      },
+      assetsInclude: [
+        ...(Array.isArray(config.assetsInclude) ? config.assetsInclude : []),
+        '**/*.woff2'
+      ],
+    }
+
+    // Add PostCSS configuration
+    if (typeof finalConfig.css === 'object') {
+      finalConfig.css = {
+        ...finalConfig.css,
+        postcss: {
+          plugins: [
+            require('tailwindcss'),
+            require('autoprefixer'),
+          ],
+        },
       }
     }
-    return config
+
+    return finalConfig
   },
 }
 
