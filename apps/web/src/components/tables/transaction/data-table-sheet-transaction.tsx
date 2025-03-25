@@ -115,17 +115,22 @@ export function TransactionSheetDetails({
   const handleUpdateTransaction = (updatedData: any) => {
     if (!transaction?.id) return;
 
+    console.log('handleUpdateTransaction received:', updatedData);
+
     // Format the data properly for the API
     const apiData = { ...updatedData };
+    console.log('apiData prepared for mutation:', apiData);
 
     // Log the formatted data and the full request
     const updateRequest = {
       id: transaction.id,
       data: apiData,
     };
+    console.log('Update request being sent to mutation:', updateRequest);
 
     updateTransaction.mutate(updateRequest, {
       onSuccess: (data) => {
+        console.log('Transaction update successful:', data);
         // Invalidate queries to refetch data
         void trpc.transactions.getTransactions.invalidate();
         void trpc.transactions.getTransaction.invalidate({

@@ -139,6 +139,8 @@ export function TransactionProvider({
 
   // Function to update transaction data locally (without saving to the server)
   const updateTransactionData = (updatedData: Partial<TransactionData>) => {
+    console.log('updateTransactionData called with:', updatedData);
+
     // Process the data to ensure dates are properly formatted for the API
     const processedData = Object.entries(updatedData).reduce(
       (acc, [key, value]) => {
@@ -153,16 +155,25 @@ export function TransactionProvider({
       {} as Record<string, any>
     );
 
+    console.log('Processed data for API:', processedData);
+
     // Update the local state
-    setTransaction((current) => ({
-      ...current,
-      ...updatedData, // Use original data for local state
-      updatedAt: new Date(), // Update the updatedAt field to trigger useEffect
-    }));
+    setTransaction((current) => {
+      const updated = {
+        ...current,
+        ...updatedData, // Use original data for local state
+        updatedAt: new Date(), // Update the updatedAt field to trigger useEffect
+      };
+      console.log('Updated transaction state:', updated);
+      return updated;
+    });
 
     // If there's an onUpdate callback, call it with the processed data
     if (onUpdate) {
+      console.log('Calling onUpdate with:', processedData);
       onUpdate(processedData);
+    } else {
+      console.warn('No onUpdate callback provided');
     }
   };
 
@@ -201,9 +212,9 @@ export function TransactionProvider({
       processedValue =
         typeof value === 'string'
           ? value
-              .split(',')
-              .map((tag) => tag.trim())
-              .filter(Boolean)
+            .split(',')
+            .map((tag) => tag.trim())
+            .filter(Boolean)
           : [];
     } else if (field === 'date') {
       // Handle date values specially
