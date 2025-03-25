@@ -1,9 +1,7 @@
 'use server';
 
 import { authActionClient } from '../safe-action';
-import { client } from '@/jobs/client';
 import { manualSyncBankAccountSchema } from './schema';
-import { prisma } from '@/server/db';
 import { revalidatePath } from 'next/cache';
 import { syncConnectionJob } from '@/jobs';
 

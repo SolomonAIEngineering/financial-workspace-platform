@@ -1,5 +1,3 @@
-import { auth, isAuth } from '@/components/auth/rsc/auth';
-
 import { AIProvider } from '@/components/ai/ai-provider';
 import { DocumentPlate } from '@/components/editor/providers/document-plate';
 import type { LayoutProps } from '@/lib/navigation/next-types';
@@ -11,6 +9,7 @@ import { RightPanelType } from '@/hooks/useResizablePanel';
 import { WithUserAndTeamConnectBankProvider } from '@/components/providers/with-user-team-connect-bank-provider';
 import { cookies } from 'next/headers';
 import { getCookie } from 'cookies-next/server';
+import { isAuth } from '@/components/auth/rsc/auth';
 
 export default async function MainLayout({ children }: LayoutProps) {
   const session = await isAuth();

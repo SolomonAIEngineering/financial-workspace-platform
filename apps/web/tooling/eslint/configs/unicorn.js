@@ -10,7 +10,7 @@ export default defineConfig(eslintPluginUnicorn.configs['flat/recommended'], {
         checkArrowFunctions: false,
       },
     ],
-
+    'unicorn/no-useless-switch-case': 'off',
     'unicorn/prefer-switch': 'off',
     'unicorn/no-document-cookie': 'off',
     'unicorn/empty-brace-spaces': 'off',
