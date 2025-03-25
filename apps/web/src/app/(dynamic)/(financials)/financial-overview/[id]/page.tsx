@@ -29,6 +29,7 @@ export default async function BankAccountPage({
     const resolvedParams = await params;
 
     // Query the bank account by ID
+    // eslint-disable-next-line testing-library/no-await-sync-queries
     const bankAccount = await trpc.bankAccounts.getById({
       id: resolvedParams.id,
     });
