@@ -58,6 +58,7 @@ export const BasicBarChart: Story = {
         xLabel: 'Month',
         yLabel: 'Value',
         height: 400,
+        color: '#000000',
     },
 }
 
@@ -70,6 +71,7 @@ export const TemporalBarChart: Story = {
         yLabel: 'Value',
         height: 400,
         formatY: (value) => `$${value.toFixed(2)}`,
+        color: '#000000',
     },
 }
 
@@ -81,7 +83,7 @@ export const CategoricalBarChart: Story = {
         xLabel: 'Category',
         yLabel: 'Value',
         height: 400,
-        color: (d) => (d.category === 'A' ? '#4CAF50' : '#2196F3'),
+        color: (d) => (d.category === 'A' ? '#000000' : '#FFFFFF'),
     },
 }
 
@@ -93,6 +95,7 @@ export const BasicScatterPlot: Story = {
         xLabel: 'X Value',
         yLabel: 'Y Value',
         height: 400,
+        color: '#000000',
     },
 }
 
@@ -107,11 +110,11 @@ export const TemporalScatterPlot: Story = {
         color: (d) => {
             switch (d.category) {
                 case 'High':
-                    return '#F44336'
+                    return '#000000'
                 case 'Medium':
-                    return '#FFC107'
+                    return '#666666'
                 default:
-                    return '#4CAF50'
+                    return '#FFFFFF'
             }
         },
     },
@@ -129,6 +132,6 @@ export const CategoricalScatterPlot: Story = {
         xLabel: 'X Axis',
         yLabel: 'Y Axis',
         height: 400,
-        color: (d) => (d.category === 'A' ? '#E91E63' : '#9C27B0'),
+        color: (d) => (d.category === 'A' ? '#000000' : '#FFFFFF'),
     },
 } 
