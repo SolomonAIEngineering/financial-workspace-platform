@@ -192,6 +192,13 @@ export const TransactionFrequency = {
 } as const
 export type TransactionFrequency =
   (typeof TransactionFrequency)[keyof typeof TransactionFrequency]
+export const SubscriptionStatus = {
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  INACTIVE: 'INACTIVE',
+} as const
+export type SubscriptionStatus =
+  (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus]
 export type App = {
   id: string
   app_id: string
@@ -542,6 +549,10 @@ export type OauthAccount = {
   providerUserId: string
   userId: string
 }
+export type OwnedTeams = {
+  A: string
+  B: string
+}
 export type RecurringTransaction = {
   id: string
   bankAccountId: string
@@ -641,6 +652,18 @@ export type SpendingInsight = {
   createdAt: Generated<Timestamp>
   updatedAt: Timestamp
 }
+export type Subscription = {
+  id: string
+  status: Generated<SubscriptionStatus>
+  planId: string
+  priceId: string
+  periodEnd: Timestamp | null
+  userId: string | null
+  teamId: string | null
+  createdAt: Generated<Timestamp>
+  updatedAt: Timestamp
+  cancelAtPeriodEnd: Generated<boolean>
+}
 export type Tag = {
   id: string
   name: string
@@ -661,6 +684,15 @@ export type Team = {
   flags: Generated<string[]>
   created_at: Generated<Timestamp>
   is_default: Generated<boolean | null>
+  stripe_customer_id: string | null
+}
+export type TeamPending = {
+  id: string
+  name: string
+  url: string
+  createdAt: Generated<Timestamp>
+  customerId: string
+  ownerUserId: string
 }
 export type TrackerEntry = {
   id: string
@@ -937,6 +969,7 @@ export type DB = {
   _BankAccountToTeam: BankAccountToTeam
   _BankConnectionToTeam: BankConnectionToTeam
   _InvoiceToInvoiceLineItem: InvoiceToInvoiceLineItem
+  _OwnedTeams: OwnedTeams
   apps: App
   Attachment: Attachment
   BankAccount: BankAccount
@@ -959,7 +992,9 @@ export type DB = {
   reports: Report
   Session: Session
   SpendingInsight: SpendingInsight
+  Subscription: Subscription
   tags: Tag
+  TeamPending: TeamPending
   teams: Team
   tracker_entries: TrackerEntry
   tracker_project_tags: TrackerProjectTag

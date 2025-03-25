@@ -464,6 +464,15 @@ export interface SpendingInsight {
   updatedAt: Date;
 }
 
+export interface TeamPending {
+  id: string;
+  name: string;
+  url: string;
+  createdAt: Date;
+  customerId: string;
+  ownerUserId: string;
+}
+
 export interface Team {
   id: string;
   name: string| null;
@@ -478,6 +487,7 @@ export interface Team {
   flags: string[];
   createdAt: Date;
   isDefault: boolean| null;
+  stripeCustomerId: string| null;
 }
 
 export interface UsersOnTeam {
@@ -764,6 +774,19 @@ export interface App {
   createdAt: Date| null;
 }
 
+export interface Subscription {
+  id: string;
+  status: SubscriptionStatus;
+  planId: string;
+  priceId: string;
+  periodEnd: Date| null;
+  userId: string| null;
+  teamId: string| null;
+  createdAt: Date;
+  updatedAt: Date;
+  cancelAtPeriodEnd: boolean;
+}
+
 export type BankConnectionStatus = "ACTIVE" | "ERROR" | "DISCONNECTED" | "PENDING" | "REQUIRES_ATTENTION" | "LOGIN_REQUIRED" | "REQUIRES_REAUTH";
 
 export declare const BankConnectionStatus: {
@@ -983,6 +1006,14 @@ export declare const TransactionFrequency: {
   readonly UNKNOWN: "UNKNOWN";
 };
 
+export type SubscriptionStatus = "ACTIVE" | "PAST_DUE" | "INACTIVE";
+
+export declare const SubscriptionStatus: {
+  readonly ACTIVE: "ACTIVE";
+  readonly PAST_DUE: "PAST_DUE";
+  readonly INACTIVE: "INACTIVE";
+};
+
 declare global {
   export type TSession = Session;
   export type TOauthAccount = OauthAccount;
@@ -1000,6 +1031,7 @@ declare global {
   export type TUserActivity = UserActivity;
   export type TNotification = Notification;
   export type TSpendingInsight = SpendingInsight;
+  export type TTeamPending = TeamPending;
   export type TTeam = Team;
   export type TUsersOnTeam = UsersOnTeam;
   export type TUserInvite = UserInvite;
@@ -1021,6 +1053,7 @@ declare global {
   export type TInbox = Inbox;
   export type TTransactionAttachment = TransactionAttachment;
   export type TApp = App;
+  export type TSubscription = Subscription;
   export type TBankConnectionStatus = BankConnectionStatus;
   export type TSyncStatus = SyncStatus;
   export type TAccountType = AccountType;
@@ -1041,5 +1074,6 @@ declare global {
   export type TInboxStatus = InboxStatus;
   export type TReportType = ReportType;
   export type TTransactionFrequency = TransactionFrequency;
+  export type TSubscriptionStatus = SubscriptionStatus;
 }
 

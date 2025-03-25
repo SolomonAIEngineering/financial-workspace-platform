@@ -502,10 +502,28 @@
             "$ref": "#/definitions/Transaction"
           }
         },
+        "subscriptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Subscription"
+          }
+        },
         "invoices": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Invoice"
+          }
+        },
+        "ownedPendingTeams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TeamPending"
+          }
+        },
+        "ownedTeams": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Team"
           }
         }
       },
@@ -2801,6 +2819,36 @@
         "updatedAt"
       ]
     },
+    "TeamPending": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "customerId": {
+          "type": "string"
+        },
+        "owner": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "required": [
+        "name",
+        "url",
+        "customerId",
+        "ownerUserId"
+      ]
+    },
     "Team": {
       "type": "object",
       "properties": {
@@ -2874,6 +2922,12 @@
             "null"
           ],
           "default": false
+        },
+        "stripeCustomerId": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "users": {
           "type": "array",
@@ -2971,6 +3025,16 @@
             "$ref": "#/definitions/Transaction"
           }
         },
+        "subscription": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Subscription"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "UserInvite": {
           "type": "array",
           "items": {
@@ -3005,6 +3069,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/TrackerProjectTag"
+          }
+        },
+        "User": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
           }
         }
       },
@@ -4607,6 +4677,73 @@
       "required": [
         "appId"
       ]
+    },
+    "Subscription": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "default": "INACTIVE",
+          "enum": [
+            "ACTIVE",
+            "PAST_DUE",
+            "INACTIVE"
+          ]
+        },
+        "planId": {
+          "type": "string"
+        },
+        "priceId": {
+          "type": "string"
+        },
+        "periodEnd": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelAtPeriodEnd": {
+          "type": "boolean",
+          "default": false
+        },
+        "team": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Team"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/User"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "planId",
+        "priceId",
+        "updatedAt"
+      ]
     }
   },
   "type": "object",
@@ -4658,6 +4795,9 @@
     },
     "spendingInsight": {
       "$ref": "#/definitions/SpendingInsight"
+    },
+    "teamPending": {
+      "$ref": "#/definitions/TeamPending"
     },
     "team": {
       "$ref": "#/definitions/Team"
@@ -4721,6 +4861,9 @@
     },
     "app": {
       "$ref": "#/definitions/App"
+    },
+    "subscription": {
+      "$ref": "#/definitions/Subscription"
     }
   }
 }
