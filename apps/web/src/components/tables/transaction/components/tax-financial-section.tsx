@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { Check, Loader2, Receipt, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { DetailRow } from './detail-row';
 import { FieldRenderer } from './field-renderer';
@@ -17,29 +17,23 @@ import { useTransactionContext } from './transaction-context';
 import { useUpdateTransaction } from '@/trpc/hooks/transaction-hooks';
 
 /**
- * ToggleableProperty - A switch toggle for a transaction property
+ * ToggleProperty - A simple property toggle component
  */
-interface ToggleablePropertyProps {
-  label: string;
-  field: string;
-  value: boolean;
-  tooltip?: string;
-  onToggle: (field: string, value: boolean) => void;
-  isUpdating: boolean;
-  updatingField: string | null;
-}
-
-function ToggleableProperty({
+function ToggleProperty({
   label,
   field,
   value,
+  onChange,
+  isDisabled = false,
   tooltip,
-  onToggle,
-  isUpdating,
-  updatingField
-}: ToggleablePropertyProps) {
-  const isCurrentlyUpdating = isUpdating && updatingField === field;
-
+}: {
+  label: string;
+  field: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+  isDisabled?: boolean;
+  tooltip?: string;
+}) {
   return (
     <div className="flex flex-row items-center justify-between space-x-2 rounded-md border border-border/40 bg-background/60 px-3 py-2 shadow-sm transition-all hover:border-primary/20 hover:bg-background/80">
       <div className="flex items-center space-x-2">
@@ -49,142 +43,18 @@ function ToggleableProperty({
           title={tooltip}
         >
           {label}
+          {isDisabled && (
+            <Loader2 className="ml-2 inline h-3.5 w-3.5 animate-spin text-primary" />
+          )}
         </Label>
-        {isCurrentlyUpdating && (
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
-        )}
       </div>
       <Switch
         id={`toggle-${field}`}
         checked={value}
-        onCheckedChange={(checked) => onToggle(field, checked)}
-        disabled={isUpdating}
+        onCheckedChange={onChange}
+        disabled={isDisabled}
         className="data-[state=checked]:bg-primary"
       />
-    </div>
-  );
-}
-
-/**
- * FinancialToggles - A component for toggling financial properties
- */
-function FinancialToggles() {
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [updatingField, setUpdatingField] = useState<string | null>(null);
-  const updateTransaction = useUpdateTransaction();
-  const { transaction } = useTransactionContext();
-
-  // Use a ref to store the transaction data to prevent unnecessary re-renders
-  const transactionRef = useRef(transaction);
-
-  // Store toggle states directly in state, initializing from transaction
-  const [toggleStates, setToggleStates] = useState({
-    taxDeductible: Boolean(transaction.taxDeductible),
-    taxExempt: Boolean(transaction.taxExempt),
-    excludeFromBudget: Boolean(transaction.excludeFromBudget),
-    reimbursable: Boolean(transaction.reimbursable),
-    plannedExpense: Boolean(transaction.plannedExpense),
-    discretionary: Boolean(transaction.discretionary)
-  });
-
-  // Update the ref when transaction changes
-  useEffect(() => {
-    transactionRef.current = transaction;
-  }, [transaction]);
-
-  const handleToggle = (field: string, value: boolean) => {
-    if (!transactionRef.current.id || isUpdating) return;
-
-    // Update UI state immediately
-    setToggleStates(prev => ({
-      ...prev,
-      [field]: value
-    }));
-
-    setIsUpdating(true);
-    setUpdatingField(field);
-
-    // Create update object
-    const updateData = {
-      id: transactionRef.current.id,
-      data: {
-        [field]: value,
-      },
-    };
-
-    // Update the transaction in the database
-    updateTransaction.mutate(updateData, {
-      onSuccess: () => {
-        toast.success(
-          `${field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')} ${value ? 'enabled' : 'disabled'}`
-        );
-
-        // No need to update context as we're bypassing it for UI state
-      },
-      onError: (error) => {
-        // Revert UI state on error
-        setToggleStates(prev => ({
-          ...prev,
-          [field]: !value
-        }));
-
-        toast.error(`Failed to update: ${error.message}`);
-      },
-      onSettled: () => {
-        setIsUpdating(false);
-        setUpdatingField(null);
-      }
-    });
-  };
-
-  // Map of properties to display
-  const properties = [
-    {
-      label: 'Tax Deductible',
-      field: 'taxDeductible',
-      tooltip: fieldDescriptions.taxDeductible,
-    },
-    {
-      label: 'Tax Exempt',
-      field: 'taxExempt',
-      tooltip: fieldDescriptions.taxExempt,
-    },
-    {
-      label: 'Exclude from Budget',
-      field: 'excludeFromBudget',
-      tooltip: fieldDescriptions.excludeFromBudget,
-    },
-    {
-      label: 'Reimbursable',
-      field: 'reimbursable',
-      tooltip: fieldDescriptions.reimbursable,
-    },
-    {
-      label: 'Planned Expense',
-      field: 'plannedExpense',
-      tooltip: fieldDescriptions.plannedExpense,
-    },
-    {
-      label: 'Discretionary',
-      field: 'discretionary',
-      tooltip: fieldDescriptions.discretionary,
-    },
-  ];
-
-  return (
-    <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-      {properties.map((prop) => (
-        <ToggleableProperty
-          key={prop.field}
-          label={prop.label}
-          field={prop.field}
-          value={toggleStates[prop.field as keyof typeof toggleStates]}
-          tooltip={prop.tooltip}
-          onToggle={handleToggle}
-          isUpdating={isUpdating}
-          updatingField={updatingField}
-        />
-      ))}
     </div>
   );
 }
@@ -196,7 +66,9 @@ function FinancialToggles() {
  * information, including tax status, amounts, rates, and business information.
  */
 export function TaxFinancialSection() {
-  const { transaction, isEditMode } = useTransactionContext();
+  const { transaction, isEditMode, updateTransactionData } = useTransactionContext();
+  const updateTransaction = useUpdateTransaction();
+  const [updatingField, setUpdatingField] = useState<string | null>(null);
 
   // Helper function to format currency amounts
   const formatAmount = (amount: number, currency?: string | null) => {
@@ -209,6 +81,70 @@ export function TaxFinancialSection() {
   // Always keep the section open by setting defaultOpen to true
   // This ensures the section stays open regardless of toggle changes
   const sectionDefaultOpen = true;
+
+  // Handle toggle changes
+  const handleToggle = (field: string, value: boolean) => {
+    if (!transaction.id || updatingField) return;
+
+    // Set updating state
+    setUpdatingField(field);
+
+    // Create update object
+    const updateData = {
+      id: transaction.id,
+      data: {
+        [field]: value
+      }
+    };
+
+    console.log(`[TaxFinancialSection] Updating ${field} to ${value}`, updateData);
+
+    // Update transaction
+    updateTransaction.mutate(updateData, {
+      onSuccess: (data) => {
+        console.log(`[TaxFinancialSection] Update success:`, data);
+
+        // Update local transaction state with the new value
+        updateTransactionData({
+          [field]: value
+        });
+
+        toast.success(`${field.replace(/([A-Z])/g, ' $1').toLowerCase()} updated`);
+      },
+      onError: (error) => {
+        console.error(`[TaxFinancialSection] Update error:`, error);
+        toast.error(`Failed to update: ${error.message}`);
+      },
+      onSettled: () => {
+        setUpdatingField(null);
+      }
+    });
+  };
+
+  // Debug log to check if values are actually present in the transaction object
+  useEffect(() => {
+    console.log(`[TaxFinancialSection] Transaction state:`, {
+      taxDeductible: transaction.taxDeductible,
+      taxExempt: transaction.taxExempt,
+      reimbursable: transaction.reimbursable,
+      excludeFromBudget: transaction.excludeFromBudget,
+      plannedExpense: transaction.plannedExpense,
+      discretionary: transaction.discretionary,
+    });
+  }, [transaction]);
+
+  // Helper to render toggle fields
+  const renderToggleField = (label: string, field: string) => (
+    <ToggleProperty
+      key={field}
+      label={label}
+      field={field}
+      value={Boolean(transaction[field as keyof typeof transaction])}
+      onChange={(value) => handleToggle(field, value)}
+      isDisabled={updatingField === field}
+      tooltip={fieldDescriptions[field as keyof typeof fieldDescriptions]}
+    />
+  );
 
   return (
     <TransactionSection
@@ -254,7 +190,14 @@ export function TaxFinancialSection() {
             />
           </div>
         ) : (
-          <FinancialToggles />
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            {renderToggleField("Tax Deductible", "taxDeductible")}
+            {renderToggleField("Tax Exempt", "taxExempt")}
+            {renderToggleField("Exclude from Budget", "excludeFromBudget")}
+            {renderToggleField("Reimbursable", "reimbursable")}
+            {renderToggleField("Planned Expense", "plannedExpense")}
+            {renderToggleField("Discretionary", "discretionary")}
+          </div>
         )}
 
         <div className="mt-2 border-t border-border/20 pt-2">
