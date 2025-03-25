@@ -15,13 +15,23 @@
           "$ref": "#/definitions/User"
         },
         "ip_address": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "user_agent": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
-      "required": ["id", "user_id", "expires_at"]
+      "required": [
+        "id",
+        "user_id",
+        "expires_at"
+      ]
     },
     "OauthAccount": {
       "type": "object",
@@ -39,7 +49,11 @@
           "$ref": "#/definitions/User"
         }
       },
-      "required": ["providerId", "providerUserId", "userId"]
+      "required": [
+        "providerId",
+        "providerUserId",
+        "userId"
+      ]
     },
     "User": {
       "type": "object",
@@ -51,10 +65,16 @@
           "type": "string"
         },
         "password_hash": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "email": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "sessions": {
           "type": "array",
@@ -82,42 +102,78 @@
           ]
         },
         "name": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "firstName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "lastName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "profileImageUrl": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "bio": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "timezone": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "language": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": "en"
         },
         "jobTitle": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "department": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "employeeId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "hireDate": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "yearsOfExperience": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "skills": {
           "type": "array",
@@ -126,22 +182,40 @@
           }
         },
         "phoneNumber": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "businessEmail": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "businessPhone": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "officeLocation": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "organizationName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "organizationUnit": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "manager": {
           "anyOf": [
@@ -160,58 +234,115 @@
           }
         },
         "teamName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "addressLine1": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "addressLine2": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "city": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "state": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "postalCode": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "country": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "notificationPreferences": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "displayPreferences": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "documentPreferences": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "notificationsEnabled": {
           "type": "boolean",
           "default": true
         },
         "lastTransactionNotificationAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "linkedinProfile": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "twitterProfile": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "githubProfile": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "version": {
           "type": "integer",
           "default": 1
         },
         "stripeCustomerId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "accountStatus": {
           "type": "string",
@@ -228,7 +359,10 @@
           ]
         },
         "lastLoginAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "uploadLimit": {
@@ -244,7 +378,10 @@
           "format": "date-time"
         },
         "deletedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "documents": {
@@ -372,7 +509,10 @@
           }
         }
       },
-      "required": ["id", "username"]
+      "required": [
+        "id",
+        "username"
+      ]
     },
     "Document": {
       "type": "object",
@@ -381,7 +521,10 @@
           "type": "string"
         },
         "templateId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "user": {
           "$ref": "#/definitions/User"
@@ -403,19 +546,38 @@
           }
         },
         "title": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "content": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "contentRich": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "coverImage": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "icon": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "isPublished": {
           "type": "boolean",
@@ -446,7 +608,11 @@
         "textStyle": {
           "type": "string",
           "default": "DEFAULT",
-          "enum": ["DEFAULT", "SERIF", "MONO"]
+          "enum": [
+            "DEFAULT",
+            "SERIF",
+            "MONO"
+          ]
         },
         "smallText": {
           "type": "boolean",
@@ -491,7 +657,11 @@
           }
         }
       },
-      "required": ["id", "userId", "updatedAt"]
+      "required": [
+        "id",
+        "userId",
+        "updatedAt"
+      ]
     },
     "DocumentVersion": {
       "type": "object",
@@ -506,10 +676,20 @@
           "$ref": "#/definitions/User"
         },
         "title": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "contentRich": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -520,7 +700,12 @@
           "format": "date-time"
         }
       },
-      "required": ["id", "documentId", "userId", "updatedAt"]
+      "required": [
+        "id",
+        "documentId",
+        "userId",
+        "updatedAt"
+      ]
     },
     "Discussion": {
       "type": "object",
@@ -538,7 +723,14 @@
           "type": "string"
         },
         "documentContentRich": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "isResolved": {
           "type": "boolean",
@@ -559,7 +751,12 @@
           "format": "date-time"
         }
       },
-      "required": ["id", "documentId", "userId", "documentContent"]
+      "required": [
+        "id",
+        "documentId",
+        "userId",
+        "documentContent"
+      ]
     },
     "Comment": {
       "type": "object",
@@ -577,7 +774,14 @@
           "type": "string"
         },
         "contentRich": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "isEdited": {
           "type": "boolean",
@@ -592,7 +796,12 @@
           "format": "date-time"
         }
       },
-      "required": ["id", "userId", "discussionId", "content"]
+      "required": [
+        "id",
+        "userId",
+        "discussionId",
+        "content"
+      ]
     },
     "File": {
       "type": "object",
@@ -634,7 +843,14 @@
           "format": "date-time"
         }
       },
-      "required": ["id", "userId", "size", "url", "appUrl", "type"]
+      "required": [
+        "id",
+        "userId",
+        "size",
+        "url",
+        "appUrl",
+        "type"
+      ]
     },
     "BankConnection": {
       "type": "object",
@@ -671,20 +887,35 @@
           ]
         },
         "errorCode": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "errorMessage": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "lastStatusChangedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "logo": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "primaryColor": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "oauthSupported": {
           "type": "boolean",
@@ -695,24 +926,41 @@
           "default": false
         },
         "lastSyncedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "nextSyncScheduledAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "syncStatus": {
           "type": "string",
           "default": "IDLE",
-          "enum": ["IDLE", "SYNCING", "FAILED", "SCHEDULED"]
+          "enum": [
+            "IDLE",
+            "SYNCING",
+            "FAILED",
+            "SCHEDULED"
+          ]
         },
         "balanceLastUpdated": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "lastNotifiedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "notificationCount": {
@@ -720,10 +968,16 @@
           "default": 0
         },
         "webhookUrl": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "consentExpiresAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "disabled": {
@@ -749,11 +1003,17 @@
           "format": "date-time"
         },
         "deletedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "lastAlertedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "alertCount": {
@@ -761,15 +1021,24 @@
           "default": 0
         },
         "lastCheckedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "lastAccessedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "lastExpiryNotifiedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "expiryNotificationCount": {
@@ -777,7 +1046,10 @@
           "default": 0
         },
         "expiresAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "provider": {
@@ -790,7 +1062,10 @@
           }
         },
         "enrollmentId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -822,7 +1097,10 @@
           "type": "string"
         },
         "officialName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "type": {
           "type": "string",
@@ -837,7 +1115,10 @@
           ]
         },
         "subtype": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "enum": [
             "CHECKING",
             "SAVINGS",
@@ -871,37 +1152,70 @@
           ]
         },
         "mask": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "displayName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "accountNumber": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "routingNumber": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "iban": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "swift": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "availableBalance": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "currentBalance": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "limit": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "isoCurrencyCode": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "balanceLastUpdated": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "capabilities": {
@@ -959,13 +1273,22 @@
           }
         },
         "monthlySpending": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "monthlyIncome": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "averageBalance": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "tags": {
           "type": "array",
@@ -974,10 +1297,16 @@
           }
         },
         "budgetCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "lastSyncedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "errorCount": {
@@ -985,7 +1314,10 @@
           "default": 0
         },
         "errorMessage": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "lastUpdated": {
           "type": "string",
@@ -1000,7 +1332,10 @@
           "format": "date-time"
         },
         "deletedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "recurringTransactions": {
@@ -1016,36 +1351,67 @@
           }
         },
         "balanceProjections": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "scheduledInflows": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "default": 0
         },
         "scheduledOutflows": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "default": 0
         },
         "recurringMonthlyInflow": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "default": 0
         },
         "recurringMonthlyOutflow": {
-          "type": ["number", "null"],
+          "type": [
+            "number",
+            "null"
+          ],
           "default": 0
         },
         "nextScheduledTransaction": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "errorDetails": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "errorRetries": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "balance": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "Team": {
           "type": "array",
@@ -1087,13 +1453,19 @@
           ]
         },
         "plaidTransactionId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "amount": {
           "type": "number"
         },
         "isoCurrencyCode": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "date": {
           "type": "string",
@@ -1103,17 +1475,26 @@
           "type": "string"
         },
         "merchantName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "description": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "pending": {
           "type": "boolean",
           "default": false
         },
         "category": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "enum": [
             "INCOME",
             "TRANSFER",
@@ -1134,43 +1515,82 @@
           ]
         },
         "subCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "categoryIconUrl": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "customCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantLogoUrl": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantWebsite": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantPhone": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantAddress": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantCity": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantState": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantZip": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantCountry": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "assignee": {
           "anyOf": [
@@ -1183,7 +1603,10 @@
           ]
         },
         "assignedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "assignedBy": {
@@ -1197,79 +1620,158 @@
           ]
         },
         "location": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "latitude": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "longitude": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "paymentChannel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "paymentMethod": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "paymentProcessor": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "paymentGateway": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "transactionReference": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "authorizationCode": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "checkNumber": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "wireReference": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "accountNumber": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "cardType": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "cardNetwork": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "cardLastFour": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "originalDescription": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "originalCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "originalMerchantName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "fiscalYear": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "fiscalMonth": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "fiscalQuarter": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "vatAmount": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "vatRate": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "taxAmount": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "taxRate": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "taxDeductible": {
           "type": "boolean",
@@ -1280,28 +1782,52 @@
           "default": false
         },
         "taxCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "status": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "transactionType": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "transactionMethod": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "transactionChannel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "budgetCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "budgetSubcategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "budgetId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "plannedExpense": {
           "type": "boolean",
@@ -1312,32 +1838,56 @@
           "default": false
         },
         "needsWantsCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "spendingGoalId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "investmentCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "businessPurpose": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "costCenter": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "projectCode": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "reimbursable": {
           "type": "boolean",
           "default": false
         },
         "clientId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "invoiceId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "excludeFromBudget": {
           "type": "boolean",
@@ -1348,35 +1898,65 @@
           "default": false
         },
         "recurrenceId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "recurringFrequency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "recurringDay": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "estimatedNextDate": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "similarTransactions": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "cashFlowCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "cashFlowType": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "inflationCategory": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "confidenceScore": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "anomalyScore": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "insightTags": {
           "type": "array",
@@ -1417,10 +1997,16 @@
           "default": false
         },
         "reviewStatus": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "userNotes": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "tags": {
           "type": "array",
@@ -1429,7 +2015,10 @@
           }
         },
         "notes": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "attachments": {
           "type": "array",
@@ -1438,7 +2027,14 @@
           }
         },
         "customFields": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "labels": {
           "type": "array",
@@ -1467,28 +2063,52 @@
           "default": false
         },
         "splitTotal": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "splitCount": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "searchableText": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "dateYear": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "dateMonth": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "dateDay": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "dateDayOfWeek": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "dateWeekOfYear": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -1499,23 +2119,38 @@
           "format": "date-time"
         },
         "importedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "lastReviewedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "lastModifiedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "lastCategorizedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "frequency": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "enum": [
             "WEEKLY",
             "BIWEEKLY",
@@ -1527,16 +2162,28 @@
           ]
         },
         "internal": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "notified": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "baseAmount": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "baseCurrency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "transactionCategory": {
           "anyOf": [
@@ -1599,7 +2246,10 @@
           "type": "string"
         },
         "description": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "amount": {
           "type": "number"
@@ -1608,7 +2258,10 @@
           "type": "string"
         },
         "initialAccountBalance": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "frequency": {
           "type": "string",
@@ -1631,20 +2284,35 @@
           "format": "date-time"
         },
         "endDate": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "dayOfMonth": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "dayOfWeek": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "weekOfMonth": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "monthOfYear": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "executionDays": {
           "type": "array",
@@ -1665,13 +2333,26 @@
           "default": true
         },
         "limitExecutions": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "transactionTemplate": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "categorySlug": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "tags": {
           "type": "array",
@@ -1680,10 +2361,20 @@
           }
         },
         "notes": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "customFields": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "targetAccount": {
           "anyOf": [
@@ -1700,11 +2391,17 @@
           "default": true
         },
         "lastExecutedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "nextScheduledDate": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "executionCount": {
@@ -1716,16 +2413,28 @@
           "default": 0
         },
         "lastExecutionStatus": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "lastExecutionError": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "minBalanceRequired": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "overspendAction": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": "block"
         },
         "insufficientFundsCount": {
@@ -1733,13 +2442,22 @@
           "default": 0
         },
         "expectedAmount": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "allowedVariance": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "varianceAction": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "reminderDays": {
           "type": "array",
@@ -1748,7 +2466,10 @@
           }
         },
         "reminderSentAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "notifyOnExecution": {
@@ -1776,22 +2497,40 @@
           "default": false
         },
         "source": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "confidenceScore": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "merchantId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "merchantName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "transactionType": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "importanceLevel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "transactions": {
           "type": "array",
@@ -1808,7 +2547,10 @@
           "format": "date-time"
         },
         "lastModifiedBy": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [
@@ -1874,7 +2616,14 @@
           "type": "string"
         },
         "metadata": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -1884,7 +2633,11 @@
           "$ref": "#/definitions/User"
         }
       },
-      "required": ["userId", "type", "detail"]
+      "required": [
+        "userId",
+        "type",
+        "detail"
+      ]
     },
     "Notification": {
       "type": "object",
@@ -1906,7 +2659,14 @@
           "default": false
         },
         "metadata": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -1916,7 +2676,12 @@
           "$ref": "#/definitions/User"
         }
       },
-      "required": ["userId", "type", "title", "body"]
+      "required": [
+        "userId",
+        "type",
+        "title",
+        "body"
+      ]
     },
     "SpendingInsight": {
       "type": "object",
@@ -1938,19 +2703,35 @@
         "timeframe": {
           "type": "string",
           "default": "MONTH",
-          "enum": ["DAY", "WEEK", "MONTH", "QUARTER", "YEAR", "CUSTOM"]
+          "enum": [
+            "DAY",
+            "WEEK",
+            "MONTH",
+            "QUARTER",
+            "YEAR",
+            "CUSTOM"
+          ]
         },
         "year": {
           "type": "integer"
         },
         "month": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "quarter": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "week": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "totalTransactions": {
           "type": "integer"
@@ -1962,19 +2743,42 @@
           "type": "number"
         },
         "categoryStats": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "merchantStats": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "spendingTrend": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "incomeTotal": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "incomeTrend": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -2004,31 +2808,55 @@
           "type": "string"
         },
         "name": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "slug": {
           "type": "string"
         },
         "baseCurrency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "email": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "logoUrl": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "inboxEmail": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "inboxId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "inboxForwarding": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "documentClassification": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "flags": {
           "type": "array",
@@ -2041,7 +2869,10 @@
           "format": "date-time"
         },
         "isDefault": {
-          "type": ["boolean", "null"],
+          "type": [
+            "boolean",
+            "null"
+          ],
           "default": false
         },
         "users": {
@@ -2177,7 +3008,9 @@
           }
         }
       },
-      "required": ["slug"]
+      "required": [
+        "slug"
+      ]
     },
     "UsersOnTeam": {
       "type": "object",
@@ -2188,10 +3021,16 @@
         "role": {
           "type": "string",
           "default": "MEMBER",
-          "enum": ["OWNER", "MEMBER"]
+          "enum": [
+            "OWNER",
+            "MEMBER"
+          ]
         },
         "createdAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "user": {
@@ -2201,7 +3040,10 @@
           "$ref": "#/definitions/Team"
         }
       },
-      "required": ["userId", "teamId"]
+      "required": [
+        "userId",
+        "teamId"
+      ]
     },
     "UserInvite": {
       "type": "object",
@@ -2210,14 +3052,26 @@
           "type": "string"
         },
         "email": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "code": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "role": {
-          "type": ["string", "null"],
-          "enum": ["OWNER", "MEMBER"]
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "OWNER",
+            "MEMBER"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -2262,40 +3116,76 @@
           "type": "string"
         },
         "phone": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "contact": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "website": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "note": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "vatNumber": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "addressLine1": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "addressLine2": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "city": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "state": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "zip": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "country": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "countryCode": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -2323,7 +3213,12 @@
           }
         }
       },
-      "required": ["name", "email", "token", "teamId"]
+      "required": [
+        "name",
+        "email",
+        "token",
+        "teamId"
+      ]
     },
     "Tag": {
       "type": "object",
@@ -2360,7 +3255,10 @@
           }
         }
       },
-      "required": ["name", "teamId"]
+      "required": [
+        "name",
+        "teamId"
+      ]
     },
     "CustomerTag": {
       "type": "object",
@@ -2382,7 +3280,11 @@
           "$ref": "#/definitions/Team"
         }
       },
-      "required": ["customerId", "tagId", "teamId"]
+      "required": [
+        "customerId",
+        "tagId",
+        "teamId"
+      ]
     },
     "TransactionTag": {
       "type": "object",
@@ -2404,7 +3306,11 @@
           "$ref": "#/definitions/Team"
         }
       },
-      "required": ["transactionId", "tagId", "teamId"]
+      "required": [
+        "transactionId",
+        "tagId",
+        "teamId"
+      ]
     },
     "CustomTransactionCategory": {
       "type": "object",
@@ -2419,22 +3325,40 @@
           "type": "string"
         },
         "description": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "color": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "vat": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "system": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "embedding": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "createdAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "team": {
@@ -2447,7 +3371,11 @@
           }
         }
       },
-      "required": ["name", "slug", "teamId"]
+      "required": [
+        "name",
+        "slug",
+        "teamId"
+      ]
     },
     "TransactionEnrichment": {
       "type": "object",
@@ -2456,13 +3384,22 @@
           "type": "string"
         },
         "name": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "categorySlug": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "system": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -2488,55 +3425,103 @@
           "type": "string"
         },
         "title": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "status": {
           "type": "string",
           "default": "DRAFT",
-          "enum": ["DRAFT", "UNPAID", "PAID", "OVERDUE", "CANCELED"]
+          "enum": [
+            "DRAFT",
+            "UNPAID",
+            "PAID",
+            "OVERDUE",
+            "CANCELED"
+          ]
         },
         "customerName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "invoiceNumber": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "amount": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "subtotal": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "tax": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "vat": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "discount": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "currency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "issueDate": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "dueDate": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "paidAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "viewedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "reminderSentAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "lineItems": {
@@ -2546,40 +3531,101 @@
           }
         },
         "fromDetails": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "customerDetails": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "paymentDetails": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "note": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "internalNote": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "noteDetails": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "topBlock": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "bottomBlock": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "template": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "url": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "token": {
           "type": "string"
         },
         "fileSize": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "filePath": {
           "type": "array",
@@ -2588,14 +3634,20 @@
           }
         },
         "sentTo": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
           "format": "date-time"
         },
         "updatedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "team": {
@@ -2622,7 +3674,10 @@
           ]
         }
       },
-      "required": ["teamId", "token"]
+      "required": [
+        "teamId",
+        "token"
+      ]
     },
     "InvoiceLineItem": {
       "type": "object",
@@ -2643,7 +3698,10 @@
           "type": "number"
         },
         "unit": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "Invoice": {
           "type": "array",
@@ -2652,7 +3710,12 @@
           }
         }
       },
-      "required": ["invoiceId", "name", "quantity", "price"]
+      "required": [
+        "invoiceId",
+        "name",
+        "quantity",
+        "price"
+      ]
     },
     "InvoiceTemplate": {
       "type": "object",
@@ -2661,100 +3724,204 @@
           "type": "string"
         },
         "title": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "deliveryType": {
           "type": "string",
           "default": "CREATE",
-          "enum": ["CREATE", "CREATE_AND_SEND"]
+          "enum": [
+            "CREATE",
+            "CREATE_AND_SEND"
+          ]
         },
         "size": {
-          "type": ["string", "null"],
-          "enum": ["A4", "LETTER"]
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "A4",
+            "LETTER"
+          ]
         },
         "logoUrl": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "currency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "fromLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "fromDetails": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "customerLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "invoiceNoLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "issueDateLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "dueDateLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "descriptionLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "quantityLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "priceLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "taxLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "discountLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "vatLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "totalLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "totalSummaryLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "noteLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "paymentLabel": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "paymentDetails": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "taxRate": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "vatRate": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "dateFormat": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "includeDecimals": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "includeDiscount": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "includeTax": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "includeVat": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "includeUnits": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "includeQr": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -2764,7 +3931,9 @@
           "$ref": "#/definitions/Team"
         }
       },
-      "required": ["teamId"]
+      "required": [
+        "teamId"
+      ]
     },
     "TrackerProject": {
       "type": "object",
@@ -2776,24 +3945,42 @@
           "type": "string"
         },
         "description": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "status": {
           "type": "string",
           "default": "IN_PROGRESS",
-          "enum": ["IN_PROGRESS", "COMPLETED"]
+          "enum": [
+            "IN_PROGRESS",
+            "COMPLETED"
+          ]
         },
         "billable": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "currency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "rate": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "estimate": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -2838,7 +4025,9 @@
           }
         }
       },
-      "required": ["name"]
+      "required": [
+        "name"
+      ]
     },
     "TrackerProjectTag": {
       "type": "object",
@@ -2860,7 +4049,11 @@
           "$ref": "#/definitions/Team"
         }
       },
-      "required": ["trackerProjectId", "tagId", "teamId"]
+      "required": [
+        "trackerProjectId",
+        "tagId",
+        "teamId"
+      ]
     },
     "TrackerEntry": {
       "type": "object",
@@ -2869,31 +4062,55 @@
           "type": "string"
         },
         "description": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "date": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "start": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "stop": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "duration": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "rate": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "currency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "billed": {
-          "type": ["boolean", "null"]
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -2939,10 +4156,16 @@
           "type": "string"
         },
         "linkId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "shortLink": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -2988,28 +4211,54 @@
           "type": "string"
         },
         "type": {
-          "type": ["string", "null"],
-          "enum": ["PROFIT", "REVENUE", "BURN_RATE", "EXPENSE"]
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "PROFIT",
+            "REVENUE",
+            "BURN_RATE",
+            "EXPENSE"
+          ]
         },
         "from": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "to": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "currency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "linkId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "shortLink": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "expireAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "createdAt": {
@@ -3046,16 +4295,28 @@
           "type": "string"
         },
         "base": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "target": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "rate": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "updatedAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         }
       },
@@ -3068,47 +4329,95 @@
           "type": "string"
         },
         "type": {
-          "type": ["string", "null"],
-          "enum": ["INVOICE", "EXPENSE"]
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "INVOICE",
+            "EXPENSE"
+          ]
         },
         "status": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "default": "NEW",
-          "enum": ["NEW", "PROCESSING", "PENDING", "ARCHIVED", "DELETED"]
+          "enum": [
+            "NEW",
+            "PROCESSING",
+            "PENDING",
+            "ARCHIVED",
+            "DELETED"
+          ]
         },
         "displayName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "description": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "date": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "amount": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "currency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "baseAmount": {
-          "type": ["number", "null"]
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "baseCurrency": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "website": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "fileName": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "contentType": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "size": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "filePath": {
           "type": "array",
@@ -3117,13 +4426,26 @@
           }
         },
         "referenceId": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "forwardedTo": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "meta": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "createdAt": {
           "type": "string",
@@ -3169,13 +4491,22 @@
           "type": "string"
         },
         "name": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "type": {
-          "type": ["string", "null"]
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "size": {
-          "type": ["integer", "null"]
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "path": {
           "type": "array",
@@ -3226,13 +4557,30 @@
           "type": "string"
         },
         "config": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "settings": {
-          "type": ["number", "string", "boolean", "object", "array", "null"]
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         },
         "createdAt": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "team": {
@@ -3256,7 +4604,9 @@
           ]
         }
       },
-      "required": ["appId"]
+      "required": [
+        "appId"
+      ]
     }
   },
   "type": "object",
