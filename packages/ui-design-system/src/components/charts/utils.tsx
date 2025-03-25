@@ -153,6 +153,8 @@ const getTickFormat = (
     }
 }
 
+export { getTickFormat }
+
 export type MetricData =
     | ParsedMetricPeriod[]
     | {
