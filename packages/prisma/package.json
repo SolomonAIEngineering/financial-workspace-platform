@@ -31,13 +31,13 @@
     "typecheck": "cross-env NODE_OPTIONS='--max-old-space-size=8192' tsc --noEmit",
     "prettier": "prettier --write .",
     "with-env": "dotenv -e .env.local --",
-    "prisma:db-push": "pnpm with-env prisma db push"
+    "prisma:db-push": "pnpm with-env prisma db push",
+    "format": "prettier --write ."
   },
   "prisma": {
     "seed": "tsx ./seed-database.ts"
   },
   "dependencies": {
-    "@solomonai/templates": "workspace:*",
     "@ai-sdk/openai": "^1.1.9",
     "@ariakit/react": "0.4.15",
     "@emoji-mart/data": "^1.2.1",
@@ -79,6 +79,7 @@
     "@radix-ui/react-tooltip": "^1.1.8",
     "@react-email/components": "^0.0.33",
     "@react-email/tailwind": "^1.0.4",
+    "@solomonai/templates": "workspace:*",
     "@t3-oss/env-core": "^0.12.0",
     "@t3-oss/env-nextjs": "^0.12.0",
     "@tanstack/react-query": "5.67.3",
@@ -167,7 +168,7 @@
     "nuqs": "^2.4.0",
     "openai": "^4.83.0",
     "oslo": "^1.2.1",
-    "pg": "^8.13.1",
+    "pg": "^8.14.1",
     "plaid": "^31.1.0",
     "postgres": "^3.4.5",
     "prisma": "6.3.1",
