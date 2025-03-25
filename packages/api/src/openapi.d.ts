@@ -3,154 +3,149 @@
  * Do not make direct changes to the file.
  */
 
+
 /** OneOf type helpers */
-type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
-type XOR<T, U> = T | U extends object
-  ? (Without<T, U> & U) | (Without<U, T> & T)
-  : T | U
-type OneOf<T extends any[]> = T extends [infer Only]
-  ? Only
-  : T extends [infer A, infer B, ...infer Rest]
-    ? OneOf<[XOR<A, B>, ...Rest]>
-    : never
+type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
+type XOR<T, U> = (T | U) extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
+type OneOf<T extends any[]> = T extends [infer Only] ? Only : T extends [infer A, infer B, ...infer Rest] ? OneOf<[XOR<A, B>, ...Rest]> : never;
 
 export interface paths {
-  '/v1/liveness': {
-    get: operations['v1.liveness']
-  }
-  '/v1/keys.getKey': {
-    get: operations['getKey']
-  }
-  '/v1/keys.whoami': {
-    post: operations['whoami']
-  }
-  '/v1/keys.deleteKey': {
-    post: operations['deleteKey']
-  }
-  '/v1/keys.createKey': {
-    post: operations['createKey']
-  }
-  '/v1/keys.verifyKey': {
-    post: operations['verifyKey']
-  }
-  '/v1/keys.updateKey': {
-    post: operations['updateKey']
-  }
-  '/v1/keys.updateRemaining': {
-    post: operations['updateRemaining']
-  }
-  '/v1/keys.getVerifications': {
-    get: operations['keys.getVerifications']
-  }
-  '/v1/keys.addPermissions': {
-    post: operations['addPermissions']
-  }
-  '/v1/keys.removePermissions': {
-    post: operations['removePermissions']
-  }
-  '/v1/keys.setPermissions': {
-    post: operations['setPermissions']
-  }
-  '/v1/keys.addRoles': {
-    post: operations['addRoles']
-  }
-  '/v1/keys.removeRoles': {
-    post: operations['removeRoles']
-  }
-  '/v1/keys.setRoles': {
-    post: operations['setRoles']
-  }
-  '/v1/apis.getApi': {
-    get: operations['getApi']
-  }
-  '/v1/apis.createApi': {
-    post: operations['createApi']
-  }
-  '/v1/apis.listKeys': {
-    get: operations['listKeys']
-  }
-  '/v1/apis.deleteApi': {
-    post: operations['deleteApi']
-  }
-  '/v1/apis.deleteKeys': {
-    post: operations['deleteKeys']
-  }
-  '/v1/ratelimits.limit': {
-    post: operations['limit']
-  }
-  '/v1/ratelimits.setOverride': {
-    post: operations['setOverride']
-  }
-  '/v1/ratelimits.listOverrides': {
-    get: operations['listOverrides']
-  }
-  '/v1/ratelimits.deleteOverride': {
-    post: operations['deleteOverride']
-  }
-  '/v1/ratelimits.getOverride': {
-    get: operations['getOverride']
-  }
-  '/v1/migrations.createKeys': {
-    post: operations['v1.migrations.createKeys']
-  }
-  '/v1/migrations.enqueueKeys': {
-    post: operations['v1.migrations.enqueueKeys']
-  }
-  '/v1/permissions.createPermission': {
-    post: operations['createPermission']
-  }
-  '/v1/permissions.deletePermission': {
-    post: operations['deletePermission']
-  }
-  '/v1/permissions.getPermission': {
-    get: operations['getPermission']
-  }
-  '/v1/permissions.listPermissions': {
-    get: operations['listPermissions']
-  }
-  '/v1/permissions.createRole': {
-    post: operations['createRole']
-  }
-  '/v1/permissions.deleteRole': {
-    post: operations['deleteRole']
-  }
-  '/v1/permissions.getRole': {
-    get: operations['getRole']
-  }
-  '/v1/permissions.listRoles': {
-    get: operations['listRoles']
-  }
-  '/v1/identities.createIdentity': {
-    post: operations['createIdentity']
-  }
-  '/v1/identities.getIdentity': {
-    get: operations['getIdentity']
-  }
-  '/v1/identities.listIdentities': {
-    get: operations['listIdentities']
-  }
-  '/v1/identities.updateIdentity': {
-    post: operations['updateIdentity']
-  }
-  '/v1/identities.deleteIdentity': {
-    post: operations['deleteIdentity']
-  }
-  '/v1/analytics.getVerifications': {
-    get: operations['getVerifications']
-  }
-  '/v1/keys': {
-    post: operations['deprecated.createKey']
-  }
-  '/v1/keys/verify': {
+  "/v1/liveness": {
+    get: operations["v1.liveness"];
+  };
+  "/v1/keys.getKey": {
+    get: operations["getKey"];
+  };
+  "/v1/keys.whoami": {
+    post: operations["whoami"];
+  };
+  "/v1/keys.deleteKey": {
+    post: operations["deleteKey"];
+  };
+  "/v1/keys.createKey": {
+    post: operations["createKey"];
+  };
+  "/v1/keys.verifyKey": {
+    post: operations["verifyKey"];
+  };
+  "/v1/keys.updateKey": {
+    post: operations["updateKey"];
+  };
+  "/v1/keys.updateRemaining": {
+    post: operations["updateRemaining"];
+  };
+  "/v1/keys.getVerifications": {
+    get: operations["keys.getVerifications"];
+  };
+  "/v1/keys.addPermissions": {
+    post: operations["addPermissions"];
+  };
+  "/v1/keys.removePermissions": {
+    post: operations["removePermissions"];
+  };
+  "/v1/keys.setPermissions": {
+    post: operations["setPermissions"];
+  };
+  "/v1/keys.addRoles": {
+    post: operations["addRoles"];
+  };
+  "/v1/keys.removeRoles": {
+    post: operations["removeRoles"];
+  };
+  "/v1/keys.setRoles": {
+    post: operations["setRoles"];
+  };
+  "/v1/apis.getApi": {
+    get: operations["getApi"];
+  };
+  "/v1/apis.createApi": {
+    post: operations["createApi"];
+  };
+  "/v1/apis.listKeys": {
+    get: operations["listKeys"];
+  };
+  "/v1/apis.deleteApi": {
+    post: operations["deleteApi"];
+  };
+  "/v1/apis.deleteKeys": {
+    post: operations["deleteKeys"];
+  };
+  "/v1/ratelimits.limit": {
+    post: operations["limit"];
+  };
+  "/v1/ratelimits.setOverride": {
+    post: operations["setOverride"];
+  };
+  "/v1/ratelimits.listOverrides": {
+    get: operations["listOverrides"];
+  };
+  "/v1/ratelimits.deleteOverride": {
+    post: operations["deleteOverride"];
+  };
+  "/v1/ratelimits.getOverride": {
+    get: operations["getOverride"];
+  };
+  "/v1/migrations.createKeys": {
+    post: operations["v1.migrations.createKeys"];
+  };
+  "/v1/migrations.enqueueKeys": {
+    post: operations["v1.migrations.enqueueKeys"];
+  };
+  "/v1/permissions.createPermission": {
+    post: operations["createPermission"];
+  };
+  "/v1/permissions.deletePermission": {
+    post: operations["deletePermission"];
+  };
+  "/v1/permissions.getPermission": {
+    get: operations["getPermission"];
+  };
+  "/v1/permissions.listPermissions": {
+    get: operations["listPermissions"];
+  };
+  "/v1/permissions.createRole": {
+    post: operations["createRole"];
+  };
+  "/v1/permissions.deleteRole": {
+    post: operations["deleteRole"];
+  };
+  "/v1/permissions.getRole": {
+    get: operations["getRole"];
+  };
+  "/v1/permissions.listRoles": {
+    get: operations["listRoles"];
+  };
+  "/v1/identities.createIdentity": {
+    post: operations["createIdentity"];
+  };
+  "/v1/identities.getIdentity": {
+    get: operations["getIdentity"];
+  };
+  "/v1/identities.listIdentities": {
+    get: operations["listIdentities"];
+  };
+  "/v1/identities.updateIdentity": {
+    post: operations["updateIdentity"];
+  };
+  "/v1/identities.deleteIdentity": {
+    post: operations["deleteIdentity"];
+  };
+  "/v1/analytics.getVerifications": {
+    get: operations["getVerifications"];
+  };
+  "/v1/keys": {
+    post: operations["deprecated.createKey"];
+  };
+  "/v1/keys/verify": {
     /** @deprecated */
-    post: operations['deprecated.verifyKey']
-  }
-  '/v1/apis/{apiId}/keys': {
-    get: operations['deprecated.listKeys']
-  }
+    post: operations["deprecated.verifyKey"];
+  };
+  "/v1/apis/{apiId}/keys": {
+    get: operations["deprecated.listKeys"];
+  };
 }
 
-export type webhooks = Record<string, never>
+export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
@@ -161,21 +156,21 @@ export interface components {
          * @example BAD_REQUEST
          * @enum {string}
          */
-        code: 'BAD_REQUEST'
+        code: "BAD_REQUEST";
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://unkey.dev/docs/api-reference/errors/code/BAD_REQUEST
          */
-        docs: string
+        docs: string;
         /** @description A human readable explanation of what went wrong */
-        message: string
+        message: string;
         /**
          * @description Please always include the requestId in your error report
          * @example req_1234
          */
-        requestId: string
-      }
-    }
+        requestId: string;
+      };
+    };
     ErrUnauthorized: {
       error: {
         /**
@@ -183,21 +178,21 @@ export interface components {
          * @example UNAUTHORIZED
          * @enum {string}
          */
-        code: 'UNAUTHORIZED'
+        code: "UNAUTHORIZED";
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://unkey.dev/docs/api-reference/errors/code/UNAUTHORIZED
          */
-        docs: string
+        docs: string;
         /** @description A human readable explanation of what went wrong */
-        message: string
+        message: string;
         /**
          * @description Please always include the requestId in your error report
          * @example req_1234
          */
-        requestId: string
-      }
-    }
+        requestId: string;
+      };
+    };
     ErrForbidden: {
       error: {
         /**
@@ -205,21 +200,21 @@ export interface components {
          * @example FORBIDDEN
          * @enum {string}
          */
-        code: 'FORBIDDEN'
+        code: "FORBIDDEN";
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://unkey.dev/docs/api-reference/errors/code/FORBIDDEN
          */
-        docs: string
+        docs: string;
         /** @description A human readable explanation of what went wrong */
-        message: string
+        message: string;
         /**
          * @description Please always include the requestId in your error report
          * @example req_1234
          */
-        requestId: string
-      }
-    }
+        requestId: string;
+      };
+    };
     ErrNotFound: {
       error: {
         /**
@@ -227,21 +222,21 @@ export interface components {
          * @example NOT_FOUND
          * @enum {string}
          */
-        code: 'NOT_FOUND'
+        code: "NOT_FOUND";
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://unkey.dev/docs/api-reference/errors/code/NOT_FOUND
          */
-        docs: string
+        docs: string;
         /** @description A human readable explanation of what went wrong */
-        message: string
+        message: string;
         /**
          * @description Please always include the requestId in your error report
          * @example req_1234
          */
-        requestId: string
-      }
-    }
+        requestId: string;
+      };
+    };
     ErrConflict: {
       error: {
         /**
@@ -249,21 +244,21 @@ export interface components {
          * @example CONFLICT
          * @enum {string}
          */
-        code: 'CONFLICT'
+        code: "CONFLICT";
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://unkey.dev/docs/api-reference/errors/code/CONFLICT
          */
-        docs: string
+        docs: string;
         /** @description A human readable explanation of what went wrong */
-        message: string
+        message: string;
         /**
          * @description Please always include the requestId in your error report
          * @example req_1234
          */
-        requestId: string
-      }
-    }
+        requestId: string;
+      };
+    };
     ErrPreconditionFailed: {
       error: {
         /**
@@ -271,21 +266,21 @@ export interface components {
          * @example PRECONDITION_FAILED
          * @enum {string}
          */
-        code: 'PRECONDITION_FAILED'
+        code: "PRECONDITION_FAILED";
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://unkey.dev/docs/api-reference/errors/code/PRECONDITION_FAILED
          */
-        docs: string
+        docs: string;
         /** @description A human readable explanation of what went wrong */
-        message: string
+        message: string;
         /**
          * @description Please always include the requestId in your error report
          * @example req_1234
          */
-        requestId: string
-      }
-    }
+        requestId: string;
+      };
+    };
     ErrTooManyRequests: {
       error: {
         /**
@@ -293,21 +288,21 @@ export interface components {
          * @example TOO_MANY_REQUESTS
          * @enum {string}
          */
-        code: 'TOO_MANY_REQUESTS'
+        code: "TOO_MANY_REQUESTS";
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://unkey.dev/docs/api-reference/errors/code/TOO_MANY_REQUESTS
          */
-        docs: string
+        docs: string;
         /** @description A human readable explanation of what went wrong */
-        message: string
+        message: string;
         /**
          * @description Please always include the requestId in your error report
          * @example req_1234
          */
-        requestId: string
-      }
-    }
+        requestId: string;
+      };
+    };
     ErrInternalServerError: {
       error: {
         /**
@@ -315,52 +310,52 @@ export interface components {
          * @example INTERNAL_SERVER_ERROR
          * @enum {string}
          */
-        code: 'INTERNAL_SERVER_ERROR'
+        code: "INTERNAL_SERVER_ERROR";
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://unkey.dev/docs/api-reference/errors/code/INTERNAL_SERVER_ERROR
          */
-        docs: string
+        docs: string;
         /** @description A human readable explanation of what went wrong */
-        message: string
+        message: string;
         /**
          * @description Please always include the requestId in your error report
          * @example req_1234
          */
-        requestId: string
-      }
-    }
+        requestId: string;
+      };
+    };
     Key: {
       /**
        * @description The id of the key
        * @example key_1234
        */
-      id: string
+      id: string;
       /**
        * @description The first few characters of the key to visually identify it
        * @example sk_5j1
        */
-      start: string
+      start: string;
       /**
        * @description The id of the workspace that owns the key
        * @example ws_1234
        */
-      workspaceId: string
+      workspaceId: string;
       /**
        * @description The id of the api that this key is for
        * @example api_1234
        */
-      apiId?: string
+      apiId?: string;
       /**
        * @description The name of the key, give keys a name to easily identify their purpose
        * @example Customer X
        */
-      name?: string
+      name?: string;
       /**
        * @description The id of the tenant associated with this key. Use whatever reference you have in your system to identify the tenant. When verifying the key, we will send this field back to you, so you know who is accessing your API.
        * @example user_123
        */
-      ownerId?: string
+      ownerId?: string;
       /**
        * @description Any additional metadata you want to store with the key
        * @example {
@@ -372,28 +367,28 @@ export interface components {
        * }
        */
       meta?: {
-        [key: string]: unknown
-      }
+        [key: string]: unknown;
+      };
       /**
        * @description The unix timestamp in milliseconds when the key was created
        * @example 0
        */
-      createdAt: number
+      createdAt: number;
       /**
        * @description The unix timestamp in milliseconds when the key was last updated
        * @example 0
        */
-      updatedAt?: number
+      updatedAt?: number;
       /**
        * @description The unix timestamp in milliseconds when the key will expire. If this field is null or undefined, the key is not expiring.
        * @example 0
        */
-      expires?: number
+      expires?: number;
       /**
        * @description The number of requests that can be made with this key before it becomes invalid. If this field is null or undefined, the key has no request limit.
        * @example 1000
        */
-      remaining?: number
+      remaining?: number;
       /**
        * @description Unkey allows you to refill remaining verifications on a key on a regular interval.
        * @example {
@@ -408,24 +403,24 @@ export interface components {
          * @example daily
          * @enum {string}
          */
-        interval: 'daily' | 'monthly'
+        interval: "daily" | "monthly";
         /**
          * @description Resets `remaining` to this value every interval.
          * @example 100
          */
-        amount: number
+        amount: number;
         /**
          * @description The day verifications will refill each month, when interval is set to 'monthly'. Value is not zero-indexed making 1 the first day of the month. If left blank it will default to the first day of the month. When 'daily' is set for 'interval' 'refillDay' will be set to null.
          * @default 1
          * @example 15
          */
-        refillDay?: number | null
+        refillDay?: number | null;
         /**
          * @description The unix timestamp in miliseconds when the key was last refilled.
          * @example 100
          */
-        lastRefillAt?: number
-      }
+        lastRefillAt?: number;
+      };
       /**
        * @description Unkey comes with per-key ratelimiting out of the box.
        * @example {
@@ -435,21 +430,21 @@ export interface components {
        * }
        */
       ratelimit?: {
-        async: boolean
+        async: boolean;
         /**
          * @description Fast ratelimiting doesn't add latency, while consistent ratelimiting is more accurate.
          * @enum {string}
          */
-        type?: 'fast' | 'consistent'
+        type?: "fast" | "consistent";
         /** @description The total amount of burstable requests. */
-        limit: number
+        limit: number;
         /** @description How many tokens to refill during each refillInterval. */
-        refillRate?: number
+        refillRate?: number;
         /** @description Determines the speed at which tokens are refilled, in milliseconds. */
-        refillInterval?: number
+        refillInterval?: number;
         /** @description The duration of the ratelimit window, in milliseconds. */
-        duration: number
-      }
+        duration: number;
+      };
       /**
        * @description All roles this key belongs to
        * @example [
@@ -457,7 +452,7 @@ export interface components {
        *   "finance"
        * ]
        */
-      roles?: string[]
+      roles?: string[];
       /**
        * @description All permissions this key has
        * @example [
@@ -465,48 +460,48 @@ export interface components {
        *   "finance.read_receipt"
        * ]
        */
-      permissions?: string[]
+      permissions?: string[];
       /**
        * @description Sets if key is enabled or disabled. Disabled keys are not valid.
        * @example true
        */
-      enabled?: boolean
+      enabled?: boolean;
       /** @description The key in plaintext */
-      plaintext?: string
+      plaintext?: string;
       /** @description The identity of the key */
       identity?: {
         /** @description The id of the identity */
-        id: string
+        id: string;
         /** @description The external id of the identity */
-        externalId: string
+        externalId: string;
         /** @description Any additional metadata attached to the identity */
         meta?: {
-          [key: string]: unknown
-        }
-      }
-    }
+          [key: string]: unknown;
+        };
+      };
+    };
     V1KeysVerifyKeyResponse: {
       /**
        * @description The id of the key
        * @example key_1234
        */
-      keyId?: string
+      keyId?: string;
       /**
        * @description Whether the key is valid or not.
        * A key could be invalid for a number of reasons, for example if it has expired, has no more verifications left or if it has been deleted.
        * @example true
        */
-      valid: boolean
+      valid: boolean;
       /**
        * @description The name of the key, give keys a name to easily identifiy their purpose
        * @example Customer X
        */
-      name?: string
+      name?: string;
       /**
        * @description The id of the tenant associated with this key. Use whatever reference you have in your system to identify the tenant. When verifying the key, we will send this field back to you, so you know who is accessing your API.
        * @example user_123
        */
-      ownerId?: string
+      ownerId?: string;
       /**
        * @description Any additional metadata you want to store with the key
        * @example {
@@ -518,13 +513,13 @@ export interface components {
        * }
        */
       meta?: {
-        [key: string]: unknown
-      }
+        [key: string]: unknown;
+      };
       /**
        * @description The unix timestamp in milliseconds when the key will expire. If this field is null or undefined, the key is not expiring.
        * @example 123
        */
-      expires?: number
+      expires?: number;
       /**
        * @description The ratelimit configuration for this key. If this field is null or undefined, the key has no ratelimit.
        * @example {
@@ -538,23 +533,23 @@ export interface components {
          * @description Maximum number of requests that can be made inside a window
          * @example 10
          */
-        limit: number
+        limit: number;
         /**
          * @description Remaining requests after this verification
          * @example 9
          */
-        remaining: number
+        remaining: number;
         /**
          * @description Unix timestamp in milliseconds when the ratelimit will reset
          * @example 3600000
          */
-        reset: number
-      }
+        reset: number;
+      };
       /**
        * @description The number of requests that can be made with this key before it becomes invalid. If this field is null or undefined, the key has no request limit.
        * @example 1000
        */
-      remaining?: number
+      remaining?: number;
       /**
        * @description A machine readable code why the key is not valid.
        * Possible values are:
@@ -572,18 +567,9 @@ export interface components {
        *
        * @enum {string}
        */
-      code:
-        | 'VALID'
-        | 'NOT_FOUND'
-        | 'FORBIDDEN'
-        | 'USAGE_EXCEEDED'
-        | 'RATE_LIMITED'
-        | 'UNAUTHORIZED'
-        | 'DISABLED'
-        | 'INSUFFICIENT_PERMISSIONS'
-        | 'EXPIRED'
+      code: "VALID" | "NOT_FOUND" | "FORBIDDEN" | "USAGE_EXCEEDED" | "RATE_LIMITED" | "UNAUTHORIZED" | "DISABLED" | "INSUFFICIENT_PERMISSIONS" | "EXPIRED";
       /** @description Sets the key to be enabled or disabled. Disabled keys will not verify. */
-      enabled?: boolean
+      enabled?: boolean;
       /**
        * @description A list of all the permissions this key is connected to.
        * @example [
@@ -591,48 +577,41 @@ export interface components {
        *   "dns.record.delete"
        * ]
        */
-      permissions?: string[]
+      permissions?: string[];
       /**
        * @description The environment of the key, this is what what you set when you crated the key
        * @example test
        */
-      environment?: string
+      environment?: string;
       /** @description The associated identity of this key. */
       identity?: {
-        id: string
-        externalId: string
+        id: string;
+        externalId: string;
         meta: {
-          [key: string]: unknown
-        }
-      }
+          [key: string]: unknown;
+        };
+      };
       /** @description A unique id for this request, please provide it to Unkey support to help us debug your issue. */
-      requestId: string
-    }
+      requestId: string;
+    };
     /** @description A query for which permissions you require */
-    PermissionQuery: OneOf<
-      [
-        string,
-        {
-          and: components['schemas']['PermissionQuery'][]
-        },
-        {
-          or: components['schemas']['PermissionQuery'][]
-        },
-        null,
-      ]
-    >
+    PermissionQuery: OneOf<[string, {
+      and: components["schemas"]["PermissionQuery"][];
+    }, {
+      or: components["schemas"]["PermissionQuery"][];
+    }, null]>;
     V1KeysVerifyKeyRequest: {
       /**
        * @description The id of the api where the key belongs to. This is optional for now but will be required soon.
        * The key will be verified against the api's configuration. If the key does not belong to the api, the verification will fail.
        * @example api_1234
        */
-      apiId?: string
+      apiId?: string;
       /**
        * @description The key to verify
        * @example sk_1234
        */
-      key: string
+      key: string;
       /**
        * @description Tags do not influence the outcome of a verification.
        *                 They can be added to filter or aggregate historical verification data for your analytics needs.
@@ -645,19 +624,19 @@ export interface components {
        *   "region=us-east-1"
        * ]
        */
-      tags?: string[]
+      tags?: string[];
       /** @description Perform RBAC checks */
       authorization?: {
-        permissions?: components['schemas']['PermissionQuery']
-      }
+        permissions?: components["schemas"]["PermissionQuery"];
+      };
       /** @description Customize the behaviour of deducting remaining uses. When some of your endpoints are more expensive than others, you can set a custom `cost` for each. */
       remaining?: {
         /**
          * @description How many tokens should be deducted from the current `remaining` value. Set it to 0, to make it free.
          * @default 1
          */
-        cost?: number
-      }
+        cost?: number;
+      };
       /**
        * @deprecated
        * @description Use 'ratelimits' with `[{ name: "default", cost: 2}]`
@@ -667,8 +646,8 @@ export interface components {
          * @description Override how many tokens are deducted during the ratelimit operation.
          * @default 1
          */
-        cost?: number
-      }
+        cost?: number;
+      };
       /**
        * @description You can check against multiple ratelimits when verifying a key. Let's say you are building an app that uses AI under the hood and you want to limit your customers to 500 requests per hour, but also ensure they use up less than 20k tokens per day.
        *
@@ -690,18 +669,18 @@ export interface components {
          * @description The name of the ratelimit.
          * @example tokens
          */
-        name: string
+        name: string;
         /**
          * @description Optionally override how expensive this operation is and how many tokens are deducted from the current limit.
          * @default 1
          */
-        cost?: number
+        cost?: number;
         /** @description Optionally override the limit. */
-        limit?: number
+        limit?: number;
         /** @description Optionally override the ratelimit window duration. */
-        duration?: number
-      }[]
-    }
+        duration?: number;
+      }[];
+    };
     ErrDeleteProtected: {
       error: {
         /**
@@ -709,220 +688,222 @@ export interface components {
          * @example DELETE_PROTECTED
          * @enum {string}
          */
-        code: 'DELETE_PROTECTED'
+        code: "DELETE_PROTECTED";
         /**
          * @description A link to our documentation with more details about this error code
          * @example https://unkey.dev/docs/api-reference/errors/code/DELETE_PROTECTED
          */
-        docs: string
+        docs: string;
         /** @description A human readable explanation of what went wrong */
-        message: string
+        message: string;
         /**
          * @description Please always include the requestId in your error report
          * @example req_1234
          */
-        requestId: string
-      }
-    }
-  }
-  responses: never
-  parameters: {}
-  requestBodies: never
-  headers: never
-  pathItems: never
+        requestId: string;
+      };
+    };
+  };
+  responses: never;
+  parameters: {
+  };
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 
-export type $defs = Record<string, never>
+export type $defs = Record<string, never>;
 
-export type external = Record<string, never>
+export type external = Record<string, never>;
 
 export interface operations {
-  'v1.liveness': {
+
+  "v1.liveness": {
     responses: {
       /** @description The configured services and their status */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /** @description The status of the server */
-            status: string
+            status: string;
             services: {
               /**
                * @description The name of the connected metrics service
                * @example AxiomMetrics
                */
-              metrics: string
+              metrics: string;
               /**
                * @description The name of the connected logger service
                * @example AxiomLogger or ConsoleLogger
                */
-              logger: string
+              logger: string;
               /** @description The name of the connected ratelimit service */
-              ratelimit: string
+              ratelimit: string;
               /** @description The name of the connected usagelimit service */
-              usagelimit: string
-            }
-          }
-        }
-      }
+              usagelimit: string;
+            };
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   getKey: {
     parameters: {
       query: {
-        keyId: string
-        decrypt?: boolean | null
-      }
-    }
+        keyId: string;
+        decrypt?: boolean | null;
+      };
+    };
     responses: {
       /** @description The configuration for a single key */
       200: {
         content: {
-          'application/json': components['schemas']['Key']
-        }
-      }
+          "application/json": components["schemas"]["Key"];
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   whoami: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The actual key to fetch
            * @example sk_123
            */
-          key: string
-        }
-      }
-    }
+          key: string;
+        };
+      };
+    };
     responses: {
       /** @description The configuration for a single key */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The ID of the key
              * @example key_123
              */
-            id: string
+            id: string;
             /**
              * @description The name of the key
              * @example API Key 1
              */
-            name?: string
+            name?: string;
             /**
              * @description The remaining number of requests for the key
              * @example 1000
              */
-            remaining?: number
+            remaining?: number;
             /** @description The identity object associated with the key */
             identity?: {
               /**
                * @description The identity ID associated with the key
                * @example id_123
                */
-              id: string
+              id: string;
               /**
                * @description The external identity ID associated with the key
                * @example ext123
                */
-              externalId: string
-            }
+              externalId: string;
+            };
             /**
              * @description Metadata associated with the key
              * @example {
@@ -931,159 +912,159 @@ export interface operations {
              * }
              */
             meta?: {
-              [key: string]: unknown
-            }
+              [key: string]: unknown;
+            };
             /**
              * @description The timestamp in milliseconds when the key was created
              * @example 1620000000000
              */
-            createdAt: number
+            createdAt: number;
             /**
              * @description Whether the key is enabled
              * @example true
              */
-            enabled: boolean
+            enabled: boolean;
             /**
              * @description The environment the key is associated with
              * @example production
              */
-            environment?: string
-          }
-        }
-      }
+            environment?: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   deleteKey: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the key to revoke
            * @example key_1234
            */
-          keyId: string
+          keyId: string;
           /**
            * @description By default Unkey soft deletes keys, so they may be recovered later. If you want to permanently delete it, set permanent=true. This might be necessary if you run into CONFLICT errors during key migration.
            * @default false
            */
-          permanent?: boolean
-        }
-      }
-    }
+          permanent?: boolean;
+        };
+      };
+    };
     responses: {
       /** @description The key was successfully revoked, it may take up to 30s for this to take effect in all regions */
       200: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   createKey: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description Choose an `API` where this key should be created.
            * @example api_123
            */
-          apiId: string
+          apiId: string;
           /**
            * @description To make it easier for your users to understand which product an api key belongs to, you can add prefix them.
            *
@@ -1091,29 +1072,29 @@ export interface operations {
            *
            * The underscore is automatically added if you are defining a prefix, for example: "prefix": "abc" will result in a key like abc_xxxxxxxxx
            */
-          prefix?: string
+          prefix?: string;
           /**
            * @description The name for your Key. This is not customer facing.
            * @example my key
            */
-          name?: string
+          name?: string;
           /**
            * @description The byte length used to generate your key determines its entropy as well as its length. Higher is better, but keys become longer and more annoying to handle. The default is 16 bytes, or 2^^128 possible combinations.
            * @default 16
            */
-          byteLength?: number
+          byteLength?: number;
           /**
            * @deprecated
            * @description Deprecated, use `externalId`
            * @example team_123
            */
-          ownerId?: string
+          ownerId?: string;
           /**
            * @description Your user's Id. This will provide a link between Unkey and your customer record.
            * When validating a key, we will return this back to you, so you can clearly identify your user from their api key.
            * @example team_123
            */
-          externalId?: string
+          externalId?: string;
           /**
            * @description This is a place for dynamic meta data, anything that feels useful for you should go here
            * @example {
@@ -1122,8 +1103,8 @@ export interface operations {
            * }
            */
           meta?: {
-            [key: string]: unknown
-          }
+            [key: string]: unknown;
+          };
           /**
            * @description A list of roles that this key should have. If the role does not exist, an error is thrown
            * @example [
@@ -1131,7 +1112,7 @@ export interface operations {
            *   "finance"
            * ]
            */
-          roles?: string[]
+          roles?: string[];
           /**
            * @description A list of permissions that this key should have. If the permission does not exist, an error is thrown
            * @example [
@@ -1139,17 +1120,17 @@ export interface operations {
            *   "say_hello"
            * ]
            */
-          permissions?: string[]
+          permissions?: string[];
           /**
            * @description You can auto expire keys by providing a unix timestamp in milliseconds. Once Keys expire they will automatically be disabled and are no longer valid unless you enable them again.
            * @example 1623869797161
            */
-          expires?: number
+          expires?: number;
           /**
            * @description You can limit the number of requests a key can make. Once a key reaches 0 remaining requests, it will automatically be disabled and is no longer valid unless you update it.
            * @example 1000
            */
-          remaining?: number
+          remaining?: number;
           /**
            * @description Unkey enables you to refill verifications for each key at regular intervals.
            * @example {
@@ -1163,15 +1144,15 @@ export interface operations {
              * @description Unkey will automatically refill verifications at the set interval.
              * @enum {string}
              */
-            interval: 'daily' | 'monthly'
+            interval: "daily" | "monthly";
             /** @description The number of verifications to refill for each occurrence is determined individually for each key. */
-            amount: number
+            amount: number;
             /**
              * @description The day of the month, when we will refill the remaining verifications. To refill on the 15th of each month, set 'refillDay': 15.
              *                     If the day does not exist, for example you specified the 30th and it's february, we will refill them on the last day of the month instead.
              */
-            refillDay?: number
-          }
+            refillDay?: number;
+          };
           /**
            * @description Unkey comes with per-key fixed-window ratelimiting out of the box.
            * @example {
@@ -1185,38 +1166,38 @@ export interface operations {
              * @description Async will return a response immediately, lowering latency at the cost of accuracy. Will be required soon.
              * @default true
              */
-            async?: boolean
+            async?: boolean;
             /**
              * @deprecated
              * @description Deprecated, use `async`. Fast ratelimiting doesn't add latency, while consistent ratelimiting is more accurate.
              * @default fast
              * @enum {string}
              */
-            type?: 'fast' | 'consistent'
+            type?: "fast" | "consistent";
             /** @description The total amount of requests in a given interval. */
-            limit: number
+            limit: number;
             /**
              * @description The window duration in milliseconds. Will be required soon.
              * @example 60000
              */
-            duration?: number
+            duration?: number;
             /**
              * @deprecated
              * @description How many tokens to refill during each refillInterval.
              */
-            refillRate?: number
+            refillRate?: number;
             /**
              * @deprecated
              * @description The refill timeframe, in milliseconds.
              */
-            refillInterval?: number
-          }
+            refillInterval?: number;
+          };
           /**
            * @description Sets if key is enabled or disabled. Disabled keys are not valid.
            * @default true
            * @example false
            */
-          enabled?: boolean
+          enabled?: boolean;
           /**
            * @description You may want to show keys again later. While we do not recommend this, we leave this option open for you.
            *
@@ -1225,7 +1206,7 @@ export interface operations {
            * [https://www.unkey.com/docs/security/recovering-keys](https://www.unkey.com/docs/security/recovering-keys) for more information.
            * @default false
            */
-          recoverable?: boolean
+          recoverable?: boolean;
           /**
            * @description Environments allow you to divide your keyspace.
            *
@@ -1236,169 +1217,169 @@ export interface operations {
            * When you set an environment, we will return it back to you when validating the key, so you can
            * handle it correctly.
            */
-          environment?: string
-        }
-      }
-    }
+          environment?: string;
+        };
+      };
+    };
     responses: {
       /** @description The configuration for an api */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the key. This is not a secret and can be stored as a reference if you wish. You need the keyId to update or delete a key later.
              * @example key_123
              */
-            keyId: string
+            keyId: string;
             /**
              * @description The newly created api key, do not store this on your own system but pass it along to your user.
              * @example prefix_xxxxxxxxx
              */
-            key: string
-          }
-        }
-      }
+            key: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   verifyKey: {
     requestBody: {
       content: {
-        'application/json': components['schemas']['V1KeysVerifyKeyRequest']
-      }
-    }
+        "application/json": components["schemas"]["V1KeysVerifyKeyRequest"];
+      };
+    };
     responses: {
       /** @description The verification result */
       200: {
         content: {
-          'application/json': components['schemas']['V1KeysVerifyKeyResponse']
-        }
-      }
+          "application/json": components["schemas"]["V1KeysVerifyKeyResponse"];
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   updateKey: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the key you want to modify
            * @example key_123
            */
-          keyId: string
+          keyId: string;
           /**
            * @description The name of the key
            * @example Customer X
            */
-          name?: string | null
+          name?: string | null;
           /**
            * @deprecated
            * @description Deprecated, use `externalId`
            *                     The id of the tenant associated with this key. Use whatever reference you have in your system to identify the tenant. When verifying the key, we will send this field back to you, so you know who is accessing your API.
            * @example user_123
            */
-          ownerId?: string | null
+          ownerId?: string | null;
           /**
            * @description The id of the tenant associated with this key. Use whatever reference you have in your system to identify the tenant. When verifying the key, we will send this back to you, so you know who is accessing your API.
            *                   Under the hood this upserts and connects an `ìdentity` for you.
            *                   To disconnect the key from an identity, set `externalId: null`.
            * @example user_123
            */
-          externalId?: string | null
+          externalId?: string | null;
           /**
            * @description Any additional metadata you want to store with the key
            * @example {
@@ -1410,13 +1391,13 @@ export interface operations {
            * }
            */
           meta?: {
-            [key: string]: unknown
-          } | null
+            [key: string]: unknown;
+          } | null;
           /**
            * @description The unix timestamp in milliseconds when the key will expire. If this field is null or undefined, the key is not expiring.
            * @example 0
            */
-          expires?: number | null
+          expires?: number | null;
           /**
            * @description Unkey comes with per-key ratelimiting out of the box. Set `null` to disable.
            * @example {
@@ -1426,44 +1407,44 @@ export interface operations {
            *   "refillInterval": 60
            * }
            */
-          ratelimit?: {
+          ratelimit?: ({
             /**
              * @deprecated
              * @description Fast ratelimiting doesn't add latency, while consistent ratelimiting is more accurate.
              * Deprecated, use 'async' instead
              * @enum {string}
              */
-            type?: 'fast' | 'consistent'
+            type?: "fast" | "consistent";
             /**
              * @description Asnyc ratelimiting doesn't add latency, while sync ratelimiting is slightly more accurate.
              * @default false
              */
-            async?: boolean
+            async?: boolean;
             /** @description The total amount of requests allowed in a single window. */
-            limit: number
+            limit: number;
             /**
              * @deprecated
              * @description How many tokens to refill during each refillInterval.
              * Deprecated, use 'limit' instead.
              */
-            refillRate?: number
+            refillRate?: number;
             /**
              * @deprecated
              * @description Determines the speed at which tokens are refilled, in milliseconds.
              * Deprecated, use 'duration'
              */
-            refillInterval?: number
+            refillInterval?: number;
             /**
              * @description The duration of each ratelimit window, in milliseconds.
              * This field will become required in a future version.
              */
-            duration?: number
-          } | null
+            duration?: number;
+          }) | null;
           /**
            * @description The number of requests that can be made with this key before it becomes invalid. Set `null` to disable.
            * @example 1000
            */
-          remaining?: number | null
+          remaining?: number | null;
           /**
            * @description Unkey enables you to refill verifications for each key at regular intervals.
            * @example {
@@ -1471,22 +1452,22 @@ export interface operations {
            *   "amount": 100
            * }
            */
-          refill?: {
+          refill?: ({
             /**
              * @description Unkey will automatically refill verifications at the set interval. If null is used the refill functionality will be removed from the key.
              * @enum {string}
              */
-            interval: 'daily' | 'monthly'
+            interval: "daily" | "monthly";
             /** @description The amount of verifications to refill for each occurrence is determined individually for each key. */
-            amount: number
+            amount: number;
             /** @description The day verifications will refill each month, when interval is set to 'monthly' */
-            refillDay?: number
-          } | null
+            refillDay?: number;
+          }) | null;
           /**
            * @description Set if key is enabled or disabled. If disabled, the key cannot be used to verify.
            * @example true
            */
-          enabled?: boolean
+          enabled?: boolean;
           /**
            * @description The roles you want to set for this key. This overwrites all existing roles.
            *                 Setting roles requires the `rbac.*.add_role_to_key` permission.
@@ -1505,15 +1486,15 @@ export interface operations {
            */
           roles?: {
             /** @description The id of the role. Provide either `id` or `name`. If both are provided `id` is used. */
-            id?: string
+            id?: string;
             /** @description Identify the role via its name. Provide either `id` or `name`. If both are provided `id` is used. */
-            name?: string
+            name?: string;
             /**
              * @description Set to true to automatically create the permissions they do not exist yet. Only works when specifying `name`.
              *                     Autocreating roles requires your root key to have the `rbac.*.create_role` permission, otherwise the request will get rejected
              */
-            create?: boolean
-          }[]
+            create?: boolean;
+          }[];
           /**
            * @description The permissions you want to set for this key. This overwrites all existing permissions.
            *                 Setting permissions requires the `rbac.*.add_permission_to_key` permission.
@@ -1532,345 +1513,345 @@ export interface operations {
            */
           permissions?: {
             /** @description The id of the permission. Provide either `id` or `name`. If both are provided `id` is used. */
-            id?: string
+            id?: string;
             /** @description Identify the permission via its name. Provide either `id` or `name`. If both are provided `id` is used. */
-            name?: string
+            name?: string;
             /**
              * @description Set to true to automatically create the permissions they do not exist yet. Only works when specifying `name`.
              *                     Autocreating permissions requires your root key to have the `rbac.*.create_permission` permission, otherwise the request will get rejected
              */
-            create?: boolean
-          }[]
-        }
-      }
-    }
+            create?: boolean;
+          }[];
+        };
+      };
+    };
     responses: {
       /** @description The key was successfully updated, it may take up to 30s for this to take effect in all regions */
       200: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   updateRemaining: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the key you want to modify
            * @example key_123
            */
-          keyId: string
+          keyId: string;
           /**
            * @description The operation you want to perform on the remaining count
            * @enum {string}
            */
-          op: 'increment' | 'decrement' | 'set'
+          op: "increment" | "decrement" | "set";
           /**
            * @description The value you want to set, add or subtract the remaining count by
            * @example 1
            */
-          value: number | null
-        }
-      }
-    }
+          value: number | null;
+        };
+      };
+    };
     responses: {
       /** @description The configuration for an api */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The number of remaining requests for this key after updating it. `null` means unlimited.
              * @example 100
              */
-            remaining: number | null
-          }
-        }
-      }
+            remaining: number | null;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
-  'keys.getVerifications': {
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
+  "keys.getVerifications": {
     parameters: {
       query?: {
-        keyId?: string
-        ownerId?: string
-        start?: number | null
-        end?: number | null
-        granularity?: 'day'
-      }
-    }
+        keyId?: string;
+        ownerId?: string;
+        start?: number | null;
+        end?: number | null;
+        granularity?: "day";
+      };
+    };
     responses: {
       /** @description Usage numbers over time */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             verifications: {
               /**
                * @description The timestamp of the usage data
                * @example 1620000000000
                */
-              time: number
+              time: number;
               /**
                * @description The number of successful requests
                * @example 100
                */
-              success: number
+              success: number;
               /**
                * @description The number of requests that were rate limited
                * @example 10
                */
-              rateLimited: number
+              rateLimited: number;
               /**
                * @description The number of requests that exceeded the usage limit
                * @example 0
                */
-              usageExceeded: number
-            }[]
-          }
-        }
-      }
+              usageExceeded: number;
+            }[];
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   addPermissions: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /** @description The id of the key. */
-          keyId: string
+          keyId: string;
           /** @description The permissions you want to add to this key */
           permissions: {
             /** @description The id of the permission. Provide either `id` or `name`. If both are provided `id` is used. */
-            id?: string
+            id?: string;
             /** @description Identify the permission via its name. Provide either `id` or `name`. If both are provided `id` is used. */
-            name?: string
+            name?: string;
             /**
              * @description Set to true to automatically create the permissions they do not exist yet. Only works when specifying `name`.
              *               Autocreating permissions requires your root key to have the `rbac.*.create_permission` permission, otherwise the request will get rejected
              */
-            create?: boolean
-          }[]
-        }
-      }
-    }
+            create?: boolean;
+          }[];
+        };
+      };
+    };
     responses: {
       /** @description All currently connected permissions */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the permission. This is used internally
              * @example perm_123
              */
-            id: string
+            id: string;
             /**
              * @description The name of the permission
              * @example dns.record.create
              */
-            name: string
-          }[]
-        }
-      }
+            name: string;
+          }[];
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   removePermissions: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /** @description The id of the key. */
-          keyId: string
+          keyId: string;
           /**
            * @description The permissions you want to remove from this key.
            * @example [
@@ -1884,76 +1865,76 @@ export interface operations {
            */
           permissions: {
             /** @description The id of the permission. Provide either `id` or `name`. If both are provided `id` is used. */
-            id?: string
+            id?: string;
             /** @description Identify the permission via its name. Provide either `id` or `name`. If both are provided `id` is used. */
-            name?: string
-          }[]
-        }
-      }
-    }
+            name?: string;
+          }[];
+        };
+      };
+    };
     responses: {
       /** @description Success */
       200: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   setPermissions: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /** @description The id of the key. */
-          keyId: string
+          keyId: string;
           /**
            * @description The permissions you want to set for this key. This overwrites all existing permissions.
            *             Setting permissions requires the `rbac.*.add_permission_to_key` permission.
@@ -1972,92 +1953,92 @@ export interface operations {
            */
           permissions: {
             /** @description The id of the permission. Provide either `id` or `name`. If both are provided `id` is used. */
-            id?: string
+            id?: string;
             /** @description Identify the permission via its name. Provide either `id` or `name`. If both are provided `id` is used. */
-            name?: string
+            name?: string;
             /**
              * @description Set to true to automatically create the permissions they do not exist yet. Only works when specifying `name`.
              *                 Autocreating permissions requires your root key to have the `rbac.*.create_permission` permission, otherwise the request will get rejected
              */
-            create?: boolean
-          }[]
-        }
-      }
-    }
+            create?: boolean;
+          }[];
+        };
+      };
+    };
     responses: {
       /** @description All currently connected permissions */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the permission. This is used internally
              * @example perm_123
              */
-            id: string
+            id: string;
             /**
              * @description The name of the permission
              * @example dns.record.create
              */
-            name: string
-          }[]
-        }
-      }
+            name: string;
+          }[];
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   addRoles: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /** @description The id of the key. */
-          keyId: string
+          keyId: string;
           /**
            * @description The roles you want to set for this key. This overwrites all existing roles.
            *           Setting roles requires the `rbac.*.add_role_to_key` permission.
@@ -2076,92 +2057,92 @@ export interface operations {
            */
           roles: {
             /** @description The id of the role. Provide either `id` or `name`. If both are provided `id` is used. */
-            id?: string
+            id?: string;
             /** @description Identify the role via its name. Provide either `id` or `name`. If both are provided `id` is used. */
-            name?: string
+            name?: string;
             /**
              * @description Set to true to automatically create the permissions they do not exist yet. Only works when specifying `name`.
              *               Autocreating roles requires your root key to have the `rbac.*.create_role` permission, otherwise the request will get rejected
              */
-            create?: boolean
-          }[]
-        }
-      }
-    }
+            create?: boolean;
+          }[];
+        };
+      };
+    };
     responses: {
       /** @description All currently connected roles */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the role. This is used internally
              * @example role_123
              */
-            id: string
+            id: string;
             /**
              * @description The name of the role
              * @example dns.record.create
              */
-            name: string
-          }[]
-        }
-      }
+            name: string;
+          }[];
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   removeRoles: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /** @description The id of the key. */
-          keyId: string
+          keyId: string;
           /**
            * @description The roles you want to remove from this key.
            * @example [
@@ -2175,76 +2156,76 @@ export interface operations {
            */
           roles: {
             /** @description The id of the role. Provide either `id` or `name`. If both are provided `id` is used. */
-            id?: string
+            id?: string;
             /** @description Identify the role via its name. Provide either `id` or `name`. If both are provided `id` is used. */
-            name?: string
-          }[]
-        }
-      }
-    }
+            name?: string;
+          }[];
+        };
+      };
+    };
     responses: {
       /** @description Success */
       200: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   setRoles: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /** @description The id of the key. */
-          keyId: string
+          keyId: string;
           /**
            * @description The roles you want to set for this key. This overwrites all existing roles.
            *             Setting roles requires the `rbac.*.add_role_to_key` permission.
@@ -2263,489 +2244,489 @@ export interface operations {
            */
           roles: {
             /** @description The id of the role. Provide either `id` or `name`. If both are provided `id` is used. */
-            id?: string
+            id?: string;
             /** @description Identify the role via its name. Provide either `id` or `name`. If both are provided `id` is used. */
-            name?: string
+            name?: string;
             /**
              * @description Set to true to automatically create the permissions they do not exist yet. Only works when specifying `name`.
              *                 Autocreating roles requires your root key to have the `rbac.*.create_role` permission, otherwise the request will get rejected
              */
-            create?: boolean
-          }[]
-        }
-      }
-    }
+            create?: boolean;
+          }[];
+        };
+      };
+    };
     responses: {
       /** @description All currently connected roles */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the role. This is used internally
              * @example role_123
              */
-            id: string
+            id: string;
             /**
              * @description The name of the role
              * @example dns.record.create
              */
-            name: string
-          }[]
-        }
-      }
+            name: string;
+          }[];
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   getApi: {
     parameters: {
       query: {
-        apiId: string
-      }
-    }
+        apiId: string;
+      };
+    };
     responses: {
       /** @description The configuration for an api */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the key
              * @example key_1234
              */
-            id: string
+            id: string;
             /**
              * @description The id of the workspace that owns the api
              * @example ws_1234
              */
-            workspaceId: string
+            workspaceId: string;
             /**
              * @description The name of the api. This is internal and your users will not see this.
              * @example Unkey - Production
              */
-            name?: string
-          }
-        }
-      }
+            name?: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   createApi: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The name for your API. This is not customer facing.
            * @example my-api
            */
-          name: string
-        }
-      }
-    }
+          name: string;
+        };
+      };
+    };
     responses: {
       /** @description The configuration for an api */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the api
              * @example api_134
              */
-            apiId: string
-          }
-        }
-      }
+            apiId: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   listKeys: {
     parameters: {
       query: {
-        apiId: string
-        limit?: number
-        cursor?: string
-        ownerId?: string
-        externalId?: string
-        decrypt?: boolean | null
-        revalidateKeysCache?: boolean | null
-      }
-    }
+        apiId: string;
+        limit?: number;
+        cursor?: string;
+        ownerId?: string;
+        externalId?: string;
+        decrypt?: boolean | null;
+        revalidateKeysCache?: boolean | null;
+      };
+    };
     responses: {
       /** @description List of keys for the api */
       200: {
         content: {
-          'application/json': {
-            keys: components['schemas']['Key'][]
+          "application/json": {
+            keys: components["schemas"]["Key"][];
             /**
              * @description The cursor to use for the next page of results, if no cursor is returned, there are no more results
              * @example eyJrZXkiOiJrZXlfMTIzNCJ9
              */
-            cursor?: string
+            cursor?: string;
             /** @description The total number of keys for this api. This is an approximation and may lag behind up to 5 minutes. */
-            total: number
-          }
-        }
-      }
+            total: number;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   deleteApi: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the api to delete
            * @example api_1234
            */
-          apiId: string
-        }
-      }
-    }
+          apiId: string;
+        };
+      };
+    };
     responses: {
       /** @description The api was successfully deleted, it may take up to 30s for this to take effect in all regions */
       200: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The api is protected from deletions */
       429: {
         content: {
-          'application/json': components['schemas']['ErrDeleteProtected']
-        }
-      }
+          "application/json": components["schemas"]["ErrDeleteProtected"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   deleteKeys: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the api, that the keys belong to.
            * @example api_1234
            */
-          apiId: string
+          apiId: string;
           /**
            * @description Delete the keys permanently, if false the keys will be marked as deleted but not removed from the database. In either case, the keys will no longer be valid when verifying them.
            * @default false
            */
-          permanent?: boolean
-        }
-      }
-    }
+          permanent?: boolean;
+        };
+      };
+    };
     responses: {
       /** @description The keys have been deleted */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /** @description The number of keys that were deleted */
-            deletedKeys: number
-          }
-        }
-      }
+            deletedKeys: number;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   limit: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description Namespaces group different limits together for better analytics. You might have a namespace for your public API and one for internal tRPC routes.
            * @default default
            * @example email.outbound
            */
-          namespace?: string
+          namespace?: string;
           /**
            * @description Identifier of your user, this can be their userId, an email, an ip or anything else.
            * @example user_123
            */
-          identifier: string
+          identifier: string;
           /**
            * @description How many requests may pass in a given window.
            * @example 10
            */
-          limit: number
+          limit: number;
           /**
            * @description The window duration in milliseconds
            * @example 60000
            */
-          duration: number
+          duration: number;
           /**
            * @description Expensive requests may use up more tokens. You can specify a cost to the request here and we'll deduct this many tokens in the current window.
            * If there are not enough tokens left, the request is denied.
@@ -2754,16 +2735,16 @@ export interface operations {
            * @default 1
            * @example 2
            */
-          cost?: number
+          cost?: number;
           /**
            * @description Async will return a response immediately, lowering latency at the cost of accuracy.
            * @default false
            */
-          async?: boolean
+          async?: boolean;
           /** @description Attach any metadata to this request */
           meta?: {
-            [key: string]: unknown
-          }
+            [key: string]: unknown;
+          };
           /**
            * @description Resources that are about to be accessed by the user
            * @example [
@@ -2779,442 +2760,442 @@ export interface operations {
              * @description The type of resource
              * @example organization
              */
-            type: string
+            type: string;
             /**
              * @description The unique identifier for the resource
              * @example org_123
              */
-            id: string
+            id: string;
             /**
              * @description A human readable name for this resource
              * @example unkey
              */
-            name?: string
+            name?: string;
             /** @description Attach any metadata to this resources */
             meta?: {
-              [key: string]: unknown
-            }
-          }[]
-        }
-      }
-    }
+              [key: string]: unknown;
+            };
+          }[];
+        };
+      };
+    };
     responses: {
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description Returns true if the request should be processed, false if it was rejected.
              * @example true
              */
-            success: boolean
+            success: boolean;
             /**
              * @description How many requests are allowed within a window.
              * @example 10
              */
-            limit: number
+            limit: number;
             /**
              * @description How many requests can still be made in the current window.
              * @example 9
              */
-            remaining: number
+            remaining: number;
             /**
              * @description A unix millisecond timestamp when the limits reset.
              * @example 1709804263654
              */
-            reset: number
-          }
-        }
-      }
+            reset: number;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   setOverride: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the namespace. Either namespaceId or namespaceName must be provided
            * @example rlns_1234
            */
-          namespaceId?: string
+          namespaceId?: string;
           /**
            * @description Namespaces group different limits together for better analytics. You might have a namespace for your public API and one for internal tRPC routes. Wildcards can also be used, more info can be found at https://www.unkey.com/docs/ratelimiting/overrides#wildcard-rules
            * @example email.outbound
            */
-          namespaceName?: string
+          namespaceName?: string;
           /**
            * @description Identifier of your user, this can be their userId, an email, an ip or anything else. Wildcards ( * ) can be used to match multiple identifiers, More info can be found at https://www.unkey.com/docs/ratelimiting/overrides#wildcard-rules
            * @example user_123
            */
-          identifier: string
+          identifier: string;
           /**
            * @description How many requests may pass in a given window.
            * @example 10
            */
-          limit: number
+          limit: number;
           /**
            * @description The window duration in milliseconds
            * @example 60000
            */
-          duration: number
+          duration: number;
           /**
            * @description Async will return a response immediately, lowering latency at the cost of accuracy.
            * @default false
            */
-          async?: boolean
-        }
-      }
-    }
+          async?: boolean;
+        };
+      };
+    };
     responses: {
       /** @description Sucessfully created a ratelimit override */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the override. This is used internally
              * @example over_123
              */
-            overrideId: string
-          }
-        }
-      }
+            overrideId: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   listOverrides: {
     parameters: {
       query?: {
-        namespaceId?: string
-        namespaceName?: string
-        limit?: number
-        cursor?: string
-      }
-    }
+        namespaceId?: string;
+        namespaceName?: string;
+        limit?: number;
+        cursor?: string;
+      };
+    };
     responses: {
       /** @description List of overrides for the given namespace. */
       200: {
         content: {
-          'application/json': {
-            overrides: {
-              id: string
-              identifier: string
-              limit: number
-              duration: number
-              async?: boolean | null
-            }[]
+          "application/json": {
+            overrides: ({
+              id: string;
+              identifier: string;
+              limit: number;
+              duration: number;
+              async?: boolean | null;
+            })[];
             /**
              * @description The cursor to use for the next page of results, if no cursor is returned, there are no more results
              * @example eyJrZXkiOiJrZXlfMTIzNCJ9
              */
-            cursor?: string
+            cursor?: string;
             /** @description The total number of overrides for the namespace */
-            total: number
-          }
-        }
-      }
+            total: number;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   deleteOverride: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the namespace. Either namespaceId or namespaceName must be provided
            * @example rlns_1234
            */
-          namespaceId?: string
+          namespaceId?: string;
           /**
            * @description The name of the namespace. Namespaces group different limits together for better analytics. You might have a namespace for your public API and one for internal tRPC routes.
            * @example email.outbound
            */
-          namespaceName?: string
+          namespaceName?: string;
           /**
            * @description Identifier of your user, this can be their userId, an email, an ip or anything else. Wildcards ( * ) can be used to match multiple identifiers, More info can be found at https://www.unkey.com/docs/ratelimiting/overrides#wildcard-rules
            * @example user_123
            */
-          identifier: string
-        }
-      }
-    }
+          identifier: string;
+        };
+      };
+    };
     responses: {
       /** @description Successfully deleted a ratelimit override */
       200: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   getOverride: {
     parameters: {
       query: {
-        namespaceId?: string
-        namespaceName?: string
-        identifier: string
-      }
-    }
+        namespaceId?: string;
+        namespaceName?: string;
+        identifier: string;
+      };
+    };
     responses: {
       /** @description Details of the override for the given identifier */
       200: {
         content: {
-          'application/json': {
-            id: string
-            identifier: string
-            limit: number
-            duration: number
-            async?: boolean | null
-          }
-        }
-      }
+          "application/json": {
+            id: string;
+            identifier: string;
+            limit: number;
+            duration: number;
+            async?: boolean | null;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
-  'v1.migrations.createKeys': {
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
+  "v1.migrations.createKeys": {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": ({
           /**
            * @description Choose an `API` where this key should be created.
            * @example api_123
            */
-          apiId: string
+          apiId: string;
           /**
            * @description To make it easier for your users to understand which product an api key belongs to, you can add prefix them.
            *
@@ -3222,41 +3203,41 @@ export interface operations {
            *
            * The underscore is automatically added if you are defining a prefix, for example: "prefix": "abc" will result in a key like abc_xxxxxxxxx
            */
-          prefix?: string
+          prefix?: string;
           /**
            * @description The name for your Key. This is not customer facing.
            * @example my key
            */
-          name?: string
+          name?: string;
           /** @description The raw key in plaintext. If provided, unkey encrypts this value and stores it securely. Provide either `hash` or `plaintext` */
-          plaintext?: string
+          plaintext?: string;
           /** @description Provide either `hash` or `plaintext` */
           hash?: {
             /** @description The hashed and encoded key */
-            value: string
+            value: string;
             /**
              * @description The algorithm for hashing and encoding, currently only sha256 and base64 are supported
              * @enum {string}
              */
-            variant: 'sha256_base64'
-          }
+            variant: "sha256_base64";
+          };
           /**
            * @description The first 4 characters of the key. If a prefix is used, it should be the prefix plus 4 characters.
            * @example unkey_32kq
            */
-          start?: string
+          start?: string;
           /**
            * @deprecated
            * @description Deprecated, use `externalId`
            * @example team_123
            */
-          ownerId?: string
+          ownerId?: string;
           /**
            * @description Your user’s Id. This will provide a link between Unkey and your customer record.
            * When validating a key, we will return this back to you, so you can clearly identify your user from their api key.
            * @example user_123
            */
-          externalId?: string
+          externalId?: string;
           /**
            * @description This is a place for dynamic meta data, anything that feels useful for you should go here
            * @example {
@@ -3265,8 +3246,8 @@ export interface operations {
            * }
            */
           meta?: {
-            [key: string]: unknown
-          }
+            [key: string]: unknown;
+          };
           /**
            * @description A list of roles that this key should have. If the role does not exist, an error is thrown
            * @example [
@@ -3274,7 +3255,7 @@ export interface operations {
            *   "finance"
            * ]
            */
-          roles?: string[]
+          roles?: string[];
           /**
            * @description A list of permissions that this key should have. If the permission does not exist, an error is thrown
            * @example [
@@ -3282,17 +3263,17 @@ export interface operations {
            *   "say_hello"
            * ]
            */
-          permissions?: string[]
+          permissions?: string[];
           /**
            * @description You can auto expire keys by providing a unix timestamp in milliseconds. Once Keys expire they will automatically be disabled and are no longer valid unless you enable them again.
            * @example 1623869797161
            */
-          expires?: number
+          expires?: number;
           /**
            * @description You can limit the number of requests a key can make. Once a key reaches 0 remaining requests, it will automatically be disabled and is no longer valid unless you update it.
            * @example 1000
            */
-          remaining?: number
+          remaining?: number;
           /**
            * @description Unkey enables you to refill verifications for each key at regular intervals.
            * @example {
@@ -3305,12 +3286,12 @@ export interface operations {
              * @description Unkey will automatically refill verifications at the set interval.
              * @enum {string}
              */
-            interval: 'daily' | 'monthly'
+            interval: "daily" | "monthly";
             /** @description The number of verifications to refill for each occurrence is determined individually for each key. */
-            amount: number
+            amount: number;
             /** @description The day verifications will refill each month, when interval is set to 'monthly' */
-            refillDay?: number
-          }
+            refillDay?: number;
+          };
           /**
            * @description Unkey comes with per-key ratelimiting out of the box.
            * @example {
@@ -3325,33 +3306,33 @@ export interface operations {
              * @description Async will return a response immediately, lowering latency at the cost of accuracy.
              * @default false
              */
-            async?: boolean
+            async?: boolean;
             /**
              * @deprecated
              * @description Fast ratelimiting doesn't add latency, while consistent ratelimiting is more accurate.
              * @default fast
              * @enum {string}
              */
-            type?: 'fast' | 'consistent'
+            type?: "fast" | "consistent";
             /** @description The total amount of burstable requests. */
-            limit: number
+            limit: number;
             /**
              * @deprecated
              * @description How many tokens to refill during each refillInterval.
              */
-            refillRate: number
+            refillRate: number;
             /**
              * @deprecated
              * @description Determines the speed at which tokens are refilled, in milliseconds.
              */
-            refillInterval: number
-          }
+            refillInterval: number;
+          };
           /**
            * @description Sets if key is enabled or disabled. Disabled keys are not valid.
            * @default true
            * @example false
            */
-          enabled?: boolean
+          enabled?: boolean;
           /**
            * @description Environments allow you to divide your keyspace.
            *
@@ -3362,15 +3343,15 @@ export interface operations {
            * When you set an environment, we will return it back to you when validating the key, so you can
            * handle it correctly.
            */
-          environment?: string
-        }[]
-      }
-    }
+          environment?: string;
+        })[];
+      };
+    };
     responses: {
       /** @description The key ids of all created keys */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The ids of the keys. This is not a secret and can be stored as a reference if you wish. You need the keyId to update or delete a key later.
              * @example [
@@ -3378,69 +3359,69 @@ export interface operations {
              *   "key_456"
              * ]
              */
-            keyIds: string[]
-          }
-        }
-      }
+            keyIds: string[];
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
-  'v1.migrations.enqueueKeys': {
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
+  "v1.migrations.enqueueKeys": {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /** @description Contact support@unkey.dev to receive your migration id. */
-          migrationId: string
+          migrationId: string;
           /** @description The id of the api, you want to migrate keys to */
-          apiId: string
-          keys: {
+          apiId: string;
+          keys: ({
             /**
              * @description To make it easier for your users to understand which product an api key belongs to, you can add prefix them.
              *
@@ -3448,35 +3429,35 @@ export interface operations {
              *
              * The underscore is automatically added if you are defining a prefix, for example: "prefix": "abc" will result in a key like abc_xxxxxxxxx
              */
-            prefix?: string
+            prefix?: string;
             /**
              * @description The name for your Key. This is not customer facing.
              * @example my key
              */
-            name?: string
+            name?: string;
             /** @description The raw key in plaintext. If provided, unkey encrypts this value and stores it securely. Provide either `hash` or `plaintext` */
-            plaintext?: string
+            plaintext?: string;
             /** @description Provide either `hash` or `plaintext` */
             hash?: {
               /** @description The hashed and encoded key */
-              value: string
+              value: string;
               /**
                * @description The algorithm for hashing and encoding, currently only sha256 and base64 are supported
                * @enum {string}
                */
-              variant: 'sha256_base64'
-            }
+              variant: "sha256_base64";
+            };
             /**
              * @description The first 4 characters of the key. If a prefix is used, it should be the prefix plus 4 characters.
              * @example unkey_32kq
              */
-            start?: string
+            start?: string;
             /**
              * @description Your user’s Id. This will provide a link between Unkey and your customer record.
              * When validating a key, we will return this back to you, so you can clearly identify your user from their api key.
              * @example team_123
              */
-            ownerId?: string
+            ownerId?: string;
             /**
              * @description This is a place for dynamic meta data, anything that feels useful for you should go here
              * @example {
@@ -3485,8 +3466,8 @@ export interface operations {
              * }
              */
             meta?: {
-              [key: string]: unknown
-            }
+              [key: string]: unknown;
+            };
             /**
              * @description A list of roles that this key should have. If the role does not exist, an error is thrown
              * @example [
@@ -3494,7 +3475,7 @@ export interface operations {
              *   "finance"
              * ]
              */
-            roles?: string[]
+            roles?: string[];
             /**
              * @description A list of permissions that this key should have. If the permission does not exist, an error is thrown
              * @example [
@@ -3502,17 +3483,17 @@ export interface operations {
              *   "say_hello"
              * ]
              */
-            permissions?: string[]
+            permissions?: string[];
             /**
              * @description You can auto expire keys by providing a unix timestamp in milliseconds. Once Keys expire they will automatically be disabled and are no longer valid unless you enable them again.
              * @example 1623869797161
              */
-            expires?: number
+            expires?: number;
             /**
              * @description You can limit the number of requests a key can make. Once a key reaches 0 remaining requests, it will automatically be disabled and is no longer valid unless you update it.
              * @example 1000
              */
-            remaining?: number
+            remaining?: number;
             /**
              * @description Unkey enables you to refill verifications for each key at regular intervals.
              * @example {
@@ -3525,12 +3506,12 @@ export interface operations {
                * @description Unkey will automatically refill verifications at the set interval.
                * @enum {string}
                */
-              interval: 'daily' | 'monthly'
+              interval: "daily" | "monthly";
               /** @description The number of verifications to refill for each occurrence is determined individually for each key. */
-              amount: number
+              amount: number;
               /** @description The day verifications will refill each month, when interval is set to 'monthly' */
-              refillDay?: number
-            }
+              refillDay?: number;
+            };
             /**
              * @description Unkey comes with per-key fixed-window ratelimiting out of the box.
              * @example {
@@ -3544,38 +3525,38 @@ export interface operations {
                * @description Async will return a response immediately, lowering latency at the cost of accuracy.
                * @default true
                */
-              async?: boolean
+              async?: boolean;
               /**
                * @deprecated
                * @description Deprecated, use `async`. Fast ratelimiting doesn't add latency, while consistent ratelimiting is more accurate.
                * @default fast
                * @enum {string}
                */
-              type?: 'fast' | 'consistent'
+              type?: "fast" | "consistent";
               /** @description The total amount of requests in a given interval. */
-              limit: number
+              limit: number;
               /**
                * @description The window duration in milliseconds
                * @example 60000
                */
-              duration: number
+              duration: number;
               /**
                * @deprecated
                * @description How many tokens to refill during each refillInterval.
                */
-              refillRate?: number
+              refillRate?: number;
               /**
                * @deprecated
                * @description The refill timeframe, in milliseconds.
                */
-              refillInterval?: number
-            }
+              refillInterval?: number;
+            };
             /**
              * @description Sets if key is enabled or disabled. Disabled keys are not valid.
              * @default true
              * @example false
              */
-            enabled?: boolean
+            enabled?: boolean;
             /**
              * @description Environments allow you to divide your keyspace.
              *
@@ -3586,676 +3567,676 @@ export interface operations {
              * When you set an environment, we will return it back to you when validating the key, so you can
              * handle it correctly.
              */
-            environment?: string
-          }[]
-        }
-      }
-    }
+            environment?: string;
+          })[];
+        };
+      };
+    };
     responses: {
       /** @description The key ids of all created keys */
       202: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   createPermission: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The unique name of your permission.
            * @example record.write
            */
-          name: string
+          name: string;
           /**
            * @description Explain what this permission does. This is just for your team, your users will not see this.
            * @example record.write can create new dns records for our domains.
            */
-          description?: string | ''
-        }
-      }
-    }
+          description?: string | "";
+        };
+      };
+    };
     responses: {
       /** @description Sucessfully created a permission */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the permission. This is used internally
              * @example perm_123
              */
-            permissionId: string
-          }
-        }
-      }
+            permissionId: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   deletePermission: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the permission you want to delete.
            * @example perm_123
            */
-          permissionId: string
-        }
-      }
-    }
+          permissionId: string;
+        };
+      };
+    };
     responses: {
       /** @description Sucessfully deleted a permission */
       200: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   getPermission: {
     parameters: {
       query: {
-        permissionId: string
-      }
-    }
+        permissionId: string;
+      };
+    };
     responses: {
       /** @description The Role */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the permission
              * @example perm_123
              */
-            id: string
+            id: string;
             /**
              * @description The name of the permission.
              * @example domain.record.manager
              */
-            name: string
+            name: string;
             /**
              * @description The description of what this permission does. This is just for your team, your users will not see this.
              * @example Can manage dns records
              */
-            description?: string
-          }
-        }
-      }
+            description?: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   listPermissions: {
     responses: {
       /** @description The permissions in your workspace */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the permission
              * @example perm_123
              */
-            id: string
+            id: string;
             /**
              * @description The name of the permission.
              * @example domain.record.manager
              */
-            name: string
+            name: string;
             /**
              * @description The description of what this permission does. This is just for your team, your users will not see this.
              * @example Can manage dns records
              */
-            description?: string
-          }[]
-        }
-      }
+            description?: string;
+          }[];
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   createRole: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The unique name of your role.
            * @example dns.records.manager
            */
-          name: string
+          name: string;
           /**
            * @description Explain what this role does. This is just for your team, your users will not see this.
            * @example dns.records.manager can read and write dns records for our domains.
            */
-          description?: string | ''
-        }
-      }
-    }
+          description?: string | "";
+        };
+      };
+    };
     responses: {
       /** @description Sucessfully created a role */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the role. This is used internally
              * @example role_123
              */
-            roleId: string
-          }
-        }
-      }
+            roleId: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   deleteRole: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the role you want to delete.
            * @example role_123
            */
-          roleId: string
-        }
-      }
-    }
+          roleId: string;
+        };
+      };
+    };
     responses: {
       /** @description Sucessfully deleted a role */
       200: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   getRole: {
     parameters: {
       query: {
-        roleId: string
-      }
-    }
+        roleId: string;
+      };
+    };
     responses: {
       /** @description The Role */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the role
              * @example role_1234
              */
-            id: string
+            id: string;
             /**
              * @description The name of the role.
              * @example domain.record.manager
              */
-            name: string
+            name: string;
             /**
              * @description The description of what this role does. This is just for your team, your users will not see this.
              * @example Can manage dns records
              */
-            description?: string
-          }
-        }
-      }
+            description?: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   listRoles: {
     responses: {
       /** @description The Roles in your workspace */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the role
              * @example role_1234
              */
-            id: string
+            id: string;
             /**
              * @description The name of the role.
              * @example domain.record.manager
              */
-            name: string
+            name: string;
             /**
              * @description The description of what this role does. This is just for your team, your users will not see this.
              * @example Can manage dns records
              */
-            description?: string
-          }[]
-        }
-      }
+            description?: string;
+          }[];
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   createIdentity: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of this identity in your system.
            *
@@ -4266,15 +4247,15 @@ export interface operations {
            *
            * @example user_123
            */
-          externalId: string
+          externalId: string;
           /**
            * @description Attach metadata to this identity that you need to have access to when verifying a key.
            *
            * This will be returned as part of the `verifyKey` response.
            */
           meta?: {
-            [key: string]: unknown
-          }
+            [key: string]: unknown;
+          };
           /**
            * @description Attach ratelimits to this identity.
            *
@@ -4285,292 +4266,292 @@ export interface operations {
              * @description The name of this limit. You will need to use this again when verifying a key.
              * @example tokens
              */
-            name: string
+            name: string;
             /**
              * @description How many requests may pass within a given window before requests are rejected.
              * @example 10
              */
-            limit: number
+            limit: number;
             /**
              * @description The duration for each ratelimit window in milliseconds.
              * @example 1000
              */
-            duration: number
-          }[]
-        }
-      }
-    }
+            duration: number;
+          }[];
+        };
+      };
+    };
     responses: {
       /** @description The configuration for an api */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the identity. Used internally, you do not need to store this.
              * @example id_123
              */
-            identityId: string
-          }
-        }
-      }
+            identityId: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   getIdentity: {
     parameters: {
       query?: {
-        identityId?: string
-        externalId?: string
-      }
-    }
+        identityId?: string;
+        externalId?: string;
+      };
+    };
     responses: {
       /** @description The configuration for an api */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /** @description The id of this identity. Used to interact with unkey's API */
-            id: string
+            id: string;
             /** @description The id in your system */
-            externalId: string
+            externalId: string;
             /** @description The meta object defined for this identity. */
             meta: {
-              [key: string]: unknown
-            }
+              [key: string]: unknown;
+            };
             /** @description When verifying keys, you can specify which limits you want to use and all keys attached to this identity, will share the limits. */
             ratelimits: {
               /**
                * @description The name of this limit. You will need to use this again when verifying a key.
                * @example tokens
                */
-              name: string
+              name: string;
               /**
                * @description How many requests may pass within a given window before requests are rejected.
                * @example 10
                */
-              limit: number
+              limit: number;
               /**
                * @description The duration for each ratelimit window in milliseconds.
                * @example 1000
                */
-              duration: number
-            }[]
-          }
-        }
-      }
+              duration: number;
+            }[];
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   listIdentities: {
     parameters: {
       query?: {
-        environment?: string
-        limit?: number
-        cursor?: string
-      }
-    }
+        environment?: string;
+        limit?: number;
+        cursor?: string;
+      };
+    };
     responses: {
       /** @description A list of identities. */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /** @description A list of identities. */
             identities: {
               /** @description The id of this identity. Used to interact with unkey's API */
-              id: string
+              id: string;
               /** @description The id in your system */
-              externalId: string
+              externalId: string;
               /** @description When verifying keys, you can specify which limits you want to use and all keys attached to this identity, will share the limits. */
               ratelimits: {
                 /**
                  * @description The name of this limit. You will need to use this again when verifying a key.
                  * @example tokens
                  */
-                name: string
+                name: string;
                 /**
                  * @description How many requests may pass within a given window before requests are rejected.
                  * @example 10
                  */
-                limit: number
+                limit: number;
                 /**
                  * @description The duration for each ratelimit window in milliseconds.
                  * @example 1000
                  */
-                duration: number
-              }[]
-            }[]
+                duration: number;
+              }[];
+            }[];
             /**
              * @description The cursor to use for the next page of results, if no cursor is returned, there are no more results
              * @example eyJrZXkiOiJrZXlfMTIzNCJ9
              */
-            cursor?: string
+            cursor?: string;
             /** @description The total number of identities for this environment */
-            total: number
-          }
-        }
-      }
+            total: number;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   updateIdentity: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the identity to update, use either `identityId` or `externalId`, if both are provided, `identityId` takes precedence.
            * @example id_1234
            */
-          identityId?: string
+          identityId?: string;
           /**
            * @description The externalId of the identity to update, use either `identityId` or `externalId`, if both are provided, `identityId` takes precedence.
            * @example user_1234
            */
-          externalId?: string
+          externalId?: string;
           /**
            * @description This is not yet used but here for future compatibility.
            * @default default
            */
-          environment?: string
+          environment?: string;
           /**
            * @description Attach metadata to this identity that you need to have access to when verifying a key.
            *
@@ -4579,8 +4560,8 @@ export interface operations {
            * This will be returned as part of the `verifyKey` response.
            */
           meta?: {
-            [key: string]: unknown
-          }
+            [key: string]: unknown;
+          };
           /**
            * @description Attach ratelimits to this identity.
            *
@@ -4594,36 +4575,36 @@ export interface operations {
              * @description The name of this limit. You will need to use this again when verifying a key.
              * @example tokens
              */
-            name: string
+            name: string;
             /**
              * @description How many requests may pass within a given window before requests are rejected.
              * @example 10
              */
-            limit: number
+            limit: number;
             /**
              * @description The duration for each ratelimit window in milliseconds.
              * @example 1000
              */
-            duration: number
-          }[]
-        }
-      }
-    }
+            duration: number;
+          }[];
+        };
+      };
+    };
     responses: {
       /** @description The identity after the update. */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the identity.
              * @example id_1234
              */
-            id: string
+            id: string;
             /**
              * @description The externalId of the identity.
              * @example user_1234
              */
-            externalId: string
+            externalId: string;
             /**
              * @description The metadata attached to this identity.
              * @example {
@@ -4631,272 +4612,259 @@ export interface operations {
              * }
              */
             meta: {
-              [key: string]: unknown
-            }
+              [key: string]: unknown;
+            };
             ratelimits: {
               /**
                * @description The name of this limit.
                * @example tokens
                */
-              name: string
+              name: string;
               /**
                * @description How many requests may pass within a given window before requests are rejected.
                * @example 10
                */
-              limit: number
+              limit: number;
               /**
                * @description The duration for each ratelimit window in milliseconds.
                * @example 1000
                */
-              duration: number
-            }[]
-          }
-        }
-      }
+              duration: number;
+            }[];
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   deleteIdentity: {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the identity to delete
            * @example id_1234
            */
-          identityId: string
-        }
-      }
-    }
+          identityId: string;
+        };
+      };
+    };
     responses: {
       /** @description The identity was successfully deleted, it may take up to 30s for this to take effect in all regions */
       200: {
         content: {
-          'application/json': Record<string, never>
-        }
-      }
+          "application/json": Record<string, never>;
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   getVerifications: {
     parameters: {
       query: {
-        apiId: string
-        externalId?: string
-        keyId?: string | string[]
-        tag?: string | string[]
-        start?: number | null
-        end?: number | null
-        groupBy?:
-          | ('key' | 'identity' | 'tags' | 'tag' | 'month' | 'day' | 'hour')
-          | ('key' | 'identity' | 'tags' | 'tag' | 'month' | 'day' | 'hour')[]
-        limit?: number
-        orderBy?:
-          | 'time'
-          | 'valid'
-          | 'notFound'
-          | 'forbidden'
-          | 'usageExceeded'
-          | 'rateLimited'
-          | 'unauthorized'
-          | 'disabled'
-          | 'insufficientPermissions'
-          | 'expired'
-          | 'total'
-        order?: 'asc' | 'desc'
-      }
-    }
+        apiId: string;
+        externalId?: string;
+        keyId?: string | string[];
+        tag?: string | string[];
+        start?: number | null;
+        end?: number | null;
+        groupBy?: ("key" | "identity" | "tags" | "tag" | "month" | "day" | "hour") | (("key" | "identity" | "tags" | "tag" | "month" | "day" | "hour")[]);
+        limit?: number;
+        orderBy?: "time" | "valid" | "notFound" | "forbidden" | "usageExceeded" | "rateLimited" | "unauthorized" | "disabled" | "insufficientPermissions" | "expired" | "total";
+        order?: "asc" | "desc";
+      };
+    };
     responses: {
       /** @description Retrieve all required data to build end-user facing dashboards and drive your usage-based billing. */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /** @description Unix timestamp in milliseconds of the start of the current time slice. */
-            time?: number
-            valid?: number
-            notFound?: number
-            forbidden?: number
-            usageExceeded?: number
-            rateLimited?: number
-            unauthorized?: number
-            disabled?: number
-            insufficientPermissions?: number
-            expired?: number
+            time?: number;
+            valid?: number;
+            notFound?: number;
+            forbidden?: number;
+            usageExceeded?: number;
+            rateLimited?: number;
+            unauthorized?: number;
+            disabled?: number;
+            insufficientPermissions?: number;
+            expired?: number;
             /** @description Total number of verifications in the current time slice, regardless of outcome. */
-            total: number
+            total: number;
             /** @description Only available when grouping by tag. */
-            tag?: string
+            tag?: string;
             /** @description Filter by one or multiple tags. If multiple tags are provided */
-            tags?: string[]
+            tags?: string[];
             /**
              * @description Only available when specifying groupBy=key in the query.
              * In this case there would be one datapoint per time and groupBy target.
              */
-            keyId?: string
+            keyId?: string;
             /**
              * @description Only available when specifying groupBy=identity in the query.
              * In this case there would be one datapoint per time and groupBy target.
              */
             identity?: {
-              id: string
-              externalId: string
-            }
-          }[]
-        }
-      }
+              id: string;
+              externalId: string;
+            };
+          }[];
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
-  'deprecated.createKey': {
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
+  "deprecated.createKey": {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description Choose an `API` where this key should be created.
            * @example api_123
            */
-          apiId: string
+          apiId: string;
           /**
            * @description To make it easier for your users to understand which product an api key belongs to, you can add prefix them.
            *
@@ -4904,23 +4872,23 @@ export interface operations {
            *
            * The underscore is automatically added if you are defining a prefix, for example: "prefix": "abc" will result in a key like abc_xxxxxxxxx
            */
-          prefix?: string
+          prefix?: string;
           /**
            * @description The name for your Key. This is not customer facing.
            * @example my key
            */
-          name?: string
+          name?: string;
           /**
            * @description The byte length used to generate your key determines its entropy as well as its length. Higher is better, but keys become longer and more annoying to handle. The default is 16 bytes, or 2^^128 possible combinations.
            * @default 16
            */
-          byteLength?: number
+          byteLength?: number;
           /**
            * @description Your user’s Id. This will provide a link between Unkey and your customer record.
            * When validating a key, we will return this back to you, so you can clearly identify your user from their api key.
            * @example team_123
            */
-          ownerId?: string
+          ownerId?: string;
           /**
            * @description This is a place for dynamic meta data, anything that feels useful for you should go here
            * @example {
@@ -4929,18 +4897,18 @@ export interface operations {
            * }
            */
           meta?: {
-            [key: string]: unknown
-          }
+            [key: string]: unknown;
+          };
           /**
            * @description You can auto expire keys by providing a unix timestamp in milliseconds. Once Keys expire they will automatically be disabled and are no longer valid unless you enable them again.
            * @example 1623869797161
            */
-          expires?: number
+          expires?: number;
           /**
            * @description You can limit the number of requests a key can make. Once a key reaches 0 remaining requests, it will automatically be disabled and is no longer valid unless you update it.
            * @example 1000
            */
-          remaining?: number
+          remaining?: number;
           /**
            * @description Unkey comes with per-key ratelimiting out of the box.
            * @example {
@@ -4956,130 +4924,130 @@ export interface operations {
              * @default fast
              * @enum {string}
              */
-            type?: 'fast' | 'consistent'
+            type?: "fast" | "consistent";
             /** @description The total amount of burstable requests. */
-            limit: number
+            limit: number;
             /** @description How many tokens to refill during each refillInterval. */
-            refillRate: number
+            refillRate: number;
             /** @description Determines the speed at which tokens are refilled, in milliseconds. */
-            refillInterval: number
-          }
-        }
-      }
-    }
+            refillInterval: number;
+          };
+        };
+      };
+    };
     responses: {
       /** @description The configuration for an api */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the key. This is not a secret and can be stored as a reference if you wish. You need the keyId to update or delete a key later.
              * @example key_123
              */
-            keyId: string
+            keyId: string;
             /**
              * @description The newly created api key, do not store this on your own system but pass it along to your user.
              * @example prefix_xxxxxxxxx
              */
-            key: string
-          }
-        }
-      }
+            key: string;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
   /** @deprecated */
-  'deprecated.verifyKey': {
+  "deprecated.verifyKey": {
     requestBody: {
       content: {
-        'application/json': {
+        "application/json": {
           /**
            * @description The id of the api where the key belongs to. This is optional for now but will be required soon.
            * The key will be verified against the api's configuration. If the key does not belong to the api, the verification will fail.
            * @example api_1234
            */
-          apiId?: string
+          apiId?: string;
           /**
            * @description The key to verify
            * @example sk_1234
            */
-          key: string
-        }
-      }
-    }
+          key: string;
+        };
+      };
+    };
     responses: {
       /** @description The verification result */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /**
              * @description The id of the key
              * @example key_1234
              */
-            keyId?: string
+            keyId?: string;
             /**
              * @description Whether the key is valid or not.
              * A key could be invalid for a number of reasons, for example if it has expired, has no more verifications left or if it has been deleted.
              * @example true
              */
-            valid: boolean
+            valid: boolean;
             /**
              * @description The name of the key, give keys a name to easily identify their purpose
              * @example Customer X
              */
-            name?: string
+            name?: string;
             /**
              * @description The id of the tenant associated with this key. Use whatever reference you have in your system to identify the tenant. When verifying the key, we will send this field back to you, so you know who is accessing your API.
              * @example user_123
              */
-            ownerId?: string
+            ownerId?: string;
             /**
              * @description Any additional metadata you want to store with the key
              * @example {
@@ -5091,18 +5059,18 @@ export interface operations {
              * }
              */
             meta?: {
-              [key: string]: unknown
-            }
+              [key: string]: unknown;
+            };
             /**
              * @description The unix timestamp in milliseconds when the key was created
              * @example 0
              */
-            createdAt?: number
+            createdAt?: number;
             /**
              * @description The unix timestamp in milliseconds when the key will expire. If this field is null or undefined, the key is not expiring.
              * @example 123
              */
-            expires?: number
+            expires?: number;
             /**
              * @description The ratelimit configuration for this key. If this field is null or undefined, the key has no ratelimit.
              * @example {
@@ -5116,23 +5084,23 @@ export interface operations {
                * @description Maximum number of requests that can be made inside a window
                * @example 10
                */
-              limit: number
+              limit: number;
               /**
                * @description Remaining requests after this verification
                * @example 9
                */
-              remaining: number
+              remaining: number;
               /**
                * @description Unix timestamp in milliseconds when the ratelimit will reset
                * @example 3600000
                */
-              reset: number
-            }
+              reset: number;
+            };
             /**
              * @description The number of requests that can be made with this key before it becomes invalid. If this field is null or undefined, the key has no request limit.
              * @example 1000
              */
-            remaining?: number
+            remaining?: number;
             /**
              * @description If the key is invalid this field will be set to the reason why it is invalid.
              * Possible values are:
@@ -5145,138 +5113,130 @@ export interface operations {
              * @example NOT_FOUND
              * @enum {string}
              */
-            code?:
-              | 'NOT_FOUND'
-              | 'FORBIDDEN'
-              | 'USAGE_EXCEEDED'
-              | 'RATE_LIMITED'
-              | 'UNAUTHORIZED'
-              | 'DISABLED'
-              | 'INSUFFICIENT_PERMISSIONS'
-              | 'EXPIRED'
-          }
-        }
-      }
+            code?: "NOT_FOUND" | "FORBIDDEN" | "USAGE_EXCEEDED" | "RATE_LIMITED" | "UNAUTHORIZED" | "DISABLED" | "INSUFFICIENT_PERMISSIONS" | "EXPIRED";
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
-  'deprecated.listKeys': {
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
+  "deprecated.listKeys": {
     parameters: {
       query?: {
-        limit?: number
-        offset?: number | null
-        ownerId?: string
-      }
+        limit?: number;
+        offset?: number | null;
+        ownerId?: string;
+      };
       path: {
-        apiId: string
-      }
-    }
+        apiId: string;
+      };
+    };
     responses: {
       /** @description Keys belonging to the api */
       200: {
         content: {
-          'application/json': {
-            keys: components['schemas']['Key'][]
+          "application/json": {
+            keys: components["schemas"]["Key"][];
             /** @description The total number of keys for this api */
-            total: number
-          }
-        }
-      }
+            total: number;
+          };
+        };
+      };
       /** @description The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing). */
       400: {
         content: {
-          'application/json': components['schemas']['ErrBadRequest']
-        }
-      }
+          "application/json": components["schemas"]["ErrBadRequest"];
+        };
+      };
       /** @description Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated". That is, the client must authenticate itself to get the requested response. */
       401: {
         content: {
-          'application/json': components['schemas']['ErrUnauthorized']
-        }
-      }
+          "application/json": components["schemas"]["ErrUnauthorized"];
+        };
+      };
       /** @description The client does not have access rights to the content; that is, it is unauthorized, so the server is refusing to give the requested resource. Unlike 401 Unauthorized, the client's identity is known to the server. */
       403: {
         content: {
-          'application/json': components['schemas']['ErrForbidden']
-        }
-      }
+          "application/json": components["schemas"]["ErrForbidden"];
+        };
+      };
       /** @description The server cannot find the requested resource. In the browser, this means the URL is not recognized. In an API, this can also mean that the endpoint is valid but the resource itself does not exist. Servers may also send this response instead of 403 Forbidden to hide the existence of a resource from an unauthorized client. This response code is probably the most well known due to its frequent occurrence on the web. */
       404: {
         content: {
-          'application/json': components['schemas']['ErrNotFound']
-        }
-      }
+          "application/json": components["schemas"]["ErrNotFound"];
+        };
+      };
       /** @description This response is sent when a request conflicts with the current state of the server. */
       409: {
         content: {
-          'application/json': components['schemas']['ErrConflict']
-        }
-      }
+          "application/json": components["schemas"]["ErrConflict"];
+        };
+      };
       /** @description The requested operation cannot be completed because certain conditions were not met. This typically occurs when a required resource state or version check fails. */
       412: {
         content: {
-          'application/json': components['schemas']['ErrPreconditionFailed']
-        }
-      }
+          "application/json": components["schemas"]["ErrPreconditionFailed"];
+        };
+      };
       /** @description The user has sent too many requests in a given amount of time ("rate limiting") */
       429: {
         content: {
-          'application/json': components['schemas']['ErrTooManyRequests']
-        }
-      }
+          "application/json": components["schemas"]["ErrTooManyRequests"];
+        };
+      };
       /** @description The server has encountered a situation it does not know how to handle. */
       500: {
         content: {
-          'application/json': components['schemas']['ErrInternalServerError']
-        }
-      }
-    }
-  }
+          "application/json": components["schemas"]["ErrInternalServerError"];
+        };
+      };
+    };
+  };
 }
