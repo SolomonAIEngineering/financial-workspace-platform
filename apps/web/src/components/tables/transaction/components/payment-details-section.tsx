@@ -26,7 +26,6 @@ import {
 } from '@/registry/default/potion-ui/dropdown-menu';
 
 import { Badge } from '@/components/ui/badge';
-import { DetailRow } from './detail-row';
 import { FieldRenderer } from './field-renderer';
 import { SubheadingWithTooltip } from './subheading-with-tooltip';
 import { TransactionSection } from './transaction-section';

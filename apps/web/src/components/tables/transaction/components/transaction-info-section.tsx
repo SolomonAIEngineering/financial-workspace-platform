@@ -365,13 +365,13 @@ function TransactionStatusField() {
    * @returns {{ label: string; value: string }[]} Filtered status options
    */
   const getFilteredStatusOptions = () => {
-    const allowedStatuses = [
+    const allowedStatuses: Set<TransactionStatus> = new Set([
       currentStatus,
       ...TransactionStatusMetadata[currentStatus].canTransitionTo,
-    ];
+    ]);
 
     return statusOptions.filter((option) =>
-      allowedStatuses.includes(option.value as TransactionStatus)
+      allowedStatuses.has(option.value as TransactionStatus)
     );
   };
 

@@ -5,7 +5,6 @@ import {
   useUpdateTransactionCategory,
 } from '@/trpc/hooks/transaction-hooks';
 
-import { TransactionCategory } from '@solomonai/prisma/client';
 import { Transaction as TransactionData } from '@solomonai/prisma/client';
 import { api } from '@/trpc/react';
 import { formatDate } from './utils';
