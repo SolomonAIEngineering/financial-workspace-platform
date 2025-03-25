@@ -1,8 +1,8 @@
 'use server'
 
-import { headers } from 'next/headers'
-import { getLimits } from '../client'
 import { LimitsProvider as ClientLimitsProvider } from './client'
+import { getLimits } from '../client'
+import { headers } from 'next/headers'
 
 export type LimitsProviderProps = {
   children?: React.ReactNode
