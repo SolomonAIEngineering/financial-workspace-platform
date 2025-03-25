@@ -1,11 +1,7 @@
-import type { Endpoints } from '@octokit/types';
-
-import { GitHub } from 'arctic';
-
-import { env } from '@/env';
-
 import type { AuthProviderConfig } from '../lucia';
-
+import type { Endpoints } from '@octokit/types';
+import { GitHub } from 'arctic';
+import { env } from '@/env';
 import { findOrCreateUser } from '../findOrCreateUser';
 
 const githubAuth = new GitHub(
