@@ -3,15 +3,15 @@ import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 import { bankAccountsRouter } from './routers/bank-accounts/index';
 import { bankConnectionRouter } from './routers/bank-connection';
-import { commentRouter } from './routers/comment';
-import { documentRouter } from './routers/document';
+import { commentRouter } from './routers/comment/index';
+import { documentRouter } from './routers/document/index';
 import { fileRouter } from './routers/file';
 import { layoutRouter } from './routers/layout';
 import { recurringTransactionsRouter } from './routers/recurring-transactions';
-import { teamRouter } from './routers/team';
+import { teamRouter } from './routers/team/index';
 import { transactionsRouter } from './routers/transactions';
 import { userRouter } from './routers/user';
-import { versionRouter } from './routers/version';
+import { versionRouter } from './routers/version/index';
 
 export const appRouter = createRouter({
   bankAccounts: bankAccountsRouter,

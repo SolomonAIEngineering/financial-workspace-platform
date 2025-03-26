@@ -65,6 +65,7 @@ export const commentMutations = {
         select: { id: true },
       });
     }),
+
   createDiscussionWithComment: protectedProcedure
     .use(ratelimitMiddleware('discussion/create'))
     .input(
