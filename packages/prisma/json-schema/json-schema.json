@@ -28,7 +28,6 @@
         }
       },
       "required": [
-        "id",
         "user_id",
         "expires_at"
       ]
@@ -528,7 +527,6 @@
         }
       },
       "required": [
-        "id",
         "username"
       ]
     },
@@ -676,7 +674,6 @@
         }
       },
       "required": [
-        "id",
         "userId",
         "updatedAt"
       ]
@@ -719,7 +716,6 @@
         }
       },
       "required": [
-        "id",
         "documentId",
         "userId",
         "updatedAt"
@@ -770,7 +766,6 @@
         }
       },
       "required": [
-        "id",
         "documentId",
         "userId",
         "documentContent"
@@ -815,7 +810,6 @@
         }
       },
       "required": [
-        "id",
         "userId",
         "discussionId",
         "content"
@@ -862,7 +856,6 @@
         }
       },
       "required": [
-        "id",
         "userId",
         "size",
         "url",
