@@ -1,6 +1,7 @@
 import { NodeApi } from '@udecode/plate';
 import { TRPCError } from '@trpc/server';
 import { createRouter } from '../trpc';
+import { nid } from '@solomonai/lib/utils/nid';
 import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../middlewares/procedures';
 import { ratelimitMiddleware } from '../middlewares/ratelimitMiddleware';

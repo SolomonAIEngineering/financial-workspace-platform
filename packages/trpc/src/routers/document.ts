@@ -1,15 +1,11 @@
 import { NodeApi } from '@udecode/plate';
-import { ResourceType } from '@/server/services/payment-tier';
 import { TRPCError } from '@trpc/server';
-import { createResourceValidationMiddleware } from '../middlewares/resourceValidationMiddleware';
 import { createRouter } from '../trpc';
-import { isTemplateDocument } from '@/components/editor/utils/useTemplateDocument';
-import { nid } from '@/lib/nid';
+import { nid } from '@solomonai/lib/utils/nid';
 import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../middlewares/procedures';
 import { ratelimitMiddleware } from '../middlewares/ratelimitMiddleware';
 import { z } from 'zod';
-
 const MAX_TITLE_LENGTH = 256;
 const MAX_CONTENT_LENGTH = 1_000_000; // 1MB of text
 const MAX_ICON_LENGTH = 100;
@@ -26,11 +22,6 @@ const DOCUMENT_STATUS = [
 ] as const;
 type DocumentStatus = (typeof DOCUMENT_STATUS)[number];
 
-// Create document-specific validation middleware
-const validateDocumentCreation = createResourceValidationMiddleware({
-  resourceType: ResourceType.DOCUMENT,
-});
-
 export const documentMutations = {
   archive: protectedProcedure
     .input(
@@ -45,7 +36,7 @@ export const documentMutations = {
         },
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
     }),
@@ -60,7 +51,6 @@ export const documentMutations = {
       })
     )
     // Apply the document validation middleware
-    .use(validateDocumentCreation)
     .mutation(async ({ ctx, input }) => {
       const content = input.contentRich
         ? NodeApi.string({
@@ -82,7 +72,7 @@ export const documentMutations = {
           contentRich: input.contentRich,
           parentDocumentId: input.parentDocumentId ?? null,
           title: input.title,
-          userId: ctx.userId,
+          userId: ctx.session?.userId as string,
         },
         select: { id: true },
       });
@@ -98,7 +88,7 @@ export const documentMutations = {
       await prisma.document.delete({
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
     }),
@@ -116,7 +106,7 @@ export const documentMutations = {
         },
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
     }),
@@ -133,7 +123,7 @@ export const documentMutations = {
         select: { pinned: true },
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -150,7 +140,7 @@ export const documentMutations = {
         },
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -169,7 +159,7 @@ export const documentMutations = {
         select: { isTemplate: true },
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -186,7 +176,7 @@ export const documentMutations = {
         },
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -244,7 +234,7 @@ export const documentMutations = {
         },
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
     }),
@@ -264,7 +254,7 @@ export const documentMutations = {
         },
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -288,7 +278,7 @@ export const documentMutations = {
         },
         where: {
           id: input.id,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -328,13 +318,8 @@ export const documentRouter = createRouter({
           updatedAt: true,
         },
         where: {
-          id: isTemplateDocument(input.id) ? undefined : input.id,
-          userId_templateId: isTemplateDocument(input.id)
-            ? {
-              templateId: input.id,
-              userId: ctx.userId,
-            }
-            : undefined,
+          id: input.id,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -368,7 +353,7 @@ export const documentRouter = createRouter({
         where: {
           isArchived: false,
           parentDocumentId: input.parentDocumentId ?? null,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -394,7 +379,7 @@ export const documentRouter = createRouter({
           title: {
             contains: input.q,
           },
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -420,7 +405,7 @@ export const documentRouter = createRouter({
           title: {
             contains: input.q ?? '',
           },
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 

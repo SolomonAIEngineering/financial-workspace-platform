@@ -8,7 +8,7 @@ export const layoutRouter = createRouter({
   app: protectedProcedure
     .use(devMiddleware(CookieNames.devWaitAppLayout))
     .query(async ({ ctx }) => {
-      const { userId } = ctx;
+      const userId = ctx.session?.userId;
 
       const authUser = ctx.user!;
 

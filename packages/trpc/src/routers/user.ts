@@ -1,9 +1,8 @@
-import Stripe from 'stripe';
 import { TRPCError } from '@trpc/server';
 import { createRouter } from '../trpc';
 import { deleteContactInLoopsAction } from '@/actions/loops';
 import { env } from '@/env';
-import { prisma } from '@/server/db';
+import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../middlewares/procedures';
 import { stripe } from '@/lib/stripe';
 import { z } from 'zod';
@@ -438,7 +437,7 @@ export const userRouter = createRouter({
     ];
     const professionalInfoCompleteness = Math.round(
       (professionalInfo.filter((f) => !!f).length / professionalInfo.length) *
-        100
+      100
     );
 
     const contactInfo = [

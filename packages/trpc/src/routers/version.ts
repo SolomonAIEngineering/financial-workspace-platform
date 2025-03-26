@@ -1,7 +1,6 @@
 import { NodeApi } from '@udecode/plate';
 import { createRouter } from '../trpc';
 import { getTemplateDocument } from '@solomonai/lib/utils';
-import { nid } from '@solomonai/lib/nid';
 // import { getNodeString } from '@udecode/plate/server';
 import { omit } from 'lodash';
 import { prisma } from '@solomonai/prisma';
@@ -38,7 +37,6 @@ const versionMutations = {
 
       return await prisma.documentVersion.create({
         data: {
-          id: nid(),
           contentRich: document.contentRich as any,
           documentId: input.documentId,
           title: document.title,

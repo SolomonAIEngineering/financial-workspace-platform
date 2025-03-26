@@ -4,7 +4,7 @@ import {
 } from '@solomonai/prisma/client';
 
 import { TRPCError } from '@trpc/server';
-import { createRouter } from '@/server/api/trpc';
+import { createRouter } from '../trpc';
 import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../middlewares/procedures';
 import { z } from 'zod';
@@ -98,7 +98,7 @@ export const recurringTransactionsRouter = createRouter({
       const where: any = {
         // Find recurring transactions for all bank accounts owned by this user
         bankAccount: {
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       };
 
@@ -212,7 +212,7 @@ export const recurringTransactionsRouter = createRouter({
 
       if (
         !recurringTransaction ||
-        recurringTransaction.bankAccount.userId !== ctx.userId
+        recurringTransaction.bankAccount.userId !== ctx.session?.userId
       ) {
         throw new TRPCError({
           code: 'NOT_FOUND',
@@ -232,7 +232,7 @@ export const recurringTransactionsRouter = createRouter({
         where: { id: input.bankAccountId },
       });
 
-      if (!bankAccount || bankAccount.userId !== ctx.userId) {
+      if (!bankAccount || bankAccount.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Bank account not found or unauthorized',
@@ -245,7 +245,7 @@ export const recurringTransactionsRouter = createRouter({
           where: { id: input.targetAccountId },
         });
 
-        if (!targetAccount || targetAccount.userId !== ctx.userId) {
+        if (!targetAccount || targetAccount.userId !== ctx.session?.userId) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Target account not found or unauthorized',
@@ -385,7 +385,7 @@ export const recurringTransactionsRouter = createRouter({
 
       if (
         !existingRecurringTransaction ||
-        existingRecurringTransaction.bankAccount.userId !== ctx.userId
+        existingRecurringTransaction.bankAccount.userId !== ctx.session?.userId
       ) {
         throw new TRPCError({
           code: 'NOT_FOUND',
@@ -399,7 +399,7 @@ export const recurringTransactionsRouter = createRouter({
           where: { id: input.data.bankAccountId },
         });
 
-        if (!bankAccount || bankAccount.userId !== ctx.userId) {
+        if (!bankAccount || bankAccount.userId !== ctx.session?.userId) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Bank account not found or unauthorized',
@@ -413,7 +413,7 @@ export const recurringTransactionsRouter = createRouter({
           where: { id: input.data.targetAccountId },
         });
 
-        if (!targetAccount || targetAccount.userId !== ctx.userId) {
+        if (!targetAccount || targetAccount.userId !== ctx.session?.userId) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Target account not found or unauthorized',
@@ -591,7 +591,7 @@ export const recurringTransactionsRouter = createRouter({
           data: {
             ...input.data,
             nextScheduledDate,
-            lastModifiedBy: ctx.userId,
+            lastModifiedBy: ctx.session?.userId,
           },
         });
 
@@ -618,7 +618,7 @@ export const recurringTransactionsRouter = createRouter({
 
       if (
         !existingRecurringTransaction ||
-        existingRecurringTransaction.bankAccount.userId !== ctx.userId
+        existingRecurringTransaction.bankAccount.userId !== ctx.session?.userId
       ) {
         throw new TRPCError({
           code: 'NOT_FOUND',
@@ -685,7 +685,7 @@ export const recurringTransactionsRouter = createRouter({
 
       if (
         !recurringTransaction ||
-        recurringTransaction.bankAccount.userId !== ctx.userId
+        recurringTransaction.bankAccount.userId !== ctx.session?.userId
       ) {
         throw new TRPCError({
           code: 'NOT_FOUND',
@@ -760,7 +760,7 @@ export const recurringTransactionsRouter = createRouter({
 
       if (
         !recurringTransaction ||
-        recurringTransaction.bankAccount.userId !== ctx.userId
+        recurringTransaction.bankAccount.userId !== ctx.session?.userId
       ) {
         throw new TRPCError({
           code: 'NOT_FOUND',
@@ -779,7 +779,7 @@ export const recurringTransactionsRouter = createRouter({
           where: { id: input.id },
           data: {
             tags: updatedTags,
-            lastModifiedBy: ctx.userId,
+            lastModifiedBy: ctx.session?.userId,
           },
         });
 
@@ -811,7 +811,7 @@ export const recurringTransactionsRouter = createRouter({
 
       if (
         !recurringTransaction ||
-        recurringTransaction.bankAccount.userId !== ctx.userId
+        recurringTransaction.bankAccount.userId !== ctx.session?.userId
       ) {
         throw new TRPCError({
           code: 'NOT_FOUND',
@@ -825,7 +825,7 @@ export const recurringTransactionsRouter = createRouter({
           where: { id: input.id },
           data: {
             notes: input.notes,
-            lastModifiedBy: ctx.userId,
+            lastModifiedBy: ctx.session?.userId,
           },
         });
 
@@ -857,7 +857,7 @@ export const recurringTransactionsRouter = createRouter({
 
       if (
         !recurringTransaction ||
-        recurringTransaction.bankAccount.userId !== ctx.userId
+        recurringTransaction.bankAccount.userId !== ctx.session?.userId
       ) {
         throw new TRPCError({
           code: 'NOT_FOUND',
@@ -883,7 +883,7 @@ export const recurringTransactionsRouter = createRouter({
           where: { id: input.id },
           data: {
             categorySlug: input.categorySlug,
-            lastModifiedBy: ctx.userId,
+            lastModifiedBy: ctx.session?.userId,
           },
         });
 
@@ -916,7 +916,7 @@ export const recurringTransactionsRouter = createRouter({
 
       if (
         !recurringTransaction ||
-        recurringTransaction.bankAccount.userId !== ctx.userId
+        recurringTransaction.bankAccount.userId !== ctx.session?.userId
       ) {
         throw new TRPCError({
           code: 'NOT_FOUND',
@@ -931,7 +931,7 @@ export const recurringTransactionsRouter = createRouter({
           data: {
             merchantName: input.merchantName,
             merchantId: input.merchantId,
-            lastModifiedBy: ctx.userId,
+            lastModifiedBy: ctx.session?.userId,
           },
         });
 
@@ -964,7 +964,7 @@ export const recurringTransactionsRouter = createRouter({
 
       if (
         !recurringTransaction ||
-        recurringTransaction.bankAccount.userId !== ctx.userId
+        recurringTransaction.bankAccount.userId !== ctx.session?.userId
       ) {
         throw new TRPCError({
           code: 'NOT_FOUND',
@@ -982,7 +982,7 @@ export const recurringTransactionsRouter = createRouter({
           where: { id: input.id },
           data: {
             // assignedToUserId: input.assignedToUserId,
-            lastModifiedBy: ctx.userId,
+            lastModifiedBy: ctx.session?.userId,
           },
         });
 
@@ -1003,7 +1003,7 @@ export const recurringTransactionsRouter = createRouter({
 
       // Build where condition for transactions
       const where: any = {
-        userId: ctx.userId,
+        userId: ctx.session?.userId,
       };
 
       if (bankAccountId) {
@@ -1222,7 +1222,7 @@ export const recurringTransactionsRouter = createRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { userId } = ctx;
+        const userId = ctx.session?.userId;
         const {
           query,
           minAmount,

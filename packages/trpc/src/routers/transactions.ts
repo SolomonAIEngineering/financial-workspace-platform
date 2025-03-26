@@ -1,7 +1,8 @@
+import { Prisma, prisma } from '@solomonai/prisma';
+
 import { TRPCError } from '@trpc/server';
 import { TransactionCategory } from '@solomonai/prisma/client';
 import { createRouter } from '../trpc';
-import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../middlewares/procedures';
 import { z } from 'zod';
 
@@ -138,8 +139,8 @@ export const transactionsRouter = createRouter({
       const skip = (page - 1) * limit;
 
       // Build filter conditions
-      const where: any = {
-        userId: ctx.userId,
+      const where: Prisma.TransactionWhereInput = {
+        userId: ctx.session?.userId,
       };
 
       if (filters.merchant) {
@@ -162,7 +163,7 @@ export const transactionsRouter = createRouter({
       }
 
       if (filters.assignedTo) {
-        where.assignedToUserId = filters.assignedTo;
+        where.assigneeId = filters.assignedTo;
       }
 
       if (filters.status) {
@@ -270,7 +271,7 @@ export const transactionsRouter = createRouter({
         },
       });
 
-      if (!transaction || transaction.userId !== ctx.userId) {
+      if (!transaction || transaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -289,7 +290,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.bankAccountId },
       });
 
-      if (!bankAccount || bankAccount.userId !== ctx.userId) {
+      if (!bankAccount || bankAccount.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Bank account not found or unauthorized',
@@ -300,7 +301,7 @@ export const transactionsRouter = createRouter({
       const transaction = await prisma.transaction.create({
         data: {
           ...input,
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
           isManual: true,
           tags: input.tags || [],
         },
@@ -337,7 +338,7 @@ export const transactionsRouter = createRouter({
           });
         }
 
-        if (existingTransaction.userId !== ctx.userId) {
+        if (existingTransaction.userId !== ctx.session?.userId) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'You do not have permission to modify this transaction',
@@ -402,7 +403,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.id },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -432,7 +433,7 @@ export const transactionsRouter = createRouter({
       const bankAccounts = await prisma.bankAccount.findMany({
         where: {
           id: { in: bankAccountIds },
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -447,7 +448,7 @@ export const transactionsRouter = createRouter({
       const createdTransactions = await prisma.transaction.createMany({
         data: transactions.map((t) => ({
           ...t,
-          userId: ctx.userId,
+          userId: ctx.session?.userId as string,
           isManual: true,
           tags: t.tags || [],
         })),
@@ -479,7 +480,7 @@ export const transactionsRouter = createRouter({
       const existingTransactions = await prisma.transaction.findMany({
         where: {
           id: { in: transactionIds },
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
       });
 
@@ -532,7 +533,7 @@ export const transactionsRouter = createRouter({
       const existingTransactions = await prisma.transaction.findMany({
         where: {
           id: { in: ids },
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
         select: { id: true },
       });
@@ -574,7 +575,7 @@ export const transactionsRouter = createRouter({
         },
       });
 
-      if (!transaction || transaction.userId !== ctx.userId) {
+      if (!transaction || transaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -583,7 +584,7 @@ export const transactionsRouter = createRouter({
 
       const associatedTransactions = await prisma.transaction.findMany({
         where: {
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
           recurringTransactionId: transaction.recurringTransactionId,
         },
         include: {
@@ -631,7 +632,7 @@ export const transactionsRouter = createRouter({
     )
     .query(async ({ ctx, input }) => {
       try {
-        const { userId } = ctx;
+        const userId = ctx.session?.userId;
         const {
           query,
           startDate,
@@ -644,7 +645,7 @@ export const transactionsRouter = createRouter({
         } = input;
 
         // Build the where clause
-        const where: any = {
+        const where: Prisma.TransactionWhereInput = {
           userId,
         };
 
@@ -661,18 +662,18 @@ export const transactionsRouter = createRouter({
 
         // Date filters
         if (startDate) {
-          where.date = { ...where.date, gte: startDate };
+          where.date = { gte: startDate };
         }
         if (endDate) {
-          where.date = { ...where.date, lte: endDate };
+          where.date = { lte: endDate };
         }
 
         // Amount filters
         if (minAmount !== undefined) {
-          where.amount = { ...where.amount, gte: minAmount };
+          where.amount = { gte: minAmount };
         }
         if (maxAmount !== undefined) {
-          where.amount = { ...where.amount, lte: maxAmount };
+          where.amount = { lte: maxAmount };
         }
 
         // Categories filter
@@ -742,7 +743,7 @@ export const transactionsRouter = createRouter({
         select: { userId: true, tags: true },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -795,7 +796,7 @@ export const transactionsRouter = createRouter({
         select: { userId: true, tags: true },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -836,7 +837,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.id },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -878,7 +879,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.id },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -917,7 +918,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.id },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -954,7 +955,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.id },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -1008,7 +1009,7 @@ export const transactionsRouter = createRouter({
           });
         }
 
-        if (existingTransaction.userId !== ctx.userId) {
+        if (existingTransaction.userId !== ctx.session?.userId) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'You do not have permission to modify this transaction',
@@ -1118,7 +1119,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.id },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -1154,7 +1155,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.id },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -1184,7 +1185,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.id },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -1218,7 +1219,7 @@ export const transactionsRouter = createRouter({
       // Find all transactions by this merchant name for the user
       const transactions = await prisma.transaction.findMany({
         where: {
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
           merchantName: input.merchantName,
         },
         select: { id: true },
@@ -1267,7 +1268,7 @@ export const transactionsRouter = createRouter({
       const existingTransactions = await prisma.transaction.findMany({
         where: {
           id: { in: input.transactionIds },
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
         select: { id: true },
       });
@@ -1386,7 +1387,7 @@ export const transactionsRouter = createRouter({
         where: { id: input.id },
       });
 
-      if (!existingTransaction || existingTransaction.userId !== ctx.userId) {
+      if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
@@ -1430,7 +1431,7 @@ export const transactionsRouter = createRouter({
       const existingTransactions = await prisma.transaction.findMany({
         where: {
           id: { in: transactionIds },
-          userId: ctx.userId,
+          userId: ctx.session?.userId,
         },
         select: { id: true, tags: true },
       });
@@ -1533,7 +1534,7 @@ export const transactionsRouter = createRouter({
         const existingTransactions = await prisma.transaction.findMany({
           where: {
             id: { in: transactionIds },
-            userId: ctx.userId,
+            userId: ctx.session?.userId,
           },
           select: { id: true },
         });

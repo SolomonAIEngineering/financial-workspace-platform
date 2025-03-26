@@ -1,7 +1,8 @@
+import { Prisma, prisma } from '@solomonai/prisma';
+
 import { TRPCError } from '@trpc/server';
 import { TeamRole } from '@solomonai/prisma/client';
 import { createRouter } from '../trpc';
-import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../middlewares/procedures';
 import { z } from 'zod';
 
@@ -47,7 +48,7 @@ export const teamRouter = createRouter({
         }
 
         // Create the team - normalize input data
-        const teamData = {
+        const teamData: Prisma.TeamCreateInput = {
           ...input,
           // Ensure slug is not undefined by providing a default if needed
           slug:
@@ -57,7 +58,7 @@ export const teamRouter = createRouter({
           // Create the user-team relationship with OWNER role
           usersOnTeam: {
             create: {
-              userId,
+              userId: userId as string,
               role: TeamRole.OWNER,
             },
           },
@@ -837,7 +838,7 @@ export const teamRouter = createRouter({
         const userOnTeam = await prisma.usersOnTeam.create({
           data: {
             teamId: invite.teamId,
-            userId,
+            userId: userId as string,
             role: invite.role || 'MEMBER',
           },
         });
