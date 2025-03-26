@@ -1,5 +1,5 @@
-import { prisma } from '@solomonai/prisma';
 import { TRPCError } from '@trpc/server';
+import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
 import { z } from 'zod';
 
@@ -17,6 +17,8 @@ export const deleteTransactionHandler = protectedProcedure
         message: 'Transaction not found',
       });
     }
+
+    // TODO: if the transaction has attachments, we need to delete them first
 
     // Delete transaction
     await prisma.transaction.delete({

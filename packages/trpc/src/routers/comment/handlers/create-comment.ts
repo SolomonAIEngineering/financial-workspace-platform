@@ -1,9 +1,10 @@
+import { MAX_COMMENT_LENGTH, createCommentSchema } from '../schema';
+
 import { NodeApi } from '@udecode/plate';
 import { TRPCError } from '@trpc/server';
 import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
 import { ratelimitMiddleware } from '../../../middlewares/ratelimitMiddleware';
-import { createCommentSchema, MAX_COMMENT_LENGTH } from '../schema';
 
 /**
  * Protected procedure to create a new comment.

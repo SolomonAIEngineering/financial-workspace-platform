@@ -1,8 +1,8 @@
-import { prisma } from '@solomonai/prisma';
 import { TRPCError } from '@trpc/server';
 import { TeamRole } from '@solomonai/prisma/client';
-import { protectedProcedure } from '../../../middlewares/procedures';
 import { createInviteSchema } from '../schema';
+import { prisma } from '@solomonai/prisma';
+import { protectedProcedure } from '../../../middlewares/procedures';
 
 /**
  * Protected procedure to create a team invite.

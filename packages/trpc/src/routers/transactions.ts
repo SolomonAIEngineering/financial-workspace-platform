@@ -1,10 +1,46 @@
 import { Prisma, prisma } from '@solomonai/prisma';
-
 import { TRPCError } from '@trpc/server';
 import { TransactionCategory } from '@solomonai/prisma/client';
 import { createRouter } from '../trpc';
 import { protectedProcedure } from '../middlewares/procedures';
 import { z } from 'zod';
+
+// Import all handlers
+import {
+  getTransactionsHandler,
+  getTransactionHandler,
+  createTransactionHandler,
+  updateTransactionHandler,
+  deleteTransactionHandler,
+  updateBatchTransactionsHandler,
+  searchTransactionsHandler,
+  removeTagHandler,
+  updatePaymentMethodHandler,
+  updateAssignedToHandler,
+  addAttachmentHandler,
+  updateTagsHandler,
+  bulkUpdateTagsHandler,
+  bulkUpdateAssignedToHandler,
+  
+  // New handlers
+  createBatchTransactionsHandler,
+  
+  // Transaction categories
+  updateTransactionCategoryHandler,
+  bulkUpdateTransactionCategoriesHandler,
+  categorizeByMerchantHandler,
+  getTransactionsByCategoryHandler,
+  
+  // Transaction attachments
+  listTransactionAttachmentsHandler,
+  deleteTransactionAttachmentHandler,
+  updateTransactionAttachmentHandler,
+  
+  // Transaction splits
+  splitTransactionHandler,
+  getSplitTransactionsHandler,
+  recombineSplitTransactionHandler,
+} from './transactions/handlers';
 
 // Transaction filter schema
 const transactionFilterSchema = z.object({
@@ -129,10 +165,45 @@ const manualCategorizationSchema = z.object({
 });
 
 export const transactionsRouter = createRouter({
-  // Core Transaction Endpoints
-
-  // GET /api/transactions - Retrieve transactions with filtering, sorting, and pagination
-  getTransactions: protectedProcedure
+  // GET Transactions with new handler implementation
+  getTransactions: getTransactionsHandler,
+  getTransaction: getTransactionHandler,
+  searchTransactions: searchTransactionsHandler,
+  getTransactionsByCategory: getTransactionsByCategoryHandler,
+  getSplitTransactions: getSplitTransactionsHandler,
+  listTransactionAttachments: listTransactionAttachmentsHandler,
+  
+  // CREATE Transactions with new handler implementation
+  createTransaction: createTransactionHandler,
+  createBatchTransactions: createBatchTransactionsHandler,
+  
+  // UPDATE Transactions with new handler implementation
+  updateTransaction: updateTransactionHandler,
+  updateBatchTransactions: updateBatchTransactionsHandler,
+  updateTags: updateTagsHandler,
+  updateTransactionCategory: updateTransactionCategoryHandler,
+  bulkUpdateTransactionCategories: bulkUpdateTransactionCategoriesHandler,
+  categorizeByMerchant: categorizeByMerchantHandler,
+  removeTag: removeTagHandler,
+  updatePaymentMethod: updatePaymentMethodHandler,
+  updateAssignedTo: updateAssignedToHandler,
+  bulkUpdateTags: bulkUpdateTagsHandler,
+  bulkUpdateAssignedTo: bulkUpdateAssignedToHandler,
+  updateTransactionAttachment: updateTransactionAttachmentHandler,
+  
+  // DELETE/MODIFY Transactions with new handler implementation
+  deleteTransaction: deleteTransactionHandler,
+  deleteTransactionAttachment: deleteTransactionAttachmentHandler,
+  
+  // SPLIT Transactions with new handler implementation
+  splitTransaction: splitTransactionHandler,
+  recombineSplitTransaction: recombineSplitTransactionHandler,
+  
+  // ATTACHMENT Transactions with new handler implementation
+  addAttachment: addAttachmentHandler,
+  
+  // Legacy endpoints - will be removed after transitioning to handlers
+  legacyGetTransactions: protectedProcedure
     .input(transactionFilterSchema)
     .query(async ({ ctx, input }) => {
       const { page, limit, ...filters } = input;
