@@ -1,4 +1,5 @@
 import { Prisma, prisma } from '@solomonai/prisma';
+
 import { protectedProcedure } from '../../../middlewares/procedures';
 import { transactionFilterSchema } from '../schema';
 
@@ -73,6 +74,12 @@ export const getTransactionsHandler = protectedProcedure
             plaidAccountId: true,
             type: true,
             subtype: true,
+            bankConnection: {
+              select: {
+                institutionId: true,
+                institutionName: true,
+              },
+            },
           },
         },
         transactionCategory: {
@@ -85,6 +92,14 @@ export const getTransactionsHandler = protectedProcedure
         transactionTags: {
           select: {
             tag: true,
+          },
+        },
+        attachments: {
+          select: {
+            id: true,
+            fileUrl: true,
+            name: true,
+            createdAt: true,
           },
         },
       },

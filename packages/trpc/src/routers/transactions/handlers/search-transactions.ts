@@ -1,22 +1,12 @@
-import { Prisma, prisma } from '@solomonai/prisma';
+import { Prisma, TransactionCategory, prisma } from '@solomonai/prisma';
 
 import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
+import { searchTransactionsSchema } from '../schema';
 
 export const searchTransactionsHandler = protectedProcedure
-  .input(
-    z.object({
-      query: z.string().optional(),
-      startDate: z.date().optional(),
-      endDate: z.date().optional(),
-      minAmount: z.number().optional(),
-      maxAmount: z.number().optional(),
-      page: z.number().min(1).default(1),
-      limit: z.number().min(1).max(100).default(20),
-    })
-  )
+  .input(searchTransactionsSchema)
   .query(async ({ ctx, input }) => {
-    const { query, startDate, endDate, minAmount, maxAmount, page, limit } = input;
+    const { query, startDate, endDate, minAmount, maxAmount, page, limit, categories, bankAccountIds } = input;
     const skip = (page - 1) * limit;
 
     // Build filter conditions
@@ -32,6 +22,7 @@ export const searchTransactionsHandler = protectedProcedure
         { merchantName: { contains: searchTerm, mode: 'insensitive' } },
         { description: { contains: searchTerm, mode: 'insensitive' } },
         { paymentMethod: { contains: searchTerm, mode: 'insensitive' } },
+        { tags: { has: searchTerm } },
       ];
     }
 
@@ -55,6 +46,18 @@ export const searchTransactionsHandler = protectedProcedure
       if (maxAmount !== undefined) {
         where.amount.lte = maxAmount;
       }
+    }
+
+    if (categories) {
+      where.category = {
+        in: categories as TransactionCategory[],
+      };
+    }
+
+    if (bankAccountIds) {
+      where.bankAccountId = {
+        in: bankAccountIds as string[],
+      };
     }
 
     // Execute search query with pagination

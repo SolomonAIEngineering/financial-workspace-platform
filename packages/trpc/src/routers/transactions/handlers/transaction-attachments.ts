@@ -1,25 +1,19 @@
+import { deleteTransactionAttachmentSchema, listTransactionAttachmentsSchema, updateTransactionAttachmentSchema } from '../schema';
+
 import { TRPCError } from '@trpc/server';
-import { Prisma, prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
 
 export const listTransactionAttachmentsHandler = protectedProcedure
-  .input(z.object({ transactionId: z.string() }))
+  .input(listTransactionAttachmentsSchema)
   .query(async ({ ctx, input }) => {
     const userId = ctx.session?.userId;
-    if (!userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
-
     // Check if transaction exists and belongs to user
     const existingTransaction = await prisma.transaction.findUnique({
-      where: { id: input.transactionId },
+      where: { id: input.transactionId, userId: userId },
     });
 
-    if (!existingTransaction || existingTransaction.userId !== userId) {
+    if (!existingTransaction) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found',
@@ -37,22 +31,16 @@ export const listTransactionAttachmentsHandler = protectedProcedure
   });
 
 export const deleteTransactionAttachmentHandler = protectedProcedure
-  .input(z.object({ id: z.string(), transactionId: z.string() }))
+  .input(deleteTransactionAttachmentSchema)
   .mutation(async ({ ctx, input }) => {
     const userId = ctx.session?.userId;
-    if (!userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
 
     // Check if transaction exists and belongs to user
     const existingTransaction = await prisma.transaction.findUnique({
-      where: { id: input.transactionId },
+      where: { id: input.id, userId: userId },
     });
 
-    if (!existingTransaction || existingTransaction.userId !== userId) {
+    if (!existingTransaction) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found',
@@ -63,7 +51,7 @@ export const deleteTransactionAttachmentHandler = protectedProcedure
     const attachment = await prisma.transactionAttachment.findFirst({
       where: {
         id: input.id,
-        transactionId: input.transactionId,
+        transactionId: input.id,
       },
     });
 
@@ -75,45 +63,31 @@ export const deleteTransactionAttachmentHandler = protectedProcedure
     }
 
     // Delete the attachment
-    await prisma.transactionAttachment.delete({
+    const deletedAttachment = await prisma.transactionAttachment.delete({
       where: { id: input.id },
     });
 
-    // Check if there are any remaining attachments for this transaction
-    const remainingAttachments = await prisma.transactionAttachment.findFirst({
-      where: {
-        transactionId: input.transactionId,
-      },
-    });
+    if (!deletedAttachment) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to delete attachment',
+      });
+    }
 
     return { success: true };
   });
 
 export const updateTransactionAttachmentHandler = protectedProcedure
-  .input(
-    z.object({
-      id: z.string(),
-      transactionId: z.string(),
-      name: z.string().optional(),
-      type: z.string().optional(),
-      path: z.array(z.string()).optional(),
-    })
-  )
+  .input(updateTransactionAttachmentSchema)
   .mutation(async ({ ctx, input }) => {
     const userId = ctx.session?.userId;
-    if (!userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
 
     // Check if transaction exists and belongs to user
     const existingTransaction = await prisma.transaction.findUnique({
-      where: { id: input.transactionId },
+      where: { id: input.transactionId, userId: userId },
     });
 
-    if (!existingTransaction || existingTransaction.userId !== userId) {
+    if (!existingTransaction) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found',
@@ -145,5 +119,11 @@ export const updateTransactionAttachmentHandler = protectedProcedure
       },
     });
 
+    if (!updatedAttachment) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to update attachment',
+      });
+    }
     return updatedAttachment;
   });

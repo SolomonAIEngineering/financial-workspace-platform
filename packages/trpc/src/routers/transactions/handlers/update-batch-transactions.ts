@@ -1,64 +1,11 @@
-import { TRPCError } from '@trpc/server';
-import { Prisma, prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
-import { TransactionCategory } from '@solomonai/prisma/client';
-
-// Transaction schema
-const transactionSchema = z.object({
-  bankAccountId: z.string(),
-  amount: z.number(),
-  date: z.string().datetime(),
-  name: z.string(),
-  merchantName: z.string().optional(),
-  description: z.string().optional(),
-  pending: z.boolean().default(false),
-  category: z.nativeEnum(TransactionCategory).optional(),
-  paymentMethod: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-
-  // Tax & Financial Information
-  taxDeductible: z.boolean().optional(),
-  taxExempt: z.boolean().optional(),
-  taxAmount: z.number().optional(),
-  taxRate: z.number().optional(),
-  taxCategory: z.string().optional(),
-  vatAmount: z.number().optional(),
-  vatRate: z.number().optional(),
-
-  // Additional financial flags
-  excludeFromBudget: z.boolean().optional(),
-  reimbursable: z.boolean().optional(),
-  plannedExpense: z.boolean().optional(),
-  discretionary: z.boolean().optional(),
-
-  // Business information
-  businessPurpose: z.string().optional(),
-  costCenter: z.string().optional(),
-  projectCode: z.string().optional(),
-  cashFlowCategory: z.string().optional(),
-  cashFlowType: z.string().optional(),
-});
+import { updateBatchTransactionsSchema } from '../schema';
 
 export const updateBatchTransactionsHandler = protectedProcedure
-  .input(
-    z.object({
-      transactions: z.array(
-        z.object({
-          id: z.string(),
-          data: transactionSchema.partial(),
-        })
-      ),
-    })
-  )
+  .input(updateBatchTransactionsSchema)
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session?.userId;
-    if (!userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
+    const userId = ctx.session?.userId as string;
 
     const results = await Promise.all(
       input.transactions.map(async (txInput) => {
@@ -68,11 +15,11 @@ export const updateBatchTransactionsHandler = protectedProcedure
             where: { id: txInput.id },
           });
 
-          if (!existingTransaction || existingTransaction.userId !== userId) {
+          if (!existingTransaction) {
             return {
               id: txInput.id,
               success: false,
-              error: 'Transaction not found or not owned by user',
+              error: 'Transaction not found',
             };
           }
 

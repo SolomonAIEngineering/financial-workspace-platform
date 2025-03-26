@@ -1,23 +1,15 @@
-import { prisma } from '@solomonai/prisma';
 import { TRPCError } from '@trpc/server';
+import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
-import { transactionSchema } from '../schema';
-import { z } from 'zod';
+import { updateTransactionSchema } from '../schema';
 
 export const updateTransactionHandler = protectedProcedure
-  .input(
-    z.object({
-      id: z.string(),
-      data: transactionSchema.partial(),
-    })
-  )
+  .input(updateTransactionSchema)
   .mutation(async ({ ctx, input }) => {
-    const { id, data } = input;
-
     try {
       // Check if transaction exists and belongs to user
       const existingTransaction = await prisma.transaction.findUnique({
-        where: { id },
+        where: { id: input.id },
         select: {
           id: true,
           userId: true,
@@ -43,11 +35,11 @@ export const updateTransactionHandler = protectedProcedure
       return await prisma.$transaction(async (tx) => {
         try {
           const updatedTransaction = await tx.transaction.update({
-            where: { id },
+            where: { id: input.id },
             data: {
-              ...data,
-              isModified: true,
-              lastModifiedAt: now,
+              ...Object.fromEntries(
+                Object.entries(input).filter(([_, value]) => value !== null)
+              ),
             },
           });
 
@@ -73,10 +65,10 @@ export const updateTransactionHandler = protectedProcedure
         throw error;
       }
 
-      console.error(`[updateTransaction] Unexpected error for ${id}:`, {
+      console.error(`[updateTransaction] Unexpected error for ${input.id}:`, {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
-        data: Object.keys(data),
+        data: Object.keys(input),
       });
 
       throw new TRPCError({

@@ -1,81 +1,34 @@
-import { Prisma, prisma } from '@solomonai/prisma';
+import { batchResultSchema, createBatchTransactionsSchema } from '../schema';
 
 import { TRPCError } from '@trpc/server';
-import { TransactionCategory } from '@solomonai/prisma/client';
+import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
 
-// Define schemas for the batch transaction handler
-
-// Transaction input schema
-const transactionSchema = z.object({
-  bankAccountId: z.string(),
-  amount: z.number(),
-  date: z.string().datetime(),
-  name: z.string(),
-  merchantName: z.string().optional(),
-  description: z.string().optional(),
-  pending: z.boolean().default(false),
-  category: z.nativeEnum(TransactionCategory).optional(),
-  paymentMethod: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-
-  // Tax & Financial Information
-  taxDeductible: z.boolean().optional(),
-  taxExempt: z.boolean().optional(),
-  taxAmount: z.number().optional(),
-  taxRate: z.number().optional(),
-  taxCategory: z.string().optional(),
-  vatAmount: z.number().optional(),
-  vatRate: z.number().optional(),
-
-  // Additional financial flags
-  excludeFromBudget: z.boolean().optional(),
-  reimbursable: z.boolean().optional(),
-  plannedExpense: z.boolean().optional(),
-  discretionary: z.boolean().optional(),
-
-  // Business information
-  businessPurpose: z.string().optional(),
-  costCenter: z.string().optional(),
-  projectCode: z.string().optional(),
-  cashFlowCategory: z.string().optional(),
-  cashFlowType: z.string().optional(),
-});
-
-// Failed batch information schema
-const failedBatchSchema = z.object({
-  batchIndex: z.number(),
-  startIndex: z.number(),
-  endIndex: z.number(),
-  error: z.string()
-});
-
-// Result schema with detailed status information
-const batchResultSchema = z.object({
-  transactions: z.array(z.any()),  // Using any since we don't know the exact Prisma return type
-  status: z.enum(['SUCCESS', 'PARTIAL_SUCCESS']),
-  totalProcessed: z.number(),
-  totalRequested: z.number(),
-  failedBatches: z.array(failedBatchSchema).optional()
-});
-
+/**
+ * Creates multiple transactions in batches to optimize database performance.
+ * This handler verifies that all specified bank accounts belong to the authenticated user
+ * before creating transactions in configurable batch sizes.
+ *
+ * @param ctx - The context object containing the user's session information
+ * @param input - The input object containing:
+ *   - transactions: Array of transaction objects conforming to the transactionSchema
+ *   - batchSize: Optional number of transactions to process in each batch (default: 50)
+ * @returns A batch result object containing:
+ *   - transactions: Array of successfully created transaction entities
+ *   - status: Overall status ('SUCCESS' or 'PARTIAL_SUCCESS')
+ *   - totalProcessed: Number of transactions successfully created
+ *   - totalRequested: Total number of transactions requested for creation
+ *   - failedBatches: Array of objects describing failed batches (if any)
+ * @throws {TRPCError} With code 'UNAUTHORIZED' if the user is not authenticated
+ * @throws {TRPCError} With code 'BAD_REQUEST' if any bank accounts don't exist or don't belong to the user
+ * @throws {TRPCError} With code 'INTERNAL_SERVER_ERROR' if all transaction batches fail to process
+ */
 export const createBatchTransactionsHandler = protectedProcedure
-  .input(
-    z.object({
-      transactions: z.array(transactionSchema),
-      batchSize: z.number().int().positive().default(50).optional(),
-    })
-  )
+  .input(createBatchTransactionsSchema)
   .output(batchResultSchema)
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session?.userId;
-    if (!userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
+    // since this is a protected procedure, we can safely assume the user is authenticated
+    const userId = ctx.session?.userId as string;
 
     // Get all unique bank account IDs from input
     const bankAccountIds = [

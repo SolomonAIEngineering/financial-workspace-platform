@@ -1,30 +1,19 @@
 import { TRPCError } from '@trpc/server';
 import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
+import { removeTagSchema } from '../schema';
 
 export const removeTagHandler = protectedProcedure
-  .input(
-    z.object({
-      id: z.string(),
-      tag: z.string(),
-    })
-  )
+  .input(removeTagSchema)
   .mutation(async ({ ctx, input }) => {
     const userId = ctx.session?.userId;
-    if (!userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
 
     // Check if transaction exists and belongs to user
     const existingTransaction = await prisma.transaction.findUnique({
-      where: { id: input.id },
+      where: { id: input.id, userId: userId },
     });
 
-    if (!existingTransaction || existingTransaction.userId !== userId) {
+    if (!existingTransaction) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found',

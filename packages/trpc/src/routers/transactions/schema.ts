@@ -1,5 +1,6 @@
-import { z } from 'zod';
 import { TransactionCategory } from '@solomonai/prisma/client';
+import { TransactionSchema as TxSchema } from '@solomonai/prisma/generated/zod';
+import { z } from 'zod';
 
 // Transaction filter schema
 export const transactionFilterSchema = z.object({
@@ -53,7 +54,7 @@ export const transactionSchema = z.object({
   cashFlowType: z.string().optional(),
 });
 
-// Batch transaction schema
+
 export const batchTransactionSchema = z.object({
   transactions: z.array(transactionSchema),
 });
@@ -125,9 +126,9 @@ export const manualCategorizationSchema = z.object({
 
 // Bulk update tags schema
 export const bulkUpdateTagsSchema = z.object({
-  transactionIds: z.array(z.string()),
-  tags: z.array(z.string()),
-  operation: z.enum(['add', 'remove', 'replace']),
+  transactionIds: z.array(z.string()).min(1).max(50),
+  tags: z.array(z.string().min(1).max(10)),
+  operation: z.enum(['add', 'remove', 'replace']).default('replace'),
 });
 
 // Bulk update assigned to schema
@@ -178,6 +179,7 @@ export const searchTransactionsSchema = z.object({
   categories: z.array(z.nativeEnum(TransactionCategory)).optional(),
   bankAccountIds: z.array(z.string()).optional(),
   limit: z.number().min(1).max(100).default(20),
+  page: z.number().min(1).default(1),
 });
 
 // Add/Remove tag schema
@@ -232,6 +234,10 @@ export const deleteBatchTransactionsSchema = z.object({
   ids: z.array(z.string()),
 });
 
+export const deleteTransactionSchema = z.object({
+  id: z.string(),
+});
+
 // Update batch transactions schema
 export const updateBatchTransactionsSchema = z.object({
   transactions: z.array(
@@ -239,10 +245,93 @@ export const updateBatchTransactionsSchema = z.object({
       id: z.string(),
       data: transactionSchema.partial(),
     })
-  ),
+  ).min(1).max(10),
 });
 
 // Get associated transactions schema
 export const getAssociatedTransactionsSchema = z.object({
+  id: z.string(),
+});
+
+export const createBatchTransactionsSchema = z.object({
+  transactions: z.array(transactionSchema),
+  batchSize: z.number().int().positive().default(50).optional(),
+});
+
+// Failed batch information schema
+export const failedBatchSchema = z.object({
+  batchIndex: z.number(),
+  startIndex: z.number(),
+  endIndex: z.number(),
+  error: z.string()
+});
+
+// Result schema with detailed status information
+export const batchResultSchema = z.object({
+  transactions: z.array(z.any()),  // Using any since we don't know the exact Prisma return type
+  status: z.enum(['SUCCESS', 'PARTIAL_SUCCESS']),
+  totalProcessed: z.number(),
+  totalRequested: z.number(),
+  failedBatches: z.array(failedBatchSchema).optional()
+});
+
+export const getTransactionSchema = z.object({
+  id: z.string(),
+});
+
+export const removeTagSchema = z.object({
+  id: z.string(),
+  tag: z.string(),
+});
+
+export const listTransactionAttachmentsSchema = z.object({
+  transactionId: z.string(),
+});
+
+export const deleteTransactionAttachmentSchema = z.object({
+  id: z.string(),
+});
+
+export const updateTransactionAttachmentSchema = z.object({
+  id: z.string(),
+  transactionId: z.string(),
+  name: z.string().optional(),
+  type: z.string().optional(),
+  path: z.array(z.string()).optional(),
+});
+
+export const updateTransactionSchema = TxSchema.partial()
+
+// Category update schema
+export const categoryUpdateSchema = z.object({
+  id: z.string(),
+  category: z.nativeEnum(TransactionCategory),
+  subCategory: z.string().optional(),
+  customCategory: z.string().optional(),
+});
+
+// Bulk categorization schema
+export const bulkCategorizationSchema = z.object({
+  transactionIds: z.array(z.string()),
+  category: z.nativeEnum(TransactionCategory),
+  subCategory: z.string().optional(),
+  customCategory: z.string().optional(),
+});
+
+export const getTransactionsByCategorySchema = z.object({
+  category: z.nativeEnum(TransactionCategory),
+  page: z.number().int().positive().default(1),
+  limit: z.number().int().positive().default(20),
+});
+
+// Assign transaction schema (deprecated)
+export const assignTransactionSchema = z.object({
+  id: z.string(),
+  assignedToUserId: z.string(),
+  notifyUser: z.boolean().default(false),
+});
+
+// Complete transaction schema
+export const completeTransactionSchema = z.object({
   id: z.string(),
 });

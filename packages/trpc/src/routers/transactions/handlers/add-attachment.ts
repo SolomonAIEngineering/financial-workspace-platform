@@ -1,55 +1,54 @@
-import { TRPCError } from '@trpc/server';
 import { Prisma, prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
 
+import { TRPCError } from '@trpc/server';
+import { addAttachmentSchema } from '../schema';
+import { protectedProcedure } from '../../../middlewares/procedures';
+
+/**
+ * Adds an attachment to a transaction by creating a new TransactionAttachment record.
+ * This handler verifies that the user is authenticated and that the transaction belongs to the user
+ * before creating the attachment.
+ *
+ * @param ctx - The context object containing the user's session information
+ * @param input - The input object containing:
+ *   - id: The ID of the transaction to attach the file to
+ *   - fileName: The name of the file being attached
+ *   - fileType: The MIME type of the file
+ *   - fileSize: The size of the file in bytes
+ *   - fileUrl: The URL where the file is stored
+ * @returns The newly created TransactionAttachment entity with all its properties
+ * @throws {TRPCError} With code 'UNAUTHORIZED' if the user is not authenticated
+ * @throws {TRPCError} With code 'NOT_FOUND' if the transaction doesn't exist or doesn't belong to the user
+ */
 export const addAttachmentHandler = protectedProcedure
-  .input(
-    z.object({
-      id: z.string(),
-      fileName: z.string(),
-      fileType: z.string(),
-      fileSize: z.number(),
-      fileUrl: z.string(),
-      description: z.string().optional(),
-      isReceipt: z.boolean().default(false),
-    })
-  )
+  .input(addAttachmentSchema)
   .mutation(async ({ ctx, input }) => {
     const userId = ctx.session?.userId;
-    if (!userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
 
     // Check if transaction exists and belongs to user
     const existingTransaction = await prisma.transaction.findUnique({
-      where: { id: input.id },
+      where: { id: input.id, userId: userId },
     });
 
     if (!existingTransaction || existingTransaction.userId !== userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
-        message: 'Transaction not found',
+        message: 'Transaction not found or does not belong to user',
       });
     }
 
-    // Create attachment
+    // Create and attach the transaction attachment
     const attachment = await prisma.transactionAttachment.create({
       data: {
-        transactionId: input.id,
+        transaction: {
+          connect: { id: input.id },
+        },
         name: input.fileName,
         type: input.fileType,
         size: input.fileSize,
-        path: [input.fileUrl], // path is a string array in the schema
-        // No direct field for description or isReceipt in the schema
+        path: [input.fileUrl],
       },
     });
-
-    // Update transaction relation - no need to set hasAttachments field as it's not in the schema
-    // The relation is automatically handled by Prisma through the transactionId field
 
     return attachment;
   });

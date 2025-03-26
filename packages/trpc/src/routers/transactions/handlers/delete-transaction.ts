@@ -1,29 +1,76 @@
 import { TRPCError } from '@trpc/server';
+import { deleteFiles } from "@solomonai/lib/clients"
+import { deleteTransactionSchema } from '../schema';
 import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
 import { z } from 'zod';
 
 export const deleteTransactionHandler = protectedProcedure
-  .input(z.object({ id: z.string() }))
+  .input(deleteTransactionSchema)
   .mutation(async ({ ctx, input }) => {
-    // Check if transaction exists and belongs to user
-    const existingTransaction = await prisma.transaction.findUnique({
-      where: { id: input.id },
-    });
+    const userId = ctx.session?.userId as string;
 
-    if (!existingTransaction || existingTransaction.userId !== ctx.session?.userId) {
+    try {
+      return await prisma.$transaction(async (tx) => {
+        // Check if transaction exists and belongs to user
+        const existingTransaction = await tx.transaction.findUnique({
+          where: { id: input.id, userId: userId },
+          include: {
+            attachments: {
+              select: {
+                id: true,
+                fileUrl: true,
+              },
+            },
+          },
+        });
+
+        if (!existingTransaction) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Transaction not found',
+          });
+        }
+
+        // Delete files from UploadThing if there are any attachments
+        if (existingTransaction.attachments.length > 0) {
+          const fileUrls = existingTransaction.attachments
+            .map(attachment => attachment.fileUrl)
+            .filter(Boolean);
+
+          if (fileUrls.length > 0) {
+            try {
+              await deleteFiles(fileUrls);
+            } catch (error) {
+              console.error('Error deleting files from UploadThing:', error);
+              // Continue with transaction deletion even if file deletion fails
+            }
+          }
+
+          // Delete all attachments
+          await tx.attachment.deleteMany({
+            where: {
+              transactionId: input.id,
+            },
+          });
+        }
+
+        // Delete the transaction
+        await tx.transaction.delete({
+          where: { id: input.id, userId: userId },
+        });
+
+        return {
+          success: true,
+          message: 'Transaction and associated files deleted successfully',
+        };
+      });
+    } catch (error) {
+      console.error('Error in deleteTransactionHandler:', error);
       throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: 'Transaction not found',
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to delete transaction',
+        cause: error,
       });
     }
-
-    // TODO: if the transaction has attachments, we need to delete them first
-
-    // Delete transaction
-    await prisma.transaction.delete({
-      where: { id: input.id },
-    });
-
-    return { success: true };
   });

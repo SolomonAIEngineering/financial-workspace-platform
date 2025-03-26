@@ -1,33 +1,20 @@
 import { TRPCError } from '@trpc/server';
 import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
+import { updatePaymentMethodSchema } from '../schema';
 import { z } from 'zod';
 
 export const updatePaymentMethodHandler = protectedProcedure
-  .input(
-    z.object({
-      id: z.string(),
-      paymentMethod: z.string(),
-      paymentProcessor: z.string().optional(),
-      cardType: z.string().optional(),
-      cardLastFour: z.string().optional(),
-    })
-  )
+  .input(updatePaymentMethodSchema)
   .mutation(async ({ ctx, input }) => {
     const userId = ctx.session?.userId;
-    if (!userId) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'User not authenticated',
-      });
-    }
 
     // Check if transaction exists and belongs to user
     const existingTransaction = await prisma.transaction.findUnique({
-      where: { id: input.id },
+      where: { id: input.id, userId: userId },
     });
 
-    if (!existingTransaction || existingTransaction.userId !== userId) {
+    if (!existingTransaction) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found',
@@ -40,10 +27,18 @@ export const updatePaymentMethodHandler = protectedProcedure
       data: {
         paymentMethod: input.paymentMethod,
         paymentProcessor: input.paymentProcessor,
+        paymentChannel: input.paymentChannel,
         cardType: input.cardType,
         cardLastFour: input.cardLastFour,
       },
     });
+
+    if (!updatedTransaction) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to update transaction payment method',
+      });
+    }
 
     return updatedTransaction;
   });

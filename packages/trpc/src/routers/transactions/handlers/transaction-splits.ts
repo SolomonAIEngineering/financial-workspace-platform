@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server';
-import { Prisma, prisma } from '@solomonai/prisma';
+import { TransactionCategory } from '@solomonai/prisma/client';
+import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
 import { z } from 'zod';
-import { TransactionCategory, TransactionFrequency } from '@solomonai/prisma/client';
 
 // Split transaction part schema
 const splitTransactionPartSchema = z.object({
@@ -79,14 +79,14 @@ export const splitTransactionHandler = protectedProcedure
               userId,
               bankAccountId: originalTransaction.bankAccountId,
               teamId: originalTransaction.teamId,
-              
+
               // Base transaction details
               amount: part.amount,
               date: originalTransaction.date,
               name: `${originalTransaction.name} (Split ${index + 1})`,
               merchantName: originalTransaction.merchantName,
               isoCurrencyCode: originalTransaction.isoCurrencyCode,
-              
+
               // Split-specific categorization
               description: part.description || originalTransaction.description,
               category: part.category || originalTransaction.category,
@@ -94,12 +94,12 @@ export const splitTransactionHandler = protectedProcedure
               customCategory: part.customCategory || originalTransaction.customCategory,
               categoryIconUrl: originalTransaction.categoryIconUrl,
               categorySlug: originalTransaction.categorySlug,
-              
+
               // Merchant information
               merchantId: originalTransaction.merchantId,
               merchantLogoUrl: originalTransaction.merchantLogoUrl,
               merchantCategory: originalTransaction.merchantCategory,
-              
+
               // Payment details
               paymentChannel: originalTransaction.paymentChannel,
               paymentMethod: originalTransaction.paymentMethod,
@@ -107,20 +107,20 @@ export const splitTransactionHandler = protectedProcedure
               transactionType: originalTransaction.transactionType,
               transactionMethod: originalTransaction.transactionMethod,
               pending: originalTransaction.pending,
-              
+
               // Categorization for financial planning
               cashFlowCategory: part.cashFlowCategory || originalTransaction.cashFlowCategory,
               cashFlowType: part.cashFlowType || originalTransaction.cashFlowType,
               budgetCategory: part.budgetCategory || originalTransaction.budgetCategory,
               businessPurpose: part.businessPurpose || originalTransaction.businessPurpose,
-              
+
               // Tags and notes
               tags: part.tags || originalTransaction.tags,
               notes: part.notes || originalTransaction.notes,
-              
+
               // Split relationship
               parentTransactionId: input.transactionId,
-              
+
               // Metadata
               isModified: true,
               isManual: false,
