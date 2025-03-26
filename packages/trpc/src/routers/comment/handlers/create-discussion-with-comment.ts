@@ -1,10 +1,11 @@
+import { MAX_COMMENT_LENGTH, createDiscussionWithCommentSchema } from '../schema';
+
 import { NodeApi } from '@udecode/plate';
 import { TRPCError } from '@trpc/server';
 import { nid } from '@solomonai/lib/utils/nid';
 import { prisma } from '@solomonai/prisma';
 import { protectedProcedure } from '../../../middlewares/procedures';
 import { ratelimitMiddleware } from '../../../middlewares/ratelimitMiddleware';
-import { createDiscussionWithCommentSchema, MAX_COMMENT_LENGTH } from '../schema';
 
 /**
  * Protected procedure to create a discussion and first comment in one operation.

@@ -60,9 +60,9 @@ export type CreateDiscussionWithCommentInput = z.infer<typeof createDiscussionWi
 /**
  * Schema for deleting a comment
  */
-export const deleteCommentSchema = z.object({ 
-  id: z.string(), 
-  discussionId: z.string() 
+export const deleteCommentSchema = z.object({
+  id: z.string(),
+  discussionId: z.string()
 });
 
 /**
@@ -73,8 +73,8 @@ export type DeleteCommentInput = z.infer<typeof deleteCommentSchema>;
 /**
  * Schema for removing a discussion
  */
-export const removeDiscussionSchema = z.object({ 
-  id: z.string() 
+export const removeDiscussionSchema = z.object({
+  id: z.string()
 });
 
 /**
@@ -85,8 +85,8 @@ export type RemoveDiscussionInput = z.infer<typeof removeDiscussionSchema>;
 /**
  * Schema for resolving a discussion
  */
-export const resolveDiscussionSchema = z.object({ 
-  id: z.string() 
+export const resolveDiscussionSchema = z.object({
+  id: z.string()
 });
 
 /**
@@ -112,11 +112,24 @@ export type UpdateCommentInput = z.infer<typeof updateCommentSchema>;
 /**
  * Schema for fetching discussions
  */
-export const discussionsSchema = z.object({ 
-  documentId: z.string() 
+export const discussionsSchema = z.object({
+  documentId: z.string()
 });
 
 /**
  * Type for fetching discussions
  */
 export type DiscussionsInput = z.infer<typeof discussionsSchema>;
+
+export const getCommentSchema = z.object({
+  id: z.string(),
+});
+
+export type GetCommentInput = z.infer<typeof getCommentSchema>;
+
+export const getCommentsByDiscussionSchema = z.object({
+  discussionId: z.string(),
+});
+
+export type GetCommentsByDiscussionInput = z.infer<typeof getCommentsByDiscussionSchema>;
+

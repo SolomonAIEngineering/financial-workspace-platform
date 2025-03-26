@@ -5,25 +5,19 @@
  * within the platform.
  */
 
+import { create } from './handlers/create';
+import { deleteComment } from './handlers/delete';
+import { get } from './handlers/get';
+import { getByDiscussion } from './handlers/get-by-discussion';
 // Import all handlers
-import { createRouter } from '../../trpc';
-import { createComment } from './handlers/create-comment';
-import { createDiscussion } from './handlers/create-discussion';
-import { createDiscussionWithComment } from './handlers/create-discussion-with-comment';
-import { deleteComment } from './handlers/delete-comment';
-import { discussions } from './handlers/discussions';
-import { removeDiscussion } from './handlers/remove-discussion';
-import { resolveDiscussion } from './handlers/resolve-discussion';
-import { updateComment } from './handlers/update-comment';
+import { router } from '../../trpc';
+import { update } from './handlers/update';
 
 // Create and export the comment router
-export const commentRouter = createRouter({
-  createComment,
-  createDiscussion,
-  createDiscussionWithComment,
-  deleteComment,
-  discussions,
-  removeDiscussion,
-  resolveDiscussion,
-  updateComment,
+export const commentRouter = router({
+  create,
+  update,
+  delete: deleteComment,
+  get,
+  getByDiscussion,
 });
