@@ -30,7 +30,10 @@
     "actions:run": "act -W .github/workflows/deploy-web.yml --secret-file .secrets --container-architecture linux/amd64",
     "actions:trigger-staging:list": "act -W .github/workflows/release-trigger-staging.yml --list",
     "actions:trigger-staging:dry-run": "act -W .github/workflows/release-trigger-staging.yml --secret-file .secrets --container-architecture linux/amd64 --dryrun",
-    "actions:trigger-staging:run": "act -W .github/workflows/release-trigger-staging.yml --secret-file .secrets --container-architecture linux/amd64"
+    "actions:trigger-staging:run": "act -W .github/workflows/release-trigger-staging.yml --secret-file .secrets --container-architecture linux/amd64",
+    "up": "docker compose -f ./deployment/docker-compose.yaml up",
+    "migrate": "pnpm turbo run migrate",
+    "bump-versions": "pnpm changeset version && pnpm install"
   },
   "devDependencies": {
     "@changesets/cli": "^2.28.1",
