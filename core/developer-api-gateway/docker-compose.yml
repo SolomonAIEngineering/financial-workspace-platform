@@ -1,23 +1,164 @@
-version: '3.8'
+name: unkey
 
 services:
-  db:
+  mysql:
+    container_name: mysql
     image: mysql:8.0
-    container_name: planetscale_test_db
+    restart: always
     environment:
-      MYSQL_USER: ${DATABASE_USERNAME:-unkey}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-password}
-      MYSQL_DATABASE: unkey_test
-      MYSQL_ROOT_PASSWORD: rootpassword  # This must be set for MySQL to start properly
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: unkey
+      MYSQL_USER: unkey
+      MYSQL_PASSWORD: password
+    command: ["--max_connections=1000"]
     ports:
-      - "${DATABASE_PORT:-3306}:3306"
+      - 3306:3306
     volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "--silent"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - mysql:/var/lib/mysql
+  planetscale:
+    container_name: planetscale
+    image: ghcr.io/mattrobenolt/ps-http-sim:latest
+    command:
+      [
+        "-listen-port=3900",
+        "-mysql-dbname=unkey",
+        "-mysql-addr=mysql",
+        "-mysql-max-rows=100000",
+        "-mysql-idle-timeout=1s",
+      ]
+    depends_on:
+      - mysql
+    ports:
+      - 3900:3900
+  apiv2_lb:
+    container_name: apiv2_lb
+    image: nginx:latest
+    volumes:
+      - ./nginx.apiv2.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - apiv2
+    ports:
+      - 7070:7070
+
+  apiv2:
+    deploy:
+      replicas: 3
+      endpoint_mode: vip
+    command: ["api"]
+    build:
+      context: ../api-key-service
+      dockerfile: ./Dockerfile
+    depends_on:
+      - mysql
+      - redis
+      - clickhouse
+      - otel
+    environment:
+      UNKEY_HTTP_PORT: 7070
+      UNKEY_CLUSTER: true
+      UNKEY_CLUSTER_GOSSIP_PORT: 9090
+      UNKEY_CLUSTER_RPC_PORT: 9091
+      # UNKEY_CLUSTER_ADVERTISE_ADDR_STATIC: "${HOSTNAME}"
+      UNKEY_CLUSTER_DISCOVERY_REDIS_URL: "redis://redis:6379"
+      UNKEY_DATABASE_PRIMARY_DSN: "mysql://unkey:password@tcp(mysql:3900)/unkey?parseTime=true"
+      UNKEY_CLICKHOUSE_URL: "clickhouse://default:password@clickhouse:9000"
+      UNKEY_OTEL: true
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel:4318"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf"      
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+  chproxy:
+    build:
+      context: ../chproxy
+      dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+    depends_on:
+      - clickhouse
+    environment:
+      PORT: 7123
+      CLICKHOUSE_URL: http://default:password@clickhouse:8123
+      BASIC_AUTH: proxy:password
+    ports:
+      - "7123:7123"
+  clickhouse:
+    image: bitnami/clickhouse:latest
+    container_name: clickhouse
+    environment:
+      CLICKHOUSE_ADMIN_USER: default
+      CLICKHOUSE_ADMIN_PASSWORD: password
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse:/bitnami/clickhouse
+
+  clickhouse_migrator:
+    build:
+      context: ../../packages/clickhouse
+      dockerfile: ./Dockerfile
+    depends_on:
+      - clickhouse
+
+  s3:
+    container_name: s3
+    image: bitnami/minio:latest
+    ports:
+      - 3902:3902
+      - 2903:2903
+    environment:
+      MINIO_ROOT_USER: minio_root_user
+      MINIO_ROOT_PASSWORD: minio_root_password
+      MINIO_API_PORT_NUMBER: 3902
+      MINIO_CONSOLE_PORT_NUMBER: 3903
+    volumes:
+      - s3:/data
+
+  api:
+    build:
+      context: ../..
+      dockerfile: ./core/developer-api-gateway/Dockerfile.dev
+    ports:
+      - 8787:8787
+    command:
+      [
+        "pnpm",
+        "wrangler",
+        "dev",
+        "--ip=0.0.0.0",
+        "--var=VERSION:1",
+        "--var=DATABASE_HOST:planetscale:3900",
+        "--var=DATABASE_USERNAME:unkey",
+        "--var=DATABASE_PASSWORD:password",
+        "--var=AGENT_URL:http://agent:8080",
+        "--var=AGENT_TOKEN:agent-auth-secret",
+        "--var=EMIT_METRICS_LOGS:false",
+        "--var=SYNC_RATELIMIT_ON_NO_DATA:1.0",
+        "--var=CLICKHOUSE_URL:http://default:password@clickhouse:8123",
+        "--var=CLICKHOUSE_INSERT_URL:http://proxy:password@chproxy:7123",
+      ]
+
+    depends_on:
+      - planetscale
+      - clickhouse
+      - chproxy
+
+  otel:
+    image: grafana/otel-lgtm:latest
+    container_name: otel
+    ports:
+      - 3000:3000
+      - 4317:4317
+      - 4318:4318
 
 volumes:
-  mysql_data:
+  mysql:
+  clickhouse:
+  clickhouse-keeper:
+  s3:

@@ -24,7 +24,7 @@ RUN pnpm install
 
 # Build the project and its dependencies
 COPY --from=builder /unkey/out/full/ .
-COPY turbo.json turbo.json
+COPY ../../turbo.json turbo.json
 
 RUN pnpm turbo build --filter=api...
 
