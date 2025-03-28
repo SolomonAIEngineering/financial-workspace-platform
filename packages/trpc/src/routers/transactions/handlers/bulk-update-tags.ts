@@ -1,9 +1,8 @@
-import { Prisma, prisma } from '@solomonai/prisma';
+import { Prisma, prisma } from '@solomonai/prisma'
 
-import { TRPCError } from '@trpc/server';
-import { bulkUpdateTagsSchema } from '../schema';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
+import { TRPCError } from '@trpc/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { bulkUpdateTagsSchema } from '../schema'
 
 /**
  * Updates tags for multiple transactions in bulk.
@@ -28,9 +27,9 @@ import { z } from 'zod';
 export const bulkUpdateTagsHandler = protectedProcedure
   .input(bulkUpdateTagsSchema)
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session?.userId;
+    const userId = ctx.session?.userId
 
-    const { transactionIds, tags, operation } = input;
+    const { transactionIds, tags, operation } = input
 
     // Verify all transactions exist and belong to the user
     const transactions = await prisma.transaction.findMany({
@@ -38,17 +37,17 @@ export const bulkUpdateTagsHandler = protectedProcedure
         id: { in: transactionIds },
         userId,
       },
-    });
+    })
 
     if (transactions.length !== transactionIds.length) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
         message: 'One or more transactions not found or not owned by user',
-      });
+      })
     }
 
     // Execute all operations in a transaction for atomicity
-    const now = new Date();
+    const now = new Date()
 
     return await prisma.$transaction(async (tx) => {
       // First, get all current transactions with their tags
@@ -60,11 +59,11 @@ export const bulkUpdateTagsHandler = protectedProcedure
           id: true,
           tags: true,
         },
-      });
+      })
 
-      const existingIds = currentTransactions.map((tx) => tx.id);
+      const existingIds = currentTransactions.map((tx) => tx.id)
 
-      let updateResult: Prisma.BatchPayload | undefined;
+      let updateResult: Prisma.BatchPayload | undefined
 
       if (operation === 'add') {
         updateResult = await tx.transaction.updateMany({
@@ -77,7 +76,7 @@ export const bulkUpdateTagsHandler = protectedProcedure
             },
             lastModifiedAt: now,
           },
-        });
+        })
       }
 
       if (operation === 'replace') {
@@ -91,7 +90,7 @@ export const bulkUpdateTagsHandler = protectedProcedure
             },
             lastModifiedAt: now,
           },
-        });
+        })
       }
 
       if (operation === 'remove') {
@@ -102,21 +101,23 @@ export const bulkUpdateTagsHandler = protectedProcedure
             id: true,
             tags: true,
           },
-        });
+        })
 
         // Update each transaction with filtered tags
-        const updatePromises = transactionsWithTags.map(transaction =>
+        const updatePromises = transactionsWithTags.map((transaction) =>
           tx.transaction.update({
             where: { id: transaction.id },
             data: {
-              tags: (transaction.tags || []).filter(tag => !tags.includes(tag)),
+              tags: (transaction.tags || []).filter(
+                (tag) => !tags.includes(tag),
+              ),
               lastModifiedAt: now,
             },
-          })
-        );
+          }),
+        )
 
-        const results = await Promise.all(updatePromises);
-        updateResult = { count: results.length };
+        const results = await Promise.all(updatePromises)
+        updateResult = { count: results.length }
       }
 
       // Get the updated transactions for the response
@@ -129,13 +130,13 @@ export const bulkUpdateTagsHandler = protectedProcedure
           date: true,
           tags: true,
         },
-      });
+      })
 
       return {
         success: true,
         count: updateResult?.count ?? 0,
         updatedTransactions,
         timestamp: now,
-      };
-    });
-  });
+      }
+    })
+  })

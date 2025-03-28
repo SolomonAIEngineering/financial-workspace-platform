@@ -1,14 +1,14 @@
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { searchSchema } from '../schema';
+import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { searchSchema } from '../schema'
 
 /**
  * Protected procedure to search for documents.
- * 
+ *
  * This procedure:
  * 1. Verifies the user is authenticated via the protected procedure middleware
  * 2. Searches for non-archived documents with titles containing the search query
- * 
+ *
  * @input {SearchInput} - Search query string
  * @returns Object containing the matching documents array
  */
@@ -28,9 +28,9 @@ export const search = protectedProcedure
         },
         userId: ctx.session?.userId,
       },
-    });
+    })
 
     return {
       documents,
-    };
-  });
+    }
+  })

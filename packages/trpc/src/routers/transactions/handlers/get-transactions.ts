@@ -1,63 +1,63 @@
-import { Prisma, prisma } from '@solomonai/prisma';
+import { Prisma, prisma } from '@solomonai/prisma'
 
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { transactionFilterSchema } from '../schema';
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { transactionFilterSchema } from '../schema'
 
 export const getTransactionsHandler = protectedProcedure
   .input(transactionFilterSchema)
   .query(async ({ ctx, input }) => {
-    const { page, limit, ...filters } = input;
-    const skip = (page - 1) * limit;
+    const { page, limit, ...filters } = input
+    const skip = (page - 1) * limit
 
     // Build filter conditions
     const where: Prisma.TransactionWhereInput = {
       userId: ctx.session?.userId,
-    };
+    }
 
     if (filters.merchant) {
       where.merchantName = {
         contains: filters.merchant,
         mode: 'insensitive',
-      };
+      }
     }
 
     if (filters.category) {
-      where.category = filters.category;
+      where.category = filters.category
     }
 
     if (filters.tags && filters.tags.length > 0) {
-      where.tags = { hasEvery: filters.tags };
+      where.tags = { hasEvery: filters.tags }
     }
 
     if (filters.method) {
-      where.paymentMethod = { contains: filters.method, mode: 'insensitive' };
+      where.paymentMethod = { contains: filters.method, mode: 'insensitive' }
     }
 
     if (filters.assignedTo) {
-      where.assigneeId = filters.assignedTo;
+      where.assigneeId = filters.assignedTo
     }
 
     if (filters.status) {
-      where.status = filters.status;
+      where.status = filters.status
     }
 
     if (filters.dateFrom || filters.dateTo) {
-      where.date = {};
+      where.date = {}
       if (filters.dateFrom) {
-        where.date.gte = new Date(filters.dateFrom);
+        where.date.gte = new Date(filters.dateFrom)
       }
       if (filters.dateTo) {
-        where.date.lte = new Date(filters.dateTo);
+        where.date.lte = new Date(filters.dateTo)
       }
     }
 
     if (filters.minAmount !== undefined || filters.maxAmount !== undefined) {
-      where.amount = {};
+      where.amount = {}
       if (filters.minAmount !== undefined) {
-        where.amount.gte = filters.minAmount;
+        where.amount.gte = filters.minAmount
       }
       if (filters.maxAmount !== undefined) {
-        where.amount.lte = filters.maxAmount;
+        where.amount.lte = filters.maxAmount
       }
     }
 
@@ -103,10 +103,10 @@ export const getTransactionsHandler = protectedProcedure
           },
         },
       },
-    });
+    })
 
     // Get total count for pagination
-    const totalCount = await prisma.transaction.count({ where });
+    const totalCount = await prisma.transaction.count({ where })
 
     return {
       transactions,
@@ -116,5 +116,5 @@ export const getTransactionsHandler = protectedProcedure
         limit,
         pages: Math.ceil(totalCount / limit),
       },
-    };
-  });
+    }
+  })

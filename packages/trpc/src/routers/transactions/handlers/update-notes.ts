@@ -1,7 +1,7 @@
-import { TRPCError } from '@trpc/server';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { updateNotesSchema } from '../schema';
+import { prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { updateNotesSchema } from '../schema'
 
 /**
  * Updates the notes for a transaction.
@@ -16,61 +16,61 @@ import { updateNotesSchema } from '../schema';
  * @throws {TRPCError} With code 'NOT_FOUND' if the transaction doesn't exist or doesn't belong to the user
  */
 export const updateNotesHandler = protectedProcedure
-    .input(updateNotesSchema)
-    .mutation(async ({ ctx, input }) => {
-        try {
-            // Check if transaction exists and belongs to user
-            const existingTransaction = await prisma.transaction.findUnique({
-                where: { id: input.id, userId: ctx.session?.userId },
-                select: {
-                    id: true,
-                    userId: true,
-                },
-            });
+  .input(updateNotesSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      // Check if transaction exists and belongs to user
+      const existingTransaction = await prisma.transaction.findUnique({
+        where: { id: input.id, userId: ctx.session?.userId },
+        select: {
+          id: true,
+          userId: true,
+        },
+      })
 
-            if (!existingTransaction) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'Transaction not found',
-                });
-            }
+      if (!existingTransaction) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Transaction not found',
+        })
+      }
 
-            // Update transaction with new notes
-            const now = new Date();
-            const updatedTransaction = await prisma.transaction.update({
-                where: { id: input.id },
-                data: {
-                    notes: input.notes,
-                    lastModifiedAt: now,
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    amount: true,
-                    date: true,
-                    notes: true,
-                    lastModifiedAt: true,
-                },
-            });
+      // Update transaction with new notes
+      const now = new Date()
+      const updatedTransaction = await prisma.transaction.update({
+        where: { id: input.id },
+        data: {
+          notes: input.notes,
+          lastModifiedAt: now,
+        },
+        select: {
+          id: true,
+          name: true,
+          amount: true,
+          date: true,
+          notes: true,
+          lastModifiedAt: true,
+        },
+      })
 
-            if (!updatedTransaction) {
-                throw new TRPCError({
-                    code: 'INTERNAL_SERVER_ERROR',
-                    message: 'Failed to update transaction notes',
-                });
-            }
+      if (!updatedTransaction) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update transaction notes',
+        })
+      }
 
-            return updatedTransaction;
-        } catch (error) {
-            if (error instanceof TRPCError) {
-                throw error;
-            }
+      return updatedTransaction
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error
+      }
 
-            console.error('Error in updateNotes:', error);
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Failed to update transaction notes',
-                cause: error,
-            });
-        }
-    }); 
+      console.error('Error in updateNotes:', error)
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to update transaction notes',
+        cause: error,
+      })
+    }
+  })

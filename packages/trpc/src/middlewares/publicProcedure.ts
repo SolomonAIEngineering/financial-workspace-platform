@@ -1,7 +1,7 @@
-import { CookieNames } from '@solomonai/lib/storage/cookies';
-import { devMiddleware } from './devMiddleware';
-import { ratelimitMiddleware } from './ratelimitMiddleware';
-import { t } from '../trpc';
+import { CookieNames } from '@solomonai/lib/storage/cookies'
+import { t } from '../trpc'
+import { devMiddleware } from './devMiddleware'
+import { ratelimitMiddleware } from './ratelimitMiddleware'
 
 /**
  * Public (unauthenticated) procedure This is the base piece you use to build
@@ -11,4 +11,4 @@ import { t } from '../trpc';
  */
 export const publicProcedure = t.procedure
   .use(ratelimitMiddleware())
-  .use(devMiddleware(CookieNames.devWait));
+  .use(devMiddleware(CookieNames.devWait))

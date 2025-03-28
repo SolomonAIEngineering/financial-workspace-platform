@@ -1,15 +1,15 @@
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { discussionsSchema } from '../schema';
+import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { discussionsSchema } from '../schema'
 
 /**
  * Protected procedure to get all discussions for a document.
- * 
+ *
  * This procedure:
  * 1. Verifies the user is authenticated via the protected procedure middleware
  * 2. Retrieves all discussions for the specified document
  * 3. Includes comments and user information
- * 
+ *
  * @input {DiscussionsInput} - Document ID
  * @returns Object containing an array of discussions with their comments
  */
@@ -51,9 +51,9 @@ export const discussions = protectedProcedure
       where: {
         documentId: input.documentId,
       },
-    });
+    })
 
     return {
       discussions: discussions,
-    };
-  });
+    }
+  })

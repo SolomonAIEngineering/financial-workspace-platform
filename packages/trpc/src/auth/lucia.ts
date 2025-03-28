@@ -1,35 +1,35 @@
-import type { User as PrismaUser, Session } from '@solomonai/prisma/client';
+import type { User as PrismaUser, Session } from '@solomonai/prisma/client'
 
-import { NodePostgresAdapter } from '@lucia-auth/adapter-postgresql';
-import { type User, Lucia, TimeSpan } from 'lucia';
+import { NodePostgresAdapter } from '@lucia-auth/adapter-postgresql'
+import { type User, Lucia, TimeSpan } from 'lucia'
 
-import { pgPool as pool } from '@solomonai/prisma';
+import { pgPool as pool } from '@solomonai/prisma'
 
-import type { AuthUser } from './getAuthUser';
+import type { AuthUser } from './getAuthUser'
 
-import { githubProvider } from './providers/github';
-import { googleProvider } from './providers/google';
+import { githubProvider } from './providers/github'
+import { googleProvider } from './providers/google'
 
 class CustomNodePostgresAdapter extends NodePostgresAdapter {
   override async getSessionAndUser(
-    sessionId: string
+    sessionId: string,
   ): ReturnType<
     (typeof NodePostgresAdapter)['prototype']['getSessionAndUser']
   > {
-    const [session, user] = await super.getSessionAndUser(sessionId);
+    const [session, user] = await super.getSessionAndUser(sessionId)
 
     if (session) {
-      session.expiresAt = new Date(session.expiresAt);
+      session.expiresAt = new Date(session.expiresAt)
     }
 
-    return [session, user];
+    return [session, user]
   }
 }
 
 const adapter = new CustomNodePostgresAdapter(pool as any, {
   session: 'Session',
   user: 'User',
-});
+})
 
 export const lucia = new Lucia(adapter, {
   sessionCookie: {
@@ -38,7 +38,8 @@ export const lucia = new Lucia(adapter, {
         process.env.NEXT_PUBLIC_ENVIRONMENT === 'development'
           ? undefined
           : '.platejs.org',
-      sameSite: process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' ? 'lax' : 'none',
+      sameSite:
+        process.env.NEXT_PUBLIC_ENVIRONMENT === 'development' ? 'lax' : 'none',
       // set to `true` when using HTTPS
       secure: process.env.NEXT_PUBLIC_ENVIRONMENT !== 'development',
     },
@@ -50,7 +51,7 @@ export const lucia = new Lucia(adapter, {
     return {
       ipAddress: attributes.ip_address,
       userAgent: attributes.user_agent,
-    };
+    }
   },
   getUserAttributes: (attributes) => {
     return {
@@ -58,35 +59,35 @@ export const lucia = new Lucia(adapter, {
       email: attributes.email,
       role: attributes.role,
       username: attributes.username,
-    };
+    }
   },
-});
+})
 
 export const authProviders = {
   github: githubProvider,
   google: googleProvider,
-} as const;
+} as const
 
 export type AuthProviderConfig = {
-  name: string;
-  pkce?: boolean;
-};
+  name: string
+  pkce?: boolean
+}
 
-export type AuthProviders = keyof typeof authProviders;
+export type AuthProviders = keyof typeof authProviders
 
 export type AuthResponse =
   | { session: null; user: null }
-  | { session: Session; user: AuthUser };
+  | { session: Session; user: AuthUser }
 
-export type LuciaUser = User;
+export type LuciaUser = User
 
 declare module 'lucia' {
   interface Register {
-    DatabaseSessionAttributes: DatabaseSessionAttributes;
-    DatabaseUserAttributes: DatabaseUserAttributes;
-    Lucia: typeof lucia;
+    DatabaseSessionAttributes: DatabaseSessionAttributes
+    DatabaseUserAttributes: DatabaseUserAttributes
+    Lucia: typeof lucia
   }
 }
 interface DatabaseSessionAttributes
-  extends Pick<Session, 'ip_address' | 'user_agent'> { }
-interface DatabaseUserAttributes extends PrismaUser { }
+  extends Pick<Session, 'ip_address' | 'user_agent'> {}
+interface DatabaseUserAttributes extends PrismaUser {}

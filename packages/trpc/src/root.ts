@@ -1,17 +1,17 @@
-import { createCallerFactory, createRouter } from '@solomonai/trpc/src/trpc';
-import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
+import { createCallerFactory, createRouter } from '@solomonai/trpc/src/trpc'
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
 
-import { bankAccountsRouter } from './routers/bank-accounts/index';
-import { bankConnectionRouter } from './routers/bank-connection';
-import { commentRouter } from './routers/comment/index';
-import { documentRouter } from './routers/document/index';
-import { fileRouter } from './routers/file';
-import { layoutRouter } from './routers/layout';
-import { recurringTransactionsRouter } from './routers/recurring-transactions';
-import { teamRouter } from './routers/team/index';
-import { transactionsRouter } from './routers/transactions';
-import { userRouter } from './routers/user';
-import { versionRouter } from './routers/version/index';
+import { bankAccountsRouter } from './routers/bank-accounts/index'
+import { bankConnectionRouter } from './routers/bank-connection'
+import { commentRouter } from './routers/comment/index'
+import { documentRouter } from './routers/document/index'
+import { fileRouter } from './routers/file'
+import { layoutRouter } from './routers/layout'
+import { recurringTransactionsRouter } from './routers/recurring-transactions'
+import { teamRouter } from './routers/team/index'
+import { transactionsRouter } from './routers/transactions'
+import { userRouter } from './routers/user'
+import { versionRouter } from './routers/version/index'
 
 export const appRouter = createRouter({
   bankAccounts: bankAccountsRouter,
@@ -25,10 +25,10 @@ export const appRouter = createRouter({
   transactions: transactionsRouter,
   recurringTransactions: recurringTransactionsRouter,
   bankConnection: bankConnectionRouter,
-});
+})
 
 // export type definition of API
-export type AppRouter = typeof appRouter;
+export type AppRouter = typeof appRouter
 
 /**
  * Inference helpers for input types
@@ -37,7 +37,7 @@ export type AppRouter = typeof appRouter;
  *   type PostByIdInput = RouterInputs['post']['byId']
  *   ^? { id: number }
  */
-export type RouterInputs = inferRouterInputs<AppRouter>;
+export type RouterInputs = inferRouterInputs<AppRouter>
 
 /**
  * Inference helpers for output types
@@ -46,7 +46,7 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
  *   type AllPostsOutput = RouterOutputs['post']['all']
  *   ^? Post[]
  */
-export type RouterOutputs = inferRouterOutputs<AppRouter>;
+export type RouterOutputs = inferRouterOutputs<AppRouter>
 
 /**
  * Create a server-side caller for the tRPC API
@@ -56,4 +56,4 @@ export type RouterOutputs = inferRouterOutputs<AppRouter>;
  *   const res = await trpc.post.all();
  *   ^? Post[]
  */
-export const createCaller = createCallerFactory(appRouter);
+export const createCaller = createCallerFactory(appRouter)

@@ -1,8 +1,7 @@
-import { TRPCError } from '@trpc/server';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { updateAssignedToSchema } from '../schema';
-import { z } from 'zod';
+import { prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { updateAssignedToSchema } from '../schema'
 
 /**
  * Updates the assignee for a single transaction.
@@ -23,21 +22,21 @@ import { z } from 'zod';
 export const updateAssignedToHandler = protectedProcedure
   .input(updateAssignedToSchema)
   .mutation(async ({ ctx, input }) => {
-    const { id, assignedTo, teamId, notifyAssignee } = input;
-    const userId = ctx.session?.userId as string;
+    const { id, assignedTo, teamId, notifyAssignee } = input
+    const userId = ctx.session?.userId as string
 
     try {
       // Check if transaction exists and belongs to user
       const existingTransaction = await prisma.transaction.findUnique({
         where: { id },
         select: { id: true, userId: true },
-      });
+      })
 
       if (!existingTransaction) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Transaction not found',
-        });
+        })
       }
 
       // Verify that both users are part of the same team if teamId is provided
@@ -46,28 +45,28 @@ export const updateAssignedToHandler = protectedProcedure
           where: {
             teamId: teamId,
             userId: {
-              in: [userId, assignedTo]
-            }
+              in: [userId, assignedTo],
+            },
           },
           select: {
-            userId: true
-          }
-        });
+            userId: true,
+          },
+        })
 
-        const userIds = teamMembers.map(member => member.userId);
-        const isCurrentUserInTeam = userIds.includes(userId);
-        const isAssignedUserInTeam = userIds.includes(assignedTo);
+        const userIds = teamMembers.map((member) => member.userId)
+        const isCurrentUserInTeam = userIds.includes(userId)
+        const isAssignedUserInTeam = userIds.includes(assignedTo)
 
         if (!isCurrentUserInTeam || !isAssignedUserInTeam) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'One or both users are not part of the specified team'
-          });
+            message: 'One or both users are not part of the specified team',
+          })
         }
       }
 
       // Execute update in a transaction for atomicity
-      const now = new Date();
+      const now = new Date()
       return await prisma.$transaction(async (tx) => {
         const updatedTransaction = await tx.transaction.update({
           where: { id },
@@ -84,26 +83,26 @@ export const updateAssignedToHandler = protectedProcedure
             assigneeId: true,
             assignedAt: true,
           },
-        });
+        })
 
         // TODO: If notifyAssignee is true, queue notification
         if (notifyAssignee && assignedTo) {
           // Implement notification logic here or queue a background job
         }
 
-        return updatedTransaction;
-      });
+        return updatedTransaction
+      })
     } catch (error) {
       // Handle any errors that weren't explicitly caught
       if (error instanceof TRPCError) {
-        throw error;
+        throw error
       }
 
-      console.error('Error in updateAssignedTo:', error);
+      console.error('Error in updateAssignedTo:', error)
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Failed to update transaction assignment',
         cause: error,
-      });
+      })
     }
-  });
+  })

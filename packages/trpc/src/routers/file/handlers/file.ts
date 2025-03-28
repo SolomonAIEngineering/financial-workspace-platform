@@ -1,6 +1,6 @@
-import { CreateFileSchemaRequest } from '../schema';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
+import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { CreateFileSchemaRequest } from '../schema'
 
 /**
  * Mutations for the file router
@@ -20,5 +20,5 @@ export const createFile = protectedProcedure
         url: input.url,
         userId: ctx.user?.id as string,
       },
-    });
+    })
   })

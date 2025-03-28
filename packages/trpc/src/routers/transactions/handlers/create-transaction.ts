@@ -1,7 +1,7 @@
-import { TRPCError } from '@trpc/server';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { transactionSchema } from '../schema';
+import { prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { transactionSchema } from '../schema'
 
 /**
  * Creates a new transaction in the system.
@@ -23,21 +23,21 @@ import { transactionSchema } from '../schema';
 export const createTransactionHandler = protectedProcedure
   .input(transactionSchema)
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session?.userId as string;
+    const userId = ctx.session?.userId as string
     // Verify bank account belongs to user
     const bankAccount = await prisma.bankAccount.findUnique({
       where: { id: input.bankAccountId, userId: userId },
-    });
+    })
 
     if (!bankAccount) {
       throw new TRPCError({
         code: 'FORBIDDEN',
         message: 'Bank account not found or unauthorized',
-      });
+      })
     }
 
     // Create transaction in a transaction for atomicity
-    const now = new Date();
+    const now = new Date()
     const transactionId = await prisma.$transaction(async (tx) => {
       // Create transaction
       const newTransaction = await tx.transaction.create({
@@ -48,16 +48,14 @@ export const createTransactionHandler = protectedProcedure
           tags: input.tags || [],
           lastModifiedAt: now,
         },
-      });
+      })
 
-
-
-      return newTransaction.id;
-    });
+      return newTransaction.id
+    })
 
     return {
       success: true,
       transactionId: transactionId,
       timestamp: now,
-    };
-  });
+    }
+  })

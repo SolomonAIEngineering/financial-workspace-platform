@@ -1,7 +1,7 @@
-import { TRPCError } from '@trpc/server';
-import { bulkCategorizationSchema } from '../schema';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
+import { prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { bulkCategorizationSchema } from '../schema'
 
 /**
  * Bulk updates the categories of multiple transactions.
@@ -18,50 +18,50 @@ import { protectedProcedure } from '../../../middlewares/procedures';
  * @throws {TRPCError} With code 'BAD_REQUEST' if any transactions don't belong to the user
  */
 export const bulkUpdateTransactionCategoriesHandler = protectedProcedure
-    .input(bulkCategorizationSchema)
-    .mutation(async ({ ctx, input }) => {
-        const userId = ctx.session?.userId;
+  .input(bulkCategorizationSchema)
+  .mutation(async ({ ctx, input }) => {
+    const userId = ctx.session?.userId
 
-        const { transactionIds, category, subCategory, customCategory } = input;
+    const { transactionIds, category, subCategory, customCategory } = input
 
-        // Verify all transactions exist and belong to the user
-        const transactions = await prisma.transaction.findMany({
-            where: {
-                id: { in: transactionIds },
-                userId,
-            },
-        });
+    // Verify all transactions exist and belong to the user
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        id: { in: transactionIds },
+        userId,
+      },
+    })
 
-        if (transactions.length !== transactionIds.length) {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'One or more transactions not found or not owned by user',
-            });
-        }
+    if (transactions.length !== transactionIds.length) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'One or more transactions not found or not owned by user',
+      })
+    }
 
-        // Apply the update to all transactions at once
-        const updateResult = await prisma.transaction.updateMany({
-            where: {
-                id: { in: transactionIds },
-                userId,
-            },
-            data: {
-                category,
-                subCategory,
-                customCategory,
-            },
-        });
+    // Apply the update to all transactions at once
+    const updateResult = await prisma.transaction.updateMany({
+      where: {
+        id: { in: transactionIds },
+        userId,
+      },
+      data: {
+        category,
+        subCategory,
+        customCategory,
+      },
+    })
 
-        if (!updateResult) {
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Failed to update transaction categories',
-            });
-        }
+    if (!updateResult) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to update transaction categories',
+      })
+    }
 
-        return {
-            success: true,
-            updatedCount: updateResult.count,
-            totalTransactions: transactionIds.length,
-        };
-    }); 
+    return {
+      success: true,
+      updatedCount: updateResult.count,
+      totalTransactions: transactionIds.length,
+    }
+  })

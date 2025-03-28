@@ -1,8 +1,8 @@
-import { batchResultSchema, createBatchTransactionsSchema } from '../schema';
+import { batchResultSchema, createBatchTransactionsSchema } from '../schema'
 
-import { TRPCError } from '@trpc/server';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
+import { prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Creates multiple transactions in batches to optimize database performance.
@@ -28,12 +28,12 @@ export const createBatchTransactionsHandler = protectedProcedure
   .output(batchResultSchema)
   .mutation(async ({ ctx, input }) => {
     // since this is a protected procedure, we can safely assume the user is authenticated
-    const userId = ctx.session?.userId as string;
+    const userId = ctx.session?.userId as string
 
     // Get all unique bank account IDs from input
     const bankAccountIds = [
       ...new Set(input.transactions.map((tx) => tx.bankAccountId)),
-    ];
+    ]
 
     // Ensure all bank accounts exist and belong to the user
     const bankAccounts = await prisma.bankAccount.findMany({
@@ -41,26 +41,26 @@ export const createBatchTransactionsHandler = protectedProcedure
         id: { in: bankAccountIds },
         userId,
       },
-    });
+    })
 
     if (bankAccounts.length !== bankAccountIds.length) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
         message: 'One or more bank accounts not found or not owned by user',
-      });
+      })
     }
 
     // Process transactions in smaller batches to prevent DB overload
-    const BATCH_SIZE = input.batchSize || 50; // Use provided batch size or default to 50
-    const allTransactions = input.transactions;
-    const totalTransactions = allTransactions.length;
-    const createdTransactions = [];
-    const failedBatches = [];
+    const BATCH_SIZE = input.batchSize || 50 // Use provided batch size or default to 50
+    const allTransactions = input.transactions
+    const totalTransactions = allTransactions.length
+    const createdTransactions = []
+    const failedBatches = []
 
     // Process transactions in batches
     for (let i = 0; i < totalTransactions; i += BATCH_SIZE) {
-      const batchIndex = Math.floor(i / BATCH_SIZE);
-      const batchTransactions = allTransactions.slice(i, i + BATCH_SIZE);
+      const batchIndex = Math.floor(i / BATCH_SIZE)
+      const batchTransactions = allTransactions.slice(i, i + BATCH_SIZE)
 
       try {
         // Create this batch of transactions in a transaction
@@ -72,21 +72,23 @@ export const createBatchTransactionsHandler = protectedProcedure
                 userId,
                 date: new Date(tx.date),
               },
-            })
-          )
-        );
+            }),
+          ),
+        )
 
-        createdTransactions.push(...batchResults);
-        console.log(`Successfully processed batch ${batchIndex + 1} (${batchResults.length} transactions)`);
+        createdTransactions.push(...batchResults)
+        console.log(
+          `Successfully processed batch ${batchIndex + 1} (${batchResults.length} transactions)`,
+        )
       } catch (error) {
         // Log the error and continue with next batch
-        console.error(`Error processing batch ${batchIndex + 1}:`, error);
+        console.error(`Error processing batch ${batchIndex + 1}:`, error)
         failedBatches.push({
           batchIndex,
           startIndex: i,
           endIndex: Math.min(i + BATCH_SIZE - 1, totalTransactions - 1),
-          error: error instanceof Error ? error.message : String(error)
-        });
+          error: error instanceof Error ? error.message : String(error),
+        })
       }
     }
 
@@ -95,7 +97,7 @@ export const createBatchTransactionsHandler = protectedProcedure
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: `All transaction batches failed to process. First error: ${failedBatches[0].error}`,
-      });
+      })
     }
 
     return {
@@ -103,6 +105,6 @@ export const createBatchTransactionsHandler = protectedProcedure
       status: failedBatches.length > 0 ? 'PARTIAL_SUCCESS' : 'SUCCESS',
       totalProcessed: createdTransactions.length,
       totalRequested: totalTransactions,
-      failedBatches: failedBatches.length > 0 ? failedBatches : undefined
-    };
-  });
+      failedBatches: failedBatches.length > 0 ? failedBatches : undefined,
+    }
+  })

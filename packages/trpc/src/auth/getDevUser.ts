@@ -1,24 +1,23 @@
-
 export type DevUser = {
-  isAdmin?: boolean;
-  isSubscribed?: boolean;
-  isSuperAdmin?: boolean;
-};
+  isAdmin?: boolean
+  isSubscribed?: boolean
+  isSuperAdmin?: boolean
+}
 
 export const getDevUser = (devUserStr?: string) => {
-  if (process.env.NODE_ENV === 'production' || !devUserStr) return null;
+  if (process.env.NODE_ENV === 'production' || !devUserStr) return null
 
-  const devUser = JSON.parse(devUserStr);
+  const devUser = JSON.parse(devUserStr)
 
-  const res: DevUser = {};
+  const res: DevUser = {}
 
   if (devUser.role && devUser.role !== 'DEFAULT') {
-    res.isAdmin = devUser.role === 'ADMIN';
-    res.isSuperAdmin = devUser.role === 'SUPERADMIN';
+    res.isAdmin = devUser.role === 'ADMIN'
+    res.isSuperAdmin = devUser.role === 'SUPERADMIN'
   }
   // if (devUser.plan && devUser.plan !== 'default') {
   //   res.isSubscribed = devUser.plan !== SubscriptionPlan.Free;
   // }
 
-  return res;
-};
+  return res
+}

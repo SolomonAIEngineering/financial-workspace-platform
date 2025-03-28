@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod'
 
 /**
  * Zod schema for validating request cookie objects
@@ -10,14 +10,14 @@ import { z } from "zod";
 export const RequestCookieSchema = z.object({
   name: z.string(),
   value: z.string(),
-});
+})
 
 /**
  * Type definition for a request cookie object
  * @property {string} name - The name of the cookie
  * @property {string} value - The value of the cookie
  */
-export type RequestCookie = z.infer<typeof RequestCookieSchema>;
+export type RequestCookie = z.infer<typeof RequestCookieSchema>
 
 /**
  * Retrieves a cookie value by name from an array of cookies
@@ -32,10 +32,10 @@ export type RequestCookie = z.infer<typeof RequestCookieSchema>;
  */
 export const getCookie = (
   cookies: RequestCookie[] | undefined,
-  name: string
+  name: string,
 ) => {
-  return cookies?.find((cookie) => cookie.name === name)?.value;
-};
+  return cookies?.find((cookie) => cookie.name === name)?.value
+}
 
 /**
  * Retrieves a cookie value by name and converts it to a number
@@ -50,11 +50,11 @@ export const getCookie = (
  */
 export const getCookieNumber = (
   cookies: RequestCookie[] | undefined,
-  name: string
+  name: string,
 ) => {
-  const cookie = getCookie(cookies, name);
+  const cookie = getCookie(cookies, name)
 
-  if (!cookie) return;
+  if (!cookie) return
 
-  return Number.parseInt(cookie);
-};
+  return Number.parseInt(cookie)
+}

@@ -1,38 +1,38 @@
-import type { AuthProviderConfig } from '../lucia';
-import type { Endpoints } from '@octokit/types';
-import { GitHub } from 'arctic';
-import { findOrCreateUser } from '@solomonai/lib/server-only/user';
+import type { Endpoints } from '@octokit/types'
+import { findOrCreateUser } from '@solomonai/lib/server-only/user'
+import { GitHub } from 'arctic'
+import type { AuthProviderConfig } from '../lucia'
 
 const githubAuth = new GitHub(
   process.env.GITHUB_CLIENT_ID ?? '',
   process.env.GITHUB_CLIENT_SECRET ?? '',
-  process.env.NEXT_PUBLIC_SITE_URL + '/api/auth/github/callback'
-);
+  process.env.NEXT_PUBLIC_SITE_URL + '/api/auth/github/callback',
+)
 
 const config: AuthProviderConfig = {
   name: 'github',
-};
+}
 
 const getProviderAuthorizationUrl = (state: string, _codeVerifier?: string) => {
-  return githubAuth.createAuthorizationURL(state, ['read:user', 'user:email']);
-};
+  return githubAuth.createAuthorizationURL(state, ['read:user', 'user:email'])
+}
 
 const handleProviderCallback = async (
   code: string,
   _codeVerifier?: string,
-  _userId?: string
+  _userId?: string,
 ) => {
-  const tokens = await githubAuth.validateAuthorizationCode(code);
-  const accessToken = tokens.accessToken();
+  const tokens = await githubAuth.validateAuthorizationCode(code)
+  const accessToken = tokens.accessToken()
   const response = await fetch('https://api.github.com/user', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-  });
+  })
   const githubUser =
-    (await response.json()) as Endpoints['GET /user']['response']['data'];
+    (await response.json()) as Endpoints['GET /user']['response']['data']
 
-  let email = githubUser.email;
+  let email = githubUser.email
 
   if (!email) {
     /**
@@ -45,12 +45,12 @@ const handleProviderCallback = async (
         Authorization: `Bearer ${accessToken}`,
         'User-Agent': 'luciaauth',
       },
-    });
+    })
     const emails =
-      (await res.json()) as Endpoints['GET /user/emails']['response']['data'];
+      (await res.json()) as Endpoints['GET /user/emails']['response']['data']
 
-    const primaryEmail = emails.find((item) => item.primary);
-    email = primaryEmail?.email ?? emails[0]!.email;
+    const primaryEmail = emails.find((item) => item.primary)
+    email = primaryEmail?.email ?? emails[0]!.email
   }
 
   const user = await findOrCreateUser({
@@ -64,13 +64,13 @@ const handleProviderCallback = async (
     providerUserId: githubUser.id.toString(),
     username: githubUser.login,
     x: githubUser.twitter_username ?? undefined,
-  });
+  })
 
-  return user.id;
-};
+  return user.id
+}
 
 export const githubProvider = {
   config,
   getProviderAuthorizationUrl,
   handleProviderCallback,
-};
+}

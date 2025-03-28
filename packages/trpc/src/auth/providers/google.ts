@@ -1,60 +1,60 @@
-import type { AuthProviderConfig } from '../lucia';
-import { Google } from 'arctic';
-import { findOrCreateUser } from '@solomonai/lib/server-only/user';
+import { findOrCreateUser } from '@solomonai/lib/server-only/user'
+import { Google } from 'arctic'
+import type { AuthProviderConfig } from '../lucia'
 
 const googleAuth = new Google(
   process.env.GOOGLE_CLIENT_ID ?? '',
   process.env.GOOGLE_CLIENT_SECRET ?? '',
-  process.env.NEXT_PUBLIC_SITE_URL + '/api/auth/google/callback'
-);
+  process.env.NEXT_PUBLIC_SITE_URL + '/api/auth/google/callback',
+)
 
 const config: AuthProviderConfig = {
   name: 'google',
   pkce: true, // Enable PKCE
-};
+}
 
 const getProviderAuthorizationUrl = (state: string, codeVerifier: string) => {
   return googleAuth.createAuthorizationURL(state, codeVerifier, [
     'email',
     'profile',
     'openid',
-  ]);
-};
+  ])
+}
 
 interface GoogleUser {
-  email: string;
-  email_verified: boolean;
-  name: string;
-  sub: string;
-  family_name?: string;
-  given_name?: string;
-  picture?: string;
+  email: string
+  email_verified: boolean
+  name: string
+  sub: string
+  family_name?: string
+  given_name?: string
+  picture?: string
 }
 
 const handleProviderCallback = async (
   code: string,
   codeVerifier: string,
-  userId?: string
+  userId?: string,
 ) => {
   try {
     const tokens = await googleAuth.validateAuthorizationCode(
       code,
-      codeVerifier
-    );
+      codeVerifier,
+    )
 
-    let accessToken;
+    let accessToken
 
     try {
-      accessToken = tokens.accessToken();
+      accessToken = tokens.accessToken()
 
       if (!accessToken || typeof accessToken !== 'string') {
-        throw new Error('Invalid access token format');
+        throw new Error('Invalid access token format')
       }
     } catch (tokenError) {
-      console.error('Token extraction error:', tokenError);
-      console.error('Tokens object:', JSON.stringify(tokens, null, 2));
+      console.error('Token extraction error:', tokenError)
+      console.error('Tokens object:', JSON.stringify(tokens, null, 2))
 
-      throw new Error('Failed to extract access token');
+      throw new Error('Failed to extract access token')
     }
 
     const response = await fetch(
@@ -65,24 +65,24 @@ const handleProviderCallback = async (
           Authorization: `Bearer ${accessToken}`,
         }),
         method: 'GET',
-      }
-    );
+      },
+    )
 
     if (!response.ok) {
-      const errorText = await response.text();
+      const errorText = await response.text()
       console.error('Google API error:', {
         body: errorText,
         status: response.status,
         statusText: response.statusText,
-      });
+      })
 
-      throw new Error(`Failed to fetch user info: ${response.statusText}`);
+      throw new Error(`Failed to fetch user info: ${response.statusText}`)
     }
 
-    const googleUser = (await response.json()) as GoogleUser;
+    const googleUser = (await response.json()) as GoogleUser
 
     if (!googleUser.email_verified) {
-      throw new Error('Email not verified with Google');
+      throw new Error('Email not verified with Google')
     }
 
     const user = await findOrCreateUser({
@@ -94,18 +94,18 @@ const handleProviderCallback = async (
       providerId: 'google',
       providerUserId: googleUser.sub,
       username: googleUser.email.split('@')[0],
-    });
+    })
 
-    return user.id;
+    return user.id
   } catch (error) {
-    console.error('Google auth error:', error);
+    console.error('Google auth error:', error)
 
-    throw error;
+    throw error
   }
-};
+}
 
 export const googleProvider = {
   config,
   getProviderAuthorizationUrl,
   handleProviderCallback,
-};
+}

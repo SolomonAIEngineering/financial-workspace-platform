@@ -1,8 +1,8 @@
-import { Prisma, prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma'
 
-import { TRPCError } from '@trpc/server';
-import { addAttachmentSchema } from '../schema';
-import { protectedProcedure } from '../../../middlewares/procedures';
+import { TRPCError } from '@trpc/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { addAttachmentSchema } from '../schema'
 
 /**
  * Adds an attachment to a transaction by creating a new TransactionAttachment record.
@@ -23,18 +23,18 @@ import { protectedProcedure } from '../../../middlewares/procedures';
 export const addAttachmentHandler = protectedProcedure
   .input(addAttachmentSchema)
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session?.userId;
+    const userId = ctx.session?.userId
 
     // Check if transaction exists and belongs to user
     const existingTransaction = await prisma.transaction.findUnique({
       where: { id: input.id, userId: userId },
-    });
+    })
 
     if (!existingTransaction || existingTransaction.userId !== userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found or does not belong to user',
-      });
+      })
     }
 
     // Create and attach the transaction attachment
@@ -48,7 +48,7 @@ export const addAttachmentHandler = protectedProcedure
         size: input.fileSize,
         path: [input.fileUrl],
       },
-    });
+    })
 
-    return attachment;
-  });
+    return attachment
+  })

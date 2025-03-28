@@ -1,7 +1,7 @@
-import { TRPCError } from '@trpc/server';
-import { manualCategorizationSchema } from '../schema';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
+import { prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { manualCategorizationSchema } from '../schema'
 
 /**
  * Manually categorizes multiple transactions with the same category.
@@ -18,57 +18,57 @@ import { protectedProcedure } from '../../../middlewares/procedures';
  * @throws {TRPCError} With code 'FORBIDDEN' if any transactions don't belong to the user
  */
 export const manualCategorizationHandler = protectedProcedure
-    .input(manualCategorizationSchema)
-    .mutation(async ({ ctx, input }) => {
-        try {
-            // Verify all transactions belong to user
-            const existingTransactions = await prisma.transaction.findMany({
-                where: {
-                    id: { in: input.transactionIds },
-                    userId: ctx.session?.userId,
-                },
-                select: { id: true },
-            });
+  .input(manualCategorizationSchema)
+  .mutation(async ({ ctx, input }) => {
+    try {
+      // Verify all transactions belong to user
+      const existingTransactions = await prisma.transaction.findMany({
+        where: {
+          id: { in: input.transactionIds },
+          userId: ctx.session?.userId,
+        },
+        select: { id: true },
+      })
 
-            const existingIds = existingTransactions.map((t) => t.id);
+      const existingIds = existingTransactions.map((t) => t.id)
 
-            if (existingIds.length !== input.transactionIds.length) {
-                throw new TRPCError({
-                    code: 'FORBIDDEN',
-                    message: 'One or more transactions not found or unauthorized',
-                });
-            }
+      if (existingIds.length !== input.transactionIds.length) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'One or more transactions not found or unauthorized',
+        })
+      }
 
-            // Update all transactions with the new category
-            const now = new Date();
-            const result = await prisma.transaction.updateMany({
-                where: {
-                    id: { in: existingIds },
-                },
-                data: {
-                    category: input.category,
-                    subCategory: input.subCategory,
-                    customCategory: input.customCategory,
-                    lastCategorizedAt: now,
-                    lastModifiedAt: now,
-                },
-            });
+      // Update all transactions with the new category
+      const now = new Date()
+      const result = await prisma.transaction.updateMany({
+        where: {
+          id: { in: existingIds },
+        },
+        data: {
+          category: input.category,
+          subCategory: input.subCategory,
+          customCategory: input.customCategory,
+          lastCategorizedAt: now,
+          lastModifiedAt: now,
+        },
+      })
 
-            return {
-                success: true,
-                count: result.count,
-                updatedTransactions: existingIds,
-            };
-        } catch (error) {
-            if (error instanceof TRPCError) {
-                throw error;
-            }
+      return {
+        success: true,
+        count: result.count,
+        updatedTransactions: existingIds,
+      }
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        throw error
+      }
 
-            console.error('Error in manualCategorization:', error);
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Failed to categorize transactions',
-                cause: error,
-            });
-        }
-    }); 
+      console.error('Error in manualCategorization:', error)
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to categorize transactions',
+        cause: error,
+      })
+    }
+  })

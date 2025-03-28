@@ -1,7 +1,6 @@
-import { type RatelimitConfig, Ratelimit } from '@upstash/ratelimit';
+import { type RatelimitConfig, Ratelimit } from '@upstash/ratelimit'
 
-
-import { redis as redisClient } from './redis';
+import { redis as redisClient } from './redis'
 
 export const ratelimits: Record<string, RatelimitOptions> = {
   'ai/command': {
@@ -60,35 +59,35 @@ export const ratelimits: Record<string, RatelimitOptions> = {
   'version/create': {
     limiter: Ratelimit.slidingWindow(5, '1 d'),
   },
-} satisfies Record<string, RatelimitOptions>;
+} satisfies Record<string, RatelimitOptions>
 
 Object.values(ratelimits).forEach((ratelimit) => {
-  (ratelimit as RatelimitOptions).ephemeralCache = new Map<string, number>();
-});
+  ;(ratelimit as RatelimitOptions).ephemeralCache = new Map<string, number>()
+})
 
-export type RatelimitKey = keyof typeof ratelimits;
+export type RatelimitKey = keyof typeof ratelimits
 
 export type RatelimitOptions = {
   limiters?:
-  | RatelimitConfig['limiter'][]
-  | Record<string, RatelimitConfig['limiter'][]>;
-  message?: string;
-  prefix?: string;
+    | RatelimitConfig['limiter'][]
+    | Record<string, RatelimitConfig['limiter'][]>
+  message?: string
+  prefix?: string
 } & Omit<RatelimitConfig, 'limiter' | 'redis'> & {
-  limiter?: RatelimitConfig['limiter'];
-};
+    limiter?: RatelimitConfig['limiter']
+  }
 
 export const getRatelimitResponse = async (
   key: RatelimitKey,
   id: string,
   tier: 'admin' | 'free' | 'pro' | 'public',
-  orgName = 'plate'
+  orgName = 'plate',
 ) => {
   if (!process.env.UPSTASH_REDIS_REST_TOKEN || tier === 'admin') {
-    return { limit: 0, message: '', remaining: 0, reset: 0, success: true };
+    return { limit: 0, message: '', remaining: 0, reset: 0, success: true }
   }
 
-  const ratelimit: RatelimitOptions = ratelimits[key] ?? ratelimits.public;
+  const ratelimit: RatelimitOptions = ratelimits[key] ?? ratelimits.public
 
   const {
     analytics = true,
@@ -97,26 +96,26 @@ export const getRatelimitResponse = async (
     message = 'Rate limit exceeded',
     prefix = `@${orgName}/ratelimit/${key}`,
     ...config
-  } = ratelimit;
+  } = ratelimit
 
-  let allLimiters: RatelimitConfig['limiter'][];
-  let actualPrefix = prefix;
+  let allLimiters: RatelimitConfig['limiter'][]
+  let actualPrefix = prefix
 
   if (Array.isArray(limiters)) {
-    allLimiters = limiters;
+    allLimiters = limiters
   } else if (limiters) {
     // Fallback pro -> free -> public
     if (tier === 'pro' && !limiters.pro) {
-      allLimiters = limiters.free ?? limiters.public;
+      allLimiters = limiters.free ?? limiters.public
     } else if (tier === 'free' && !limiters.free) {
-      allLimiters = limiters.public;
+      allLimiters = limiters.public
     } else {
-      allLimiters = limiters[tier];
+      allLimiters = limiters[tier]
     }
 
-    actualPrefix = `${prefix}:${tier}`;
+    actualPrefix = `${prefix}:${tier}`
   } else {
-    allLimiters = [limiter!];
+    allLimiters = [limiter!]
   }
 
   for (const limiter of allLimiters) {
@@ -126,32 +125,32 @@ export const getRatelimitResponse = async (
       limiter,
       prefix: actualPrefix,
       redis: redisClient,
-    }).limit(id);
+    }).limit(id)
 
     if (!res.success) {
-      return { ...res, message };
+      return { ...res, message }
     }
   }
 
-  return { limit: 0, message: '', remaining: 0, reset: 0, success: true };
-};
+  return { limit: 0, message: '', remaining: 0, reset: 0, success: true }
+}
 
 export const getUserRatelimit = async ({
   key,
   ip,
   user,
 }: {
-  user: { id: string; isAdmin?: boolean; isPro?: boolean } | null;
-  key?: RatelimitKey;
-  ip?: string | null;
+  user: { id: string; isAdmin?: boolean; isPro?: boolean } | null
+  key?: RatelimitKey
+  ip?: string | null
 }) => {
   if (!user) {
-    return getRatelimitResponse(key ?? 'public', ip ?? '127.0.0.1', 'public');
+    return getRatelimitResponse(key ?? 'public', ip ?? '127.0.0.1', 'public')
   }
 
   return getRatelimitResponse(
     key ?? 'free',
     user.id,
-    user.isAdmin ? 'admin' : user.isPro ? 'pro' : 'free'
-  );
-};
+    user.isAdmin ? 'admin' : user.isPro ? 'pro' : 'free',
+  )
+}

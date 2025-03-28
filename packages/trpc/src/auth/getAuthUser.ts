@@ -1,23 +1,23 @@
-import { isAdmin, isSuperAdmin } from '@solomonai/lib/utils/isAdmin';
+import { isAdmin, isSuperAdmin } from '@solomonai/lib/utils/isAdmin'
 
-import type { LuciaUser } from './lucia';
-import { getDevUser } from './getDevUser';
+import { getDevUser } from './getDevUser'
+import type { LuciaUser } from './lucia'
 
 export type AuthUser = {
-  id: string;
-  email: string | null;
-  isAdmin: boolean;
-  isSuperAdmin: boolean;
+  id: string
+  email: string | null
+  isAdmin: boolean
+  isSuperAdmin: boolean
   // isMonthlyPlan: boolean;
   // isSubscribed: boolean;
-  username: string;
-};
+  username: string
+}
 
 export const getAuthUser = (
   user: LuciaUser | null,
-  devUser?: string
+  devUser?: string,
 ): AuthUser | null => {
-  if (!user) return null;
+  if (!user) return null
 
   return {
     id: user.id,
@@ -30,5 +30,5 @@ export const getAuthUser = (
     // isSubscribed: isUserSubscribed(user),
     username: user.username,
     ...getDevUser(devUser),
-  };
-};
+  }
+}

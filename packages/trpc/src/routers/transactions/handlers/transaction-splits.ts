@@ -1,8 +1,8 @@
-import { TRPCError } from '@trpc/server';
-import { TransactionCategory } from '@solomonai/prisma/client';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
+import { prisma } from '@solomonai/prisma'
+import { TransactionCategory } from '@solomonai/prisma/client'
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 // Split transaction part schema
 const splitTransactionPartSchema = z.object({
@@ -16,43 +16,47 @@ const splitTransactionPartSchema = z.object({
   budgetCategory: z.string().optional(),
   businessPurpose: z.string().optional(),
   notes: z.string().optional(),
-});
+})
 
 export const splitTransactionHandler = protectedProcedure
   .input(
     z.object({
       transactionId: z.string(),
       parts: z.array(splitTransactionPartSchema).min(2),
-    })
+    }),
   )
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session?.userId;
+    const userId = ctx.session?.userId
     if (!userId) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'User not authenticated',
-      });
+      })
     }
 
     // Check if transaction exists and belongs to user
     const originalTransaction = await prisma.transaction.findUnique({
       where: { id: input.transactionId },
-    });
+    })
 
     if (!originalTransaction || originalTransaction.userId !== userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found',
-      });
+      })
     }
 
     // Validate total amount of splits matches original transaction amount
-    const totalSplitAmount = input.parts.reduce((sum, part) => sum + part.amount, 0);
+    const totalSplitAmount = input.parts.reduce(
+      (sum, part) => sum + part.amount,
+      0,
+    )
     if (Math.abs(totalSplitAmount - originalTransaction.amount) > 0.01) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
-        message: 'Total amount of split parts must equal original transaction amount',
-      });
+        message:
+          'Total amount of split parts must equal original transaction amount',
+      })
     }
 
     // Create a transaction for each split part
@@ -68,7 +72,7 @@ export const splitTransactionHandler = protectedProcedure
           lastModifiedAt: new Date(),
           isModified: true,
         },
-      });
+      })
 
       // Create split transactions
       const splits = await Promise.all(
@@ -91,7 +95,8 @@ export const splitTransactionHandler = protectedProcedure
               description: part.description || originalTransaction.description,
               category: part.category || originalTransaction.category,
               subCategory: originalTransaction.subCategory,
-              customCategory: part.customCategory || originalTransaction.customCategory,
+              customCategory:
+                part.customCategory || originalTransaction.customCategory,
               categoryIconUrl: originalTransaction.categoryIconUrl,
               categorySlug: originalTransaction.categorySlug,
 
@@ -109,10 +114,14 @@ export const splitTransactionHandler = protectedProcedure
               pending: originalTransaction.pending,
 
               // Categorization for financial planning
-              cashFlowCategory: part.cashFlowCategory || originalTransaction.cashFlowCategory,
-              cashFlowType: part.cashFlowType || originalTransaction.cashFlowType,
-              budgetCategory: part.budgetCategory || originalTransaction.budgetCategory,
-              businessPurpose: part.businessPurpose || originalTransaction.businessPurpose,
+              cashFlowCategory:
+                part.cashFlowCategory || originalTransaction.cashFlowCategory,
+              cashFlowType:
+                part.cashFlowType || originalTransaction.cashFlowType,
+              budgetCategory:
+                part.budgetCategory || originalTransaction.budgetCategory,
+              businessPurpose:
+                part.businessPurpose || originalTransaction.businessPurpose,
 
               // Tags and notes
               tags: part.tags || originalTransaction.tags,
@@ -129,32 +138,32 @@ export const splitTransactionHandler = protectedProcedure
               lastModifiedAt: new Date(),
               searchableText: `${originalTransaction.name} ${part.description || originalTransaction.description} split`,
             },
-          });
-        })
-      );
+          })
+        }),
+      )
 
-      return { originalTransaction: updatedOriginal, splitTransactions: splits };
-    });
+      return { originalTransaction: updatedOriginal, splitTransactions: splits }
+    })
 
-    return splitTransactions;
-  });
+    return splitTransactions
+  })
 
 // Define the return schema for split transactions
 const splitTransactionResultSchema = z.object({
   originalTransaction: z.any(),
   splitTransactions: z.array(z.any()),
-});
+})
 
 export const getSplitTransactionsHandler = protectedProcedure
   .input(z.object({ transactionId: z.string() }))
   .output(splitTransactionResultSchema)
   .query(async ({ ctx, input }) => {
-    const userId = ctx.session?.userId;
+    const userId = ctx.session?.userId
     if (!userId) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'User not authenticated',
-      });
+      })
     }
 
     // Check if transaction exists and belongs to user with enhanced query
@@ -171,13 +180,13 @@ export const getSplitTransactionsHandler = protectedProcedure
         },
         transactionCategory: true,
       },
-    });
+    })
 
     if (!transaction || transaction.userId !== userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found',
-      });
+      })
     }
 
     // If this is a parent transaction, get all its splits
@@ -200,12 +209,12 @@ export const getSplitTransactionsHandler = protectedProcedure
         orderBy: {
           createdAt: 'desc',
         },
-      });
+      })
 
       return {
         originalTransaction: transaction,
         splitTransactions,
-      };
+      }
     }
 
     // If this is a split part, get its parent and siblings
@@ -223,7 +232,7 @@ export const getSplitTransactionsHandler = protectedProcedure
           },
           transactionCategory: true,
         },
-      });
+      })
 
       const siblingTransactions = await prisma.transaction.findMany({
         where: {
@@ -244,37 +253,37 @@ export const getSplitTransactionsHandler = protectedProcedure
         orderBy: {
           createdAt: 'desc',
         },
-      });
+      })
 
       return {
         originalTransaction: parentTransaction,
         splitTransactions: [transaction, ...siblingTransactions],
-      };
+      }
     }
 
     // If not a split transaction
     return {
       originalTransaction: transaction,
       splitTransactions: [],
-    };
-  });
+    }
+  })
 
 // Define the return schema for recombining split transactions
 const recombineResultSchema = z.object({
   success: z.boolean(),
   recombinedTransaction: z.any(),
-});
+})
 
 export const recombineSplitTransactionHandler = protectedProcedure
   .input(z.object({ transactionId: z.string() }))
   .output(recombineResultSchema)
   .mutation(async ({ ctx, input }) => {
-    const userId = ctx.session?.userId;
+    const userId = ctx.session?.userId
     if (!userId) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'User not authenticated',
-      });
+      })
     }
 
     // Check if transaction exists, is marked as split, and belongs to user
@@ -283,20 +292,20 @@ export const recombineSplitTransactionHandler = protectedProcedure
       include: {
         bankAccount: true,
       },
-    });
+    })
 
     if (!parentTransaction || parentTransaction.userId !== userId) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found',
-      });
+      })
     }
 
     if (!parentTransaction.isSplit) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
         message: 'Transaction is not split',
-      });
+      })
     }
 
     // Find all split parts
@@ -304,7 +313,7 @@ export const recombineSplitTransactionHandler = protectedProcedure
       where: {
         parentTransactionId: input.transactionId,
       },
-    });
+    })
 
     // Use a transaction to ensure all operations succeed or fail together
     const updatedTransaction = await prisma.$transaction(async (tx) => {
@@ -313,9 +322,9 @@ export const recombineSplitTransactionHandler = protectedProcedure
         splitParts.map(async (part) => {
           return tx.transaction.delete({
             where: { id: part.id },
-          });
-        })
-      );
+          })
+        }),
+      )
 
       // Update parent transaction to no longer be split
       return tx.transaction.update({
@@ -337,8 +346,8 @@ export const recombineSplitTransactionHandler = protectedProcedure
             },
           },
         },
-      });
-    });
+      })
+    })
 
-    return { success: true, recombinedTransaction: updatedTransaction };
-  });
+    return { success: true, recombinedTransaction: updatedTransaction }
+  })

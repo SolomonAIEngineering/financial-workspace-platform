@@ -1,13 +1,13 @@
 import {
   TransactionCategory,
   TransactionFrequency,
-} from '@solomonai/prisma/client';
+} from '@solomonai/prisma/client'
 
-import { TRPCError } from '@trpc/server';
-import { createRouter } from '../trpc';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../middlewares/procedures';
-import { z } from 'zod';
+import { prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { z } from 'zod'
+import { protectedProcedure } from '../middlewares/procedures'
+import { createRouter } from '../trpc'
 
 // Recurring Transaction filter schema
 const recurringTransactionFilterSchema = z.object({
@@ -20,7 +20,7 @@ const recurringTransactionFilterSchema = z.object({
   bankAccountId: z.string().optional(),
   page: z.number().int().min(1).default(1),
   limit: z.number().int().min(1).max(100).default(20),
-});
+})
 
 // Recurring Transaction schema
 const recurringTransactionSchema = z.object({
@@ -47,34 +47,34 @@ const recurringTransactionSchema = z.object({
   affectAvailableBalance: z.boolean().default(true),
   notes: z.string().optional(),
   targetAccountId: z.string().optional(), // For transfers: destination account
-});
+})
 
 // Tag schema
 const tagSchema = z.object({
   tags: z.array(z.string()),
-});
+})
 
 // Notes schema
 const notesSchema = z.object({
   notes: z.string(),
-});
+})
 
 // Category schema
 const categorySchema = z.object({
   categorySlug: z.string(),
-});
+})
 
 // Merchant schema
 const merchantSchema = z.object({
   merchantName: z.string(),
   merchantId: z.string().optional(),
-});
+})
 
 // Assign schema
 const assignSchema = z.object({
   assignedToUserId: z.string(),
   notifyUser: z.boolean().default(false),
-});
+})
 
 // Auto-detect recurring transactions schema
 const detectRecurringTransactionsSchema = z.object({
@@ -82,7 +82,7 @@ const detectRecurringTransactionsSchema = z.object({
   minConfidence: z.number().min(0).max(1).default(0.7),
   minimumOccurrences: z.number().int().min(2).default(2),
   lookbackDays: z.number().int().min(30).default(90),
-});
+})
 
 export const recurringTransactionsRouter = createRouter({
   // Core Recurring Transaction Endpoints
@@ -91,8 +91,8 @@ export const recurringTransactionsRouter = createRouter({
   getRecurringTransactions: protectedProcedure
     .input(recurringTransactionFilterSchema)
     .query(async ({ ctx, input }) => {
-      const { page, limit, ...filters } = input;
-      const skip = (page - 1) * limit;
+      const { page, limit, ...filters } = input
+      const skip = (page - 1) * limit
 
       // Build filter conditions
       const where: any = {
@@ -100,38 +100,38 @@ export const recurringTransactionsRouter = createRouter({
         bankAccount: {
           userId: ctx.session?.userId,
         },
-      };
+      }
 
       if (filters.title) {
-        where.title = { contains: filters.title, mode: 'insensitive' };
+        where.title = { contains: filters.title, mode: 'insensitive' }
       }
 
       if (filters.merchantName) {
         where.merchantName = {
           contains: filters.merchantName,
           mode: 'insensitive',
-        };
+        }
       }
 
       if (filters.status) {
-        where.status = filters.status;
+        where.status = filters.status
       }
 
       if (filters.frequency) {
-        where.frequency = filters.frequency;
+        where.frequency = filters.frequency
       }
 
       if (filters.bankAccountId) {
-        where.bankAccountId = filters.bankAccountId;
+        where.bankAccountId = filters.bankAccountId
       }
 
       if (filters.minAmount !== undefined || filters.maxAmount !== undefined) {
-        where.amount = {};
+        where.amount = {}
         if (filters.minAmount !== undefined) {
-          where.amount.gte = filters.minAmount;
+          where.amount.gte = filters.minAmount
         }
         if (filters.maxAmount !== undefined) {
-          where.amount.lte = filters.maxAmount;
+          where.amount.lte = filters.maxAmount
         }
       }
 
@@ -159,10 +159,10 @@ export const recurringTransactionsRouter = createRouter({
             },
           },
         },
-      });
+      })
 
       // Get total count for pagination
-      const totalCount = await prisma.recurringTransaction.count({ where });
+      const totalCount = await prisma.recurringTransaction.count({ where })
 
       return {
         recurringTransactions,
@@ -172,7 +172,7 @@ export const recurringTransactionsRouter = createRouter({
           limit,
           pages: Math.ceil(totalCount / limit),
         },
-      };
+      }
     }),
 
   // GET /api/recurring-transactions/:id - Get a specific recurring transaction
@@ -207,8 +207,8 @@ export const recurringTransactionsRouter = createRouter({
               take: 10,
             },
           },
-        }
-      );
+        },
+      )
 
       if (
         !recurringTransaction ||
@@ -217,10 +217,10 @@ export const recurringTransactionsRouter = createRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Recurring transaction not found',
-        });
+        })
       }
 
-      return recurringTransaction;
+      return recurringTransaction
     }),
 
   // POST /api/recurring-transactions - Create a new recurring transaction
@@ -230,94 +230,94 @@ export const recurringTransactionsRouter = createRouter({
       // Verify bank account belongs to user
       const bankAccount = await prisma.bankAccount.findUnique({
         where: { id: input.bankAccountId },
-      });
+      })
 
       if (!bankAccount || bankAccount.userId !== ctx.session?.userId) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: 'Bank account not found or unauthorized',
-        });
+        })
       }
 
       // If targetAccountId is provided, verify it belongs to user
       if (input.targetAccountId) {
         const targetAccount = await prisma.bankAccount.findUnique({
           where: { id: input.targetAccountId },
-        });
+        })
 
         if (!targetAccount || targetAccount.userId !== ctx.session?.userId) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Target account not found or unauthorized',
-          });
+          })
         }
       }
 
       // Calculate next scheduled date based on frequency and start date
-      const startDate = new Date(input.startDate);
-      let nextScheduledDate = new Date(startDate);
+      const startDate = new Date(input.startDate)
+      let nextScheduledDate = new Date(startDate)
 
       // If start date is in the past, calculate the next occurrence
       if (nextScheduledDate < new Date()) {
-        const today = new Date();
+        const today = new Date()
 
         switch (input.frequency) {
           case 'WEEKLY':
             // Find next occurrence by adding weeks
             while (nextScheduledDate < today) {
               nextScheduledDate.setDate(
-                nextScheduledDate.getDate() + 7 * input.interval
-              );
+                nextScheduledDate.getDate() + 7 * input.interval,
+              )
             }
-            break;
+            break
           case 'BIWEEKLY':
             // Find next occurrence by adding 2 weeks
             while (nextScheduledDate < today) {
               nextScheduledDate.setDate(
-                nextScheduledDate.getDate() + 14 * input.interval
-              );
+                nextScheduledDate.getDate() + 14 * input.interval,
+              )
             }
-            break;
+            break
           case 'MONTHLY':
             // Find next occurrence by adding months
             while (nextScheduledDate < today) {
               nextScheduledDate.setMonth(
-                nextScheduledDate.getMonth() + 1 * input.interval
-              );
+                nextScheduledDate.getMonth() + 1 * input.interval,
+              )
             }
-            break;
+            break
           case 'SEMI_MONTHLY':
             // For semi-monthly (typically 1st and 15th), find next occurrence
             while (nextScheduledDate < today) {
               // If day is 1-14, move to 15th
               if (nextScheduledDate.getDate() < 15) {
-                nextScheduledDate.setDate(15);
+                nextScheduledDate.setDate(15)
               }
               // If day is 15-31, move to 1st of next month
               else {
-                nextScheduledDate.setMonth(nextScheduledDate.getMonth() + 1);
-                nextScheduledDate.setDate(1);
+                nextScheduledDate.setMonth(nextScheduledDate.getMonth() + 1)
+                nextScheduledDate.setDate(1)
               }
             }
-            break;
+            break
           case 'ANNUALLY':
             // Find next occurrence by adding years
             while (nextScheduledDate < today) {
               nextScheduledDate.setFullYear(
-                nextScheduledDate.getFullYear() + 1 * input.interval
-              );
+                nextScheduledDate.getFullYear() + 1 * input.interval,
+              )
             }
-            break;
+            break
           default:
             // For IRREGULAR or UNKNOWN, just use the next day
-            nextScheduledDate = new Date();
-            nextScheduledDate.setDate(nextScheduledDate.getDate() + 1);
-            break;
+            nextScheduledDate = new Date()
+            nextScheduledDate.setDate(nextScheduledDate.getDate() + 1)
+            break
         }
       }
 
       // Get current account balance to store as reference
-      const initialAccountBalance = bankAccount.currentBalance;
+      const initialAccountBalance = bankAccount.currentBalance
 
       // Create recurring transaction
       const recurringTransaction = await prisma.recurringTransaction.create({
@@ -329,7 +329,7 @@ export const recurringTransactionsRouter = createRouter({
           executionCount: 0,
           totalExecuted: 0,
         },
-      });
+      })
 
       // If affectAvailableBalance is true, update bank account scheduled flows
       if (input.affectAvailableBalance) {
@@ -342,7 +342,7 @@ export const recurringTransactionsRouter = createRouter({
                 increment: Math.abs(input.amount),
               },
             },
-          });
+          })
         }
         // For incoming transactions (positive amount), update scheduled inflows
         else if (input.amount > 0) {
@@ -353,11 +353,11 @@ export const recurringTransactionsRouter = createRouter({
                 increment: input.amount,
               },
             },
-          });
+          })
         }
       }
 
-      return recurringTransaction;
+      return recurringTransaction
     }),
 
   // PUT /api/recurring-transactions/:id - Update a recurring transaction
@@ -366,7 +366,7 @@ export const recurringTransactionsRouter = createRouter({
       z.object({
         id: z.string(),
         data: recurringTransactionSchema.partial(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Fetch the recurring transaction with its bank account to check ownership
@@ -381,7 +381,7 @@ export const recurringTransactionsRouter = createRouter({
               },
             },
           },
-        });
+        })
 
       if (
         !existingRecurringTransaction ||
@@ -390,20 +390,20 @@ export const recurringTransactionsRouter = createRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Recurring transaction not found',
-        });
+        })
       }
 
       // If updating bank account, verify new account belongs to user
       if (input.data.bankAccountId) {
         const bankAccount = await prisma.bankAccount.findUnique({
           where: { id: input.data.bankAccountId },
-        });
+        })
 
         if (!bankAccount || bankAccount.userId !== ctx.session?.userId) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Bank account not found or unauthorized',
-          });
+          })
         }
       }
 
@@ -411,13 +411,13 @@ export const recurringTransactionsRouter = createRouter({
       if (input.data.targetAccountId) {
         const targetAccount = await prisma.bankAccount.findUnique({
           where: { id: input.data.targetAccountId },
-        });
+        })
 
         if (!targetAccount || targetAccount.userId !== ctx.session?.userId) {
           throw new TRPCError({
             code: 'FORBIDDEN',
             message: 'Target account not found or unauthorized',
-          });
+          })
         }
       }
 
@@ -426,12 +426,12 @@ export const recurringTransactionsRouter = createRouter({
         input.data.amount !== undefined &&
         existingRecurringTransaction.affectAvailableBalance
       ) {
-        const oldAmount = existingRecurringTransaction.amount;
-        const newAmount = input.data.amount;
+        const oldAmount = existingRecurringTransaction.amount
+        const newAmount = input.data.amount
 
         // If both old and new amounts are outflows (negative)
         if (oldAmount < 0 && newAmount < 0) {
-          const difference = Math.abs(newAmount) - Math.abs(oldAmount);
+          const difference = Math.abs(newAmount) - Math.abs(oldAmount)
 
           // If new outflow is larger, increment scheduled outflows
           if (difference > 0) {
@@ -442,7 +442,7 @@ export const recurringTransactionsRouter = createRouter({
                   increment: difference,
                 },
               },
-            });
+            })
           }
           // If new outflow is smaller, decrement scheduled outflows
           else if (difference < 0) {
@@ -453,12 +453,12 @@ export const recurringTransactionsRouter = createRouter({
                   decrement: Math.abs(difference),
                 },
               },
-            });
+            })
           }
         }
         // If both old and new amounts are inflows (positive)
         else if (oldAmount > 0 && newAmount > 0) {
-          const difference = newAmount - oldAmount;
+          const difference = newAmount - oldAmount
 
           // If new inflow is larger, increment scheduled inflows
           if (difference > 0) {
@@ -469,7 +469,7 @@ export const recurringTransactionsRouter = createRouter({
                   increment: difference,
                 },
               },
-            });
+            })
           }
           // If new inflow is smaller, decrement scheduled inflows
           else if (difference < 0) {
@@ -480,7 +480,7 @@ export const recurringTransactionsRouter = createRouter({
                   decrement: Math.abs(difference),
                 },
               },
-            });
+            })
           }
         }
         // If changing from outflow to inflow
@@ -495,7 +495,7 @@ export const recurringTransactionsRouter = createRouter({
                 increment: newAmount,
               },
             },
-          });
+          })
         }
         // If changing from inflow to outflow
         else if (oldAmount > 0 && newAmount < 0) {
@@ -509,12 +509,12 @@ export const recurringTransactionsRouter = createRouter({
                 increment: Math.abs(newAmount),
               },
             },
-          });
+          })
         }
       }
 
       // If frequency or dates are changed, recalculate the next scheduled date
-      let nextScheduledDate = existingRecurringTransaction.nextScheduledDate;
+      let nextScheduledDate = existingRecurringTransaction.nextScheduledDate
 
       if (
         input.data.frequency ||
@@ -524,16 +524,16 @@ export const recurringTransactionsRouter = createRouter({
         input.data.dayOfWeek
       ) {
         const frequency =
-          input.data.frequency || existingRecurringTransaction.frequency;
+          input.data.frequency || existingRecurringTransaction.frequency
         const interval =
-          input.data.interval || existingRecurringTransaction.interval;
+          input.data.interval || existingRecurringTransaction.interval
         const startDate = input.data.startDate
           ? new Date(input.data.startDate)
-          : existingRecurringTransaction.startDate;
+          : existingRecurringTransaction.startDate
 
         // Create a new date to calculate from
-        nextScheduledDate = new Date(startDate);
-        const today = new Date();
+        nextScheduledDate = new Date(startDate)
+        const today = new Date()
 
         // Calculate next occurrence based on frequency
         if (nextScheduledDate < today) {
@@ -541,45 +541,45 @@ export const recurringTransactionsRouter = createRouter({
             case 'WEEKLY':
               while (nextScheduledDate < today) {
                 nextScheduledDate.setDate(
-                  nextScheduledDate.getDate() + 7 * interval
-                );
+                  nextScheduledDate.getDate() + 7 * interval,
+                )
               }
-              break;
+              break
             case 'BIWEEKLY':
               while (nextScheduledDate < today) {
                 nextScheduledDate.setDate(
-                  nextScheduledDate.getDate() + 14 * interval
-                );
+                  nextScheduledDate.getDate() + 14 * interval,
+                )
               }
-              break;
+              break
             case 'MONTHLY':
               while (nextScheduledDate < today) {
                 nextScheduledDate.setMonth(
-                  nextScheduledDate.getMonth() + interval
-                );
+                  nextScheduledDate.getMonth() + interval,
+                )
               }
-              break;
+              break
             case 'SEMI_MONTHLY':
               while (nextScheduledDate < today) {
                 if (nextScheduledDate.getDate() < 15) {
-                  nextScheduledDate.setDate(15);
+                  nextScheduledDate.setDate(15)
                 } else {
-                  nextScheduledDate.setMonth(nextScheduledDate.getMonth() + 1);
-                  nextScheduledDate.setDate(1);
+                  nextScheduledDate.setMonth(nextScheduledDate.getMonth() + 1)
+                  nextScheduledDate.setDate(1)
                 }
               }
-              break;
+              break
             case 'ANNUALLY':
               while (nextScheduledDate < today) {
                 nextScheduledDate.setFullYear(
-                  nextScheduledDate.getFullYear() + interval
-                );
+                  nextScheduledDate.getFullYear() + interval,
+                )
               }
-              break;
+              break
             default:
-              nextScheduledDate = new Date();
-              nextScheduledDate.setDate(nextScheduledDate.getDate() + 1);
-              break;
+              nextScheduledDate = new Date()
+              nextScheduledDate.setDate(nextScheduledDate.getDate() + 1)
+              break
           }
         }
       }
@@ -593,9 +593,9 @@ export const recurringTransactionsRouter = createRouter({
             nextScheduledDate,
             lastModifiedBy: ctx.session?.userId,
           },
-        });
+        })
 
-      return updatedRecurringTransaction;
+      return updatedRecurringTransaction
     }),
 
   // DELETE /api/recurring-transactions/:id - Delete a recurring transaction
@@ -614,7 +614,7 @@ export const recurringTransactionsRouter = createRouter({
               },
             },
           },
-        });
+        })
 
       if (
         !existingRecurringTransaction ||
@@ -623,7 +623,7 @@ export const recurringTransactionsRouter = createRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Recurring transaction not found',
-        });
+        })
       }
 
       // If this recurring transaction affects available balance, update bank account scheduled flows
@@ -637,7 +637,7 @@ export const recurringTransactionsRouter = createRouter({
                 decrement: Math.abs(existingRecurringTransaction.amount),
               },
             },
-          });
+          })
         } else if (existingRecurringTransaction.amount > 0) {
           // If inflow (positive amount), decrease scheduled inflows
           await prisma.bankAccount.update({
@@ -647,16 +647,16 @@ export const recurringTransactionsRouter = createRouter({
                 decrement: existingRecurringTransaction.amount,
               },
             },
-          });
+          })
         }
       }
 
       // Delete the recurring transaction
       await prisma.recurringTransaction.delete({
         where: { id: input.id },
-      });
+      })
 
-      return { success: true };
+      return { success: true }
     }),
 
   // GET /api/recurring-transactions/:id/transactions - Get all transactions associated with a recurring transaction
@@ -666,7 +666,7 @@ export const recurringTransactionsRouter = createRouter({
         id: z.string(),
         page: z.number().int().min(1).default(1),
         limit: z.number().int().min(1).max(100).default(20),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       // Fetch the recurring transaction to check ownership
@@ -680,8 +680,8 @@ export const recurringTransactionsRouter = createRouter({
               },
             },
           },
-        }
-      );
+        },
+      )
 
       if (
         !recurringTransaction ||
@@ -690,11 +690,11 @@ export const recurringTransactionsRouter = createRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Recurring transaction not found',
-        });
+        })
       }
 
-      const { page, limit } = input;
-      const skip = (page - 1) * limit;
+      const { page, limit } = input
+      const skip = (page - 1) * limit
 
       // Get associated transactions with pagination
       const transactions = await prisma.transaction.findMany({
@@ -713,14 +713,14 @@ export const recurringTransactionsRouter = createRouter({
             },
           },
         },
-      });
+      })
 
       // Get total count for pagination
       const totalCount = await prisma.transaction.count({
         where: {
           recurringTransactionId: input.id,
         },
-      });
+      })
 
       return {
         transactions,
@@ -730,7 +730,7 @@ export const recurringTransactionsRouter = createRouter({
           limit,
           pages: Math.ceil(totalCount / limit),
         },
-      };
+      }
     }),
 
   // Recurring Transaction Management Endpoints
@@ -741,7 +741,7 @@ export const recurringTransactionsRouter = createRouter({
       z.object({
         id: z.string(),
         tags: z.array(z.string()),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Fetch the recurring transaction to check ownership
@@ -755,8 +755,8 @@ export const recurringTransactionsRouter = createRouter({
               },
             },
           },
-        }
-      );
+        },
+      )
 
       if (
         !recurringTransaction ||
@@ -765,13 +765,13 @@ export const recurringTransactionsRouter = createRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Recurring transaction not found',
-        });
+        })
       }
 
       // Merge existing tags with new tags (remove duplicates)
       const updatedTags = [
         ...new Set([...recurringTransaction.tags, ...input.tags]),
-      ];
+      ]
 
       // Update recurring transaction with new tags
       const updatedRecurringTransaction =
@@ -781,9 +781,9 @@ export const recurringTransactionsRouter = createRouter({
             tags: updatedTags,
             lastModifiedBy: ctx.session?.userId,
           },
-        });
+        })
 
-      return updatedRecurringTransaction;
+      return updatedRecurringTransaction
     }),
 
   // PUT /api/recurring-transactions/:id/notes - Add or update notes for a recurring transaction
@@ -792,7 +792,7 @@ export const recurringTransactionsRouter = createRouter({
       z.object({
         id: z.string(),
         notes: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Fetch the recurring transaction to check ownership
@@ -806,8 +806,8 @@ export const recurringTransactionsRouter = createRouter({
               },
             },
           },
-        }
-      );
+        },
+      )
 
       if (
         !recurringTransaction ||
@@ -816,7 +816,7 @@ export const recurringTransactionsRouter = createRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Recurring transaction not found',
-        });
+        })
       }
 
       // Update recurring transaction with notes
@@ -827,9 +827,9 @@ export const recurringTransactionsRouter = createRouter({
             notes: input.notes,
             lastModifiedBy: ctx.session?.userId,
           },
-        });
+        })
 
-      return updatedRecurringTransaction;
+      return updatedRecurringTransaction
     }),
 
   // PUT /api/recurring-transactions/:id/category - Update the category of a recurring transaction
@@ -838,7 +838,7 @@ export const recurringTransactionsRouter = createRouter({
       z.object({
         id: z.string(),
         categorySlug: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Fetch the recurring transaction to check ownership
@@ -852,8 +852,8 @@ export const recurringTransactionsRouter = createRouter({
               },
             },
           },
-        }
-      );
+        },
+      )
 
       if (
         !recurringTransaction ||
@@ -862,19 +862,19 @@ export const recurringTransactionsRouter = createRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Recurring transaction not found',
-        });
+        })
       }
 
       // Verify the category exists
       const category = await prisma.customTransactionCategory.findUnique({
         where: { id: input.categorySlug },
-      });
+      })
 
       if (!category) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Category not found',
-        });
+        })
       }
 
       // Update recurring transaction with new category
@@ -885,9 +885,9 @@ export const recurringTransactionsRouter = createRouter({
             categorySlug: input.categorySlug,
             lastModifiedBy: ctx.session?.userId,
           },
-        });
+        })
 
-      return updatedRecurringTransaction;
+      return updatedRecurringTransaction
     }),
 
   // PUT /api/recurring-transactions/:id/merchant - Update the merchant details of a recurring transaction
@@ -897,7 +897,7 @@ export const recurringTransactionsRouter = createRouter({
         id: z.string(),
         merchantName: z.string(),
         merchantId: z.string().optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Fetch the recurring transaction to check ownership
@@ -911,8 +911,8 @@ export const recurringTransactionsRouter = createRouter({
               },
             },
           },
-        }
-      );
+        },
+      )
 
       if (
         !recurringTransaction ||
@@ -921,7 +921,7 @@ export const recurringTransactionsRouter = createRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Recurring transaction not found',
-        });
+        })
       }
 
       // Update recurring transaction with new merchant details
@@ -933,9 +933,9 @@ export const recurringTransactionsRouter = createRouter({
             merchantId: input.merchantId,
             lastModifiedBy: ctx.session?.userId,
           },
-        });
+        })
 
-      return updatedRecurringTransaction;
+      return updatedRecurringTransaction
     }),
 
   // PUT /api/recurring-transactions/:id/assign - Assign a recurring transaction to a specific user
@@ -945,7 +945,7 @@ export const recurringTransactionsRouter = createRouter({
         id: z.string(),
         assignedToUserId: z.string(),
         notifyUser: z.boolean().default(false),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Fetch the recurring transaction to check ownership
@@ -959,8 +959,8 @@ export const recurringTransactionsRouter = createRouter({
               },
             },
           },
-        }
-      );
+        },
+      )
 
       if (
         !recurringTransaction ||
@@ -969,7 +969,7 @@ export const recurringTransactionsRouter = createRouter({
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'Recurring transaction not found',
-        });
+        })
       }
 
       // TODO: Verify the assignedToUserId has appropriate permissions
@@ -984,14 +984,14 @@ export const recurringTransactionsRouter = createRouter({
             // assignedToUserId: input.assignedToUserId,
             lastModifiedBy: ctx.session?.userId,
           },
-        });
+        })
 
       // TODO: If notifyUser is true, send notification to assigned user
       if (input.notifyUser) {
         // Implement notification logic here
       }
 
-      return updatedRecurringTransaction;
+      return updatedRecurringTransaction
     }),
 
   // POST /api/recurring-transactions/detect - Auto-detect recurring transactions from existing transactions
@@ -999,21 +999,21 @@ export const recurringTransactionsRouter = createRouter({
     .input(detectRecurringTransactionsSchema)
     .mutation(async ({ ctx, input }) => {
       const { bankAccountId, minConfidence, minimumOccurrences, lookbackDays } =
-        input;
+        input
 
       // Build where condition for transactions
       const where: any = {
         userId: ctx.session?.userId,
-      };
+      }
 
       if (bankAccountId) {
-        where.bankAccountId = bankAccountId;
+        where.bankAccountId = bankAccountId
       }
 
       // Set lookback date
-      const lookbackDate = new Date();
-      lookbackDate.setDate(lookbackDate.getDate() - lookbackDays);
-      where.date = { gte: lookbackDate };
+      const lookbackDate = new Date()
+      lookbackDate.setDate(lookbackDate.getDate() - lookbackDays)
+      where.date = { gte: lookbackDate }
 
       // Get all transactions in the lookback period
       const transactions = await prisma.transaction.findMany({
@@ -1028,157 +1028,155 @@ export const recurringTransactionsRouter = createRouter({
           bankAccountId: true,
           isRecurring: true,
         },
-      });
+      })
 
       // Simplified algorithm to detect recurring patterns
       // Group transactions by merchantName (or name if no merchantName)
-      const groupedByMerchant: Record<string, any[]> = {};
+      const groupedByMerchant: Record<string, any[]> = {}
 
       transactions.forEach((transaction) => {
-        const key = transaction.merchantName || transaction.name;
+        const key = transaction.merchantName || transaction.name
         if (!groupedByMerchant[key]) {
-          groupedByMerchant[key] = [];
+          groupedByMerchant[key] = []
         }
-        groupedByMerchant[key].push(transaction);
-      });
+        groupedByMerchant[key].push(transaction)
+      })
 
       // Process each merchant group to detect patterns
-      const detectedRecurringTransactions: any[] = [];
+      const detectedRecurringTransactions: any[] = []
 
       for (const [merchantName, merchantTransactions] of Object.entries(
-        groupedByMerchant
+        groupedByMerchant,
       )) {
         // Skip if not enough transactions
         if (merchantTransactions.length < minimumOccurrences) {
-          continue;
+          continue
         }
 
         // Sort by date
-        merchantTransactions.sort(
-          (a, b) => a.date.getTime() - b.date.getTime()
-        );
+        merchantTransactions.sort((a, b) => a.date.getTime() - b.date.getTime())
 
         // Simple pattern detection - check if transactions occur at regular intervals
-        const intervals: number[] = [];
+        const intervals: number[] = []
         for (let i = 1; i < merchantTransactions.length; i++) {
           const dayDiff = Math.round(
             (merchantTransactions[i].date.getTime() -
               merchantTransactions[i - 1].date.getTime()) /
-            (1000 * 60 * 60 * 24)
-          );
-          intervals.push(dayDiff);
+              (1000 * 60 * 60 * 24),
+          )
+          intervals.push(dayDiff)
         }
 
         // Calculate average interval and its consistency (standard deviation)
         const avgInterval =
-          intervals.reduce((a, b) => a + b, 0) / intervals.length;
+          intervals.reduce((a, b) => a + b, 0) / intervals.length
         const variance =
           intervals.reduce((a, b) => a + Math.pow(b - avgInterval, 2), 0) /
-          intervals.length;
-        const stdDev = Math.sqrt(variance);
+          intervals.length
+        const stdDev = Math.sqrt(variance)
 
         // Determine frequency based on average interval
-        let frequency: TransactionFrequency;
-        let interval = 1;
+        let frequency: TransactionFrequency
+        let interval = 1
 
         if (avgInterval >= 25 && avgInterval <= 35) {
-          frequency = 'MONTHLY';
+          frequency = 'MONTHLY'
         } else if (avgInterval >= 13 && avgInterval <= 15) {
-          frequency = 'SEMI_MONTHLY';
+          frequency = 'SEMI_MONTHLY'
         } else if (avgInterval >= 12 && avgInterval <= 16) {
-          frequency = 'BIWEEKLY';
+          frequency = 'BIWEEKLY'
         } else if (avgInterval >= 6 && avgInterval <= 8) {
-          frequency = 'WEEKLY';
+          frequency = 'WEEKLY'
         } else if (avgInterval >= 350 && avgInterval <= 380) {
-          frequency = 'ANNUALLY';
+          frequency = 'ANNUALLY'
         } else {
           // If interval doesn't match common patterns, use a frequency that's closest
           if (avgInterval > 90) {
-            frequency = 'ANNUALLY';
-            interval = Math.round(avgInterval / 365);
+            frequency = 'ANNUALLY'
+            interval = Math.round(avgInterval / 365)
           } else if (avgInterval > 21) {
-            frequency = 'MONTHLY';
-            interval = Math.round(avgInterval / 30);
+            frequency = 'MONTHLY'
+            interval = Math.round(avgInterval / 30)
           } else if (avgInterval > 10) {
-            frequency = 'BIWEEKLY';
-            interval = Math.round(avgInterval / 14);
+            frequency = 'BIWEEKLY'
+            interval = Math.round(avgInterval / 14)
           } else {
-            frequency = 'WEEKLY';
-            interval = Math.round(avgInterval / 7);
+            frequency = 'WEEKLY'
+            interval = Math.round(avgInterval / 7)
           }
         }
 
         // Calculate confidence score based on consistency of intervals
         // Lower standard deviation means higher confidence
-        const maxAllowedStdDev = avgInterval * 0.3; // Allow up to 30% deviation
+        const maxAllowedStdDev = avgInterval * 0.3 // Allow up to 30% deviation
         const confidenceScore = Math.max(
           0,
-          Math.min(1, 1 - stdDev / maxAllowedStdDev)
-        );
+          Math.min(1, 1 - stdDev / maxAllowedStdDev),
+        )
 
         // Skip if confidence score is too low
         if (confidenceScore < minConfidence) {
-          continue;
+          continue
         }
 
         // Check if amounts are consistent
-        const amounts = merchantTransactions.map((t) => t.amount);
-        const avgAmount = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+        const amounts = merchantTransactions.map((t) => t.amount)
+        const avgAmount = amounts.reduce((a, b) => a + b, 0) / amounts.length
         const amountVariance =
           amounts.reduce((a, b) => a + Math.pow(b - avgAmount, 2), 0) /
-          amounts.length;
-        const amountStdDev = Math.sqrt(amountVariance);
-        const isVariableAmount = amountStdDev / Math.abs(avgAmount) > 0.05; // 5% threshold
+          amounts.length
+        const amountStdDev = Math.sqrt(amountVariance)
+        const isVariableAmount = amountStdDev / Math.abs(avgAmount) > 0.05 // 5% threshold
 
         // Calculate next scheduled date based on detected pattern
-        const lastTransactionDate = merchantTransactions.at(-1)?.date;
-        if (!lastTransactionDate) continue;
-        const nextScheduledDate = new Date(lastTransactionDate);
+        const lastTransactionDate = merchantTransactions.at(-1)?.date
+        if (!lastTransactionDate) continue
+        const nextScheduledDate = new Date(lastTransactionDate)
 
         switch (frequency) {
           case 'WEEKLY':
             nextScheduledDate.setDate(
-              nextScheduledDate.getDate() + 7 * interval
-            );
-            break;
+              nextScheduledDate.getDate() + 7 * interval,
+            )
+            break
           case 'BIWEEKLY':
             nextScheduledDate.setDate(
-              nextScheduledDate.getDate() + 14 * interval
-            );
-            break;
+              nextScheduledDate.getDate() + 14 * interval,
+            )
+            break
           case 'MONTHLY':
-            nextScheduledDate.setMonth(nextScheduledDate.getMonth() + interval);
-            break;
+            nextScheduledDate.setMonth(nextScheduledDate.getMonth() + interval)
+            break
           case 'SEMI_MONTHLY':
             if (nextScheduledDate.getDate() < 15) {
-              nextScheduledDate.setDate(15);
+              nextScheduledDate.setDate(15)
             } else {
-              nextScheduledDate.setMonth(nextScheduledDate.getMonth() + 1);
-              nextScheduledDate.setDate(1);
+              nextScheduledDate.setMonth(nextScheduledDate.getMonth() + 1)
+              nextScheduledDate.setDate(1)
             }
-            break;
+            break
           case 'ANNUALLY':
             nextScheduledDate.setFullYear(
-              nextScheduledDate.getFullYear() + interval
-            );
-            break;
+              nextScheduledDate.getFullYear() + interval,
+            )
+            break
           default:
-            nextScheduledDate.setMonth(nextScheduledDate.getMonth() + 1);
-            break;
+            nextScheduledDate.setMonth(nextScheduledDate.getMonth() + 1)
+            break
         }
 
         // Get dayOfMonth or dayOfWeek
-        let dayOfMonth: number | null = null;
-        let dayOfWeek: number | null = null;
+        let dayOfMonth: number | null = null
+        let dayOfWeek: number | null = null
 
         if (
           frequency === 'MONTHLY' ||
           frequency === 'SEMI_MONTHLY' ||
           frequency === 'ANNUALLY'
         ) {
-          dayOfMonth = lastTransactionDate.getDate();
+          dayOfMonth = lastTransactionDate.getDate()
         } else if (frequency === 'WEEKLY' || frequency === 'BIWEEKLY') {
-          dayOfWeek = lastTransactionDate.getDay();
+          dayOfWeek = lastTransactionDate.getDay()
         }
 
         // Create recurring transaction suggestion
@@ -1199,13 +1197,13 @@ export const recurringTransactionsRouter = createRouter({
           confidenceScore,
           source: 'detected',
           transactionIds: merchantTransactions.map((t) => t.id),
-        });
+        })
       }
 
       return {
         detectedRecurringTransactions,
         count: detectedRecurringTransactions.length,
-      };
+      }
     }),
 
   // Search recurring transactions with comprehensive filters
@@ -1218,11 +1216,11 @@ export const recurringTransactionsRouter = createRouter({
         categories: z.array(z.nativeEnum(TransactionCategory)).optional(),
         bankAccountIds: z.array(z.string()).optional(),
         limit: z.number().min(1).max(100).default(20),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       try {
-        const userId = ctx.session?.userId;
+        const userId = ctx.session?.userId
         const {
           query,
           minAmount,
@@ -1230,44 +1228,44 @@ export const recurringTransactionsRouter = createRouter({
           categories,
           bankAccountIds,
           limit,
-        } = input;
+        } = input
 
         // Build the where clause
         const where: any = {
           userId,
           isRecurring: true,
-        };
+        }
 
         // Text search
         if (query && query.trim() !== '') {
-          const searchTerm = query.trim();
+          const searchTerm = query.trim()
           where.OR = [
             { name: { contains: searchTerm, mode: 'insensitive' } },
             { merchantName: { contains: searchTerm, mode: 'insensitive' } },
             { description: { contains: searchTerm, mode: 'insensitive' } },
-          ];
+          ]
         }
 
         // Amount filters
         if (minAmount !== undefined) {
-          where.amount = { ...where.amount, gte: minAmount };
+          where.amount = { ...where.amount, gte: minAmount }
         }
         if (maxAmount !== undefined) {
-          where.amount = { ...where.amount, lte: maxAmount };
+          where.amount = { ...where.amount, lte: maxAmount }
         }
 
         // Categories filter
         if (categories && categories.length > 0) {
-          where.category = { in: categories };
+          where.category = { in: categories }
         }
 
         // Filter by specific bank accounts
         if (bankAccountIds && bankAccountIds.length > 0) {
-          where.bankAccountId = { in: bankAccountIds };
+          where.bankAccountId = { in: bankAccountIds }
         }
 
         // Get total count for pagination
-        const totalCount = await prisma.transaction.count({ where });
+        const totalCount = await prisma.transaction.count({ where })
 
         // Execute the search
         const recurringTransactions = await prisma.transaction.findMany({
@@ -1285,18 +1283,18 @@ export const recurringTransactionsRouter = createRouter({
             date: 'desc',
           },
           take: limit,
-        });
+        })
 
         return {
           recurringTransactions,
           totalCount,
-        };
+        }
       } catch (error) {
-        console.error('Error searching recurring transactions:', error);
+        console.error('Error searching recurring transactions:', error)
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to search recurring transactions',
-        });
+        })
       }
     }),
-});
+})

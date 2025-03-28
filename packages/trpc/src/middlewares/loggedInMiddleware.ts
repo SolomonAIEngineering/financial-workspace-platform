@@ -1,15 +1,15 @@
-import { TRPCError } from '@trpc/server';
-import { t } from '../trpc';
+import { TRPCError } from '@trpc/server'
+import { t } from '../trpc'
 
 export const loggedInMiddleware = t.middleware(async ({ ctx, next }) => {
-  const userId = ctx.session?.userId;
+  const userId = ctx.session?.userId
 
   if (!userId) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'Login required',
-    });
+    })
   }
 
-  return next({ ctx });
-});
+  return next({ ctx })
+})

@@ -1,14 +1,13 @@
-import { getTransactionSchema, transactionWithIdSchema } from '../schema';
+import { getTransactionSchema } from '../schema'
 
-import { TRPCError } from '@trpc/server';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
+import { prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 export const getTransactionHandler = protectedProcedure
   .input(getTransactionSchema)
   .query(async ({ ctx, input }) => {
-    const userId = ctx.session?.userId as string;
+    const userId = ctx.session?.userId as string
 
     // get the transaction uniquely by id and userId
     const transaction = await prisma.transaction.findUnique({
@@ -42,14 +41,14 @@ export const getTransactionHandler = protectedProcedure
         },
         recurringTransaction: true,
       },
-    });
+    })
 
     if (!transaction) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Transaction not found',
-      });
+      })
     }
 
-    return transaction;
-  });
+    return transaction
+  })

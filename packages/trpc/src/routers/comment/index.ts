@@ -5,13 +5,13 @@
  * within the platform.
  */
 
-import { create } from './handlers/create';
-import { deleteComment } from './handlers/delete';
-import { get } from './handlers/get';
-import { getByDiscussion } from './handlers/get-by-discussion';
+import { create } from './handlers/create'
+import { deleteComment } from './handlers/delete'
+import { get } from './handlers/get'
+import { getByDiscussion } from './handlers/get-by-discussion'
 // Import all handlers
-import { router } from '../../trpc';
-import { update } from './handlers/update';
+import { router } from '../../trpc'
+import { update } from './handlers/update'
 
 // Create and export the comment router
 export const commentRouter = router({
@@ -20,4 +20,4 @@ export const commentRouter = router({
   delete: deleteComment,
   get,
   getByDiscussion,
-});
+})

@@ -1,8 +1,7 @@
-import { TRPCError } from '@trpc/server';
-import { bulkUpdateAssignedToSchema } from '../schema';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { z } from 'zod';
+import { TRPCError } from '@trpc/server'
+import { bulkUpdateAssignedToSchema } from '../schema'
+import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Updates the assignee for multiple transactions in bulk.
@@ -24,7 +23,7 @@ import { z } from 'zod';
 export const bulkUpdateAssignedToHandler = protectedProcedure
   .input(bulkUpdateAssignedToSchema)
   .mutation(async ({ ctx, input }) => {
-    const { transactionIds, assignedTo, teamId, notifyAssignees } = input;
+    const { transactionIds, assignedTo, teamId, notifyAssignees } = input
 
     try {
       // Verify user has access to all transactions
@@ -34,27 +33,27 @@ export const bulkUpdateAssignedToHandler = protectedProcedure
           userId: ctx.session?.userId,
         },
         select: { id: true },
-      });
+      })
 
       // ensure the list of transactions is not empty
       if (existingTransactions.length === 0) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'No transactions found',
-        });
+        })
       }
 
-      const existingIds = existingTransactions.map((tx) => tx.id);
+      const existingIds = existingTransactions.map((tx: { id: string }) => tx.id)
       const missingIds = transactionIds.filter(
-        (id) => !existingIds.includes(id)
-      );
+        (id) => !existingIds.includes(id),
+      )
 
       if (existingIds.length !== transactionIds.length) {
         throw new TRPCError({
           code: 'FORBIDDEN',
           message: `${missingIds.length} transaction(s) not found or unauthorized`,
           cause: { missingIds },
-        });
+        })
       }
 
       // Verify that both users are part of the same team
@@ -63,28 +62,28 @@ export const bulkUpdateAssignedToHandler = protectedProcedure
           where: {
             teamId: teamId,
             userId: {
-              in: [ctx.session.userId, assignedTo]
-            }
+              in: [ctx.session.userId, assignedTo],
+            },
           },
           select: {
-            userId: true
-          }
-        });
+            userId: true,
+          },
+        })
 
-        const userIds = teamMembers.map(member => member.userId);
-        const isCurrentUserInTeam = userIds.includes(ctx.session.userId);
-        const isAssignedUserInTeam = userIds.includes(assignedTo);
+        const userIds = teamMembers.map((member: { userId: string }) => member.userId)
+        const isCurrentUserInTeam = userIds.includes(ctx.session.userId)
+        const isAssignedUserInTeam = userIds.includes(assignedTo)
 
         if (!isCurrentUserInTeam || !isAssignedUserInTeam) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
-            message: 'One or both users are not part of the specified team'
-          });
+            message: 'One or both users are not part of the specified team',
+          })
         }
       }
 
       // Execute all operations in a transaction for atomicity
-      const now = new Date();
+      const now = new Date()
 
       return await prisma.$transaction(async (tx) => {
         // Bulk update all transactions
@@ -97,13 +96,13 @@ export const bulkUpdateAssignedToHandler = protectedProcedure
             assigneeId: assignedTo,
             lastModifiedAt: now,
           },
-        });
+        })
 
         if (updateResult.count === 0) {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to update transactions',
-          });
+          })
         }
 
         // Get updated transactions with basic info for the response
@@ -117,7 +116,7 @@ export const bulkUpdateAssignedToHandler = protectedProcedure
             assigneeId: true,
             assignedAt: true,
           },
-        });
+        })
 
         // TODO: If notifyAssignees is true, queue notifications
         if (notifyAssignees && assignedTo) {
@@ -129,19 +128,19 @@ export const bulkUpdateAssignedToHandler = protectedProcedure
           success: true,
           updatedTransactions,
           timestamp: now,
-        };
-      });
+        }
+      })
     } catch (error) {
       // Handle any errors that weren't explicitly caught
       if (error instanceof TRPCError) {
-        throw error;
+        throw error
       }
 
-      console.error('Error in bulkUpdateAssignedTo:', error);
+      console.error('Error in bulkUpdateAssignedTo:', error)
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Failed to update transaction assignments',
         cause: error,
-      });
+      })
     }
   })

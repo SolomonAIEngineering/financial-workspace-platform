@@ -1,20 +1,20 @@
-import { NodeApi } from '@udecode/plate';
-import { TRPCError } from '@trpc/server';
-import { prisma } from '@solomonai/prisma';
-import { protectedProcedure } from '../../../middlewares/procedures';
-import { updateDocumentSchema, MAX_CONTENT_LENGTH } from '../schema';
+import { prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { NodeApi } from '@udecode/plate'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { MAX_CONTENT_LENGTH, updateDocumentSchema } from '../schema'
 
 /**
  * Protected procedure to update a document.
- * 
+ *
  * This procedure:
  * 1. Verifies the user is authenticated via the protected procedure middleware
  * 2. Validates the document content length
  * 3. Updates the document with the provided fields
- * 
+ *
  * @input {UpdateDocumentInput} - Document fields to update including ID
  * @returns void
- * 
+ *
  * @throws {TRPCError} BAD_REQUEST - If the content is too long
  * @throws {TRPCError} NOT_FOUND - If the document does not exist or user doesn't have access
  */
@@ -23,16 +23,16 @@ export const update = protectedProcedure
   .mutation(async ({ ctx, input }) => {
     const content = input.contentRich
       ? NodeApi.string({
-        children: input.contentRich,
-        type: 'root',
-      })
-      : undefined;
+          children: input.contentRich,
+          type: 'root',
+        })
+      : undefined
 
     if (content && content.length > MAX_CONTENT_LENGTH) {
       throw new TRPCError({
         code: 'BAD_REQUEST',
         message: 'Content is too long',
-      });
+      })
     }
 
     await prisma.document.update({
@@ -53,5 +53,5 @@ export const update = protectedProcedure
         id: input.id,
         userId: ctx.session?.userId,
       },
-    });
-  });
+    })
+  })
