@@ -21,7 +21,7 @@ import { protectedProcedure } from '../../../middlewares/procedures'
 export const deleteAccount = protectedProcedure.mutation(async ({ ctx }) => {
   // First, check if user has a Stripe customer ID
   const user = await prisma.user.findUnique({
-    where: { id: ctx.userId },
+    where: { id: ctx.session?.userId },
     select: { stripeCustomerId: true, email: true },
   })
 
@@ -66,7 +66,7 @@ export const deleteAccount = protectedProcedure.mutation(async ({ ctx }) => {
     // Delete contact in Loops using the SDK
     const response = await loops.deleteContact({
       email: ctx.user?.email ?? '',
-      userId: ctx.userId,
+      userId: ctx.session?.userId ?? '',
     })
 
     if (!response.success) {
@@ -80,13 +80,13 @@ export const deleteAccount = protectedProcedure.mutation(async ({ ctx }) => {
   try {
     // First delete team associations to avoid foreign key constraint violation
     await prisma.usersOnTeam.deleteMany({
-      where: { userId: ctx.userId },
+      where: { userId: ctx.session?.userId ?? '' },
     })
     // With onDelete: Cascade set in the Prisma schema,
     // we don't need to manually delete related records first
     // Just delete the user and all related records will be deleted automatically
     await prisma.user.delete({
-      where: { id: ctx.userId },
+      where: { id: ctx.session?.userId ?? '' },
     })
 
     return { success: true }

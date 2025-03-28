@@ -1,6 +1,6 @@
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { prisma } from '@solomonai/prisma'
 import { professionalProfileSchema } from '../schema'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Update the professional profile for the authenticated user
@@ -16,9 +16,10 @@ import { professionalProfileSchema } from '../schema'
 export const updateProfessionalProfile = protectedProcedure
   .input(professionalProfileSchema)
   .mutation(async ({ ctx, input }) => {
+    const userId = ctx.session?.userId
     const updatedUser = await prisma.user.update({
       data: input,
-      where: { id: ctx.userId },
+      where: { id: userId },
     })
 
     return updatedUser

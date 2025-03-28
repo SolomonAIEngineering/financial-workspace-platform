@@ -20,7 +20,7 @@ import { protectedProcedure } from '../../../middlewares/procedures'
  * @returns A boolean indicating whether the user has at least one team
  */
 export const hasTeam = protectedProcedure.query(async ({ ctx }) => {
-  const { userId } = ctx
+  const userId = ctx.session?.userId
 
   // Count the number of teams the user is a member of
   const teamsCount = await prisma.usersOnTeam.count({

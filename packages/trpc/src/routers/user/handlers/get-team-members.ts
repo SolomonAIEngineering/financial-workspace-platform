@@ -1,5 +1,5 @@
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Get team members (users with the same teamName)
@@ -14,7 +14,7 @@ import { prisma } from '@solomonai/prisma'
 export const getTeamMembers = protectedProcedure.query(async ({ ctx }) => {
   const currentUser = await prisma.user.findUnique({
     select: { organizationName: true, teamName: true },
-    where: { id: ctx.userId },
+    where: { id: ctx.session?.userId },
   })
 
   if (!currentUser?.teamName) {
@@ -32,7 +32,7 @@ export const getTeamMembers = protectedProcedure.query(async ({ ctx }) => {
       profileImageUrl: true,
     },
     where: {
-      id: { not: ctx.userId }, // Exclude current user
+      id: { not: ctx.session?.userId }, // Exclude current user
       organizationName: currentUser.organizationName,
       teamName: currentUser.teamName,
     },

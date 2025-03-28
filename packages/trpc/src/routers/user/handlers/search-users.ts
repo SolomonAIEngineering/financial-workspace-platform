@@ -1,5 +1,5 @@
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 import { searchUsersSchema } from '../schema'
 
 /**

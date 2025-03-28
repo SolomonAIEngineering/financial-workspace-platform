@@ -1,8 +1,8 @@
-import { prisma } from '@solomonai/prisma'
-import { TransactionCategory } from '@solomonai/prisma/client'
 import { TRPCError } from '@trpc/server'
-import { z } from 'zod'
+import { TransactionCategory } from '@solomonai/prisma/client'
+import { prisma } from '@solomonai/prisma'
 import { protectedProcedure } from '../../../middlewares/procedures'
+import { z } from 'zod'
 
 // Split transaction part schema
 const splitTransactionPartSchema = z.object({

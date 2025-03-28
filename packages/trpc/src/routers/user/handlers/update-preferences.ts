@@ -1,5 +1,5 @@
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 import { userPreferencesSchema } from '../schema'
 
 /**
@@ -16,6 +16,7 @@ import { userPreferencesSchema } from '../schema'
 export const updatePreferences = protectedProcedure
   .input(userPreferencesSchema)
   .mutation(async ({ ctx, input }) => {
+    const userId = ctx.session?.userId
     // Serialize the preferences objects while converting to Prisma-compatible JSON
     const displayPrefs = input.displayPreferences
       ? structuredClone(input.displayPreferences)
@@ -33,7 +34,7 @@ export const updatePreferences = protectedProcedure
         documentPreferences: documentPrefs,
         notificationPreferences: notificationPrefs,
       },
-      where: { id: ctx.userId },
+      where: { id: userId },
     })
 
     return updatedUser

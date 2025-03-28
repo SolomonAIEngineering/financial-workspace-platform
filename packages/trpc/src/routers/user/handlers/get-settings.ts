@@ -1,6 +1,6 @@
-import { protectedProcedure } from '../../../middlewares/procedures'
-import { prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
+import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Get user settings with essential profile information
@@ -21,7 +21,7 @@ export const getSettings = protectedProcedure.query(async ({ ctx }) => {
       name: true,
       profileImageUrl: true,
     },
-    where: { id: ctx.userId },
+    where: { id: ctx.session?.userId },
   })
 
   if (!user) {

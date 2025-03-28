@@ -1,5 +1,5 @@
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 import { settingsUpdateSchema } from '../schema'
 
 /**
@@ -16,9 +16,10 @@ import { settingsUpdateSchema } from '../schema'
 export const updateSettings = protectedProcedure
   .input(settingsUpdateSchema)
   .mutation(async ({ ctx, input }) => {
+    const userId = ctx.session?.userId
     const updatedUser = await prisma.user.update({
       data: input,
-      where: { id: ctx.userId },
+      where: { id: userId },
     })
 
     return updatedUser

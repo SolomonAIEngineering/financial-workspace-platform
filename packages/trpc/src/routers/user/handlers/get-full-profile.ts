@@ -1,6 +1,6 @@
-import { protectedProcedure } from '../../../middlewares/procedures'
-import { prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
+import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Get the full profile for the authenticated user
@@ -15,7 +15,7 @@ import { TRPCError } from '@trpc/server'
  */
 export const getFullProfile = protectedProcedure.query(async ({ ctx }) => {
   const user = await prisma.user.findUnique({
-    where: { id: ctx.userId },
+    where: { id: ctx.session?.userId },
   })
 
   if (!user) {

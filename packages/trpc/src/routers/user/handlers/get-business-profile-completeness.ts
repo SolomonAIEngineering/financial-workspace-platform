@@ -16,7 +16,7 @@ import { protectedProcedure } from '../../../middlewares/procedures'
  */
 export const getBusinessProfileCompleteness = protectedProcedure.query(async ({ ctx }) => {
   const user = await prisma.user.findUnique({
-    where: { id: ctx.userId },
+    where: { id: ctx.session?.userId },
   })
 
   if (!user) {

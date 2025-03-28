@@ -15,7 +15,7 @@ import { stripe } from '@solomonai/lib/clients'
  * @returns Subscription details including plan, status, and renewal information
  */
 export const getUserSubscription = protectedProcedure.query(async ({ ctx }) => {
-  const { userId } = ctx
+  const userId = ctx.session?.userId
 
   // Get the user's Stripe customer ID
   const user = await prisma.user.findUnique({

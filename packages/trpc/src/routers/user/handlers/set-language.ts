@@ -1,6 +1,6 @@
-import { protectedProcedure } from '../../../middlewares/procedures'
-import { prisma } from '@solomonai/prisma'
 import { languageSchema } from '../schema'
+import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Set user language preference
@@ -15,11 +15,12 @@ import { languageSchema } from '../schema'
 export const setLanguage = protectedProcedure
   .input(languageSchema)
   .mutation(async ({ ctx, input }) => {
+    const userId = ctx.session?.userId
     const updatedUser = await prisma.user.update({
       data: {
         language: input.language,
       },
-      where: { id: ctx.userId },
+      where: { id: userId },
     })
 
     return { language: updatedUser.language, success: true }

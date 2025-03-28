@@ -1,3 +1,4 @@
+import Stripe from 'stripe'
 import { TRPCError } from '@trpc/server'
 import { checkoutSessionSchema } from '../schema'
 import { prisma } from '@solomonai/prisma'
@@ -37,6 +38,13 @@ export const createCheckoutSession = protectedProcedure
       })
     }
 
+    if (!userId) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'User ID is required',
+      })
+    }
+
     // Base URL for redirects
     const baseUrl =
       process.env.NEXT_PUBLIC_SITE_URL ||
@@ -48,13 +56,16 @@ export const createCheckoutSession = protectedProcedure
 
     if (!customerId) {
       // Create a new customer if one doesn't exist
-      const customer = await stripe.customers.create({
-        email: user.email || undefined,
+      const customerData: Stripe.CustomerCreateParams = {
         metadata: {
-          userId: userId,
-        },
-        name: user.name || undefined,
-      })
+          userId,
+        }
+      }
+
+      if (user.email) customerData.email = user.email
+      if (user.name) customerData.name = user.name
+
+      const customer = await stripe.customers.create(customerData)
 
       customerId = customer.id
 
@@ -66,7 +77,7 @@ export const createCheckoutSession = protectedProcedure
     }
 
     // Create the checkout session
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       cancel_url: `${baseUrl}/api/stripe/return?status=canceled`,
       customer: customerId,
       line_items: [
@@ -76,17 +87,19 @@ export const createCheckoutSession = protectedProcedure
         },
       ],
       metadata: {
-        userId: userId,
+        userId,
       },
       mode: 'subscription',
       payment_method_types: ['card'],
       subscription_data: {
         metadata: {
-          userId: userId,
+          userId,
         },
       },
       success_url: `${baseUrl}/api/stripe/return?status=success&session_id={CHECKOUT_SESSION_ID}`,
-    })
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
 
     return { url: session.url }
   })

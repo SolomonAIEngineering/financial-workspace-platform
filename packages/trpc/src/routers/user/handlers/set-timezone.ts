@@ -1,5 +1,5 @@
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 import { timezoneSchema } from '../schema'
 
 /**
@@ -15,11 +15,12 @@ import { timezoneSchema } from '../schema'
 export const setTimezone = protectedProcedure
   .input(timezoneSchema)
   .mutation(async ({ ctx, input }) => {
+    const userId = ctx.session?.userId
     const updatedUser = await prisma.user.update({
       data: {
         timezone: input.timezone,
       },
-      where: { id: ctx.userId },
+      where: { id: userId },
     })
 
     return { success: true, timezone: updatedUser.timezone }

@@ -16,7 +16,7 @@ import { stripe } from '@solomonai/lib/clients'
  * @throws {TRPCError} BAD_REQUEST - If no Stripe customer is found for the user
  */
 export const createPortalSession = protectedProcedure.mutation(async ({ ctx }) => {
-  const { userId } = ctx
+  const userId = ctx.session?.userId ?? ''
 
   // Get the user's Stripe customer ID
   const user = await prisma.user.findUnique({
