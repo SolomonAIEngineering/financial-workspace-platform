@@ -21,6 +21,7 @@
     "@solomonai/prisma": "workspace:*",
     "@solomonai/templates": "workspace:*",
     "@tanstack/react-query": "5.59.15",
+    "@solomonai/platform-config": "workspace:*",
     "@trpc/client": "11.0.0-rc.648",
     "@trpc/next": "11.0.0-rc.648",
     "@trpc/react-query": "11.0.0-rc.648",
@@ -38,6 +39,7 @@
     "oslo": "^1.2.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "rimraf": "^5.0.10",
     "stripe": "^17.7.0",
     "superjson": "^1.13.1",
     "trpc-to-openapi": "2.0.4",
@@ -47,8 +49,8 @@
   "devDependencies": {
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.13.13",
-    "@types/react": "19.0.12",
-    "@types/react-dom": "^19.0.4",
+    "@types/react": "18.3.20",
+    "@types/react-dom": "18.3.5",
     "tsconfig": "workspace:*"
   }
 }
