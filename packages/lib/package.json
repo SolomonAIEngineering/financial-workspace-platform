@@ -13,7 +13,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "clean": "rimraf node_modules"
+    "clean": "rimraf node_modules",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@auth/kysely-adapter": "^0.6.0",

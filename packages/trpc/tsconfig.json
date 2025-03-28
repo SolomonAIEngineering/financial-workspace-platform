@@ -7,11 +7,11 @@
     "jsx": "react-jsx",
     // Increase the maximum number of instantiations or recursion depth
     "typeRoots": ["./node_modules/@types"],
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "disableSizeLimit": true,
     "maxNodeModuleJsDepth": 100,
     "paths": {
-      "@solomonai/trpc/*": ["./*"]
+      "@solomonai/trpc/*": ["./*"],
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],

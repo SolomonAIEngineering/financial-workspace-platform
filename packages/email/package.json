@@ -2,8 +2,6 @@
   "name": "@solomonai/email",
   "version": "0.0.0",
   "private": true,
-  "main": "./dist/index.js",
-  "types": "./src/index.ts",
   "dependencies": {
     "@react-email/components": "^0.0.34",
     "@react-email/tailwind": "^1.0.4",
@@ -18,10 +16,7 @@
     "resend": "^4.0.1"
   },
   "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
+    ".": "./index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
