@@ -7,7 +7,7 @@
     "lint:fix": "eslint . --fix",
     "clean": "rimraf node_modules",
     "format": "prettier --write .",
-    "build": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "exports": {
     ".": "./src/index.ts"
