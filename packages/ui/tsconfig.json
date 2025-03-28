@@ -6,8 +6,9 @@
       "@/*": ["./src/*"]
     },
     "lib": ["DOM", "DOM.Iterable", "ESNext", "ES2019"],
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "skipLibCheck": true
   },
-  "include": ["src"],
+  "include": ["src", "src/types/*.d.ts"],
   "exclude": ["node_modules"]
 }
