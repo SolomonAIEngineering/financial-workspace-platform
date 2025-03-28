@@ -1,7 +1,7 @@
-import { prisma } from '@solomonai/prisma';
 import { TRPCError } from '@trpc/server';
-import { protectedProcedure } from '../../../middlewares/procedures';
 import { acceptInviteSchema } from '../schema';
+import { prisma } from '@solomonai/prisma';
+import { protectedProcedure } from '../../../middlewares/procedures';
 
 /**
  * Protected procedure to accept a team invite.

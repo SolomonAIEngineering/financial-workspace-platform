@@ -1,8 +1,9 @@
-import { prisma } from '@solomonai/prisma';
 import { TRPCError } from '@trpc/server';
 import { TeamRole } from '@solomonai/prisma/client';
-import { protectedProcedure } from '../../../middlewares/procedures';
 import { addUserSchema } from '../schema';
+import { isTeamOwner } from '@solomonai/trpc/src/middlewares/teamAuthorizationMiddleware';
+import { prisma } from '@solomonai/prisma';
+import { protectedProcedure } from '../../../middlewares/procedures';
 
 /**
  * Protected procedure to add a user to a team.
@@ -22,6 +23,7 @@ import { addUserSchema } from '../schema';
  */
 export const addUser = protectedProcedure
   .input(addUserSchema)
+  .use(isTeamOwner)
   .mutation(async ({ ctx, input }) => {
     const userId = ctx.session?.userId;
     const { teamId, userId: newUserId, role = TeamRole.MEMBER } = input;
