@@ -7,12 +7,18 @@
   "keywords": [],
   "author": "Yoan Yomba",
   "scripts": {
-    "test": "vitest run",
+    "prune-docker": "./docker-cleanup.sh",
+    "reset-docker": "./reset-docker.sh",
+    "test": "npm run prune-docker && vitest run",
+    "test:debug": "npm run prune-docker && vitest run --reporters=verbose",
+    "test:coverage": "npm run prune-docker && vitest run --coverage",
+    "test:single": "npm run prune-docker && vitest run",
     "format": "prettier --write ."
   },
   "devDependencies": {
     "@dagger.io/dagger": "^0.14.0",
     "@types/node": "^22.13.10",
+    "@vitest/coverage-v8": "^1.6.1",
     "execa": "^9.3.0",
     "testcontainers": "^10.14.0",
     "typescript": "^5.7.2",

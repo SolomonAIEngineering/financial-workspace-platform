@@ -2371,6 +2371,9 @@ importers:
       '@types/node':
         specifier: ^22.13.10
         version: 22.13.13
+      '@vitest/coverage-v8':
+        specifier: ^1.6.1
+        version: 1.6.1(vitest@1.6.1)
       execa:
         specifier: ^9.3.0
         version: 9.5.2
