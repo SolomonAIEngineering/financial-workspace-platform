@@ -11,11 +11,11 @@ import {
   Text,
 } from '@react-email/components'
 
-import { Tailwind } from '@react-email/tailwind'
-import { BusinessConfig as platform } from '@solomonai/platform-config'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 import { currencyFormatter } from '../utils/currency-formatter'
 import { getPrettyUrl } from '../utils/utils'
+import { BusinessConfig as platform } from '@solomonai/platform-config'
 
 export default function NewSaleCreated({
   email = 'panic@thedis.co',
@@ -26,7 +26,7 @@ export default function NewSaleCreated({
   program = {
     id: 'prog_d8pl69xXCv4AoHNT281pHQdo',
     name: 'Acme',
-    logo: `${platform.assets.wordmark}`,
+    logo: `${platform.assets.logo}`,
   },
   sale = {
     amount: 4900,

@@ -20,14 +20,14 @@ import {
   Section,
   Text,
 } from '@react-email/components'
+import { Building, Calendar, Clock, CreditCard, DollarSign } from 'lucide-react'
 import {
   BusinessConfig,
   BusinessConfig as platform,
 } from '@solomonai/platform-config'
-import { Building, Calendar, Clock, CreditCard, DollarSign } from 'lucide-react'
 
-import { Tailwind } from '@react-email/tailwind'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 
 /**
  * Interface defining the properties for the InvoiceReminderEmail component.
@@ -75,7 +75,7 @@ interface InvoiceReminderEmailProps {
  * @param props.link - URL to view and pay the invoice
  * @param props.email - Customer's email address (defaults to 'billing@example.com')
  * @param props.teamSlug - URL-friendly identifier for the team
- * @param props.companyLogo - URL of the company logo (defaults to BusinessConfig.assets.wordmark)
+ * @param props.companyLogo - URL of the company logo (defaults to BusinessConfig.assets.logo)
  * @param props.invoiceAmount - Total amount due on the invoice (defaults to '$1,234.56')
  * @param props.dueDate - Due date of the invoice (defaults to 'March 25, 2024')
  * @param props.paymentMethods - Available payment methods (defaults to ['Bank Transfer', 'Credit Card', 'PayPal'])
@@ -91,7 +91,7 @@ export default function InvoiceReminderEmail({
   link = 'https://app.example.com/invoices/1234567890',
   email = 'billing@example.com',
   teamSlug,
-  companyLogo = BusinessConfig.assets.wordmark,
+  companyLogo = BusinessConfig.assets.logo,
   invoiceAmount = '$1,234.56',
   dueDate = 'March 25, 2024',
   paymentMethods = ['Bank Transfer', 'Credit Card', 'PayPal'],
@@ -125,14 +125,12 @@ export default function InvoiceReminderEmail({
               <Row className="mx-auto py-[5%]">
                 <Column align="center">
                   <div
-                    className={`mx-auto flex h-12 w-12 items-center justify-center rounded-full ${
-                      isOverdue ? 'bg-orange-100' : 'bg-blue-100'
-                    }`}
+                    className={`mx-auto flex h-12 w-12 items-center justify-center rounded-full ${isOverdue ? 'bg-orange-100' : 'bg-blue-100'
+                      }`}
                   >
                     <Clock
-                      className={`h-6 w-6 ${
-                        isOverdue ? 'text-orange-600' : 'text-blue-600'
-                      }`}
+                      className={`h-6 w-6 ${isOverdue ? 'text-orange-600' : 'text-blue-600'
+                        }`}
                     />
                   </div>
                 </Column>
@@ -147,11 +145,10 @@ export default function InvoiceReminderEmail({
               <Row>
                 <Column className="px-4">
                   <div
-                    className={`rounded-lg border p-4 ${
-                      isOverdue
+                    className={`rounded-lg border p-4 ${isOverdue
                         ? 'border-orange-200 bg-orange-50'
                         : 'border-blue-200 bg-blue-50'
-                    }`}
+                      }`}
                   >
                     <Text className="m-0 text-sm text-gray-900">
                       <strong>Dear {companyName},</strong>

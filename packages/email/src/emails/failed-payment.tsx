@@ -11,9 +11,9 @@ import {
   Text,
 } from '@react-email/components'
 
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
-import Footer from '../components/footer'
 
 export default function FailedPayment({
   user = { name: 'Brendon Urie', email: 'panic@thedis.co' },
@@ -29,13 +29,12 @@ export default function FailedPayment({
   amountDue: number
   attemptCount: number
 }) {
-  const title = `${
-    attemptCount === 2
+  const title = `${attemptCount === 2
       ? '2nd notice: '
       : attemptCount === 3
         ? '3rd notice: '
         : ''
-  }Your payment for ${platform.company} failed`
+    }Your payment for ${platform.company} failed`
 
   return (
     <Html>
@@ -46,7 +45,7 @@ export default function FailedPayment({
           <Container className="mx-auto my-10 max-w-[500px] rounded border border-solid border-gray-200 px-10 py-5">
             <Section className="mt-8">
               <Img
-                src={platform.assets.wordmark}
+                src={platform.assets.logo}
                 height="140"
                 width="140"
                 alt={platform.company}

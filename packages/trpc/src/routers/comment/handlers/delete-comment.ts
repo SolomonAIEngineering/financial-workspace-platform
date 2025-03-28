@@ -1,6 +1,6 @@
+import { deleteCommentSchema } from '../schema'
 import { prisma } from '@solomonai/prisma'
 import { protectedProcedure } from '../../../middlewares/procedures'
-import { deleteCommentSchema } from '../schema'
 
 /**
  * Protected procedure to delete a comment.

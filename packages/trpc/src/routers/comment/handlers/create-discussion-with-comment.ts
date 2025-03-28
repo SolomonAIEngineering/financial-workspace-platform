@@ -3,10 +3,10 @@ import {
   createDiscussionWithCommentSchema,
 } from '../schema'
 
+import { NodeApi } from '@udecode/plate'
+import { TRPCError } from '@trpc/server'
 import { nid } from '@solomonai/lib/utils/nid'
 import { prisma } from '@solomonai/prisma'
-import { TRPCError } from '@trpc/server'
-import { NodeApi } from '@udecode/plate'
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { ratelimitMiddleware } from '../../../middlewares/ratelimitMiddleware'
 
@@ -30,9 +30,9 @@ export const createDiscussionWithComment = protectedProcedure
   .mutation(async ({ ctx, input }) => {
     const content = input.contentRich
       ? NodeApi.string({
-          children: input.contentRich as any,
-          type: 'root',
-        })
+        children: input.contentRich as any,
+        type: 'root',
+      })
       : ''
 
     if (content.length > MAX_COMMENT_LENGTH) {

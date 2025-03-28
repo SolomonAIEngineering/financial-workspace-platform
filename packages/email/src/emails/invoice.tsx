@@ -21,19 +21,19 @@ import {
   Text,
 } from '@react-email/components'
 import {
-  BusinessConfig,
-  BusinessConfig as platform,
-} from '@solomonai/platform-config'
-import {
   Building,
   Calendar,
   CreditCard,
   DollarSign,
   FileText,
 } from 'lucide-react'
+import {
+  BusinessConfig,
+  BusinessConfig as platform,
+} from '@solomonai/platform-config'
 
-import { Tailwind } from '@react-email/tailwind'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 
 /**
  * Interface defining the properties for the InvoiceEmail component.
@@ -82,7 +82,7 @@ interface InvoiceEmailProps {
  * @param props.link - URL to view and pay the invoice
  * @param props.email - Customer's email address
  * @param props.teamSlug - URL-friendly identifier for the team
- * @param props.companyLogo - URL of the company logo (defaults to BusinessConfig.assets.wordmark)
+ * @param props.companyLogo - URL of the company logo (defaults to BusinessConfig.assets.logo)
  * @param props.invoiceNumber - Unique identifier for the invoice (defaults to 'INV-0001')
  * @param props.invoiceAmount - Total amount due on the invoice (defaults to '$1,234.56')
  * @param props.dueDate - Date by which the invoice should be paid (defaults to 'April 1, 2024')
@@ -99,7 +99,7 @@ export default function InvoiceEmail({
   link = 'https://app.example.com/invoices/1234567890',
   email = 'billing@example.com',
   teamSlug,
-  companyLogo = BusinessConfig.assets.wordmark,
+  companyLogo = BusinessConfig.assets.logo,
   invoiceNumber = 'INV-0001',
   invoiceAmount = '$1,234.56',
   dueDate = 'April 1, 2024',

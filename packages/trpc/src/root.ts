@@ -1,4 +1,4 @@
-import { createCallerFactory, createRouter } from '@solomonai/trpc/src/trpc'
+import { createCallerFactory, createRouter } from './trpc'
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
 
 import { bankAccountsRouter } from './routers/bank-accounts/index'

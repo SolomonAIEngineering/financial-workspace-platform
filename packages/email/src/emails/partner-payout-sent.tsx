@@ -11,17 +11,17 @@ import {
   Text,
 } from '@react-email/components'
 
-import { Tailwind } from '@react-email/tailwind'
-import { BusinessConfig as platform } from '@solomonai/platform-config'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 import { currencyFormatter } from '../utils/currency-formatter'
+import { BusinessConfig as platform } from '@solomonai/platform-config'
 
 export default function PartnerPayoutSent({
   email = 'panic@thedis.co',
   program = {
     id: 'prog_d8pl69xXCv4AoHNT281pHQdo',
     name: 'Acme',
-    logo: `${platform.assets.wordmark}`,
+    logo: `${platform.assets.logo}`,
   },
   payout = {
     id: 'po_8VuCr2i7WnG65d4TNgZO19fT',

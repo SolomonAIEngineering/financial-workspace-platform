@@ -1,7 +1,7 @@
 import { isAdmin, isSuperAdmin } from '@solomonai/lib/utils/isAdmin'
 
-import { getDevUser } from './getDevUser'
 import type { LuciaUser } from './lucia'
+import { getDevUser } from './getDevUser'
 
 export type AuthUser = {
   id: string

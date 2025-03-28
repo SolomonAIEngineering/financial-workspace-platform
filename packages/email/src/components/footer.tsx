@@ -6,8 +6,8 @@
 
 import { Hr, Link, Text } from '@react-email/components'
 
-import { Tailwind } from '@react-email/tailwind'
 import { BusinessConfig as PlatformConfig } from '@solomonai/platform-config'
+import { Tailwind } from '@react-email/tailwind'
 
 /**
  * Email footer component that renders differently based on whether it's

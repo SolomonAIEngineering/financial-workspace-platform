@@ -1,7 +1,7 @@
-import type { Endpoints } from '@octokit/types'
-import { findOrCreateUser } from '@solomonai/lib/server-only/user'
-import { GitHub } from 'arctic'
 import type { AuthProviderConfig } from '../lucia'
+import type { Endpoints } from '@octokit/types'
+import { GitHub } from 'arctic'
+import { findOrCreateUser } from '@solomonai/lib/server-only/user'
 
 const githubAuth = new GitHub(
   process.env.GITHUB_CLIENT_ID ?? '',

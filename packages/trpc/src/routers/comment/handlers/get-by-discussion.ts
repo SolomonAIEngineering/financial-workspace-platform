@@ -1,6 +1,6 @@
+import { getCommentsByDiscussionSchema } from '../schema'
 import { prisma } from '@solomonai/prisma'
 import { protectedProcedure } from '../../../middlewares/procedures'
-import { getCommentsByDiscussionSchema } from '../schema'
 
 /**
  * Protected procedure to get all comments for a discussion.
@@ -14,25 +14,25 @@ import { getCommentsByDiscussionSchema } from '../schema'
  * @returns Array of comments with user information
  */
 export const getByDiscussion = protectedProcedure
-  .input(getCommentsByDiscussionSchema)
-  .query(async ({ input }) => {
-    const comments = await prisma.comment.findMany({
-      where: {
-        discussionId: input.discussionId,
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            profileImageUrl: true,
-          },
-        },
-      },
-    })
+    .input(getCommentsByDiscussionSchema)
+    .query(async ({ input }) => {
+        const comments = await prisma.comment.findMany({
+            where: {
+                discussionId: input.discussionId,
+            },
+            orderBy: {
+                createdAt: 'asc',
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        profileImageUrl: true,
+                    },
+                },
+            },
+        })
 
-    return comments
-  })
+        return comments
+    })

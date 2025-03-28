@@ -1,8 +1,9 @@
-import { prisma } from '@solomonai/prisma'
-import { TRPCError } from '@trpc/server'
-import { NodeApi } from '@udecode/plate'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { MAX_COMMENT_LENGTH, updateCommentSchema } from '../schema'
+
+import { NodeApi } from '@udecode/plate'
+import { TRPCError } from '@trpc/server'
+import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Protected procedure to update a comment.
@@ -23,9 +24,9 @@ export const updateComment = protectedProcedure
   .mutation(({ input }) => {
     const content = input.contentRich
       ? NodeApi.string({
-          children: input.contentRich as any,
-          type: 'root',
-        })
+        children: input.contentRich as any,
+        type: 'root',
+      })
       : undefined
 
     if (content && content.length > MAX_COMMENT_LENGTH) {

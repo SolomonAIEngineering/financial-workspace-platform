@@ -1,6 +1,6 @@
-import { findOrCreateUser } from '@solomonai/lib/server-only/user'
-import { Google } from 'arctic'
 import type { AuthProviderConfig } from '../lucia'
+import { Google } from 'arctic'
+import { findOrCreateUser } from '@solomonai/lib/server-only/user'
 
 const googleAuth = new Google(
   process.env.GOOGLE_CLIENT_ID ?? '',

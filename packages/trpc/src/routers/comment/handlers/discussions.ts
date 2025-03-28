@@ -1,6 +1,6 @@
+import { discussionsSchema } from '../schema'
 import { prisma } from '@solomonai/prisma'
 import { protectedProcedure } from '../../../middlewares/procedures'
-import { discussionsSchema } from '../schema'
 
 /**
  * Protected procedure to get all discussions for a document.

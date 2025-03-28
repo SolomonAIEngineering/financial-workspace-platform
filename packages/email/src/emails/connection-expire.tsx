@@ -19,9 +19,9 @@ import {
 } from '@solomonai/platform-config'
 import { addDays, formatDistance } from 'date-fns'
 
-import { Tailwind } from '@react-email/tailwind'
 import { AlertCircle } from 'lucide-react'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 
 interface ConnectionExpireEmailProps {
   fullName: string
@@ -62,7 +62,7 @@ export default function ConnectionExpireEmail({
                 className="mx-auto"
                 alt={`${BusinessConfig.company} logo`}
                 height="140"
-                src={BusinessConfig.assets.wordmark}
+                src={BusinessConfig.assets.logo}
                 width="140"
               />
             </Section>

@@ -1,8 +1,8 @@
-import { prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
+import { createDiscussionSchema } from '../schema'
+import { prisma } from '@solomonai/prisma'
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { ratelimitMiddleware } from '../../../middlewares/ratelimitMiddleware'
-import { createDiscussionSchema } from '../schema'
 
 /**
  * Protected procedure to create a new discussion.

@@ -16,8 +16,8 @@
     "clean": "rimraf node_modules"
   },
   "dependencies": {
-        "oslo": "^1.2.1",
-    "@solomonai/platform-config": "workspace:*",
+    "@solomonai/clickhouse-financials": "workspace:*",
+    "stripe": "^17.7.0",
     "@auth/kysely-adapter": "^0.6.0",
     "@aws-sdk/client-s3": "^3.410.0",
     "@aws-sdk/cloudfront-signer": "^3.410.0",
@@ -35,6 +35,7 @@
     "@scure/base": "^1.1.3",
     "@sindresorhus/slugify": "^2.2.1",
     "@solomonai/email": "workspace:*",
+    "@solomonai/platform-config": "workspace:*",
     "@solomonai/prisma": "workspace:*",
     "@solomonai/templates": "workspace:*",
     "@trigger.dev/nextjs": "^2.3.18",
@@ -55,23 +56,25 @@
     "next": "14.2.6",
     "next-auth": "4.24.5",
     "next-runtime-env": "^3.2.2",
+    "oslo": "^1.2.1",
     "pdf-lib": "^1.17.1",
     "pg": "^8.11.3",
     "playwright": "1.43.0",
-    "react": "^18",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "remeda": "^2.17.3",
     "resend": "^4.2.0",
     "sharp": "0.32.6",
-    "stripe": "^12.7.0",
     "ts-pattern": "^5.0.5",
+    "uploadthing": "7.4.4",
     "zod": "3.24.1"
   },
   "devDependencies": {
     "@playwright/browser-chromium": "1.43.0",
     "@types/luxon": "^3.3.1",
     "@types/pg": "^8.11.4",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "19.0.1",
+    "@types/react-dom": "^19.0.1",
     "tsconfig": "workspace:*"
   }
 }
