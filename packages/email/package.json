@@ -2,7 +2,7 @@
   "name": "@solomonai/email",
   "version": "0.0.0",
   "private": true,
-  "main": "./src/index.ts",
+  "main": "./dist/index.js",
   "types": "./src/index.ts",
   "dependencies": {
     "@react-email/components": "^0.0.34",
@@ -18,13 +18,16 @@
     "resend": "^4.0.1"
   },
   "exports": {
-    ".": "./src/emails/index.ts"
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "dev": "email dev --dir src/emails",
     "format": "prettier --write src",
-    "build": "tsup src/emails/index.ts --out-dir dist"
+    "build": "tsup"
   },
   "devDependencies": {
     "@types/node": "22.10.1",

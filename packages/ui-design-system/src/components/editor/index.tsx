@@ -3,6 +3,7 @@
 import './styles.css'
 
 import {
+  AnyExtension,
   EditorContent,
   type Editor as EditorInstance,
   type JSONContent,
@@ -31,7 +32,7 @@ export function Editor({
   tabIndex,
 }: EditorProps) {
   const editor = useEditor({
-    extensions: registerExtensions({ placeholder }),
+    extensions: registerExtensions({ placeholder }) as AnyExtension[],
     content: initialContent,
     immediatelyRender: false,
     onBlur,
