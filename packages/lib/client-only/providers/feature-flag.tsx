@@ -4,11 +4,11 @@ import {
   FEATURE_FLAG_POLL_INTERVAL,
   LOCAL_FEATURE_FLAGS,
   isFeatureFlagEnabled,
-} from '@solomonai/lib/constants/feature-flags';
+} from '../../../lib/constants/feature-flags';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 import { TFeatureFlagValue } from './feature-flag.types';
-import { getAllFlags } from '@solomonai/lib/universal/get-feature-flag';
+import { getAllFlags } from '../../../lib/universal/get-feature-flag';
 
 export type FeatureFlagContextValue = {
   getFlag: (_key: string) => TFeatureFlagValue;

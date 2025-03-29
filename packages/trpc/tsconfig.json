@@ -5,15 +5,19 @@
     "module": "ESNext",
     "baseUrl": ".",
     "jsx": "react-jsx",
+    "lib": ["DOM", "DOM.Iterable", "ES2021", "ESNext"],
+    "target": "ES2021",
     // Increase the maximum number of instantiations or recursion depth
     "typeRoots": ["./node_modules/@types"],
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "disableSizeLimit": true,
     "maxNodeModuleJsDepth": 100,
+    "noEmitOnError": false,
     "paths": {
       "@solomonai/trpc/*": ["./*"],
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],
-  "exclude": ["dist", "build", "node_modules"]
+  "exclude": ["dist", "build", "node_modules", "../email"]
 }

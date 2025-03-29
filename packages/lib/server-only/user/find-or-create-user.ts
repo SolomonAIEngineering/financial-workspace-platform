@@ -1,11 +1,11 @@
 'use server';
 
-import { generateFromUsername, generateUsername } from '@solomonai/lib/utils/generate-from-username';
-import { loops, sendEmailViaResend } from '@solomonai/lib/clients';
+import { generateFromUsername, generateUsername } from '../../../lib/utils/generate-from-username';
+import { loops, sendEmailViaResend } from '../../../lib/clients';
 
 import { UserRole } from '@solomonai/prisma/client';
-import { WelcomeEmail } from '@solomonai/email';
-import { nid } from '@solomonai/lib/utils/nid';
+import { WelcomeEmail } from '../../../email';
+import { nid } from '../../../lib/utils/nid';
 import { prisma } from '@solomonai/prisma';
 
 // Initialize the Loops client with API key from environment variables
