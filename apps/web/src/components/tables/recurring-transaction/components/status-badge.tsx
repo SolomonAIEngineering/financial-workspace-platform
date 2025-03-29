@@ -124,7 +124,7 @@ const getBadgeColor = (status: StatusType): string => {
 };
 
 // Replace icon colors with blue variations
-const getBadgeIcon = (status: StatusType): JSX.Element => {
+const getBadgeIcon = (status: StatusType): React.ReactNode => {
   switch (status) {
     case 'active':
       return <CheckCircle className="h-3.5 w-3.5 text-blue-700" />;
