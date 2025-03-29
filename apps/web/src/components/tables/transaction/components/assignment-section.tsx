@@ -191,11 +191,10 @@ export function AssignmentSection() {
                       <div
                         key={`${teamName}-${member.id}`}
                         onClick={() => handleAssignTransaction(member.id)}
-                        className={`group relative flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-all duration-200 ${
-                          member.id === transaction.assigneeId
+                        className={`group relative flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-all duration-200 ${member.id === transaction.assigneeId
                             ? 'border-2 border-violet-400/70 bg-gradient-to-br from-violet-100/80 to-violet-50/30 shadow-md'
                             : 'border border-border/40 bg-background/80 hover:border-violet-200/70 hover:bg-violet-50/50 hover:shadow-sm'
-                        } ${updatingAssignment !== null ? 'pointer-events-none opacity-60' : ''} `}
+                          } ${updatingAssignment !== null ? 'pointer-events-none opacity-60' : ''} `}
                       >
                         {member.id === transaction.assigneeId && (
                           <div className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-violet-500 shadow-sm">
@@ -203,11 +202,10 @@ export function AssignmentSection() {
                           </div>
                         )}
                         <Avatar
-                          className={`h-9 w-9 transition-all duration-300 ${
-                            member.id === transaction.assigneeId
+                          className={`h-9 w-9 transition-all duration-300 ${member.id === transaction.assigneeId
                               ? 'border-2 border-violet-400 ring-2 ring-violet-200/50'
                               : 'border border-border/30 group-hover:border-violet-200/70'
-                          }`}
+                            }`}
                         >
                           {updatingAssignment === member.id ? (
                             <AvatarFallback className="bg-violet-100">

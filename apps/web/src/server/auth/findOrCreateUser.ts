@@ -6,7 +6,7 @@ import {
 } from '@/lib/generateFromUsername';
 
 import { LoopsClient } from 'loops';
-import { UserRole } from '@solomonai/prisma/client';
+import { UserRole } from '@solomonai/prisma';
 import { WelcomeEmail } from '@solomonai/email';
 import { env } from '@/env';
 import { nid } from '@/lib/nid';

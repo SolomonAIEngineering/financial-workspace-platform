@@ -40,7 +40,7 @@ export function AccountDetailsPanel({
   isLoadingTransactions,
 }: AccountDetailsPanelProps) {
   return (
-    <div className="no-scrollbar w-full overflow-auto p-8">
+    <div className="no-scrollbar w-full overflow-auto md:py-[4%] md:p-[1%]">
       {/* Greeting */}
       <Greeting userName={userName} />
 

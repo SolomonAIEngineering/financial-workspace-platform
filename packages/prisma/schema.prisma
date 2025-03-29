@@ -569,10 +569,12 @@ model Transaction {
   needsAttention      Boolean @default(false) // Needs user attention
   reviewStatus        String?  // Not reviewed, reviewed, needs review
   userNotes           String?  // User notes
-  
+  isUserNotesReadOnly Boolean      @default(false)
+
   // Tagging and organization
   tags                String[]     @default([])
   notes               String?
+  isNotesReadOnly     Boolean      @default(false)
   attachments         Attachment[]
   customFields        Json?        // For user-defined fields
   labels              String[]     @default([]) // Custom labels
@@ -677,6 +679,7 @@ model RecurringTransaction {
   categorySlug        String?                  // Default category
   tags                String[]  @default([])   // Default tags
   notes               String?                  // Default notes
+  isNotesReadOnly     Boolean      @default(false)
   customFields        Json?                    // Default custom fields
   
   // Add bank account specific details

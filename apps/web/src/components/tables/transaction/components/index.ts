@@ -25,6 +25,7 @@
  * - ProcessingStep: Component showing a step in transaction processing
  * - TransactionTimeline: Visual timeline of transaction processing
  * - TransactionActions: Action buttons for transaction operations
+ * - TransactionNoteModal: Modal for editing transaction notes with templates
  *
  * Utilities and Data:
  *
@@ -48,3 +49,4 @@ export * from './transaction-actions';
 export * from './utils';
 export * from './field-descriptions';
 export * from './section-descriptions';
+export * from './transaction-note-modal';

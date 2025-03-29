@@ -1,4 +1,13 @@
-import { Edit2, Info, Loader2, Save, X } from 'lucide-react';
+import {
+  Edit,
+  Edit2,
+  FileText,
+  Info,
+  Loader2,
+  Plus,
+  Save,
+  X,
+} from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   TransactionStatus,
@@ -21,6 +30,7 @@ import { EditableDetailRow } from './editable-detail-row';
 import { FieldRenderer } from './field-renderer';
 import { Input } from '@/registry/default/potion-ui/input';
 import { Textarea } from '@/registry/default/potion-ui/textarea';
+import { TransactionNoteModal } from './transaction-note-modal';
 import { TransactionSection } from './transaction-section';
 import { cn } from '@/lib/utils';
 import { fieldDescriptions } from './field-descriptions';
@@ -217,7 +227,8 @@ function InlineEditableField({
 
 /** InlineEditableTransaction Section component */
 function InlineEditableTransaction() {
-  const { transaction, updateTransactionData } = useTransactionContext();
+  const { transaction, editedValues, handleFieldChange } =
+    useTransactionContext();
   const updateTransaction = useUpdateTransaction();
 
   // State for transaction name editing
@@ -287,9 +298,7 @@ function InlineEditableTransaction() {
       updateTransaction.mutate(updateData, {
         onSuccess: () => {
           // Update the transaction data via context to reflect the changes locally
-          updateTransactionData({
-            [field]: value,
-          });
+          handleFieldChange(field, value);
 
           toast.success(
             `Transaction ${field.toLowerCase()} updated successfully`
@@ -324,7 +333,11 @@ function InlineEditableTransaction() {
         setValue={setTransactionName}
         isEditing={isEditingName}
         setIsEditing={setIsEditingName}
-        inputRef={nameInputRef as React.RefObject<HTMLInputElement | HTMLTextAreaElement>}
+        inputRef={
+          nameInputRef as React.RefObject<
+            HTMLInputElement | HTMLTextAreaElement
+          >
+        }
         icon={<Info className="h-3.5 w-3.5 text-violet-500/70" />}
         placeholder="Enter transaction name"
         tooltip={fieldDescriptions.name}
@@ -335,6 +348,7 @@ function InlineEditableTransaction() {
       <TransactionAmountField />
       <TransactionDateField />
       <TransactionStatusField />
+      <TransactionNotesField />
 
       <InlineEditableField
         field="description"
@@ -343,28 +357,216 @@ function InlineEditableTransaction() {
         setValue={setTransactionDescription}
         isEditing={isEditingDescription}
         setIsEditing={setIsEditingDescription}
-        inputRef={descriptionInputRef as React.RefObject<HTMLInputElement | HTMLTextAreaElement>}
+        inputRef={
+          descriptionInputRef as React.RefObject<
+            HTMLInputElement | HTMLTextAreaElement
+          >
+        }
         icon={<Info className="h-3.5 w-3.5 text-violet-500/70" />}
         placeholder="Enter transaction description"
         tooltip={fieldDescriptions.description}
         onSave={handleSaveField}
         isSaving={isSaving}
       />
+    </>
+  );
+}
 
-      <InlineEditableField
-        field="notes"
-        label="Notes"
-        value={transactionNotes}
-        setValue={setTransactionNotes}
-        isEditing={isEditingNotes}
-        setIsEditing={setIsEditingNotes}
-        inputRef={notesInputRef as React.RefObject<HTMLTextAreaElement>}
-        icon={<Info className="h-3.5 w-3.5 text-violet-500/70" />}
-        placeholder="Enter transaction notes"
-        tooltip={fieldDescriptions.notes}
-        isTextarea
-        onSave={handleSaveField}
-        isSaving={isSaving}
+/**
+ * TransactionNotesField Component
+ *
+ * Manages the display and editing of transaction notes with rich text support.
+ * Provides a button to open the notes editor modal and displays the current
+ * notes.
+ *
+ * Features:
+ *
+ * - Displays formatted notes or a placeholder if no notes exist
+ * - Provides context-aware Edit/Add button to manage notes
+ * - Opens a rich text editor in a modal for complex formatting
+ * - Maintains state consistency with transaction context using handleFieldChange
+ * - Supports both plain text and rich text content formats
+ * - Handles JSON serialization/deserialization of rich content
+ *
+ * This component follows the field component pattern used throughout the
+ * transaction details interface, accessing and updating values through the
+ * transaction context.
+ *
+ * @example
+ *   <TransactionNotesField />;
+ *
+ * @returns {JSX.Element} The rendered transaction notes field component
+ * @component
+ */
+function TransactionNotesField() {
+  const { transaction, handleFieldChange, editedValues, updateTransactionData } =
+    useTransactionContext();
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+
+  /**
+   * Gets the current notes value prioritizing edited values over original
+   * transaction Ensures the component always displays the most up-to-date
+   * content, even before saving
+   *
+   * @returns {string | null | undefined} The current notes text content
+   */
+  const getNotes = () => {
+    return 'notes' in editedValues ? editedValues.notes : transaction.notes;
+  };
+
+  /**
+   * Gets the current read-only state for notes, prioritizing edited values
+   *
+   * @returns {boolean} Whether the notes are set to read-only
+   */
+  const getIsNoteReadOnly = () => {
+    return 'isNoteReadOnly' in editedValues
+      ? Boolean(editedValues.isNoteReadOnly)
+      : Boolean((transaction as any).isNoteReadOnly);
+  };
+
+  /**
+   * Safely retrieves and parses rich notes content Handles various edge cases
+   * including:
+   *
+   * - Edited values vs original transaction data
+   * - String JSON vs object values
+   * - JSON parsing errors
+   *
+   * @returns {object | null} The parsed rich notes content or null if
+   *   unavailable/invalid
+   */
+  const getRichNotes = () => {
+    try {
+      // Check if we have rich notes in edited values first
+      if ('notesRichContent' in editedValues && editedValues.notesRichContent) {
+        const content =
+          typeof editedValues.notesRichContent === 'string'
+            ? JSON.parse(editedValues.notesRichContent)
+            : editedValues.notesRichContent;
+        return content;
+      }
+
+      // Fall back to transaction rich notes
+      if ((transaction as any).notesRichContent) {
+        return JSON.parse((transaction as any).notesRichContent);
+      }
+    } catch (error) {
+      console.error('Error parsing rich notes:', error);
+    }
+
+    // Return null if no valid rich content found
+    return null;
+  };
+
+  /**
+   * Opens the note modal for editing Sets the isNoteModalOpen state to true
+   * which triggers the modal to display
+   */
+  const handleOpenNoteModal = () => {
+    setIsNoteModalOpen(true);
+  };
+
+  /**
+   * Handler for when notes are updated through the modal editor Updates both
+   * plain text and rich content in the transaction context
+   *
+   * @param {object} updatedData - The data returned from the notes modal
+   * @param {string} updatedData.notes - Plain text version of the notes
+   * @param {object | string} updatedData.notesRichContent - Rich content
+   *   structure or JSON string
+   * @param {boolean} updatedData.isNoteReadOnly - Whether the note is set to
+   *   read-only
+   */
+  const handleNotesUpdated = (updatedData: any) => {
+    // Create an update object for the transaction data
+    const updateObj: Record<string, any> = {
+      notes: updatedData.notes
+    };
+
+    // If rich content is available, add it to the update object
+    if (updatedData.notesRichContent) {
+      updateObj.notesRichContent = typeof updatedData.notesRichContent === 'string'
+        ? updatedData.notesRichContent
+        : JSON.stringify(updatedData.notesRichContent);
+    }
+
+    // Add read-only state if provided
+    if (updatedData.isNoteReadOnly !== undefined) {
+      updateObj.isNoteReadOnly = updatedData.isNoteReadOnly;
+    }
+
+    // Update the transaction data directly
+    updateTransactionData(updateObj);
+  };
+
+  // Determine if we should display the read-only indicator
+  const isReadOnly = getIsNoteReadOnly();
+
+  return (
+    <>
+      {/* Custom Notes field with enhanced UI */}
+      <div className="mb-2 flex flex-col space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <FileText className="h-3.5 w-3.5 text-primary/70" />
+            <label className="text-xs font-medium text-foreground/90">
+              Notes
+            </label>
+            {isReadOnly && (
+              <span className="ml-2 rounded-sm border border-amber-200 bg-amber-100 px-1.5 py-0.5 text-[10px] text-amber-700 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                Read-only
+              </span>
+            )}
+          </div>
+          <Button
+            variant={getNotes() ? 'outline' : 'default'}
+            size="sm"
+            className={`h-7 rounded-md px-2.5 py-0 text-xs transition-all ${getNotes()
+              ? 'border-primary/20 text-primary shadow-sm hover:bg-primary/5 hover:text-primary/90'
+              : 'bg-primary/90 text-primary-foreground shadow-sm hover:bg-primary'
+              }`}
+            onClick={handleOpenNoteModal}
+          >
+            {getNotes() ? (
+              <>
+                <Edit className="mr-1.5 h-3 w-3" />
+                <span className="font-medium">Edit Notes</span>
+              </>
+            ) : (
+              <>
+                <Plus className="mr-1.5 h-3 w-3" />
+                <span className="font-medium">Add Notes</span>
+              </>
+            )}
+          </Button>
+        </div>
+
+        {getNotes() ? (
+          <div className="rounded-lg border border-border/20 bg-muted/30 p-3 text-sm whitespace-pre-wrap shadow-sm transition-colors hover:border-border/30">
+            {getNotes()}
+          </div>
+        ) : (
+          <div className="flex items-center justify-center rounded-lg border border-dashed border-border/40 bg-background/50 p-4 text-sm text-muted-foreground/80 transition-colors hover:border-border/60">
+            <div className="flex flex-col items-center gap-1">
+              <FileText className="h-4 w-4 text-muted-foreground/60" />
+              <span className="text-center text-xs">
+                No notes available for this transaction
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Note Modal */}
+      <TransactionNoteModal
+        isOpen={isNoteModalOpen}
+        onClose={() => setIsNoteModalOpen(false)}
+        transactionId={transaction.id}
+        initialNotes={transaction.notes}
+        initialRichNotes={getRichNotes()}
+        initialReadOnly={isReadOnly}
+        onSuccess={handleNotesUpdated}
       />
     </>
   );
@@ -416,10 +618,8 @@ function TransactionAmountField() {
       // Update the transaction
       updateTransaction.mutate(updateData, {
         onSuccess: () => {
-          // Update the transaction data via context to reflect the changes locally
-          updateTransactionData({
-            amount: amountValue,
-          });
+          // Update the actual transaction data in the context
+          updateTransactionData({ amount: amountValue });
 
           toast.success('Transaction amount updated successfully');
         },
@@ -615,11 +815,8 @@ function TransactionDateField() {
       // Update the transaction
       updateTransaction.mutate(updateData, {
         onSuccess: () => {
-          // Update the transaction data via context to reflect the changes locally
-          // The context can handle the Date object directly
-          updateTransactionData({
-            date: dateValue,
-          });
+          // Update the actual transaction data in the context which will force a r
+          updateTransactionData({ date: dateValue });
 
           toast.success('Transaction date updated successfully');
         },

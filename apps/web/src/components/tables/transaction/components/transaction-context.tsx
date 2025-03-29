@@ -40,6 +40,8 @@ export const EDITABLE_FIELDS = [
   'budgetSubcategory',
   'needsWantsCategory',
 
+  'notes',
+
   // Payment details
   'paymentMethod',
   'paymentChannel',
@@ -122,6 +124,7 @@ export function TransactionProvider({
   const updateCategory = useUpdateTransactionCategory();
   const trpc = api.useUtils();
 
+
   // Update local transaction when props change
   React.useEffect(() => {
     setTransaction(initialTransaction);
@@ -139,7 +142,7 @@ export function TransactionProvider({
 
   // Function to update transaction data locally (without saving to the server)
   const updateTransactionData = (updatedData: Partial<TransactionData>) => {
-    console.log('updateTransactionData called with:', updatedData);
+    console.info('updateTransactionData called with:', updatedData);
 
     // Process the data to ensure dates are properly formatted for the API
     const processedData = Object.entries(updatedData).reduce(
@@ -155,7 +158,7 @@ export function TransactionProvider({
       {} as Record<string, any>
     );
 
-    console.log('Processed data for API:', processedData);
+    console.info('Processed data for API:', processedData);
 
     // Update the local state
     setTransaction((current) => {
@@ -164,18 +167,19 @@ export function TransactionProvider({
         ...updatedData, // Use original data for local state
         updatedAt: new Date(), // Update the updatedAt field to trigger useEffect
       };
-      console.log('Updated transaction state:', updated);
+      console.info('Updated transaction state:', updated);
       return updated;
     });
 
     // If there's an onUpdate callback, call it with the processed data
     if (onUpdate) {
-      console.log('Calling onUpdate with:', processedData);
+      console.info('Calling onUpdate with:', processedData);
       onUpdate(processedData);
     } else {
       console.warn('No onUpdate callback provided');
     }
   };
+
 
   // Format helpers
   const formatAmount = (amount: number, currency?: string | null) => {

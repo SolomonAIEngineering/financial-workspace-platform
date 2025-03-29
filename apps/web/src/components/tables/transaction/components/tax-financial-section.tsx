@@ -96,7 +96,6 @@ export function TaxFinancialSection() {
       },
     };
 
-
     // Update transaction
     updateTransaction.mutate(updateData, {
       onSuccess: (data) => {

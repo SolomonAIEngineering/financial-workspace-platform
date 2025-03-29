@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react';
 
 import { AccountDetailsPanel } from './account-details';
 import { BankAccount } from '@solomonai/prisma';
+import { Icons } from '../ui/icons';
 import { StatisticsPanel } from './statistic-panel';
 import { api } from '@/trpc/react';
 import { useCurrentUser } from '@/components/auth/useCurrentUser';
@@ -197,10 +198,22 @@ export function SingleBankAccountView({
             onValueChange={setActiveTab}
             className="flex h-full w-full flex-col"
           >
-            <div className="px-4 pt-4">
-              <TabsList className="grid w-[400px] grid-cols-2">
-                <TabsTrigger value="account">Account Details</TabsTrigger>
-                <TabsTrigger value="statistics">Statistics</TabsTrigger>
+            <div className="px-6 pt-6">
+              <TabsList className="grid w-[400px] grid-cols-2 rounded-xl p-1 shadow-sm">
+                <TabsTrigger
+                  className="flex items-center gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  value="account"
+                >
+                  <Icons.creditCard className="size-4" />
+                  <span>Account Details</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  className="flex items-center gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  value="statistics"
+                >
+                  <Icons.ai className="size-4" />
+                  <span>Statistics</span>
+                </TabsTrigger>
               </TabsList>
             </div>
 

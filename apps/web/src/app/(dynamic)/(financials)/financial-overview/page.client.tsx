@@ -218,7 +218,7 @@ export default function FinancialOverviewClient({
 
             {/* Modern Sidebar */}
             <div className="h-full flex-shrink-0 lg:w-[400px]">
-              <div className="no-scrollbar h-full rounded-xl border-0 bg-white/50 shadow-lg backdrop-blur-sm lg:sticky lg:top-16 lg:ml-6 lg:overflow-x-hidden lg:overflow-y-auto lg:border-0 dark:bg-gray-800/50">
+              <div className="no-scrollbar h-full rounded-xl border-0 bg-white/50 shadow-lg backdrop-blur-sm lg:sticky lg:top-16 lg:overflow-x-hidden lg:overflow-y-auto lg:border-0 dark:bg-gray-800/50">
                 {/* Glass effect overlay */}
                 <div className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-700/10 dark:to-gray-900/5"></div>
                 {/* Subtle border effect */}
