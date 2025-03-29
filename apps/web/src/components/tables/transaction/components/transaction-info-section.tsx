@@ -399,7 +399,7 @@ function InlineEditableTransaction() {
  * @component
  */
 function TransactionNotesField() {
-  const { transaction, handleFieldChange, editedValues } =
+  const { transaction, handleFieldChange, editedValues, updateTransactionData } =
     useTransactionContext();
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
@@ -479,21 +479,25 @@ function TransactionNotesField() {
    *   read-only
    */
   const handleNotesUpdated = (updatedData: any) => {
-    // Use the standard field change handler for consistency
-    handleFieldChange('notes', updatedData.notes);
-    // If rich content is available, update that as well
+    // Create an update object for the transaction data
+    const updateObj: Record<string, any> = {
+      notes: updatedData.notes
+    };
+
+    // If rich content is available, add it to the update object
     if (updatedData.notesRichContent) {
-      handleFieldChange(
-        'notesRichContent',
-        typeof updatedData.notesRichContent === 'string'
-          ? updatedData.notesRichContent
-          : JSON.stringify(updatedData.notesRichContent)
-      );
+      updateObj.notesRichContent = typeof updatedData.notesRichContent === 'string'
+        ? updatedData.notesRichContent
+        : JSON.stringify(updatedData.notesRichContent);
     }
-    // Update the read-only state if provided
+
+    // Add read-only state if provided
     if (updatedData.isNoteReadOnly !== undefined) {
-      handleFieldChange('isNoteReadOnly', updatedData.isNoteReadOnly);
+      updateObj.isNoteReadOnly = updatedData.isNoteReadOnly;
     }
+
+    // Update the transaction data directly
+    updateTransactionData(updateObj);
   };
 
   // Determine if we should display the read-only indicator
@@ -518,11 +522,10 @@ function TransactionNotesField() {
           <Button
             variant={getNotes() ? 'outline' : 'default'}
             size="sm"
-            className={`h-7 rounded-md px-2.5 py-0 text-xs transition-all ${
-              getNotes()
-                ? 'border-primary/20 text-primary shadow-sm hover:bg-primary/5 hover:text-primary/90'
-                : 'bg-primary/90 text-primary-foreground shadow-sm hover:bg-primary'
-            }`}
+            className={`h-7 rounded-md px-2.5 py-0 text-xs transition-all ${getNotes()
+              ? 'border-primary/20 text-primary shadow-sm hover:bg-primary/5 hover:text-primary/90'
+              : 'bg-primary/90 text-primary-foreground shadow-sm hover:bg-primary'
+              }`}
             onClick={handleOpenNoteModal}
           >
             {getNotes() ? (
@@ -541,8 +544,7 @@ function TransactionNotesField() {
 
         {getNotes() ? (
           <div className="rounded-lg border border-border/20 bg-muted/30 p-3 text-sm whitespace-pre-wrap shadow-sm transition-colors hover:border-border/30">
-            {/* {getNotes()} */}
-            <p>Note added</p>
+            {getNotes()}
           </div>
         ) : (
           <div className="flex items-center justify-center rounded-lg border border-dashed border-border/40 bg-background/50 p-4 text-sm text-muted-foreground/80 transition-colors hover:border-border/60">
@@ -578,6 +580,7 @@ function TransactionAmountField() {
     isEditMode,
     handleFieldChange,
     editedValues,
+    updateTransactionData,
   } = useTransactionContext();
   const updateTransaction = useUpdateTransaction();
 
@@ -615,8 +618,8 @@ function TransactionAmountField() {
       // Update the transaction
       updateTransaction.mutate(updateData, {
         onSuccess: () => {
-          // Update the transaction data via context to reflect the changes locally
-          handleFieldChange('amount', amountValue);
+          // Update the actual transaction data in the context
+          updateTransactionData({ amount: amountValue });
 
           toast.success('Transaction amount updated successfully');
         },
@@ -780,6 +783,7 @@ function TransactionDateField() {
     isEditMode,
     handleFieldChange,
     editedValues,
+    updateTransactionData,
   } = useTransactionContext();
   const updateTransaction = useUpdateTransaction();
 
@@ -811,9 +815,8 @@ function TransactionDateField() {
       // Update the transaction
       updateTransaction.mutate(updateData, {
         onSuccess: () => {
-          // Update the transaction data via context to reflect the changes locally
-          // The context can handle the Date object directly
-          handleFieldChange('date', dateValue);
+          // Update the actual transaction data in the context which will force a r
+          updateTransactionData({ date: dateValue });
 
           toast.success('Transaction date updated successfully');
         },
