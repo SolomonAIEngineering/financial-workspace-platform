@@ -75,7 +75,7 @@ export function DetailSection({
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
   // Map icon types to actual icon components
-  const getIconComponent = (iconType: SectionIconType): JSX.Element => {
+  const getIconComponent = (iconType: SectionIconType): React.ReactNode => {
     switch (iconType) {
       case 'fileText':
         return <FileText className="h-5 w-5 text-blue-700" />;

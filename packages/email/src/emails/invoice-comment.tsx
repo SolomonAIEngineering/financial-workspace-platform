@@ -19,8 +19,8 @@ import {
 } from '@solomonai/platform-config'
 import { Clock, ExternalLink, MessageSquare } from 'lucide-react'
 
-import { Tailwind } from '@react-email/tailwind'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 
 interface InvoiceCommentEmailProps {
   invoiceNumber: string
@@ -44,7 +44,7 @@ export default function InvoiceCommentEmail({
   commentTime = '2 minutes ago',
   invoiceAmount = '$1,234.56',
   dueDate = 'March 25, 2024',
-  companyLogo = BusinessConfig.assets.wordmark,
+  companyLogo = BusinessConfig.assets.logo,
   teamSlug,
 }: InvoiceCommentEmailProps) {
   const notificationSettingsUrl = `${platform.platformUrl}/${teamSlug}/settings/notifications`

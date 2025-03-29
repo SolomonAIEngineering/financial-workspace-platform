@@ -1,3 +1,4 @@
+import { ArrowRightCircle, XCircle } from 'lucide-react'
 import {
   Body,
   Column,
@@ -17,10 +18,9 @@ import {
   BusinessConfig,
   BusinessConfig as platform,
 } from '@solomonai/platform-config'
-import { ArrowRightCircle, XCircle } from 'lucide-react'
 
-import { Tailwind } from '@react-email/tailwind'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 
 interface ConnectionIssueEmailProps {
   fullName: string
@@ -62,7 +62,7 @@ export default function ConnectionIssueEmail({
                 className="mx-auto"
                 alt={`${BusinessConfig.company} logo`}
                 height="140"
-                src={BusinessConfig.assets.wordmark}
+                src={BusinessConfig.assets.logo}
                 width="140"
               />
             </Section>

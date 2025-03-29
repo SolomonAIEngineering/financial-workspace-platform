@@ -1,8 +1,8 @@
-import { LOCAL_FEATURE_FLAGS, isFeatureFlagEnabled } from '@solomonai/lib/constants/feature-flags';
+import { LOCAL_FEATURE_FLAGS, isFeatureFlagEnabled } from '../constants/feature-flags';
 
-import { APP_BASE_URL } from '@solomonai/lib/constants/app';
-import type { TFeatureFlagValue } from '@solomonai/lib/client-only/providers/feature-flag.types';
-import { ZFeatureFlagValueSchema } from '@solomonai/lib/client-only/providers/feature-flag.types';
+import { APP_BASE_URL } from '../constants/app';
+import type { TFeatureFlagValue } from '../client-only/providers/feature-flag.types';
+import { ZFeatureFlagValueSchema } from '../client-only/providers/feature-flag.types';
 import { z } from 'zod';
 
 /**

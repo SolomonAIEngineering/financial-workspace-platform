@@ -11,16 +11,16 @@ import {
   Text,
 } from '@react-email/components'
 
+import Footer from '../components/footer'
 import { Tailwind } from '@react-email/tailwind'
 import { BusinessConfig as platform } from '@solomonai/platform-config'
-import Footer from '../components/footer'
 
 export default function PartnerInvite({
   email = 'panic@thedis.co',
   appName = platform.company,
   program = {
     name: 'Acme',
-    logo: `${platform.assets.wordmark}`,
+    logo: `${platform.assets.logo}`,
   },
 }: {
   email: string

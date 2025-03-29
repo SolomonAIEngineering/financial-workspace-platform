@@ -32,8 +32,8 @@ import {
   FileText,
 } from 'lucide-react'
 
-import { Tailwind } from '@react-email/tailwind'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 
 /**
  * Interface defining the properties for the InvoicePaidEmail component.
@@ -82,7 +82,7 @@ interface InvoicePaidEmailProps {
  * @param props.link - URL to view the invoice details
  * @param props.email - Customer's email address (defaults to 'billing@example.com')
  * @param props.teamSlug - URL-friendly identifier for the team
- * @param props.companyLogo - URL of the company logo (defaults to BusinessConfig.assets.wordmark)
+ * @param props.companyLogo - URL of the company logo (defaults to BusinessConfig.assets.logo)
  * @param props.invoiceNumber - Unique identifier for the invoice (defaults to 'INV-0001')
  * @param props.invoiceAmount - Total amount paid on the invoice (defaults to '$1,234.56')
  * @param props.paymentDate - Date when the payment was received (defaults to 'March 18, 2024')
@@ -99,7 +99,7 @@ export default function InvoicePaidEmail({
   link = 'https://app.example.com/invoices/1234567890',
   email = 'billing@example.com',
   teamSlug,
-  companyLogo = BusinessConfig.assets.wordmark,
+  companyLogo = BusinessConfig.assets.logo,
   invoiceNumber = 'INV-0001',
   invoiceAmount = '$1,234.56',
   paymentDate = 'March 18, 2024',

@@ -22,6 +22,7 @@ import type { DB } from './kysely/types'
 import { PrismaClient } from '@prisma/client'
 import { getDatabaseUrl } from './helper'
 import kyselyExtension from 'prisma-extension-kysely'
+import pg from 'pg';
 import { remember } from './utils/remember'
 
 export const jsonSchema = require('../prisma/json-schema/json-schema.json')
@@ -102,3 +103,6 @@ export const kyselyPrisma = remember('kyselyPrisma', () =>
 export { sql } from 'kysely'
 // Export Prisma types
 export * from '@prisma/client'
+
+// Pool for raw postgres queries
+export const pgPool = new pg.Pool({ connectionString: process.env.DATABASE_URL });

@@ -5,6 +5,7 @@
  * @module invoice-overdue
  */
 
+import { AlertTriangle, Calendar, DollarSign, Send } from 'lucide-react'
 import {
   Body,
   Column,
@@ -24,10 +25,9 @@ import {
   BusinessConfig,
   BusinessConfig as platform,
 } from '@solomonai/platform-config'
-import { AlertTriangle, Calendar, DollarSign, Send } from 'lucide-react'
 
-import { Tailwind } from '@react-email/tailwind'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 
 /**
  * Interface defining the properties for the InvoiceOverdueEmail component.
@@ -68,7 +68,7 @@ interface InvoiceOverdueEmailProps {
  * @param props.link - URL to view the invoice details
  * @param props.email - Customer's email address (defaults to 'user@example.com')
  * @param props.teamSlug - URL-friendly identifier for the team
- * @param props.companyLogo - URL of the company logo (defaults to BusinessConfig.assets.wordmark)
+ * @param props.companyLogo - URL of the company logo (defaults to BusinessConfig.assets.logo)
  * @param props.invoiceAmount - Total amount due on the invoice (defaults to '$1,234.56')
  * @param props.dueDate - Original due date of the invoice (defaults to 'March 1, 2024')
  * @param props.daysOverdue - Number of days the invoice is past due (defaults to 5)
@@ -81,7 +81,7 @@ export default function InvoiceOverdueEmail({
   link = 'https://app.example.com/invoices/1234567890',
   email = 'user@example.com',
   teamSlug,
-  companyLogo = BusinessConfig.assets.wordmark,
+  companyLogo = BusinessConfig.assets.logo,
   invoiceAmount = '$1,234.56',
   dueDate = 'March 1, 2024',
   daysOverdue = 5,

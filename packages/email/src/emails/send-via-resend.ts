@@ -4,9 +4,9 @@
  * @module send-via-resend
  */
 
-import { resend } from '@/lib/resend'
-import { BusinessConfig as platform } from '@solomonai/platform-config'
 import type { CreateEmailOptions } from 'resend'
+import { BusinessConfig as platform } from '@solomonai/platform-config'
+import { resend } from '../lib/resend'
 
 /**
  * Sends an email via the Resend service.

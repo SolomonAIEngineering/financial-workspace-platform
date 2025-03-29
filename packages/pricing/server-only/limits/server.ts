@@ -14,15 +14,15 @@ import {
   TEAM_PLAN_LIMITS,
 } from './constants.js'
 
-import { IS_BILLING_ENABLED } from '@solomonai/lib/constants/app'
-import { prisma } from '@solomonai/prisma'
-import { SubscriptionStatus } from '@solomonai/prisma/kysely/types.js'
 import { DateTime } from 'luxon'
-import { z } from 'zod'
-import { getDocumentRelatedPrices } from '../stripe/get-document-related-prices.ts.js'
 import { ERROR_CODES } from './errors.js'
+import { IS_BILLING_ENABLED } from '@solomonai/lib/constants/app'
+import { SubscriptionStatus } from '@solomonai/prisma/kysely/types.js'
 import type { TLimitsResponseSchema } from './schema.js'
 import { ZLimitsSchema } from './schema.js'
+import { getDocumentRelatedPrices } from '../stripe/get-document-related-prices.ts.js'
+import { prisma } from '@solomonai/prisma'
+import { z } from 'zod'
 
 /**
  * Zod schema for validating server limits options
@@ -50,7 +50,7 @@ type HandleUserLimitsOptions = z.infer<typeof ZHandleUserLimitsOptions>
  */
 const ZHandleTeamLimitsOptions = z.object({
   email: z.string(),
-  teamId: z.string(),
+  teamId: z.string().nullable(),
   userId: z.string(),
 })
 
@@ -76,10 +76,6 @@ export const getServerLimits = async ({
       quota: SELFHOSTED_PLAN_LIMITS,
       remaining: SELFHOSTED_PLAN_LIMITS,
     }
-  }
-
-  if (!teamId) {
-    throw new Error(ERROR_CODES.INVALID_TEAM_ID)
   }
 
   if (!userId) {
@@ -237,6 +233,10 @@ const fetchTeamWithData = async ({
   teamId,
   userId,
 }: HandleTeamLimitsOptions) => {
+  if (!teamId) {
+    throw new Error(ERROR_CODES.INVALID_TEAM_ID)
+  }
+
   const team = await prisma.team.findFirst({
     where: {
       id: teamId,

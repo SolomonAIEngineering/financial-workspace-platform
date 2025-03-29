@@ -55,7 +55,7 @@ type Account = {
 const AccountTypeBadge = ({ type }: { type: string }) => {
   const typeColorMap: Record<
     string,
-    { bg: string; text: string; icon?: JSX.Element }
+    { bg: string; text: string; icon?: React.ReactNode }
   > = {
     CHECKING: {
       bg: 'bg-blue-50',
@@ -657,11 +657,10 @@ export function SelectBankAccountsModal({
                         </div>
                       </div>
                       <Button
-                        className={`w-full rounded-xl py-3 text-sm font-medium shadow-xl transition-all ${
-                          selectedCount > 0
-                            ? 'transform bg-black text-white shadow-black/5 hover:-translate-y-0.5 hover:bg-zinc-800 hover:shadow-black/10'
-                            : 'cursor-not-allowed bg-zinc-100 text-zinc-400'
-                        }`}
+                        className={`w-full rounded-xl py-3 text-sm font-medium shadow-xl transition-all ${selectedCount > 0
+                          ? 'transform bg-black text-white shadow-black/5 hover:-translate-y-0.5 hover:bg-zinc-800 hover:shadow-black/10'
+                          : 'cursor-not-allowed bg-zinc-100 text-zinc-400'
+                          }`}
                         type="button"
                         onClick={async () => {
                           // Call onSubmit directly with the current form values
@@ -688,7 +687,7 @@ export function SelectBankAccountsModal({
                         }
                       >
                         {isSubmitting ||
-                        connectBankAction.status === 'executing' ? (
+                          connectBankAction.status === 'executing' ? (
                           <motion.span
                             className="flex items-center justify-center"
                             initial={{ opacity: 0 }}

@@ -5,6 +5,7 @@
     "module": "ESNext",
     "baseUrl": ".",
     "jsx": "react-jsx",
+    "lib": ["ES2021", "DOM"],
     "paths": {
       "@solomonai/lib/*": ["./*"]
     }

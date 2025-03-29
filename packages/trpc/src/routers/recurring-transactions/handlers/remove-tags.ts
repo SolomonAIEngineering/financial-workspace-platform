@@ -1,0 +1,75 @@
+import { TRPCError } from '@trpc/server'
+import { prisma } from '@solomonai/prisma'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { z } from 'zod'
+
+/**
+ * Removes specific tags from an existing recurring transaction.
+ * 
+ * @remarks
+ * This procedure removes one or more specified tags from a recurring transaction.
+ * It performs ownership verification to ensure the recurring transaction belongs to the authenticated user.
+ * The procedure filters out the specified tags from the current list of tags.
+ * 
+ * @param input - The input parameters
+ * @param input.id - The unique identifier of the recurring transaction
+ * @param input.tags - Array of tag strings to remove from the recurring transaction
+ * 
+ * @returns An object containing the updated tags array after removal
+ * 
+ * @throws {TRPCError}
+ *   - With code 'NOT_FOUND' if the recurring transaction doesn't exist
+ *   - With code 'FORBIDDEN' if the user doesn't own the recurring transaction
+ *   - Authentication errors (handled by protectedProcedure)
+ */
+export const removeTags = protectedProcedure
+  .input(
+    z.object({
+      id: z.string(),
+      tags: z.array(z.string()),
+    })
+  )
+  .mutation(async ({ ctx, input }) => {
+    // Fetch the recurring transaction with its bank account to check ownership
+    const recurringTransaction = await prisma.recurringTransaction.findUnique({
+      where: { id: input.id },
+      include: {
+        bankAccount: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    })
+
+    if (!recurringTransaction) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Recurring transaction not found',
+      })
+    }
+
+    // Verify user owns the recurring transaction
+    if (recurringTransaction.bankAccount.userId !== ctx.session?.userId) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to modify this recurring transaction',
+      })
+    }
+
+    // Get current tags
+    const currentTags = recurringTransaction.tags || []
+
+    // Remove the specified tags
+    const updatedTags = currentTags.filter(tag => !input.tags.includes(tag))
+
+    // Update the recurring transaction with the updated tags
+    const updatedRecurringTransaction = await prisma.recurringTransaction.update({
+      where: { id: input.id },
+      data: {
+        tags: updatedTags,
+      },
+    })
+
+    return { tags: updatedRecurringTransaction.tags }
+  })

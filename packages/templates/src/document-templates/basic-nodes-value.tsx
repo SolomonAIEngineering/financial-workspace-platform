@@ -1,4 +1,4 @@
-import { basicElementsValue } from '@solomonai/templates/basic-elements-value'
-import { basicMarksValue } from '@solomonai/templates/basic-marks-value'
+import { basicElementsValue } from './basic-elements-value'
+import { basicMarksValue } from './basic-marks-value'
 
 export const basicNodesValue = [...basicElementsValue, ...basicMarksValue]

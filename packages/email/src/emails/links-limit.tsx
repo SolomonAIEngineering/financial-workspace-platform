@@ -11,12 +11,12 @@ import {
   Text,
 } from '@react-email/components'
 
-import { Tailwind } from '@react-email/tailwind'
-import { BusinessConfig as platform } from '@solomonai/platform-config'
 import Footer from '../components/footer'
+import { Tailwind } from '@react-email/tailwind'
 import { capitalize } from '../utils/capitalize'
-import { nFormatter } from '../utils/nformatter'
 import { getNextPlan } from '../utils/pricing'
+import { nFormatter } from '../utils/nformatter'
+import { BusinessConfig as platform } from '@solomonai/platform-config'
 
 export default function LinksLimitAlert({
   email = 'panic@thedis.co',
@@ -61,7 +61,7 @@ export default function LinksLimitAlert({
           <Container className="mx-auto my-10 max-w-[500px] rounded border border-solid border-gray-200 px-10 py-5">
             <Section className="mt-8">
               <Img
-                src={platform.assets.wordmark}
+                src={platform.assets.logo}
                 height="140"
                 alt={platform.company}
                 className="mx-auto my-0"

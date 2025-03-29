@@ -2,7 +2,7 @@
 import Stripe from 'stripe';
 
 export const stripe = new Stripe(process.env.NEXT_PRIVATE_STRIPE_API_KEY ?? '', {
-  apiVersion: '2022-11-15',
+  apiVersion: '2025-02-24.acacia',
   typescript: true,
 });
 

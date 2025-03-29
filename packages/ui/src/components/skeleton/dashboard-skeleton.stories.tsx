@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+
 import { DashboardSkeleton } from './dashboard-skeleton'
 
 const meta: Meta<typeof DashboardSkeleton> = {

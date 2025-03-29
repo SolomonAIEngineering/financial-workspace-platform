@@ -34,7 +34,7 @@ generator types {
 }
 
 model Session {
-  id         String   @id
+  id         String   @id @default(cuid())
   user_id    String
   expires_at DateTime
   user       User     @relation(references: [id], fields: [user_id], onDelete: Cascade)
@@ -53,7 +53,7 @@ model OauthAccount {
 }
 
 model User {
-  id            String         @id
+  id            String         @id @default(cuid())
   username      String         @unique
   password_hash String?
   email         String?        @unique
@@ -165,7 +165,7 @@ model User {
 }
 
 model Document {
-  id         String  @id
+  id         String  @id @default(cuid())
   templateId String?
 
   user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -203,7 +203,7 @@ model Document {
 }
 
 model DocumentVersion {
-  id         String   @id
+  id         String   @id @default(cuid())
   documentId String
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
   userId     String
@@ -217,7 +217,7 @@ model DocumentVersion {
 }
 
 model Discussion {
-  id String @id
+  id String @id @default(cuid())
 
   documentId String
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
@@ -234,7 +234,7 @@ model Discussion {
 }
 
 model Comment {
-  id String @id
+  id String @id @default(cuid())
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -251,7 +251,7 @@ model Comment {
 }
 
 model File {
-  id String @id
+  id String @id @default(cuid())
 
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
