@@ -94,6 +94,9 @@ interface TransactionContextType {
   toggleEditMode: () => void;
   formatAmount: (amount: number, currency?: string | null) => string;
   formatDateTime: (date: Date | string | null) => string;
+  enterEditModeForCategory: () => void;
+  enterEditMode: () => void;
+  updateTransactionData: (updatedData: Partial<TransactionData>) => void;
 }
 
 // Create the context with a default value
@@ -103,7 +106,7 @@ const TransactionContext = React.createContext<
 
 // Provider component that wraps parts of the app that need access to the context
 export function TransactionProvider({
-  transaction,
+  transaction: initialTransaction,
   onUpdate,
   children,
 }: {
@@ -111,12 +114,21 @@ export function TransactionProvider({
   transaction: TransactionData;
   onUpdate?: (updatedData: any) => void;
 }) {
+  const [transaction, setTransaction] =
+    React.useState<TransactionData>(initialTransaction);
   const [isEditMode, setIsEditMode] = React.useState(false);
   const [editedValues, setEditedValues] = React.useState<Record<string, any>>(
     {}
   );
   const updateTransaction = useUpdateTransaction();
+  const updateCategory = useUpdateTransactionCategory();
   const trpc = api.useUtils();
+
+
+  // Update local transaction when props change
+  React.useEffect(() => {
+    setTransaction(initialTransaction);
+  }, [initialTransaction]);
 
   // Reset edited values when the transaction changes
   React.useEffect(() => {
@@ -127,6 +139,47 @@ export function TransactionProvider({
       setEditedValues({});
     }
   }, [transaction.id, transaction.updatedAt]);
+
+  // Function to update transaction data locally (without saving to the server)
+  const updateTransactionData = (updatedData: Partial<TransactionData>) => {
+    console.info('updateTransactionData called with:', updatedData);
+
+    // Process the data to ensure dates are properly formatted for the API
+    const processedData = Object.entries(updatedData).reduce(
+      (acc, [key, value]) => {
+        // Convert Date objects to ISO strings for the API
+        if (value instanceof Date) {
+          acc[key] = value.toISOString();
+        } else {
+          acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, any>
+    );
+
+    console.info('Processed data for API:', processedData);
+
+    // Update the local state
+    setTransaction((current) => {
+      const updated = {
+        ...current,
+        ...updatedData, // Use original data for local state
+        updatedAt: new Date(), // Update the updatedAt field to trigger useEffect
+      };
+      console.info('Updated transaction state:', updated);
+      return updated;
+    });
+
+    // If there's an onUpdate callback, call it with the processed data
+    if (onUpdate) {
+      console.info('Calling onUpdate with:', processedData);
+      onUpdate(processedData);
+    } else {
+      console.warn('No onUpdate callback provided');
+    }
+  };
+
 
   // Format helpers
   const formatAmount = (amount: number, currency?: string | null) => {
@@ -163,9 +216,9 @@ export function TransactionProvider({
       processedValue =
         typeof value === 'string'
           ? value
-              .split(',')
-              .map((tag) => tag.trim())
-              .filter(Boolean)
+            .split(',')
+            .map((tag) => tag.trim())
+            .filter(Boolean)
           : [];
     } else if (field === 'date') {
       // Handle date values specially
@@ -183,12 +236,12 @@ export function TransactionProvider({
       // Handle amount values specially
       if (typeof value === 'number') {
         // Ensure it's a properly formatted number with 2 decimal places
-        processedValue = parseFloat(value.toFixed(2));
+        processedValue = Number.parseFloat(value.toFixed(2));
       } else if (typeof value === 'string') {
         // Try to convert string to number
-        const parsedValue = parseFloat(value);
-        if (!isNaN(parsedValue)) {
-          processedValue = parseFloat(parsedValue.toFixed(2));
+        const parsedValue = Number.parseFloat(value);
+        if (!Number.isNaN(parsedValue)) {
+          processedValue = Number.parseFloat(parsedValue.toFixed(2));
         } else {
           console.warn('Invalid amount value:', value);
           return; // Don't update if invalid
@@ -221,6 +274,21 @@ export function TransactionProvider({
       // If leaving edit mode, clear edits
       setEditedValues({});
     }
+  };
+
+  // Enter edit mode
+  const enterEditMode = () => {
+    setIsEditMode(true);
+  };
+
+  // Enter edit mode specifically for updating the category
+  const enterEditModeForCategory = () => {
+    setEditedValues((prev) => ({
+      ...prev,
+      category: transaction.category || '',
+    }));
+    setIsEditMode(true);
+    // Note: Scrolling to the categorization section would require additional DOM manipulation
   };
 
   // Handle save of edits with trpc
@@ -286,6 +354,9 @@ export function TransactionProvider({
     toggleEditMode,
     formatAmount,
     formatDateTime,
+    enterEditModeForCategory,
+    enterEditMode,
+    updateTransactionData,
   };
 
   return (

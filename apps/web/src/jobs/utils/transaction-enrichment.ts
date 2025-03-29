@@ -49,12 +49,12 @@ type EnrichedTransaction = {
   inflation_adjusted_amount?: number | null;
   similar_transactions_count?: number | null;
   merchant_reputation?:
-    | 'excellent'
-    | 'good'
-    | 'average'
-    | 'poor'
-    | 'unknown'
-    | null;
+  | 'excellent'
+  | 'good'
+  | 'average'
+  | 'poor'
+  | 'unknown'
+  | null;
 };
 
 /** Service for enriching transaction data using AI */
@@ -1063,10 +1063,10 @@ export class EnrichmentService {
       foreign_transaction_analysis: object.transactions[idx]
         ?.is_foreign_transaction
         ? {
-            exchange_rate: object.transactions[idx]?.exchange_rate,
-            original_currency: object.transactions[idx]?.original_currency,
-            currency_volatility: object.transactions[idx]?.currency_volatility,
-          }
+          exchange_rate: object.transactions[idx]?.exchange_rate,
+          original_currency: object.transactions[idx]?.original_currency,
+          currency_volatility: object.transactions[idx]?.currency_volatility,
+        }
         : null,
       description: transaction.description,
     }));

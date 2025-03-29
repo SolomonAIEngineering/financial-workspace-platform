@@ -12,6 +12,7 @@ import { MoreHorizontal } from 'lucide-react';
 interface WalletCardProps {
   userName: string;
   cardNumber: string;
+  name?: string;
 }
 
 /**
@@ -23,7 +24,7 @@ interface WalletCardProps {
  *   shadow effect
  * @component
  */
-export function WalletCard({ userName, cardNumber }: WalletCardProps) {
+export function WalletCard({ userName, cardNumber, name = 'VISA' }: WalletCardProps) {
   return (
     <div className="mb-12">
       <div className="mb-6 flex items-center justify-between">
@@ -36,38 +37,51 @@ export function WalletCard({ userName, cardNumber }: WalletCardProps) {
       </div>
 
       <div className="relative">
-        {/* Black Card */}
-        <div className="relative z-10 h-44 w-72 rounded-2xl bg-gradient-to-br from-gray-900 to-gray-800 p-6 text-white shadow-lg">
-          <div className="mb-10 flex justify-between">
-            <span className="text-xl font-semibold tracking-widest uppercase">
-              VISA
-            </span>
-          </div>
+        <div>
+          {/* Black Card */}
+          <div className="relative z-10 h-64 w-[26rem] rounded-3xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700 p-8 text-white shadow-2xl ring-1 ring-gray-700/30 transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+            {/* Top Row: Card Type and Chip */}
+            <div className="mb-12 flex items-center justify-between">
+              <span className="text-xl font-bold tracking-widest uppercase text-white/90">
+                {name}
+              </span>
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-8 rounded-sm bg-gradient-to-tr from-yellow-300 to-yellow-100 shadow-inner" />
+                <div className="h-6 w-6 rounded-full bg-white shadow-inner ring-1 ring-gray-500 flex items-center justify-center">
+                  <div className="h-3 w-3 rounded-full bg-gray-700" />
+                </div>
+              </div>
+            </div>
 
-          <div className="mb-4">
-            <p className="text-gray-300">{userName}</p>
-          </div>
+            {/* Cardholder Name */}
+            <div className="mb-4">
+              <p className="text-sm font-medium tracking-wide text-gray-300">{userName}</p>
+            </div>
 
-          <div className="flex items-center justify-between">
-            <p className="tracking-widest text-gray-300">
-              **** **** **** {cardNumber}
-            </p>
-            <p className="text-gray-300">12/25</p>
-          </div>
+            {/* Card Number and Expiry */}
+            <div className="flex items-center justify-between border-t border-gray-700 pt-4">
+              <p className="tracking-[0.3em] text-lg font-semibold text-white/80">
+                **** **** **** {cardNumber}
+              </p>
+              <p className="text-sm font-semibold text-white/60">12/25</p>
+            </div>
 
-          <div className="absolute bottom-6 left-6 flex items-center gap-3">
-            <div className="h-6 w-8 rounded border border-gray-600 bg-gray-400/30"></div>
-            <div className="flex h-6 w-6 items-center justify-center rounded-full border border-gray-600">
-              <div className="flex h-4 w-4 items-center justify-center rounded-full border border-gray-600">
-                <div className="h-2 w-2 rounded-full bg-gray-600"></div>
+            {/* Branding Mark */}
+            <div className="absolute bottom-6 left-6 flex items-center gap-3">
+              <div className="h-5 w-8 rounded-sm bg-gradient-to-br from-gray-400/50 to-gray-300/10 shadow-inner ring-1 ring-white/20" />
+              <div className="flex h-5 w-5 items-center justify-center rounded-full border border-white/30">
+                <div className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-white/30">
+                  <div className="h-2 w-2 rounded-full bg-white/40" />
+                </div>
               </div>
             </div>
           </div>
+
         </div>
 
         {/* Shadow Cards */}
-        <div className="absolute top-0 left-0 z-0 h-44 w-72 translate-x-1/3 -translate-y-2 transform rounded-2xl bg-gray-300 opacity-70 dark:bg-gray-700"></div>
-        <div className="absolute top-0 left-0 z-0 h-44 w-72 translate-x-2/3 -translate-y-4 transform rounded-2xl bg-gray-200 opacity-40 dark:bg-gray-600"></div>
+        <div className="absolute top-0 left-0 z-0 h-64 w-[26rem] -translate-y-3 translate-x-1/4 transform rounded-2xl bg-gray-300 opacity-70 dark:bg-gray-700"></div>
+        <div className="absolute top-0 left-0 z-0 h-64 w-[26rem] -translate-y-6 translate-x-2/4 transform rounded-2xl bg-gray-200 opacity-40 dark:bg-gray-600"></div>
       </div>
     </div>
   );
