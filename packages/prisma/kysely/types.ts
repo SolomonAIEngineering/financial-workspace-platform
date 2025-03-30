@@ -196,9 +196,19 @@ export const SubscriptionStatus = {
   ACTIVE: 'ACTIVE',
   PAST_DUE: 'PAST_DUE',
   INACTIVE: 'INACTIVE',
+  CANCELLED: 'CANCELLED',
+  TRIAL: 'TRIAL',
 } as const
 export type SubscriptionStatus =
   (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus]
+export const BankConnectionProvider = {
+  PLAID: 'PLAID',
+  TELLER: 'TELLER',
+  GOCARDLESS: 'GOCARDLESS',
+  STRIPE: 'STRIPE',
+} as const
+export type BankConnectionProvider =
+  (typeof BankConnectionProvider)[keyof typeof BankConnectionProvider]
 export type App = {
   id: string
   app_id: string
@@ -307,7 +317,7 @@ export type BankConnection = {
   lastExpiryNotifiedAt: Timestamp | null
   expiryNotificationCount: Generated<number>
   expiresAt: Timestamp | null
-  provider: string
+  provider: BankConnectionProvider
   enrollmentId: string | null
 }
 export type BankConnectionToTeam = {

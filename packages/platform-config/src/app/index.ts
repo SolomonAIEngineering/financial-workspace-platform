@@ -345,6 +345,7 @@ export const BusinessConfig: SiteConfig = {
   api: apiConfig,
   features: webAppFeatureFlags,
   developer: developerConfig,
+  cacheApiSecret: "SOLOMON_AI_CACHE_API_SECRET",
 };
 
 export type { ENV };

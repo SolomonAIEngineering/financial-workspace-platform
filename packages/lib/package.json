@@ -33,6 +33,7 @@
     "@pdf-lib/fontkit": "^1.1.1",
     "@scure/base": "^1.1.3",
     "@sindresorhus/slugify": "^2.2.1",
+    "@solomon-ai/workspace-financial-backend-sdk": "0.0.1-alpha.2",
     "@solomonai/clickhouse-financials": "workspace:*",
     "@solomonai/email": "workspace:*",
     "@solomonai/platform-config": "workspace:*",

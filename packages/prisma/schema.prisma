@@ -328,7 +328,7 @@ model BankConnection {
   lastExpiryNotifiedAt    DateTime?
   expiryNotificationCount Int       @default(0)
   expiresAt               DateTime?
-  provider String
+  provider BankConnectionProvider
   team Team[]
   
   // teller specific fields
@@ -1488,6 +1488,8 @@ enum SubscriptionStatus {
   ACTIVE
   PAST_DUE
   INACTIVE
+  CANCELLED
+  TRIAL
 }
 
 model Subscription {
@@ -1506,4 +1508,11 @@ model Subscription {
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+enum BankConnectionProvider {
+  PLAID
+  TELLER
+  GOCARDLESS
+  STRIPE
 }
