@@ -1,0 +1,170 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# tRPC Rules for Creating New Routes
+
+## Structure and Organization
+
+1. **Router Organization**:
+   - Create routers in the `/packages/trpc/src/routers/` directory
+   - Group related functionality into dedicated router directories (e.g., `/user/`, `/team/`)
+   - Each router directory should have an `index.ts` file that exports the router
+   - Place individual route handlers in a `/handlers/` subdirectory
+
+2. **File Naming**:
+   - Use kebab-case for directory names
+   - Use descriptive names for handler files that reflect the action (e.g., `get-user.ts`, `update-settings.ts`)
+   - Use camelCase for procedure names in the router
+
+## Handler Implementation
+
+1. **Handler Structure**:
+   - Each handler should be in its own file
+   - Export a single procedure from each handler file
+   - Include JSDoc comments explaining the purpose, inputs, and outputs
+   - Use appropriate procedure types based on authorization requirements
+
+2. **Authorization**:
+   - Use `protectedProcedure` for endpoints requiring authentication
+   - Use `adminProcedure` for admin-only routes
+   - Use `teamOwnerProcedure` for team owner operations
+   - Use `teamMemberProcedure` for team member operations
+   - Use `teamAccessProcedure` for any team member or owner operations
+   - Use resource limiting procedures (`limitedProcedure`, `teamLimitedProcedure`, etc.) when appropriate
+
+3. **Input Validation**:
+   - Define input schemas in a separate `schema.ts` file in the router directory
+   - Use Zod for input validation
+   - Keep schemas focused and reusable
+   - Add descriptive error messages to Zod validations
+
+4. **Error Handling**:
+   - Use `AppError` for domain-specific errors
+   - Set appropriate error codes and status codes
+   - Provide meaningful error messages
+
+## OpenAPI Integration
+
+1. **OpenAPI Metadata**:
+   - Include OpenAPI metadata for all public-facing procedures
+   - Specify method, path, summary, and description
+   - Add appropriate tags for grouping in the API documentation
+   - Document success and error responses
+
+```typescript
+// Example with OpenAPI metadata
+export const getUser = protectedProcedure
+  .meta({
+    openapi: {
+      method: 'GET',
+      path: '/users/{id}',
+      summary: 'Get user information',
+      description: 'Returns public profile information for a specific user',
+      tags: ['users'],
+      protect: true,
+      successDescription: 'User profile retrieved successfully',
+      errorResponses: {
+        404: 'User not found',
+        403: 'Unauthorized access'
+      }
+    }
+  })
+  .input(userIdSchema)
+  .query(async ({ input }) => {
+    // Implementation
+  })
+```
+
+## Best Practices
+
+1. **Context Usage**:
+   - Access authenticated user via `ctx.user`
+   - Access team information via `ctx.teamId`
+   - Use session data appropriately
+
+2. **Database Queries**:
+   - Use Prisma for database operations
+   - Keep queries optimized with appropriate `select` clauses
+   - Use transactions for operations that modify multiple tables
+
+3. **Rate Limiting**:
+   - All protected procedures include rate limiting by default
+   - Consider adding custom rate limit configurations for resource-intensive operations
+
+4. **Procedure Types**:
+   - Use `.query()` for read operations
+   - Use `.mutation()` for write operations
+   - Ensure handlers are idempotent where appropriate
+
+5. **Testing**:
+   - Write unit tests for complex business logic
+   - Add integration tests for critical API endpoints
+
+## Example Implementation
+
+```typescript
+// /packages/trpc/src/routers/document/handlers/create-document.ts
+import { resourceProcedure } from '../../../middlewares/procedures'
+import { prisma } from '@solomonai/prisma'
+import { createDocumentSchema } from '../schema'
+
+/**
+ * Create a new document
+ * 
+ * This procedure creates a new document associated with the current user.
+ * It enforces document limits based on the user's subscription tier.
+ * 
+ * @input title - Document title
+ * @input content - Document content
+ * @returns The created document object
+ */
+export const createDocument = resourceProcedure({
+  resource: 'documents',
+  errorMessage: 'You have reached the maximum number of documents for your plan',
+})
+  .meta({
+    openapi: {
+      method: 'POST',
+      path: '/documents',
+      summary: 'Create a new document',
+      description: 'Creates a new document for the authenticated user',
+      tags: ['documents'],
+      protect: true,
+    }
+  })
+  .input(createDocumentSchema)
+  .mutation(async ({ ctx, input }) => {
+    const userId = ctx.user.id
+    
+    const document = await prisma.document.create({
+      data: {
+        title: input.title,
+        content: input.content,
+        userId
+      }
+    })
+    
+    return document
+  })
+```
+
+## Router Registration
+
+1. **Adding a New Router to Root**:
+   - Import your router in `src/root.ts`
+   - Add it to the `appRouter` object
+   - Use a descriptive name that matches the functionality
+
+```typescript
+// src/root.ts
+import { documentRouter } from './routers/document/index'
+
+export const appRouter = createRouter({
+  // ... existing routers
+  document: documentRouter,
+})
+```
+
+By following these rules, you'll ensure consistent, secure, and well-structured tRPC routes throughout the application. 

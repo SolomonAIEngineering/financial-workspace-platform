@@ -1,0 +1,142 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# tRPC Route Creation Guidelines
+
+## Overview
+
+This file contains guidelines for creating new tRPC routes in the SolomonAI financial workspace platform. Follow these rules to ensure consistency, security, and maintainability across the codebase.
+
+## Directory Structure
+
+1. Create a new router directory in `/packages/trpc/src/routers/` if your feature requires a new top-level router
+2. Each router should follow this structure:
+   ```
+   routers/
+   └── feature-name/
+       ├── index.ts            # Exports the router
+       ├── schema.ts           # Contains Zod schemas for validation
+       └── handlers/           # Directory containing individual route handlers
+           ├── get-data.ts     # Query handler
+           └── update-data.ts  # Mutation handler
+   ```
+
+## Creating a New Route Handler
+
+1. **Handler File Structure**:
+   ```typescript
+   import { protectedProcedure } from '../../../middlewares/procedures'
+   import { prisma } from '@solomonai/prisma'
+   import { inputSchema } from '../schema'
+   
+   /**
+    * [Description of what this route does]
+    * 
+    * @input [description of inputs]
+    * @returns [description of return value]
+    */
+   export const handlerName = protectedProcedure
+     .meta({
+       openapi: {
+         method: 'GET', // or POST, PATCH, etc.
+         path: '/path/to/endpoint',
+         summary: 'Short description',
+         description: 'Longer description of the endpoint',
+         tags: ['categoryName'],
+         protect: true,
+       }
+     })
+     .input(inputSchema)
+     .query(async ({ ctx, input }) => {
+       // Implementation
+       return result
+     })
+   ```
+
+2. **Choosing the Right Procedure**:
+   - Use `protectedProcedure` for authenticated users
+   - Use `teamOwnerProcedure` for team owner operations
+   - Use `teamMemberProcedure` for team member operations
+   - Use `teamAccessProcedure` for any team user operations
+   - Use `adminProcedure` for admin-only routes
+   - Use `limitedProcedure` or `resourceProcedure` for tier-limited features
+
+3. **Input Validation**:
+   - Define all input schemas in the router's `schema.ts` file
+   - Use Zod for validation with descriptive error messages
+   - Example:
+     ```typescript
+     // schema.ts
+     import { z } from 'zod'
+     
+     export const createItemSchema = z.object({
+       name: z.string().min(1, 'Name is required'),
+       description: z.string().optional(),
+       categoryId: z.string().uuid('Invalid category ID'),
+     })
+     ```
+
+4. **Error Handling**:
+   - Use `AppError` for domain-specific errors
+   - Set appropriate codes and messages
+   - Example:
+     ```typescript
+     import { AppError } from '@solomonai/lib/errors/app-error'
+     
+     if (!data) {
+       throw new AppError({
+         code: 'NOT_FOUND',
+         message: 'The requested resource was not found',
+         statusCode: 404,
+       })
+     }
+     ```
+
+## Registering a New Router
+
+1. Add the router to `src/root.ts`:
+   ```typescript
+   import { newFeatureRouter } from './routers/new-feature/index'
+   
+   export const appRouter = createRouter({
+     // Existing routers
+     newFeature: newFeatureRouter,
+   })
+   ```
+
+2. Define the router in its index.ts file:
+   ```typescript
+   import { createRouter } from '../../trpc'
+   import { getData } from './handlers/get-data'
+   import { updateData } from './handlers/update-data'
+   
+   export const newFeatureRouter = createRouter({
+     getData,
+     updateData,
+   })
+   ```
+
+## Best Practices
+
+1. **Security**:
+   - Always use the appropriate authorization procedure
+   - Validate all inputs with Zod
+   - Check team/resource ownership before operations
+
+2. **Performance**:
+   - Use optimized Prisma queries with specific `select` clauses
+   - Use transactions for multi-table operations
+   - Consider pagination for large result sets
+
+3. **OpenAPI Documentation**:
+   - Add comprehensive metadata for all public routes
+   - Include detailed descriptions and examples
+   - Document all possible error responses
+
+4. **Testing**:
+   - Write unit tests for complex business logic
+   - Add integration tests for critical API endpoints
+
+By following these guidelines, you'll create consistent, secure, and well-documented tRPC routes that integrate seamlessly with the existing codebase. 
