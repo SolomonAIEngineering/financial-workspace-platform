@@ -58,7 +58,7 @@ jobs:
           TRIGGER_PROJECT_ID=${{ secrets.TRIGGER_PROJECT_ID }} pnpm dlx trigger.dev@3.3.17 deploy --env staging
         working-directory: packages/jobs
       - name: 🏗 Build Project Artifacts
-        run: pnpm dlx vercel build --preview --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm dlx vercel build --target=staging --token=${{ secrets.VERCEL_TOKEN }}
       - name: 🚀 Deploy to Vercel
         run: |
           pnpm dlx vercel deploy --prebuilt --archive=tgz --token=${{ secrets.VERCEL_TOKEN }}

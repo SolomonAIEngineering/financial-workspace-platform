@@ -32,7 +32,7 @@ export async function PdfTemplate({
   size = 'a4',
   token,
 }: TemplateProps) {
-  let qrCode = null
+  let qrCode: string | null = null
 
   if (template.include_qr) {
     qrCode = await QRCodeUtil.toDataURL(
