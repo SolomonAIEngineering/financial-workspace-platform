@@ -38,8 +38,7 @@ export async function PdfTemplate({
     qrCode = await QRCodeUtil.toDataURL(
       `https://smb.solomonai.dev/i/${token}`,
       {
-        width: 40 * 3,
-        height: 40 * 3,
+        scale: 3,
         margin: 0,
       },
     )
