@@ -2940,6 +2940,12 @@
             "null"
           ]
         },
+        "scheduleId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "users": {
           "type": "array",
           "items": {

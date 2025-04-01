@@ -491,6 +491,7 @@ export interface Team {
   createdAt: Date;
   isDefault: boolean| null;
   stripeCustomerId: string| null;
+  scheduleId: string| null;
 }
 
 export interface UsersOnTeam {

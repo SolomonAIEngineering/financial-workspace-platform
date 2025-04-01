@@ -696,6 +696,7 @@ export type Team = {
   created_at: Generated<Timestamp>
   is_default: Generated<boolean | null>
   stripe_customer_id: string | null
+  schedule_id: string | null
 }
 export type TeamPending = {
   id: string

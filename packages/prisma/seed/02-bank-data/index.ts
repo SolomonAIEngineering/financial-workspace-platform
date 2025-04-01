@@ -3,6 +3,7 @@ import {
   AccountStatus,
   AccountSubtype,
   AccountType,
+  BankConnectionProvider,
   BankConnectionStatus,
   PrismaClient,
   SyncStatus,
@@ -18,7 +19,7 @@ const prisma = new PrismaClient()
 
 export const seedDatabase = async () => {
   try {
-    console.log('Seeding bank data...')
+    console.info('Seeding bank data...')
 
     // Get users to associate bank data with
     const users = await prisma.user.findMany({
@@ -32,7 +33,7 @@ export const seedDatabase = async () => {
     })
 
     if (users.length === 0) {
-      console.log(
+      console.info(
         'No users found to associate bank data with. Skipping bank data seeding.',
       )
       return
@@ -47,7 +48,7 @@ export const seedDatabase = async () => {
         },
         update: {},
         create: {
-          provider: 'plaid',
+          provider: BankConnectionProvider.PLAID,
           id: uuidv4(),
           userId: user.id,
           institutionId: `inst_${user.username}`,
@@ -696,7 +697,7 @@ export const seedDatabase = async () => {
       }
     }
 
-    console.log('Bank data seeding completed successfully.')
+    console.info('Bank data seeding completed successfully.')
   } catch (error) {
     console.error('Error seeding bank data:', error)
   }
