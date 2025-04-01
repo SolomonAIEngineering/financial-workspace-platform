@@ -31,5 +31,5 @@ export default defineConfig({
             }),
         ],
     },
-    dirs: ["./src/trigger"],
+    dirs: ["./src/tasks"],
 });
