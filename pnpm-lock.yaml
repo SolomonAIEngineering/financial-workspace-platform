@@ -3105,6 +3105,9 @@ importers:
       '@storybook/test':
         specifier: ^8.6.7
         version: 8.6.11(storybook@8.6.11)
+      '@types/qrcode':
+        specifier: ^1.5.5
+        version: 1.5.5
       '@types/react':
         specifier: ^19.0.11
         version: 19.0.12
@@ -3138,6 +3141,9 @@ importers:
       '@ai-sdk/openai':
         specifier: ^1.3.4
         version: 1.3.4(zod@3.24.2)
+      '@date-fns/tz':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@react-email/components':
         specifier: ^0.0.34
         version: 0.0.34(react-dom@19.0.0)(react@18.3.1)
@@ -3147,12 +3153,18 @@ importers:
       '@solomon-ai/workspace-financial-backend-sdk':
         specifier: 0.0.1-alpha.2
         version: 0.0.1-alpha.2
+      '@solomonai/documents':
+        specifier: workspace:*
+        version: link:../documents
       '@solomonai/email':
         specifier: workspace:*
         version: link:../email
       '@solomonai/import':
         specifier: workspace:*
         version: link:../import
+      '@solomonai/invoice':
+        specifier: workspace:*
+        version: link:../invoice
       '@solomonai/lib':
         specifier: workspace:*
         version: link:../lib
@@ -3174,9 +3186,15 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      nanoid:
+        specifier: ^5.1.5
+        version: 5.1.5
       papaparse:
         specifier: ^5.5.2
         version: 5.5.2
+      plaid:
+        specifier: ^31.1.0
+        version: 31.1.0
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -11325,6 +11343,7 @@ packages:
       '@inquirer/core': 10.1.9(@types/node@22.13.14)
       '@inquirer/type': 3.0.5(@types/node@22.13.14)
       '@types/node': 22.13.14
+    dev: true
 
   /@inquirer/core@10.1.9(@types/node@22.10.1):
     resolution: {integrity: sha512-sXhVB8n20NYkUBfDYgizGHlpRVaCRjtuzNZA6xpALIUbkgfd2Hjz+DfEN6+h1BRnuxw0/P4jCIMjMsEOAMwAJw==}
@@ -11363,6 +11382,7 @@ packages:
       signal-exit: 4.1.0
       wrap-ansi: 6.2.0
       yoctocolors-cjs: 2.1.2
+    dev: true
 
   /@inquirer/figures@1.0.11:
     resolution: {integrity: sha512-eOg92lvrn/aRUqbxRyvpEWnrvRuTYRifixHkYVpJiygTgVSBIHDqLh0SrMQXkafvULg3ck11V7xvR+zcgvpHFw==}
@@ -11389,6 +11409,7 @@ packages:
         optional: true
     dependencies:
       '@types/node': 22.13.14
+    dev: true
 
   /@internationalized/date@3.7.0:
     resolution: {integrity: sha512-VJ5WS3fcVx0bejE/YHfbDKR/yawZgKqn/if+oEeLqNwBtPzVB06olkfcnojTmEMX+gTpH+FlQ69SHNitJ8/erQ==}
@@ -24728,12 +24749,12 @@ packages:
       '@storybook/icons': 1.4.0(react-dom@19.0.0)(react@19.0.0)
       '@storybook/instrumenter': 8.6.11(storybook@8.6.11)
       '@storybook/test': 8.6.11(storybook@8.6.11)
-      '@vitest/browser': 3.0.9(@types/node@22.13.14)(playwright@1.51.1)(typescript@5.7.3)(vite@5.4.15)(vitest@3.0.9)
+      '@vitest/browser': 3.0.9(playwright@1.51.1)(typescript@5.8.2)(vite@5.4.15)(vitest@3.0.9)
       polished: 4.3.1
       prompts: 2.4.2
       storybook: 8.6.11(prettier@3.5.3)
       ts-dedent: 2.2.0
-      vitest: 3.0.9(@types/node@22.13.14)(@vitest/browser@3.0.9)
+      vitest: 3.0.9(@vitest/browser@3.0.9)
     transitivePeerDependencies:
       - react
       - react-dom
@@ -27730,6 +27751,12 @@ packages:
     resolution: {integrity: sha512-trzh6NzBnq8yw5e35f8xe8VTYjqM3NE7bohBtvDVf/dtUer3zYTLK1Ka3DG3p7bdtoaOHZucma6FfVKlQ134pQ==}
     dev: true
 
+  /@types/qrcode@1.5.5:
+    resolution: {integrity: sha512-CdfBi/e3Qk+3Z/fXYShipBT13OJ2fDO2Q2w5CIP5anLTLIndQG9z6P1cnm+8zCWSpm5dnxMFd/uREtb0EXuQzg==}
+    dependencies:
+      '@types/node': 22.13.14
+    dev: true
+
   /@types/qs@6.9.18:
     resolution: {integrity: sha512-kK7dgTYDyGqS+e2Q4aK9X3D7q234CIZ1Bv0q/7Z5IwRDoADNU81xXJK/YVyLbLTZCoIwUoDoffFeF+p/eIklAA==}
     dev: false
@@ -28572,7 +28599,7 @@ packages:
       jotai-optics: 0.4.0(jotai@2.8.4)(optics-ts@2.4.1)
       jotai-x: 2.3.0(@types/react@18.3.20)(jotai@2.8.4)(react@19.0.0)
       lodash: 4.17.21
-      nanoid: 5.0.9
+      nanoid: 5.1.5
       optics-ts: 2.4.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -28608,7 +28635,7 @@ packages:
       jotai-optics: 0.4.0(jotai@2.8.4)(optics-ts@2.4.1)
       jotai-x: 2.3.0(@types/react@19.0.1)(jotai@2.8.4)(react@19.0.0)
       lodash: 4.17.21
-      nanoid: 5.0.9
+      nanoid: 5.1.5
       optics-ts: 2.4.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -28644,7 +28671,7 @@ packages:
       jotai-optics: 0.4.0(jotai@2.8.4)(optics-ts@2.4.1)
       jotai-x: 2.3.0(@types/react@19.0.10)(jotai@2.8.4)(react@19.0.0)
       lodash: 4.17.21
-      nanoid: 5.0.9
+      nanoid: 5.1.5
       optics-ts: 2.4.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -28680,7 +28707,7 @@ packages:
       jotai-optics: 0.4.0(jotai@2.8.4)(optics-ts@2.4.1)
       jotai-x: 2.3.0(@types/react@19.0.4)(jotai@2.8.4)(react@19.0.0)
       lodash: 4.17.21
-      nanoid: 5.0.9
+      nanoid: 5.1.5
       optics-ts: 2.4.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -28716,7 +28743,7 @@ packages:
       jotai-optics: 0.4.0(jotai@2.8.4)(optics-ts@2.4.1)
       jotai-x: 2.3.0(@types/react@19.0.8)(jotai@2.8.4)(react@19.0.0)
       lodash: 4.17.21
-      nanoid: 5.0.9
+      nanoid: 5.1.5
       optics-ts: 2.4.1
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
@@ -30019,7 +30046,7 @@ packages:
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
-      '@vitest/browser': 3.0.9(@types/node@22.13.14)(playwright@1.51.1)(typescript@5.7.3)(vite@5.4.15)(vitest@3.0.9)
+      '@vitest/browser': 3.0.9(playwright@1.51.1)(typescript@5.8.2)(vite@5.4.15)(vitest@3.0.9)
       debug: 4.4.0
       istanbul-lib-coverage: 3.2.2
       istanbul-lib-report: 3.0.1
@@ -30030,7 +30057,7 @@ packages:
       std-env: 3.8.1
       test-exclude: 7.0.1
       tinyrainbow: 2.0.0
-      vitest: 3.0.9(@types/node@22.13.14)(@vitest/browser@3.0.9)
+      vitest: 3.0.9(@vitest/browser@3.0.9)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -30116,7 +30143,7 @@ packages:
       '@vitest/spy': 3.0.9
       estree-walker: 3.0.3
       magic-string: 0.30.17
-      msw: 2.7.3(@types/node@22.13.14)(typescript@5.7.3)
+      msw: 2.7.3(typescript@5.8.2)
       vite: 5.4.15(@types/node@22.13.14)(less@4.2.2)
 
   /@vitest/pretty-format@2.0.5:
@@ -43395,6 +43422,7 @@ packages:
       yargs: 17.7.2
     transitivePeerDependencies:
       - '@types/node'
+    dev: true
 
   /msw@2.7.3(typescript@5.8.2):
     resolution: {integrity: sha512-+mycXv8l2fEAjFZ5sjrtjJDmm2ceKGjrNbBr1durRg6VkU9fNUE/gsmQ51hWbHqs+l35W1iM+ZsmOD9Fd6lspw==}
@@ -43524,6 +43552,12 @@ packages:
 
   /nanoid@5.0.9:
     resolution: {integrity: sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==}
+    engines: {node: ^18 || >=20}
+    hasBin: true
+    dev: false
+
+  /nanoid@5.1.5:
+    resolution: {integrity: sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==}
     engines: {node: ^18 || >=20}
     hasBin: true
     dev: false
