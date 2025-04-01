@@ -17,6 +17,7 @@ import { Tabs, TabsContent } from '@/registry/default/potion-ui/tabs';
 import { useEffect, useState } from 'react';
 
 import { APIFinancialAccountListResponse } from '@solomon-ai/workspace-financial-backend-sdk/resources/api-financial-accounts.js';
+import { BankConnectionProvider } from '@solomonai/prisma';
 import { Button } from '@/registry/default/potion-ui/button';
 import { DialogContent } from '@/registry/default/potion-ui/dialog';
 import { FormatAmount } from '../format-amount';
@@ -218,7 +219,7 @@ interface SelectBankAccountsModalProps {
 export function SelectBankAccountsModal({
   isOpen,
   onClose,
-  provider = 'plaid',
+  provider = BankConnectionProvider.PLAID,
   ref,
   institution_id = 'ins_127991',
   token = 'access-production-44a2eed4-de7a-45cc-9f68-d8e3c9cf7976',
@@ -268,7 +269,7 @@ export function SelectBankAccountsModal({
     resolver: zodResolver(bankConnectionSchema),
     defaultValues: {
       accounts: [],
-      provider: provider as 'gocardless' | 'plaid' | 'teller' | 'stripe',
+      provider: provider as BankConnectionProvider,
       accessToken: token ?? '',
       itemId: itemId ?? '',
       userId: userId ?? '',
@@ -340,8 +341,16 @@ export function SelectBankAccountsModal({
   useEffect(() => {
     async function fetchData() {
       try {
+        // Don't modify the original provider parameter directly
+        let formattedProvider = provider;
+
+        // format the provider to the correct type
+        if (provider === BankConnectionProvider.TELLER || provider === BankConnectionProvider.PLAID || provider === BankConnectionProvider.GOCARDLESS || provider === BankConnectionProvider.STRIPE) {
+          formattedProvider = provider.toLowerCase();
+        }
+
         const { data } = await engine.apiFinancialAccounts.list({
-          provider: provider as 'teller' | 'plaid' | 'gocardless' | 'stripe',
+          provider: formattedProvider as 'teller' | 'plaid' | 'gocardless' | 'stripe',
           id: ref ?? undefined,
           accessToken: token ?? undefined,
           institutionId: institution_id ?? undefined,
@@ -352,7 +361,7 @@ export function SelectBankAccountsModal({
 
         // Always reset the form with fresh data
         form.reset({
-          provider: provider as 'gocardless' | 'plaid' | 'teller' | 'stripe',
+          provider: provider as BankConnectionProvider,
           accessToken: token ?? '',
           itemId: itemId ?? '',
           userId: userId ?? '',

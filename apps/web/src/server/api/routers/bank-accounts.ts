@@ -5,6 +5,7 @@
  * connected bank accounts, disconnecting accounts, and managing transactions.
  */
 
+import { BankAccount, BankConnectionProvider } from '@solomonai/prisma';
 import {
   createLinkToken,
   exchangePublicToken,
@@ -12,7 +13,6 @@ import {
   removeItem,
 } from '@/server/services/plaid';
 
-import { BankAccount } from '@solomonai/prisma';
 import { ResourceType } from '@/server/services/payment-tier';
 import { TRPCError } from '@trpc/server';
 import { TransactionCategory } from '@solomonai/prisma/client';
@@ -196,7 +196,7 @@ export const bankAccountsRouter = createRouter({
             institution_id: z.string(),
             name: z.string(),
           }),
-          provider: z.string(),
+          provider: z.nativeEnum(BankConnectionProvider),
         }),
         publicToken: z.string(),
       })
@@ -567,9 +567,9 @@ export const bankAccountsRouter = createRouter({
         const monthlyAvgSpending =
           monthlySpendings.length > 0
             ? monthlySpendings.reduce(
-                (acc, curr) => acc + Number.parseFloat(curr.total_amount),
-                0
-              ) / monthlySpendings.length
+              (acc, curr) => acc + Number.parseFloat(curr.total_amount),
+              0
+            ) / monthlySpendings.length
             : 0;
 
         return {
@@ -769,14 +769,14 @@ export const bankAccountsRouter = createRouter({
             bank: isManual
               ? null
               : {
-                  id: account.bankConnectionId,
-                  name:
-                    account.bankConnection?.institutionName || 'Unknown Bank',
-                  logo: account.bankConnection?.logo || null,
-                  provider: 'plaid', // Could be extended to support other providers
-                  status: account.bankConnection?.status || 'ACTIVE',
-                  expires_at: account.bankConnection?.consentExpiresAt || null,
-                },
+                id: account.bankConnectionId,
+                name:
+                  account.bankConnection?.institutionName || 'Unknown Bank',
+                logo: account.bankConnection?.logo || null,
+                provider: 'plaid', // Could be extended to support other providers
+                status: account.bankConnection?.status || 'ACTIVE',
+                expires_at: account.bankConnection?.consentExpiresAt || null,
+              },
           };
         });
 
