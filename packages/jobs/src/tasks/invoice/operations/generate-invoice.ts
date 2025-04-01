@@ -1,15 +1,23 @@
+import {
+  GenerateInvoiceInput,
+  GenerateInvoiceOutput,
+  generateInvoiceInputSchema,
+  generateInvoiceOutputSchema
+} from '../schema';
 import { PdfTemplate, renderToBuffer } from '@solomonai/invoice';
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
+import { Task } from '@trigger.dev/sdk/v3';
 import { prisma } from '@solomonai/prisma';
-import { utapi } from '@/lib/uploadthing';
-import { z } from 'zod';
+import { utapi } from '@solomonai/lib/clients';
 
-export const generateInvoice = schemaTask({
+export const generateInvoice: Task<
+  'generate-invoice',
+  GenerateInvoiceInput,
+  GenerateInvoiceOutput
+> = schemaTask({
   id: 'generate-invoice',
-  schema: z.object({
-    invoiceId: z.string().uuid(),
-  }),
+  schema: generateInvoiceInputSchema,
   maxDuration: 300,
   queue: {
     concurrencyLimit: 10,
@@ -30,7 +38,7 @@ export const generateInvoice = schemaTask({
 
     if (!invoice) {
       logger.error('Invoice not found');
-      return;
+      throw new Error('Invoice not found');
     }
 
     // Use the line items from the invoice relation
@@ -115,12 +123,12 @@ export const generateInvoice = schemaTask({
       logger.error('Failed to upload invoice to storage', {
         error: fileResponse?.error?.message || 'Unknown error',
       });
-      return;
+      throw new Error('Failed to upload invoice to storage');
     }
 
     logger.debug('PDF uploaded to storage');
 
-    await prisma.invoice.update({
+    const updatedInvoice = await prisma.invoice.update({
       where: {
         id: invoiceId,
       },
@@ -132,5 +140,14 @@ export const generateInvoice = schemaTask({
     });
 
     logger.info('Invoice generation completed', { invoiceId, filename });
+
+    // Return the result
+    return generateInvoiceOutputSchema.parse({
+      success: true,
+      invoiceId,
+      filePath: updatedInvoice.filePath,
+      fileSize: updatedInvoice.fileSize,
+      url: updatedInvoice.url,
+    });
   },
 });

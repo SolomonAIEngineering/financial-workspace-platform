@@ -152,7 +152,7 @@ export const expiringNotifications: Task<
          * Create the email message object with proper sender and recipient
          */
         return {
-          from: "Middaybot <middaybot@midday.ai>",
+          from: platformConfig.email.from.notifications,
           to: [user.email],
           subject: "Bank Connection Expiring Soon",
           html,

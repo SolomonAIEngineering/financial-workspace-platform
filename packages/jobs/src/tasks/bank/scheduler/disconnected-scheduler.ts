@@ -83,7 +83,7 @@ async function sendDisconnectedNotification(connection: BankConnection) {
     });
 
     // Update last notified timestamp
-    await prisma.bankConnection.update({
+    const updatedConnection = await prisma.bankConnection.update({
       data: {
         lastNotifiedAt: new Date(),
         notificationCount: { increment: 1 },
@@ -91,8 +91,13 @@ async function sendDisconnectedNotification(connection: BankConnection) {
       where: { id: connection.id },
     });
 
+    if (!updatedConnection) {
+      logger.error(`Failed to update last notified timestamp for connection ${connection.id}`);
+      return false;
+    }
+
     // Record this activity
-    await prisma.userActivity.create({
+    const newActivity = await prisma.userActivity.create({
       data: {
         detail: `Disconnected connection notification for ${connection.institutionName}`,
         metadata: {
@@ -103,6 +108,11 @@ async function sendDisconnectedNotification(connection: BankConnection) {
         userId: connection.user.id,
       },
     });
+
+    if (!newActivity) {
+      logger.error(`Failed to create user activity for connection ${connection.id}`);
+      return false;
+    }
 
     return true;
   } catch (error) {

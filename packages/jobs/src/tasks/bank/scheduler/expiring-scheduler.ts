@@ -1,10 +1,308 @@
+import {
+  ExpiringConnection,
+  ExpiringSchedulerResult,
+  expiringSchedulerResultSchema
+} from './schema';
 import { differenceInDays, subDays } from 'date-fns';
-import { logger, schedules } from '@trigger.dev/sdk/v3';
+import { logger, schedules, tasks } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@solomonai/prisma/client';
-import { client } from '@/jobs';
+import { expiringNotifications } from '../notifications/expiring';
 import { prisma } from '@solomonai/prisma';
+
+// Constants
+const EXPIRING_THRESHOLD_DAYS = 20;
+const EXPIRED_THRESHOLD_DAYS = 30;
+const NOTIFICATION_COOLDOWN_DAYS = 7;
+
+/**
+ * Finds bank connections approaching expiration due to inactivity
+ * 
+ * @param expiringThreshold - Date threshold for connections that haven't been accessed since
+ * @returns Array of bank connections that are potentially expiring
+ */
+async function findExpiringConnections(expiringThreshold: Date) {
+  return prisma.bankConnection.findMany({
+    include: {
+      accounts: {
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          enabled: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+        },
+      },
+      team: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    },
+    where: {
+      lastAccessedAt: {
+        lt: expiringThreshold,
+      },
+      // Only get connections that haven't been notified recently
+      lastExpiryNotifiedAt: {
+        lt: subDays(new Date(), NOTIFICATION_COOLDOWN_DAYS),
+      },
+      status: BankConnectionStatus.ACTIVE,
+    },
+  });
+}
+
+/**
+ * Finds bank connections that have likely already expired due to prolonged inactivity
+ * 
+ * @param expiredThreshold - Date threshold for connections that haven't been accessed since
+ * @returns Array of bank connections that are likely expired
+ */
+async function findExpiredConnections(expiredThreshold: Date) {
+  return prisma.bankConnection.findMany({
+    include: {
+      accounts: {
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          enabled: true,
+        },
+      },
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+        },
+      },
+      team: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
+    },
+    where: {
+      lastAccessedAt: {
+        lt: expiredThreshold,
+      },
+      status: BankConnectionStatus.ACTIVE,
+    },
+  });
+}
+
+/**
+ * Calculates inactivity metrics for a connection
+ * 
+ * @param connection - The bank connection to analyze
+ * @returns Object containing days inactive and days until expiry
+ */
+function calculateInactivityMetrics(connection: ExpiringConnection) {
+  const daysInactive = differenceInDays(
+    new Date(),
+    new Date(connection.lastAccessedAt || new Date())
+  );
+  const daysUntilExpiry = EXPIRED_THRESHOLD_DAYS - daysInactive;
+
+  return {
+    daysInactive,
+    daysUntilExpiry: Math.max(0, daysUntilExpiry),
+  };
+}
+
+/**
+ * Sends an expiration notification to a user
+ * 
+ * @param connection - The connection that is expiring
+ * @param metrics - Inactivity metrics for the connection
+ * @returns Boolean indicating if the notification was sent successfully
+ */
+async function sendExpirationNotification(
+  connection: ExpiringConnection,
+  metrics: { daysInactive: number; daysUntilExpiry: number }
+): Promise<boolean> {
+  try {
+    // Skip if no email or no active accounts
+    if (!connection.user.email || connection.accounts.length === 0) {
+      logger.info(`Skipping notification for connection ${connection.id} - no email or active accounts`);
+      return false;
+    }
+
+    // Send notification to user
+    await tasks.trigger<typeof expiringNotifications>('expiring-notifications', {
+      users: [
+        {
+          expiresAt: connection.expiresAt
+            ? connection.expiresAt.toISOString()
+            : new Date().toISOString(),
+          user: {
+            id: connection.user.id,
+            email: connection.user.email || "",
+            full_name: connection.user.name || "User",
+            locale: "en-US",
+          },
+          teamName: connection.team?.[0]?.name || "Personal Finance",
+          bankName: connection.institutionName,
+          teamSlug: connection.team?.[0]?.slug || "personal",
+        },
+      ],
+    });
+
+    // Update last notified timestamp
+    await prisma.bankConnection.update({
+      data: {
+        expiryNotificationCount: { increment: 1 },
+        lastExpiryNotifiedAt: new Date(),
+      },
+      where: { id: connection.id },
+    });
+
+    // Record this activity
+    await prisma.userActivity.create({
+      data: {
+        detail: `Expiring connection notification for ${connection.institutionName}`,
+        metadata: {
+          connectionId: connection.id,
+          daysInactive: metrics.daysInactive,
+          daysUntilExpiry: metrics.daysUntilExpiry,
+        },
+        type: 'NOTIFICATION_SENT',
+        userId: connection.user.id,
+      },
+    });
+
+    logger.info(`Sent expiration notification for connection ${connection.id}`, {
+      connectionId: connection.id,
+      daysInactive: metrics.daysInactive,
+      daysUntilExpiry: metrics.daysUntilExpiry,
+      institutionName: connection.institutionName,
+    });
+
+    return true;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    logger.error(`Failed to notify user for expiring connection ${connection.id}`, {
+      connectionId: connection.id,
+      userId: connection.user.id,
+      error: errorMessage,
+    });
+
+    return false;
+  }
+}
+
+/**
+ * Marks a connection as requiring attention due to expiration
+ * 
+ * @param connection - The connection to mark as requiring attention
+ * @returns Boolean indicating if the operation was successful
+ */
+async function markConnectionAsRequiringAttention(
+  connection: ExpiringConnection
+): Promise<boolean> {
+  try {
+    // Mark as requiring attention
+    await prisma.bankConnection.update({
+      data: {
+        errorMessage: 'Connection may have expired due to inactivity',
+        status: BankConnectionStatus.REQUIRES_ATTENTION,
+      },
+      where: { id: connection.id },
+    });
+
+    logger.info(`Marked connection ${connection.id} as requiring attention`, {
+      connectionId: connection.id,
+      institutionName: connection.institutionName,
+    });
+
+    return true;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    logger.error(`Failed to mark expired connection ${connection.id}`, {
+      connectionId: connection.id,
+      error: errorMessage,
+    });
+
+    return false;
+  }
+}
+
+/**
+ * Process all connections that are approaching expiration
+ * 
+ * @param connections - The connections to process
+ * @param span - The trace span for logging
+ * @returns Number of notifications sent
+ */
+async function processExpiringConnections(
+  connections: ExpiringConnection[],
+  span: any
+): Promise<number> {
+  let notificationsSent = 0;
+
+  span.setAttribute('connectionsToProcess', connections.length);
+
+  for (const connection of connections) {
+    // Skip if connection doesn't have the necessary data
+    if (!connection.user.email || connection.accounts.length === 0) {
+      continue;
+    }
+
+    const metrics = calculateInactivityMetrics(connection);
+
+    span.setAttribute(`connection_${connection.id}_daysInactive`, metrics.daysInactive);
+    span.setAttribute(`connection_${connection.id}_daysUntilExpiry`, metrics.daysUntilExpiry);
+
+    const success = await sendExpirationNotification(connection, metrics);
+
+    if (success) {
+      notificationsSent++;
+    }
+  }
+
+  return notificationsSent;
+}
+
+/**
+ * Process all connections that have likely already expired
+ * 
+ * @param connections - The connections to process
+ * @param span - The trace span for logging
+ * @returns Number of connections marked as requiring attention
+ */
+async function processExpiredConnections(
+  connections: ExpiringConnection[],
+  span: any
+): Promise<number> {
+  let markedForAttention = 0;
+
+  span.setAttribute('connectionsToMark', connections.length);
+
+  for (const connection of connections) {
+    const success = await markConnectionAsRequiringAttention(connection);
+
+    if (success) {
+      markedForAttention++;
+    }
+  }
+
+  return markedForAttention;
+}
 
 /**
  * Scheduled task that proactively identifies bank connections approaching
@@ -25,14 +323,15 @@ import { prisma } from '@solomonai/prisma';
  *   proactively alerting users before their connections expire, reducing
  *   service disruptions. It implements error handling, retry mechanisms, and
  *   comprehensive tracing.
+ *
  * @example
  *   The job runs automatically every day at 10 AM, but can be triggered manually:
  *   ```ts
  *   await client.sendEvent({
- *   name: 'run-job',
- *   payload: {
- *   jobId: 'expiring-scheduler-job',
- *   },
+ *     name: 'run-job',
+ *     payload: {
+ *       jobId: 'expiring-scheduler-job',
+ *     },
  *   });
  *   ```
  *
@@ -60,11 +359,10 @@ export const expiringSchedulerJob = schedules.task({
    *
    * @param payload - The scheduler payload (empty for scheduled jobs)
    * @param ctx - The execution context provided by Trigger.dev
-   * @returns A summary object with counts of connections processed and actions
-   *   taken
+   * @returns A summary object with counts of connections processed and actions taken
    * @throws Error if the process fails
    */
-  run: async (payload, ctx) => {
+  run: async (payload, ctx): Promise<ExpiringSchedulerResult> => {
     try {
       // Create a trace for the entire operation
       return await logger.trace(
@@ -73,247 +371,60 @@ export const expiringSchedulerJob = schedules.task({
           span.setAttribute('scheduledAt', new Date().toISOString());
           logger.info('Starting expiring connections scheduler');
 
+          // Skip in non-production environments
           if (process.env.TRIGGER_ENVIRONMENT !== 'production') {
             logger.info(
               'Expiring connections scheduler skipped in non-production environment'
             );
-            return {
+            return expiringSchedulerResultSchema.parse({
               connectionsProcessed: 0,
               markedForAttention: 0,
               notificationsSent: 0,
               skipped: true,
               environment: process.env.TRIGGER_ENVIRONMENT,
-            };
+            });
           }
 
-          // Plaid tokens typically expire after 30 days of inactivity
-          const expiringThreshold = subDays(new Date(), 20);
-          span.setAttribute(
-            'expiringThreshold',
-            expiringThreshold.toISOString()
-          );
+          // Define the thresholds for expiring and expired connections
+          const expiringThreshold = subDays(new Date(), EXPIRING_THRESHOLD_DAYS);
+          const expiredThreshold = subDays(new Date(), EXPIRED_THRESHOLD_DAYS);
 
-          // Find potentially expiring connections
-          const expiringConnections = await prisma.bankConnection.findMany({
-            include: {
-              accounts: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-                where: {
-                  enabled: true,
-                },
-              },
-              user: {
-                select: {
-                  id: true,
-                  email: true,
-                  name: true,
-                },
-              },
-            },
-            where: {
-              lastAccessedAt: {
-                lt: expiringThreshold,
-              },
-              // Only get connections that haven't been notified about expiring in the last 7 days
-              lastExpiryNotifiedAt: {
-                lt: subDays(new Date(), 7),
-              },
-              status: BankConnectionStatus.ACTIVE,
-            },
-          });
+          span.setAttribute('expiringThreshold', expiringThreshold.toISOString());
+          span.setAttribute('expiredThreshold', expiredThreshold.toISOString());
 
-          span.setAttribute(
-            'expiringConnectionsCount',
-            expiringConnections.length
-          );
+          // Find potentially expiring and expired connections
+          const expiringConnections = await findExpiringConnections(expiringThreshold);
+          const expiredConnections = await findExpiredConnections(expiredThreshold);
+
+          span.setAttribute('expiringConnectionsCount', expiringConnections.length);
+          span.setAttribute('expiredConnectionsCount', expiredConnections.length);
+
           logger.info(
-            `Found ${expiringConnections.length} potentially expiring connections`
+            `Found ${expiringConnections.length} potentially expiring connections and ${expiredConnections.length} expired connections`
           );
 
-          // Process each expiring connection
-          let notificationsSent = 0;
-
-          // Use a sub-trace for the notification process
-          await logger.trace(
+          // Process expiring connections
+          const notificationsSent = await logger.trace(
             'process-expiring-connections',
-            async (subSpan) => {
-              subSpan.setAttribute(
-                'connectionsToProcess',
-                expiringConnections.length
-              );
-
-              for (const connection of expiringConnections) {
-                // Skip if no email or no active accounts
-                if (
-                  !connection.user.email ||
-                  connection.accounts.length === 0
-                ) {
-                  continue;
-                }
-
-                try {
-                  const daysInactive = differenceInDays(
-                    new Date(),
-                    new Date(connection.lastAccessedAt || new Date())
-                  );
-                  const daysUntilExpiry = 30 - daysInactive;
-
-                  subSpan.setAttribute(
-                    `connection_${connection.id}_daysInactive`,
-                    daysInactive
-                  );
-                  subSpan.setAttribute(
-                    `connection_${connection.id}_daysUntilExpiry`,
-                    daysUntilExpiry
-                  );
-
-                  // Send notification to user
-                  await client.sendEvent({
-                    name: 'expiring-notification-trigger',
-                    payload: {
-                      accountCount: connection.accounts.length,
-                      connectionId: connection.id,
-                      daysInactive,
-                      daysUntilExpiry,
-                      email: connection.user.email,
-                      institutionName: connection.institutionName,
-                      name: connection.user.name,
-                      userId: connection.user.id,
-                    },
-                  });
-
-                  // Update last notified timestamp
-                  await prisma.bankConnection.update({
-                    data: {
-                      expiryNotificationCount: { increment: 1 },
-                      lastExpiryNotifiedAt: new Date(),
-                    },
-                    where: { id: connection.id },
-                  });
-
-                  // Record this activity
-                  await prisma.userActivity.create({
-                    data: {
-                      detail: `Expiring connection notification for ${connection.institutionName}`,
-                      metadata: {
-                        connectionId: connection.id,
-                        daysInactive,
-                        daysUntilExpiry,
-                      },
-                      type: 'NOTIFICATION_SENT',
-                      userId: connection.user.id,
-                    },
-                  });
-
-                  notificationsSent++;
-
-                  logger.info(
-                    `Sent expiration notification for connection ${connection.id}`,
-                    {
-                      connectionId: connection.id,
-                      daysInactive,
-                      daysUntilExpiry,
-                      institutionName: connection.institutionName,
-                    }
-                  );
-                } catch (notificationError) {
-                  const errorMessage =
-                    notificationError instanceof Error
-                      ? notificationError.message
-                      : 'Unknown error';
-
-                  logger.error(
-                    `Failed to notify user for expiring connection ${connection.id}`,
-                    {
-                      connectionId: connection.id,
-                      userId: connection.user.id,
-                      error: errorMessage,
-                    }
-                  );
-
-                  // Continue with other connections even if one fails
-                }
-              }
-            }
+            (subSpan) => processExpiringConnections(expiringConnections as ExpiringConnection[], subSpan)
           );
 
-          // For connections that have likely already expired (no activity in 30+ days),
-          // mark them as requiring attention
-          const expiredConnections = await prisma.bankConnection.findMany({
-            where: {
-              lastAccessedAt: {
-                lt: subDays(new Date(), 30),
-              },
-              status: BankConnectionStatus.ACTIVE,
-            },
-          });
-
-          span.setAttribute(
-            'expiredConnectionsCount',
-            expiredConnections.length
+          // Process expired connections
+          const markedForAttention = await logger.trace(
+            'mark-expired-connections',
+            (markSpan) => processExpiredConnections(expiredConnections as ExpiringConnection[], markSpan)
           );
-          let markedForAttention = 0;
-
-          // Use a sub-trace for the mark-for-attention process
-          await logger.trace('mark-expired-connections', async (markSpan) => {
-            markSpan.setAttribute(
-              'connectionsToMark',
-              expiredConnections.length
-            );
-
-            for (const connection of expiredConnections) {
-              try {
-                // Mark as requiring attention
-                await prisma.bankConnection.update({
-                  data: {
-                    errorMessage:
-                      'Connection may have expired due to inactivity',
-                    status: BankConnectionStatus.REQUIRES_ATTENTION,
-                  },
-                  where: { id: connection.id },
-                });
-
-                markedForAttention++;
-
-                logger.info(
-                  `Marked connection ${connection.id} as requiring attention`,
-                  {
-                    connectionId: connection.id,
-                    institutionName: connection.institutionName,
-                  }
-                );
-              } catch (markError) {
-                const errorMessage =
-                  markError instanceof Error
-                    ? markError.message
-                    : 'Unknown error';
-
-                logger.error(
-                  `Failed to mark expired connection ${connection.id}`,
-                  {
-                    connectionId: connection.id,
-                    error: errorMessage,
-                  }
-                );
-
-                // Continue with other connections even if one fails
-              }
-            }
-          });
 
           logger.info(
             `Completed scheduler run. Sent ${notificationsSent} notifications and marked ${markedForAttention} connections as requiring attention`
           );
 
-          return {
+          return expiringSchedulerResultSchema.parse({
             connectionsProcessed: expiringConnections.length,
             markedForAttention,
             notificationsSent,
             skipped: false,
-          };
+          });
         }
       );
     } catch (error) {
@@ -329,37 +440,5 @@ export const expiringSchedulerJob = schedules.task({
         `Failed to process expiring connections: ${errorMessage}`
       );
     }
-  },
-  /**
-   * Custom error handler to control retry behavior based on error type
-   *
-   * @param payload - The task payload
-   * @param error - The error that occurred
-   * @param options - Options object containing context and retry control
-   * @returns Retry instructions or undefined to use default retry behavior
-   */
-  handleError: async (payload, error, { ctx, retryAt }) => {
-    // If it's a database connection error, wait longer before retry
-    if (
-      error instanceof Error &&
-      error.message.includes('database connection')
-    ) {
-      return {
-        retryAt: new Date(Date.now() + 60000), // Wait at least 1 minute
-      };
-    }
-
-    // If it's a notification service error, try again sooner
-    if (
-      error instanceof Error &&
-      error.message.includes('notification service')
-    ) {
-      return {
-        retryAt: new Date(Date.now() + 30000), // Try again after 30 seconds
-      };
-    }
-
-    // For other errors, use the default retry strategy
-    return;
   },
 });

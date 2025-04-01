@@ -2,3 +2,4 @@
 
 export * from './upload';
 export * from './document';
+export * from './schema';

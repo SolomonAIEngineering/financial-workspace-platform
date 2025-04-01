@@ -1,8 +1,8 @@
 import { logger, schedules } from '@trigger.dev/sdk/v3';
 
-import { checkInvoiceStatus } from '../operations/check-status';
+import { checkInvoiceStatusForBatch } from '../operations/check-status';
 import { prisma } from '@solomonai/prisma';
-import { triggerBatch } from '@/jobs/utils/trigger-batch';
+import { triggerBatch } from '../../../utils/trigger-batch';
 
 /**
  * Schedules invoices to be checked for status
@@ -30,7 +30,7 @@ export const invoiceScheduler = schedules.task({
       invoiceId: invoice.id,
     }));
 
-    await triggerBatch(formattedInvoices, checkInvoiceStatus);
+    await triggerBatch(formattedInvoices, checkInvoiceStatusForBatch);
 
     logger.info('Invoice status check jobs started', {
       count: invoices.length,

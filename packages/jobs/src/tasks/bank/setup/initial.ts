@@ -1,10 +1,17 @@
+import {
+  InitialSetupInput,
+  InitialSetupOutput,
+  initialSetupInputSchema,
+  initialSetupOutputSchema
+} from './schema';
 import { logger, schedules, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
+import { Task } from '@trigger.dev/sdk/v3';
 import { bankSyncScheduler } from '../scheduler/bank-scheduler';
-import { generateCronTag } from '@/lib/generate-cron-tag';
+import { generateCronTag } from '../../../utils/generate-cron-tag';
+import { prisma } from '@solomonai/prisma';
 import { syncConnectionJob as syncConnection } from '../sync/connection';
-import { z } from 'zod';
 
 /**
  * This job handles the complete initial setup process when a user connects a
@@ -46,13 +53,14 @@ import { z } from 'zod';
  *   accountCount: 5
  *   }
  */
-export const initialSetupJob = schemaTask({
+export const initialSetupJob: Task<
+  typeof BANK_JOBS.INITIAL_SETUP,
+  InitialSetupInput,
+  InitialSetupOutput
+> = schemaTask({
   id: BANK_JOBS.INITIAL_SETUP,
   description: 'Initial Bank Connection Setup',
-  schema: z.object({
-    teamId: z.string(),
-    connectionId: z.string(),
-  }),
+  schema: initialSetupInputSchema,
   maxDuration: 300,
   queue: {
     concurrencyLimit: 50,
@@ -79,7 +87,9 @@ export const initialSetupJob = schemaTask({
     // Schedule the bank sync task to run daily at a random time to distribute load
     // Use a deduplication key to prevent duplicate schedules for the same team
     // Add teamId as externalId to use it in the bankSyncScheduler task
-    await schedules.create({
+
+    // TODO: store the schedule id in the database for the given team
+    const schedule = await schedules.create({
       task: bankSyncScheduler.id,
       cron: generateCronTag(teamId),
       timezone: 'UTC',
@@ -87,32 +97,34 @@ export const initialSetupJob = schemaTask({
       deduplicationKey: `${teamId}-${bankSyncScheduler.id}`,
     });
 
-    // TODO: Add validation that the schedule was created successfully
-    // TODO: Add flexibility for custom schedule frequencies based on user tier or preferences
+    if (!schedule) {
+      throw new Error('Failed to create bank sync schedule');
+    }
+
+    // update the team with the schedule id
+    const updatedTeam = await prisma.team.update({
+      where: { id: teamId },
+      data: {
+        scheduleId: schedule.id, // save the schedule id in the database
+      },
+    });
+
+    if (!updatedTeam) {
+      throw new Error('Failed to update team with schedule id');
+    }
+
+    logger.info('Successfully created bank sync schedule', {
+      scheduleId: schedule.id,
+      timezone: schedule.timezone,
+      externalId: schedule.externalId,
+      deduplicationKey: schedule.deduplicationKey,
+    });
 
     // Run initial sync for transactions and balance for the connection
     const syncResult = await syncConnection.triggerAndWait({
       connectionId,
       manualSync: true,
     });
-
-    // TODO: Add error handling for the initial sync failure
-    // TODO: Add progress tracking and status updates during initial sync
-    // TODO: Add validation of synced data quality and completeness
-
-    // And run once more to ensure all transactions are fetched on the providers side
-    // GoCardLess, Teller and Plaid can take up to 3 minutes to fetch all transactions
-    // For Teller and Plaid we also listen on the webhook to fetch any new transactions
-    // await syncConnection.trigger(
-    //   {
-    //     connectionId,
-    //     manualSync: true,
-    //   },
-    // );
-
-    // TODO: Add verification that the delayed sync was successfully scheduled
-    // TODO: Add webhook registration and validation for providers that support it
-    // TODO: Add monitoring for initial sync completion with alerts for failures
 
     // Fetch the connection to get the access token
     await syncConnection.trigger(
@@ -124,5 +136,12 @@ export const initialSetupJob = schemaTask({
         delay: '5m',
       }
     );
+
+    // Return success result
+    return initialSetupOutputSchema.parse({
+      success: true,
+      bankConnectionId: connectionId,
+      accountCount: 0, // TODO: Update with actual account count
+    });
   },
 });

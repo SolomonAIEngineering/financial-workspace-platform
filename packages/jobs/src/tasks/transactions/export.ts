@@ -631,39 +631,4 @@ export const processExport: Task<
       }
     });
   },
-  /**
-   * Custom error handler to control retry behavior based on error type
-   *
-   * @param payload - The task payload
-   * @param error - The error that occurred
-   * @param options - Options object containing context and retry control
-   * @returns Retry instructions or undefined to use default retry behavior
-   */
-  handleError: async (payload, error, { ctx, retryAt }) => {
-    // If it's a database connection error, wait longer
-    if (
-      error instanceof Error &&
-      error.message.includes('database connection')
-    ) {
-      logger.warn(
-        `Database connection error, delaying retry for export processing`
-      );
-      return {
-        retryAt: new Date(Date.now() + 60000), // Wait 1 minute
-      };
-    }
-
-    // For resource-intensive operations that failed, maybe just skip retrying
-    if (error instanceof Error && error.message.includes('resource limit')) {
-      logger.warn(
-        `Resource limit reached, skipping retry for export processing`
-      );
-      return {
-        skipRetrying: true,
-      };
-    }
-
-    // For other errors, use the default retry strategy
-    return;
-  },
 });

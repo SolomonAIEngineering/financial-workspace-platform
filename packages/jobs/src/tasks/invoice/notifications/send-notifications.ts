@@ -1,13 +1,14 @@
 import {
   SendInvoiceNotificationsInput,
   SendInvoiceNotificationsOutput,
-  sendInvoiceNotificationsInputSchema
+  sendInvoiceNotificationsInputSchema,
+  sendInvoiceNotificationsOutputSchema
 } from '../schema';
+import { TeamRole, prisma } from '@solomonai/prisma';
+import { handleOverdueInvoiceNotifications, handlePaidInvoiceNotifications } from '../../../utils/invoice-notifications';
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
-import { handleOverdueInvoiceNotifications } from '@/jobs/utils/invoice-notifications';
-import { handlePaidInvoiceNotifications } from '@/jobs/utils/invoice-notifications';
-import { prisma } from '@solomonai/prisma';
+import { Task } from '@trigger.dev/sdk/v3';
 
 /**
  * Task that sends notifications for invoice status changes
@@ -15,7 +16,11 @@ import { prisma } from '@solomonai/prisma';
  * This task handles sending notifications (both in-app and email) when
  * an invoice is paid or becomes overdue.
  */
-export const sendInvoiceNotifications = schemaTask({
+export const sendInvoiceNotifications: Task<
+  'invoice-notifications',
+  SendInvoiceNotificationsInput,
+  SendInvoiceNotificationsOutput
+> = schemaTask({
   id: 'invoice-notifications',
   schema: sendInvoiceNotificationsInputSchema,
   run: async ({
@@ -29,7 +34,7 @@ export const sendInvoiceNotifications = schemaTask({
     const user = await prisma.usersOnTeam.findFirst({
       where: {
         teamId,
-        role: 'OWNER',
+        role: TeamRole.OWNER,
       },
     });
 
@@ -65,22 +70,22 @@ export const sendInvoiceNotifications = schemaTask({
           break;
       }
 
-      // Return the result
-      return {
+      // Return the result using the output schema
+      return sendInvoiceNotificationsOutputSchema.parse({
         success,
         notificationType: status,
         recipientCount: recipientList.length,
-      };
+      });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       logger.error(`Failed to send invoice ${status} notifications: ${errorMessage}`);
 
-      // Return error result
-      return {
+      // Return error result using the output schema
+      return sendInvoiceNotificationsOutputSchema.parse({
         success: false,
         notificationType: status,
         recipientCount: 0,
-      };
+      });
     }
   },
 });

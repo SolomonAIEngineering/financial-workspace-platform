@@ -1,7 +1,7 @@
 import { logger, schemaTask, tasks } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../../constants';
-import { getItemDetails } from '@/server/services/plaid';
+import { getItemDetails } from '../../../utils/plaid';
 import { prisma } from '@solomonai/prisma';
 import { syncConnectionJob } from '../sync/connection';
 import { z } from 'zod';
@@ -250,11 +250,11 @@ export const connectionRecoveryJob = schemaTask({
           maxRetriesExceeded: true,
         };
       }
-    } catch (error) {
+    } catch (error: unknown | Error) {
       logger.error('Connection recovery job failed', {
         connectionId,
         provider,
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
 
       // TODO: Add detailed error categorization based on error types
@@ -263,7 +263,7 @@ export const connectionRecoveryJob = schemaTask({
 
       return {
         success: false,
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   },

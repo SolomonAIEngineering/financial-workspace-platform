@@ -9,6 +9,7 @@ import {
 import { Task, logger, schedules, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { BANK_JOBS } from '../constants';
+import { bankSyncScheduler } from '../bank/scheduler/bank-scheduler';
 import { engine } from '@solomonai/lib/clients';
 import { prisma } from '@solomonai/prisma';
 
@@ -20,14 +21,28 @@ import { prisma } from '@solomonai/prisma';
  */
 async function deleteTeamSyncSchedule(teamId: string): Promise<{ success: boolean; message: string }> {
   try {
-    // Find the schedule for this team by its deduplication key
-    const scheduleKey = `${teamId}-bank-sync-scheduler`;
 
-    await schedules.del(scheduleKey);
+    // get the team from the database
+    const team = await prisma.team.findUnique({
+      where: {
+        id: teamId,
+      },
+    });
+
+    if (!team || !team.scheduleId) {
+      return {
+        success: false,
+        message: `Team ${teamId} not found`,
+      };
+    }
+
+
+    // Find the schedule for this team by its deduplication key
+    await schedules.del(team.scheduleId);
 
     logger.info('Successfully deleted team sync schedule', {
       teamId,
-      scheduleKey,
+      scheduleKey: team.scheduleId,
     });
 
     return {
@@ -304,32 +319,5 @@ export const deleteTeam: Task<
       // Propagate error but with context
       throw new Error(`Failed to delete team ${teamId}: ${errorMessage}`);
     }
-  },
-  /**
-   * Custom error handler to control retry behavior based on error type
-   *
-   * @param payload - The task payload
-   * @param error - The error that occurred
-   * @param options - Options object containing context and retry control
-   * @returns Retry instructions or undefined to use default retry behavior
-   */
-  handleError: async (payload, error, { ctx, retryAt }) => {
-    const { teamId } = payload;
-
-    // If it's a database connection error, wait longer
-    if (
-      error instanceof Error &&
-      error.message.includes('database connection')
-    ) {
-      logger.warn(
-        `Database connection error, delaying retry for team ${teamId}`
-      );
-      return {
-        retryAt: new Date(Date.now() + 60000), // Wait 1 minute
-      };
-    }
-
-    // For other errors, use the default retry strategy
-    return;
   },
 });

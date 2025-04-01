@@ -2,11 +2,11 @@ import type { BatchRunHandle } from "@trigger.dev/sdk/v3";
 
 const BATCH_SIZE = 100;
 
-interface BatchItem<T> {
+export interface BatchItem<T> {
   payload: T;
 }
 
-interface BatchTriggerTask<T> {
+export interface BatchTriggerTask<T> {
   batchTrigger: (
     items: BatchItem<T>[],
   ) => Promise<BatchRunHandle<string, T, void>>;

@@ -150,7 +150,7 @@ export const disconnectedNotifications: Task<
 
       // Create the email message object
       return {
-        from: "Middaybot <middaybot@midday.ai>",
+        from: platformConfig.email.from.notifications,
         to: [user.email],
         subject: "Bank Connection Expiring Soon",
         html,
@@ -171,7 +171,6 @@ export const disconnectedNotifications: Task<
     return {
       success: true,
       notificationCount: emails.length,
-      // TODO: Return detailed results with success/failure per user
     };
   },
 });

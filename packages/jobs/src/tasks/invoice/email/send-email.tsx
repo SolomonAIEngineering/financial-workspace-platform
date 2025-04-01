@@ -1,19 +1,26 @@
+import {
+  SendInvoiceEmailInput,
+  SendInvoiceEmailOutput,
+  sendInvoiceEmailInputSchema,
+  sendInvoiceEmailOutputSchema
+} from '../../invoice/schema';
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
-import { BusinessConfig } from '@solomonai/platform-config';
 import { Invoice } from '@solomonai/email';
-import { getAppUrl } from '@/lib/app-url';
+import { Task } from '@trigger.dev/sdk/v3';
 import { nanoid } from 'nanoid';
+import { BusinessConfig as platformConfig } from '@solomonai/platform-config';
 import { prisma } from '@solomonai/prisma';
 import { render } from '@react-email/render';
-import { resend } from '@/lib/resend';
-import { z } from 'zod';
+import { resend } from '@solomonai/lib/clients';
 
-export const sendInvoiceEmail = schemaTask({
+export const sendInvoiceEmail: Task<
+  'send-invoice-email',
+  SendInvoiceEmailInput,
+  SendInvoiceEmailOutput
+> = schemaTask({
   id: 'send-invoice-email',
-  schema: z.object({
-    invoiceId: z.string().uuid(),
-  }),
+  schema: sendInvoiceEmailInputSchema,
   maxDuration: 300,
   queue: {
     concurrencyLimit: 10,
@@ -31,18 +38,18 @@ export const sendInvoiceEmail = schemaTask({
 
     if (!invoice) {
       logger.error('Invoice not found');
-      return;
+      throw new Error('Invoice not found');
     }
 
     const customerEmail = invoice?.customer?.email;
 
     if (!customerEmail) {
       logger.error('Invoice customer email not found');
-      return;
+      throw new Error('Invoice customer email not found');
     }
 
     const response = await resend?.emails.send({
-      from: BusinessConfig.email.from.default,
+      from: platformConfig.email.from.default,
       to: customerEmail,
       replyTo: invoice?.team.email ?? undefined,
       subject: `${invoice?.team.name} sent you an invoice`,
@@ -53,7 +60,7 @@ export const sendInvoiceEmail = schemaTask({
         <Invoice
           customerName={invoice?.customer?.name ?? ''}
           teamName={invoice?.team.name ?? ''}
-          link={`${getAppUrl()}/i/${invoice?.token}`}
+          link={`${platformConfig.platformUrl}/invoice/${invoice?.token}`}
           email={invoice?.customer?.email ?? ''}
           teamSlug={invoice?.team.name ?? ''}
           companyLogo={invoice?.team.logoUrl ?? ''}
@@ -94,6 +101,14 @@ export const sendInvoiceEmail = schemaTask({
         status: 'UNPAID',
         sentTo: customerEmail,
       },
+    });
+
+    // Return success result that matches the output schema
+    return sendInvoiceEmailOutputSchema.parse({
+      success: true,
+      invoiceId,
+      recipientEmail: customerEmail,
+      updatedStatus: 'UNPAID',
     });
   },
 });

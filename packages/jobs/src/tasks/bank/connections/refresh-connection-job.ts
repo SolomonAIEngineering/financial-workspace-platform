@@ -56,7 +56,7 @@ export const refreshConnectionJob = schemaTask({
   },
   // TODO: Expand schema validation to include provider-specific tokens and refresh requirements
   schema: z.object({
-    connectionId: z.string().uuid(),
+    connectionId: z.string(),
     // TODO: Add validation for provider type with proper enum values
     // TODO: Add validation for accessToken and refreshToken formats based on provider
   }),

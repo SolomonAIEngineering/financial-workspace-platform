@@ -16,7 +16,7 @@ export const connectionToDeleteSchema = z.object({
  * Schema for the input parameters to the team deletion task
  */
 export const deleteTeamInputSchema = z.object({
-    teamId: z.string().uuid()
+    teamId: z.string()
         .describe('The unique identifier for the team to delete'),
     connections: z.array(connectionToDeleteSchema)
         .describe('Array of connections to delete from their respective providers'),

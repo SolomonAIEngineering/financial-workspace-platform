@@ -1,21 +1,30 @@
+import { BatchItem, BatchTriggerTask } from '../../../utils/trigger-batch';
+import {
+  CheckInvoiceStatusInput,
+  CheckInvoiceStatusOutput,
+  checkInvoiceStatusInputSchema,
+  checkInvoiceStatusOutputSchema
+} from '../schema';
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { TZDate } from '@date-fns/tz';
+import { Task } from '@trigger.dev/sdk/v3';
 import { prisma } from '@solomonai/prisma';
-import { updateInvoiceStatus } from '@/jobs/utils/update-invoice';
-import { z } from 'zod';
+import { updateInvoiceStatus } from '../../../utils/update-invoice';
 
 /**
  * Checks the status of an invoice and updates it if necessary
  *
  * @param invoiceId - The ID of the invoice to check
- * @returns Void
+ * @returns Result object with status information
  */
-export const checkInvoiceStatus = schemaTask({
+export const checkInvoiceStatus: Task<
+  'check-invoice-status',
+  CheckInvoiceStatusInput,
+  CheckInvoiceStatusOutput
+> = schemaTask({
   id: 'check-invoice-status',
-  schema: z.object({
-    invoiceId: z.string().uuid(),
-  }),
+  schema: checkInvoiceStatusInputSchema,
   queue: {
     concurrencyLimit: 10,
   },
@@ -28,13 +37,16 @@ export const checkInvoiceStatus = schemaTask({
 
     if (!invoice) {
       logger.error('Invoice not found');
-      return;
+      throw new Error('Invoice not found');
     }
 
     if (!invoice.amount || !invoice.currency || !invoice.dueDate) {
       logger.error('Invoice data is missing');
-      return;
+      throw new Error('Invoice data is missing');
     }
+
+    // Store the previous status for reporting
+    const previousStatus = invoice.status;
 
     // Type assertion for the template JSON field
     const template = invoice.template as { timezone?: string } | null;
@@ -58,6 +70,8 @@ export const checkInvoiceStatus = schemaTask({
       take: 1,
     });
 
+    let wasUpdated = false;
+
     // We have a match
     if (transactions && transactions.length === 1) {
       const transactionId = transactions.at(0)?.id;
@@ -79,8 +93,10 @@ export const checkInvoiceStatus = schemaTask({
         invoiceId,
         status: 'paid',
       });
+
+      wasUpdated = true;
     } else {
-      // Check if the invoice is overdue
+      // Check if the invoice is overdue using TZDate
       const isOverdue =
         new TZDate(invoice.dueDate, timezone) <
         new TZDate(new Date(), timezone);
@@ -91,7 +107,38 @@ export const checkInvoiceStatus = schemaTask({
           invoiceId,
           status: 'overdue',
         });
+        wasUpdated = true;
       }
     }
+
+    // Get the latest invoice status
+    const updatedInvoice = await prisma.invoice.findUnique({
+      where: {
+        id: invoiceId,
+      },
+    });
+
+    if (!updatedInvoice) {
+      throw new Error('Failed to retrieve updated invoice');
+    }
+
+    // Return success result
+    return checkInvoiceStatusOutputSchema.parse({
+      success: true,
+      invoiceId,
+      status: updatedInvoice.status,
+      wasUpdated,
+      previousStatus: wasUpdated ? previousStatus : null,
+    });
   },
 });
+
+/**
+ * A wrapper for the checkInvoiceStatus task that is compatible with triggerBatch
+ */
+export const checkInvoiceStatusForBatch: BatchTriggerTask<CheckInvoiceStatusInput> = {
+  batchTrigger: (items: BatchItem<CheckInvoiceStatusInput>[]) => {
+    // Cast to any to bypass type issues since we know this will work at runtime
+    return checkInvoiceStatus.batchTrigger(items) as any;
+  }
+};
