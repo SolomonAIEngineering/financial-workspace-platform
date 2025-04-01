@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.4",
+    "@react-email/components": "^0.0.34",
     "@react-email/render": "^0.0.12",
     "@solomon-ai/workspace-financial-backend-sdk": "0.0.1-alpha.2",
     "@solomonai/email": "workspace:*",

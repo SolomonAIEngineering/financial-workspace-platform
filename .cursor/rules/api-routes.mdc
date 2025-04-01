@@ -1,0 +1,181 @@
+---
+description: 
+globs: *.tsx
+alwaysApply: false
+---
+---
+description: Guidelines for implementing Next.js App Router API routes
+globs: 
+alwaysApply: false
+---
+# API Routes
+
+## Standard Format
+
+Use this format for API routes in the Next.js App Router:
+
+```ts
+import { type NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getServerSession } from '@/server/auth';
+import { prisma } from '@solomonai/db';
+
+// Define input validation schema with Zod
+const requestSchema = z.object({ 
+  id: z.string(),
+  message: z.string() 
+});
+
+// Define response type for client-side type safety
+export type ApiRequestBody = z.infer<typeof requestSchema>;
+export type ApiResponse = Awaited<ReturnType<typeof handleRequest>>;
+
+/**
+ * Handle the business logic for this API endpoint
+ * Separate business logic from the route handler for better testing
+ */
+async function handleRequest(body: ApiRequestBody, options: { userId: string }) {
+  const { userId } = options;
+  
+  const result = await prisma.table.update({
+    where: {
+      id: body.id,
+      userId,
+    },
+    data: body,
+  });
+
+  return { result };
+}
+
+/**
+ * POST handler for this API route
+ * All route handlers should have JSDoc comments explaining their purpose
+ */
+export async function POST(req: NextRequest) {
+  try {
+    // Validate authentication
+    const session = await getServerSession(req);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    // Parse and validate request body
+    const json = await req.json();
+    const body = requestSchema.parse(json);
+
+    // Process the request
+    const result = await handleRequest(body, { userId: session.user.id });
+
+    // Return successful response
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('API error:', error);
+    
+    // Handle Zod validation errors
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid request', details: error.errors },
+        { status: 400 }
+      );
+    }
+    
+    // Handle other errors
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * Example GET handler with route parameters
+ */
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { slug: string } }
+) {
+  try {
+    const session = await getServerSession(req);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const { slug } = params;
+    // Use the slug parameter...
+
+    return NextResponse.json({ result: 'success' });
+  } catch (error) {
+    console.error('API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## Webhook Handler Format
+
+For handling external webhooks (like Stripe, Plaid, etc.):
+
+```ts
+import { headers } from 'next/headers';
+import { type NextRequest, NextResponse } from 'next/server';
+
+/**
+ * Handle webhook events from external services
+ */
+export async function POST(req: NextRequest) {
+  const body = await req.text();
+  const headersList = headers();
+  const signature = headersList.get('webhook-signature');
+  
+  try {
+    // 1. Verify webhook signature if applicable
+    
+    // 2. Process the webhook event
+    
+    // 3. Return successful response
+    return NextResponse.json({ received: true });
+  } catch (error) {
+    console.error('Webhook error:', error);
+    
+    return NextResponse.json(
+      { error: 'Webhook processing failed' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## Implementation Guidelines
+
+- **Route Organization**: Place API routes in the `app/api` directory, organizing them logically by feature or resource.
+- **Authentication**: Use `getServerSession()` to validate the authentication state of requests.
+- **Input Validation**: Use Zod for request body validation and type inference.
+- **Separate Logic**: Extract business logic into separate functions to improve testability.
+- **Error Handling**: Implement consistent error handling with appropriate status codes and error messages.
+- **Type Safety**: Export types for request bodies and responses to ensure client-side type safety.
+- **Security**: Validate input, authenticate requests, and implement proper CORS headers for cross-origin requests.
+- **Documentation**: Add JSDoc comments to explain the purpose and behavior of each API route.
+- **Response Headers**: Set appropriate cache control headers based on the nature of the response.
+
+## CORS Headers
+
+For API routes that need to handle CORS:
+
+```ts
+const setCorsHeaders = (res: Response) => {
+  res.headers.set('Access-Control-Allow-Origin', '*');
+  res.headers.set('Access-Control-Request-Method', '*');
+  res.headers.set('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
+  res.headers.set('Access-Control-Allow-Headers', '*');
+};
+
+export const OPTIONS = () => {
+  const response = new Response(null, { status: 204 });
+  setCorsHeaders(response);
+  return response;
+};
+```

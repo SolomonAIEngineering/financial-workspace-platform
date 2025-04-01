@@ -1,0 +1,318 @@
+---
+description: Guidelines for implementing GET API routes in Next.js
+globs: 
+alwaysApply: false
+---
+# GET API Route Guidelines
+
+Guidelines for implementing GET API routes in the Next.js App Router:
+
+## Basic Structure
+
+```typescript
+import { type NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from '@/server/auth';
+import { prisma } from '@solomonai/prisma';
+
+/**
+ * Define response type for type safety and client-side usage
+ * Be explicit about the shape of your responses
+ */
+export type GetExampleResponse = {
+  items: ExampleItem[];
+  pagination?: {
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+};
+
+/**
+ * Separate business logic for better testability
+ * @param options - Query parameters and user context
+ */
+async function fetchExampleData(options: { 
+  userId: string;
+  page?: number;
+  pageSize?: number;
+  search?: string;
+}) {
+  const { userId, page = 1, pageSize = 20, search } = options;
+  
+  // Calculate pagination
+  const skip = (page - 1) * pageSize;
+  
+  // Build filter conditions
+  const where = {
+    userId,
+    ...(search ? {
+      OR: [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ],
+    } : {}),
+  };
+
+  // Fetch data with pagination
+  const [items, total] = await Promise.all([
+    prisma.example.findMany({
+      where,
+      orderBy: { updatedAt: 'desc' },
+      skip,
+      take: pageSize,
+    }),
+    prisma.example.count({ where }),
+  ]);
+
+  return {
+    items,
+    pagination: {
+      total,
+      page,
+      pageSize,
+    },
+  };
+}
+
+/**
+ * GET handler for retrieving example items
+ * Supports pagination and search functionality
+ */
+export async function GET(req: NextRequest) {
+  try {
+    // Get authentication session
+    const session = await getServerSession(req);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Not authenticated' }, 
+        { status: 401 }
+      );
+    }
+
+    // Parse query parameters
+    const url = new URL(req.url);
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const pageSize = parseInt(url.searchParams.get('pageSize') || '20');
+    const search = url.searchParams.get('search') || undefined;
+
+    // Fetch data using the business logic function
+    const result = await fetchExampleData({
+      userId: session.user.id,
+      page,
+      pageSize,
+      search,
+    });
+
+    // Return response with caching headers
+    // Adjust cache settings based on your needs
+    return NextResponse.json(result, {
+      headers: {
+        'Cache-Control': 'private, max-age=60, stale-while-revalidate=30',
+      },
+    });
+  } catch (error) {
+    console.error('API error:', error);
+    
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## GET Route with Path Parameters
+
+```typescript
+import { type NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from '@/server/auth';
+import { prisma } from '@solomonai/prisma';
+
+/**
+ * Response type for a single item
+ */
+export type GetExampleItemResponse = {
+  item: ExampleItem | null;
+};
+
+/**
+ * GET handler for retrieving a specific example item by ID
+ */
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Authentication check
+    const session = await getServerSession(req);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Not authenticated' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = params;
+
+    // Fetch the specific item, ensuring it belongs to the authenticated user
+    const item = await prisma.example.findUnique({
+      where: {
+        id,
+        userId: session.user.id,
+      },
+    });
+
+    if (!item) {
+      return NextResponse.json(
+        { error: 'Item not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ item });
+  } catch (error) {
+    console.error('API error:', error);
+    
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+## Implementation Guidelines
+
+### Authentication
+
+- Always use `getServerSession()` to authenticate requests
+- Return a 401 status code if the user is not authenticated
+- Always scope queries to the authenticated user's data
+
+```typescript
+const session = await getServerSession(req);
+if (!session?.user?.id) {
+  return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+}
+```
+
+### Query Parameters
+
+- Parse query parameters from the URL
+- Provide default values for parameters like page and pageSize
+- Validate parameters are within acceptable ranges
+
+```typescript
+const url = new URL(req.url);
+const page = Math.max(1, parseInt(url.searchParams.get('page') || '1'));
+const pageSize = Math.min(100, parseInt(url.searchParams.get('pageSize') || '20'));
+```
+
+### Error Handling
+
+- Use try/catch blocks to handle errors
+- Log errors for debugging
+- Return appropriate HTTP status codes
+- Provide clear error messages
+
+### Response Format
+
+- Define explicit response types with TypeScript
+- Export response types for client-side usage
+- Use consistent response structures across endpoints
+- Consider including metadata like pagination info
+
+### Caching
+
+- Set appropriate cache headers based on the nature of the data
+- Use `private` for user-specific data
+- Set reasonable `max-age` and `stale-while-revalidate` values
+
+```typescript
+return NextResponse.json(result, {
+  headers: {
+    'Cache-Control': 'private, max-age=60, stale-while-revalidate=30',
+  },
+});
+```
+
+### Pagination
+
+- Implement skip/take pagination for large datasets
+- Return total count and pagination metadata
+- Set reasonable default limits and maximums
+
+### Security
+
+- Always validate user authentication
+- Scope database queries to the authenticated user
+- Validate and sanitize all input parameters
+
+## Examples
+
+### Simple GET Route
+
+```typescript
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getServerSession(req);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const items = await prisma.example.findMany({
+      where: { userId: session.user.id },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    return NextResponse.json({ items });
+  } catch (error) {
+    console.error('API error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+```
+
+### GET Route with Filtering
+
+```typescript
+export async function GET(req: NextRequest) {
+  try {
+    const session = await getServerSession(req);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const url = new URL(req.url);
+    const status = url.searchParams.get('status');
+    const category = url.searchParams.get('category');
+
+    const items = await prisma.example.findMany({
+      where: {
+        userId: session.user.id,
+        ...(status ? { status } : {}),
+        ...(category ? { category } : {}),
+      },
+      orderBy: { updatedAt: 'desc' },
+    });
+
+    return NextResponse.json({ items });
+  } catch (error) {
+    console.error('API error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+```
+
+## Best Practices
+
+- **Separate Business Logic**: Keep route handlers clean by moving business logic to separate functions
+- **Type Safety**: Define and export response types for all endpoints
+- **Consistent Error Handling**: Use try/catch for all API routes
+- **Data Security**: Always scope queries to the authenticated user
+- **Documentation**: Use JSDoc comments to explain the purpose and behavior of your API
+- **Efficient Queries**: Optimize database queries by selecting only needed fields
+- **Pagination**: Implement pagination for endpoints that could return large datasets
+- **Caching**: Set appropriate cache headers for improved performance
+
+Remember that GET routes should focus on retrieving data, not modifying it. For data modifications, use POST, PUT, PATCH, or DELETE methods as appropriate.

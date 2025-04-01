@@ -8,11 +8,8 @@ import {
   ProcessExportOutput,
   TRANSACTION_PAGINATION_SIZE,
   TransactionWithRelations,
-  attachmentExportDataSchema,
   exportRowSchema,
-  processExportInputSchema,
-  processExportOutputSchema,
-  transactionWithRelationsSchema
+  processExportInputSchema
 } from './schema';
 import { Task, logger, schemaTask } from '@trigger.dev/sdk/v3';
 

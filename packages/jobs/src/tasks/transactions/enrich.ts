@@ -1,6 +1,6 @@
 import { Task, schemaTask } from '@trigger.dev/sdk/v3';
 
-import { EnrichmentService } from '../../utils/enrichment-service';
+import { EnrichmentService } from '../../utils/transaction-enrichment';
 import { Transaction } from '@solomonai/prisma';
 import { logger } from '@trigger.dev/sdk/v3';
 import { prisma } from '@solomonai/prisma';

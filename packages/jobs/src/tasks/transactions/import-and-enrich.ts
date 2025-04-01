@@ -11,7 +11,7 @@ import {
 import { Prisma, Transaction } from '@solomonai/prisma/client';
 import { Task, logger, schemaTask } from '@trigger.dev/sdk/v3';
 
-import { EnrichmentService } from '../../utils/enrichment-service';
+import { EnrichmentService } from '../../utils/transaction-enrichment';
 import Papa from 'papaparse';
 import { getFileContent } from '@solomonai/lib/clients';
 import { mapTransactions } from '@solomonai/import/mappings';

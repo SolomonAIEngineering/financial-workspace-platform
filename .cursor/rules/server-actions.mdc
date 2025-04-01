@@ -1,0 +1,349 @@
+---
+description: Guidelines for implementing Next.js Server Actions
+globs: 
+alwaysApply: false
+---
+# Server Actions Guidelines
+
+Guidelines for implementing server actions in the Next.js App Router:
+
+## Basic Structure
+
+Server actions provide a way to run code on the server from the client. They should follow this pattern:
+
+```typescript
+'use server';
+
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+import { authActionClient } from '@/actions/safe-action';
+import { prisma } from '@solomonai/prisma';
+
+/**
+ * Schema for validating input data
+ */
+const exampleSchema = z.object({
+  id: z.string(),
+  name: z.string().min(2, {
+    message: 'Name must be at least 2 characters.',
+  }),
+  description: z.string().optional(),
+});
+
+/**
+ * Server action for handling an example operation
+ * 
+ * @example
+ *   const result = await exampleAction({
+ *     id: "123",
+ *     name: "Example Item",
+ *     description: "Optional description"
+ *   });
+ *   
+ *   if (result.success) {
+ *     // Handle success
+ *   } else {
+ *     // Handle error
+ *   }
+ */
+export const exampleAction = authActionClient
+  .schema(exampleSchema)
+  .action(async ({ ctx: { user }, parsedInput }) => {
+    try {
+      // Perform database operations using the validated input
+      const item = await prisma.example.create({
+        data: {
+          ...parsedInput,
+          userId: user.id,
+        },
+      });
+
+      // Revalidate related pages to update UI
+      revalidatePath('/examples');
+      
+      return { 
+        success: true,
+        data: item 
+      };
+    } catch (error) {
+      console.error('Failed to create example:', error);
+      return { 
+        success: false, 
+        error: 'Failed to create example' 
+      };
+    }
+  });
+```
+
+## Using next-safe-action
+
+We use `next-safe-action` to enhance server actions with:
+- Input validation via Zod schemas
+- Authentication middleware
+- Consistent error handling
+- Type safety
+
+```typescript
+import { createSafeActionClient } from 'next-safe-action';
+import { getOrThrowCurrentUser } from '@/lib/auth';
+
+// Create the base client
+export const actionClient = createSafeActionClient();
+
+// Create the auth client by extending the base client with middleware
+export const authActionClient = actionClient.use(async ({ next }) => {
+  const user = await getOrThrowCurrentUser();
+  return next({ ctx: { user } });
+});
+```
+
+## Simple Form Actions
+
+For simple form submissions, you can use the built-in form action pattern:
+
+```typescript
+'use server';
+
+import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
+import { prisma } from '@solomonai/prisma';
+import { getOrThrowCurrentUser } from '@/lib/auth';
+
+/**
+ * Handle form submission for creating a new item
+ */
+export async function createItem(formData: FormData) {
+  const user = await getOrThrowCurrentUser();
+  
+  const name = formData.get('name') as string;
+  const description = formData.get('description') as string;
+  
+  if (!name || name.length < 2) {
+    return { error: 'Name must be at least 2 characters' };
+  }
+  
+  try {
+    await prisma.example.create({
+      data: {
+        name,
+        description,
+        userId: user.id,
+      },
+    });
+    
+    revalidatePath('/examples');
+    redirect('/examples');
+  } catch (error) {
+    console.error('Failed to create item:', error);
+    return { error: 'Failed to create item' };
+  }
+}
+```
+
+## Implementation Guidelines
+
+### Input Validation
+
+- Use Zod for robust input validation
+- Define schemas with clear validation rules and error messages
+- Export schema types for client-side type safety
+
+```typescript
+const inputSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+  email: z.string().email({ message: 'Please enter a valid email address' }),
+  age: z.number().min(18, { message: 'Must be at least 18 years old' }).optional(),
+});
+
+export type InputType = z.infer<typeof inputSchema>;
+```
+
+### Authentication
+
+- Always validate the user is authenticated before performing actions
+- Use the `authActionClient` which automatically handles authentication
+- For direct server actions, use `getOrThrowCurrentUser()`
+
+### Error Handling
+
+- Use try/catch blocks to handle errors gracefully
+- Return structured responses with success/error indicators
+- Log detailed errors on the server for debugging
+- Return user-friendly error messages to the client
+
+```typescript
+try {
+  // Operation logic
+  return { success: true, data: result };
+} catch (error) {
+  console.error('Operation failed:', error);
+  return { success: false, error: 'Operation failed. Please try again.' };
+}
+```
+
+### Response Format
+
+- Return consistent response objects
+- Include a success boolean flag
+- Provide data on success and error message on failure
+
+```typescript
+type ActionResponse<T> = 
+  | { success: true; data: T }
+  | { success: false; error: string };
+```
+
+### UI Updates
+
+- Use `revalidatePath()` to update relevant UI after successful operations
+- Optionally use `redirect()` to navigate after completion
+- Consider optimistic updates on the client side for improved UX
+
+```typescript
+// Update all examples pages
+revalidatePath('/examples');
+
+// Or more specifically a single example detail page
+revalidatePath(`/examples/${id}`);
+
+// Redirect after completion
+redirect('/examples');
+```
+
+### Organization
+
+- Group related actions in dedicated files
+- Place all actions in an `/actions` directory organized by feature
+- Use clear naming conventions (`update-x-action.ts`, `create-y-action.ts`)
+
+## Examples
+
+### Simple Update Action
+
+```typescript
+'use server';
+
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+import { authActionClient } from '@/actions/safe-action';
+import { prisma } from '@solomonai/prisma';
+
+const updateProfileSchema = z.object({
+  name: z.string().min(2),
+  bio: z.string().optional(),
+});
+
+export const updateProfileAction = authActionClient
+  .schema(updateProfileSchema)
+  .action(async ({ ctx: { user }, parsedInput }) => {
+    try {
+      const updatedProfile = await prisma.profile.update({
+        where: { userId: user.id },
+        data: parsedInput,
+      });
+      
+      revalidatePath('/profile');
+      return { success: true, profile: updatedProfile };
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+      return { success: false, error: 'Failed to update profile' };
+    }
+  });
+```
+
+### Action with External API Call
+
+```typescript
+'use server';
+
+import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
+import { authActionClient } from '@/actions/safe-action';
+import { stripe } from '@/lib/stripe';
+
+const createCheckoutSchema = z.object({
+  priceId: z.string(),
+  quantity: z.number().int().min(1),
+});
+
+export const createCheckoutAction = authActionClient
+  .schema(createCheckoutSchema)
+  .action(async ({ ctx: { user }, parsedInput }) => {
+    try {
+      // Create Stripe checkout session
+      const session = await stripe.checkout.sessions.create({
+        customer_email: user.email,
+        line_items: [
+          {
+            price: parsedInput.priceId,
+            quantity: parsedInput.quantity,
+          },
+        ],
+        mode: 'payment',
+        success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/canceled`,
+        metadata: {
+          userId: user.id,
+        },
+      });
+      
+      return { success: true, url: session.url };
+    } catch (error) {
+      console.error('Failed to create checkout session:', error);
+      return { success: false, error: 'Failed to create checkout session' };
+    }
+  });
+```
+
+### Integration with Background Jobs
+
+```typescript
+'use server';
+
+import { z } from 'zod';
+import { authActionClient } from '@/actions/safe-action';
+import { client } from '@/jobs/client';
+
+const syncDataSchema = z.object({
+  dataSource: z.string(),
+});
+
+export const syncDataAction = authActionClient
+  .schema(syncDataSchema)
+  .action(async ({ ctx: { user }, parsedInput }) => {
+    try {
+      // Trigger a background job
+      const result = await client.sendEvent({
+        name: 'sync-data',
+        payload: { 
+          userId: user.id,
+          dataSource: parsedInput.dataSource,
+        },
+      });
+      
+      return { 
+        success: true, 
+        message: 'Sync started',
+        jobId: result.id,
+      };
+    } catch (error) {
+      console.error('Failed to start sync:', error);
+      return { success: false, error: 'Failed to start sync' };
+    }
+  });
+```
+
+## Best Practices
+
+- **Input Validation**: Always validate inputs with Zod schemas
+- **Authentication**: Always check user authentication before performing actions
+- **Error Handling**: Use try/catch and return consistent error responses
+- **Separation of Concerns**: Separate business logic from data access
+- **Documentation**: Add JSDoc comments to explain purpose and usage
+- **Type Safety**: Export types for client-side usage
+- **Atomicity**: Keep actions focused on a single responsibility
+- **Testing**: Write unit tests for server actions
+- **Performance**: Keep server actions lightweight and fast
+- **Security**: Validate all inputs, avoid exposing sensitive information
+
+Remember that server actions should be used for data mutations and operations that require server-side processing. For data fetching, consider using React Server Components directly. 

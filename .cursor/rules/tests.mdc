@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+description: How to write tests in the monorepo
+globs: 
+alwaysApply: true
+---
+Follow our [tests.md](mdc:references/tests.md) guide for how to write tests in the monorepo.
