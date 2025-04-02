@@ -1,8 +1,8 @@
-import type { Stripe } from '@solomonai/lib/server-only/stripe'
-import { prisma } from '@solomonai/prisma'
 import type { Prisma } from '@solomonai/prisma/client'
+import type { Stripe } from '@solomonai/lib/server-only/stripe'
 import { SubscriptionStatus } from '@solomonai/prisma/client'
 import { match } from 'ts-pattern'
+import { prisma } from '@solomonai/prisma/server'
 
 export type OnSubscriptionUpdatedOptions = {
   userId?: string

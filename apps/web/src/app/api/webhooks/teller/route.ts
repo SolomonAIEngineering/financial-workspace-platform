@@ -1,5 +1,5 @@
 import { validateTellerSignature } from '@/lib/teller';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { isAfter, subDays } from 'date-fns';
 import { syncConnectionJob } from '@/jobs';
 import { type NextRequest, NextResponse } from 'next/server';
@@ -27,9 +27,9 @@ export async function POST(req: NextRequest) {
   const signatureHeader = req.headers.get('teller-signature');
   const signatureValid = signatureHeader
     ? validateTellerSignature({
-        signatureHeader,
-        text,
-      })
+      signatureHeader,
+      text,
+    })
     : false;
 
   if (!signatureValid) {

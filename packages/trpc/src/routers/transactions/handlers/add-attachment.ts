@@ -1,8 +1,7 @@
-import { prisma } from '@solomonai/prisma'
-
 import { TRPCError } from '@trpc/server'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { addAttachmentSchema } from '../schema'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Adds an attachment to a transaction by creating a new TransactionAttachment record.

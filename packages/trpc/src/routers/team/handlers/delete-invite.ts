@@ -3,7 +3,7 @@ import { protectedProcedure, teamOwnerProcedure } from '../../../middlewares/pro
 import { TRPCError } from '@trpc/server'
 import { TeamRole } from '@solomonai/prisma/client'
 import { deleteInviteSchema } from '../schema'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 
 /**
  * Protected procedure to delete a team invite.

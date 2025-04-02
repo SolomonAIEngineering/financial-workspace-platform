@@ -2,7 +2,7 @@ import { protectedProcedure, teamMemberProcedure } from '../../../middlewares/pr
 
 import { TRPCError } from '@trpc/server'
 import { TeamRole } from '@solomonai/prisma/client'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { updateUserRoleSchema } from '../schema'
 
 /**

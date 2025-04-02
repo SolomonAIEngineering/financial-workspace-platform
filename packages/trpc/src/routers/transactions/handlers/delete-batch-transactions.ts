@@ -1,7 +1,7 @@
-import { prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { deleteBatchTransactionsSchema } from '../schema'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Deletes multiple transactions in a single request.

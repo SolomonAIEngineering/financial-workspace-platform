@@ -1,10 +1,11 @@
-import { nid } from '@solomonai/lib/utils/nid'
-import { prisma } from '@solomonai/prisma'
-import { TRPCError } from '@trpc/server'
+import { MAX_CONTENT_LENGTH, createDocumentSchema } from '../schema'
+
 import { NodeApi } from '@udecode/plate'
+import { TRPCError } from '@trpc/server'
+import { nid } from '@solomonai/lib/utils/nid'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { ratelimitMiddleware } from '../../../middlewares/ratelimitMiddleware'
-import { createDocumentSchema, MAX_CONTENT_LENGTH } from '../schema'
 
 /**
  * Protected procedure to create a new document.
@@ -26,9 +27,9 @@ export const create = protectedProcedure
   .mutation(async ({ ctx, input }) => {
     const content = input.contentRich
       ? NodeApi.string({
-          children: input.contentRich,
-          type: 'root',
-        })
+        children: input.contentRich,
+        type: 'root',
+      })
       : ''
 
     if (content.length > MAX_CONTENT_LENGTH) {

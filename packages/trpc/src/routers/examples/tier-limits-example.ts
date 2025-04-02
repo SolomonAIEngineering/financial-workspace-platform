@@ -5,7 +5,6 @@
  * tier limits middleware to enforce subscription plan limits.
  */
 
-import { LimitableResourceEnum } from '../../middlewares/tierLimitsMiddleware'
 import {
   limitedProcedure,
   resourceProcedure,
@@ -14,9 +13,10 @@ import {
   teamResourceProcedure,
 } from '../../middlewares/procedures'
 
+import { LimitableResourceEnum } from '../../middlewares/tierLimitsMiddleware'
 import { TRPCError } from '@trpc/server'
 import { createRouter } from '../../trpc'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { z } from 'zod'
 
 /**

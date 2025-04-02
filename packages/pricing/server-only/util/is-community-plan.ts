@@ -1,8 +1,8 @@
-import { subscriptionsContainsActivePlan } from '@solomonai/lib/utils/billing'
 import type { Subscription } from '@solomonai/prisma'
-import { prisma } from '@solomonai/prisma'
-import { z } from 'zod'
 import { getCommunityPlanPriceIds } from '../stripe/get-community-plan-prices'
+import { prisma } from '@solomonai/prisma/server'
+import { subscriptionsContainsActivePlan } from '@solomonai/lib/utils/billing'
+import { z } from 'zod'
 
 /**
  * Zod schema for validating community plan check options

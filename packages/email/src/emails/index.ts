@@ -61,6 +61,7 @@ export { default as ClicksSummary } from './clicks-summary'
 export { default as LinksLimit } from './links-limit'
 
 // System and account emails
+export { default as BankReconnectAlert } from './bank-reconnect-alert'
 export { default as ConnectionExpire } from './connection-expire'
 export { default as ConnectionIssue } from './connection-issue'
 export { default as CustomerFeedbackAlert } from './customer-feedback-alert'

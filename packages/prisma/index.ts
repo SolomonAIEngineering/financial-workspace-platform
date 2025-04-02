@@ -1,108 +1,28 @@
 /**
  * @file index.ts
- * @description Prisma and Kysely database client initialization and exports
- *
- * This file initializes and exports the database clients used throughout the application:
- * 1. A standard Prisma client for type-safe database access
- * 2. A Kysely-extended Prisma client for advanced query capabilities
- *
- * The file uses the 'remember' utility to ensure singleton instances of these clients,
- * preventing connection pool exhaustion in serverless environments.
+ * @description Entry point for the Prisma package, which exports client-safe types and enums
+ * 
+ * IMPORTANT: This file should only contain exports that are safe to use in client components.
+ * No server-only modules (like pg, Prisma clients, etc.) should be included here.
+ * Server-only code should be imported from './server'
  */
 
-import {
-  Kysely,
-  PostgresAdapter,
-  PostgresIntrospector,
-  PostgresQueryCompiler,
-} from 'kysely'
+// Re-export all other types and enums from the client module
+export * from './client';
 
-import type { DB } from './kysely/types'
-/// <reference types="@solomonai/prisma/server/prisma.d.ts" />
-import { PrismaClient } from '@prisma/client'
-import { getDatabaseUrl } from './helper'
-import kyselyExtension from 'prisma-extension-kysely'
-import pg from 'pg';
-import { remember } from './utils/remember'
+// Re-export Prisma types that are safe to use on the client-side
+// We're already exporting the necessary types from ./client
 
-export const jsonSchema = require('../prisma/json-schema/json-schema.json')
+// Instead of direct export, point users to the proper place
+export const IMPORTANT_NOTICE = `
+ATTENTION: You're importing from '@solomonai/prisma' in a client component.
+This is only safe for types and enums.
 
-/**
- * Singleton instance of the Prisma client
- *
- * This exports a single, reused instance of PrismaClient to prevent connection
- * pool exhaustion in serverless environments. The client is configured with
- * the database URL from the environment variables, normalized by getDatabaseUrl().
- *
- * @example
- * // Import and use the Prisma client
- * import { prisma } from './index';
- *
- * const users = await prisma.user.findMany();
- */
-export const prisma = remember(
-  'prisma',
-  () =>
-    new PrismaClient({
-      datasourceUrl: getDatabaseUrl(),
-    }),
-)
+For server-side database access, use:
+import { prisma, kyselyPrisma, pgPool } from '@solomonai/prisma/server';
 
-/**
- * Kysely-extended Prisma client for advanced query capabilities
- *
- * This extends the standard Prisma client with Kysely's query builder capabilities,
- * allowing for more complex queries while maintaining type safety. It uses the
- * same connection as the standard Prisma client.
- *
- * The Kysely extension provides:
- * - More flexible query composition
- * - Advanced filtering and sorting
- * - Raw SQL capabilities with type safety
- * - Better support for complex joins and subqueries
- *
- * @example
- * // Import and use the Kysely-extended Prisma client
- * import { kyselyPrisma, sql } from './index';
- *
- * const users = await kyselyPrisma.kysely
- *   .selectFrom('User')
- *   .where('email', 'like', '%@example.com')
- *   .select(['id', 'name', 'email'])
- *   .execute();
- */
-export const kyselyPrisma = remember('kyselyPrisma', () =>
-  prisma.$extends(
-    kyselyExtension({
-      kysely: (driver) =>
-        new Kysely<DB>({
-          dialect: {
-            createAdapter: () => new PostgresAdapter(),
-            createDriver: () => driver,
-            createIntrospector: (db) => new PostgresIntrospector(db),
-            createQueryCompiler: () => new PostgresQueryCompiler(),
-          },
-        }),
-    }),
-  ),
-)
+For client components, consider using React Server Components or Server Actions instead.
+`;
 
-/**
- * Re-export of Kysely's sql template tag for raw SQL queries
- *
- * @example
- * // Use the sql template tag for raw SQL with type safety
- * import { kyselyPrisma, sql } from './index';
- *
- * const result = await kyselyPrisma.kysely
- *   .selectFrom('User')
- *   .where(sql`LOWER(email) LIKE ${'%@example.com'}`)
- *   .select(['id', 'name'])
- *   .execute();
- */
-export { sql } from 'kysely'
-// Export Prisma types
-export * from '@prisma/client'
-
-// Pool for raw postgres queries
-export const pgPool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+// JSON schema can be safely used on the client
+export const jsonSchema = require('../prisma/json-schema/json-schema.json');

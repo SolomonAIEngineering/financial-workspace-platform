@@ -3,7 +3,7 @@ import { protectedProcedure, teamOwnerProcedure } from '../../../middlewares/pro
 import { TRPCError } from '@trpc/server'
 import { TeamRole } from '@solomonai/prisma/client'
 import { createInviteSchema } from '../schema'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 
 /**
  * Protected procedure to create a team invite.

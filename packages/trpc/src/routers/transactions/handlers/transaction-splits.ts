@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { TransactionCategory } from '@solomonai/prisma/client'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { z } from 'zod'
 

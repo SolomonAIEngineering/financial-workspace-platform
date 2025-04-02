@@ -1,6 +1,6 @@
 import { Prisma, Team, TeamRole } from '@solomonai/prisma';
 
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 export type GetTeamByIdOptions = {
     userId?: string;

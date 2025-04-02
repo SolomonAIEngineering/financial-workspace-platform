@@ -1,8 +1,9 @@
-import { Prisma, prisma } from '@solomonai/prisma'
-import { TeamRole } from '@solomonai/prisma/client'
-import { TRPCError } from '@trpc/server'
-import { resourceProcedure } from '../../../middlewares/procedures'
 import { LimitableResourceEnum } from '../../../middlewares/tierLimitsMiddleware'
+import { Prisma } from '@solomonai/prisma'
+import { TRPCError } from '@trpc/server'
+import { TeamRole } from '@solomonai/prisma/client'
+import { prisma } from '@solomonai/prisma/server'
+import { resourceProcedure } from '../../../middlewares/procedures'
 import { teamCreateSchema } from '../schema'
 
 /**

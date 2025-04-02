@@ -1,6 +1,6 @@
-import { prisma } from '@solomonai/prisma'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { documentSchema } from '../schema'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Protected procedure to retrieve a single document.

@@ -1,16 +1,17 @@
 'use server'
 
-import { User, prisma } from '@solomonai/prisma'
+import { AuthUser, getAuthUser } from './getAuthUser'
 import type {
   GetServerSidePropsContext,
   NextApiRequest,
   NextApiResponse,
 } from 'next'
-import { AuthUser, getAuthUser } from './getAuthUser'
 
-import { CookieNames } from '@solomonai/lib/storage/cookies'
 import { AuthSession } from './lib'
+import { CookieNames } from '@solomonai/lib/storage/cookies'
+import { User } from '@solomonai/prisma'
 import { lucia } from './lucia'
+import { prisma } from '@solomonai/prisma/server'
 
 export interface GetServerSessionOptions {
   req: NextApiRequest | GetServerSidePropsContext['req']

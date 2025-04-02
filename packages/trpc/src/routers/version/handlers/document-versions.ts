@@ -1,7 +1,7 @@
-import { prisma } from '@solomonai/prisma'
-import { omit } from 'lodash'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { documentVersionsSchema } from '../schema'
+import { omit } from 'lodash'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Protected procedure to get all versions of a document.

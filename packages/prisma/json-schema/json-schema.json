@@ -1064,7 +1064,13 @@
           "format": "date-time"
         },
         "provider": {
-          "type": "string"
+          "type": "string",
+          "enum": [
+            "PLAID",
+            "TELLER",
+            "GOCARDLESS",
+            "STRIPE"
+          ]
         },
         "team": {
           "type": "array",
@@ -2934,6 +2940,12 @@
             "null"
           ]
         },
+        "scheduleId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "users": {
           "type": "array",
           "items": {
@@ -4695,7 +4707,9 @@
           "enum": [
             "ACTIVE",
             "PAST_DUE",
-            "INACTIVE"
+            "INACTIVE",
+            "CANCELLED",
+            "TRIAL"
           ]
         },
         "planId": {

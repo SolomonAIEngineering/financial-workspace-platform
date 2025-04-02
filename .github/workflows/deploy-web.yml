@@ -49,14 +49,15 @@ jobs:
           DATABASE_URL: ${{ secrets.SMB_FINANCIAL_MANAGEMENT_DATABASE_URL }}
           # Add any other environment variables needed for database connection
       - name: Generate Prisma Client
-        working-directory: apps/web
+        working-directory: packages/prisma
         run: pnpm run db:generate
       - name: 🔄 Deploy Background Jobs
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
+          TRIGGER_SECRET_KEY: tr_prod_HMOXv9s3OVztfmO3C7cG
         run: |
-          TRIGGER_PROJECT_ID=${{ secrets.TRIGGER_PROJECT_ID }} pnpm dlx trigger.dev@3.3.12 deploy
-        working-directory: apps/web
+          TRIGGER_PROJECT_ID=${{ secrets.TRIGGER_PROJECT_ID }} TRIGGER_SECRET_KEY=tr_prod_HMOXv9s3OVztfmO3C7cG pnpm dlx trigger.dev@3.3.17 deploy
+        working-directory: packages/jobs
       - name: 🏗 Build Project Artifacts
         run: pnpm dlx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: 🚀 Deploy to Vercel

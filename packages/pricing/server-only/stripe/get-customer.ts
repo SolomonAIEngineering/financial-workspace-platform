@@ -1,9 +1,9 @@
 import { STRIPE_CUSTOMER_TYPE } from '@solomonai/lib/constants/billing'
-import { stripe } from '@solomonai/lib/server-only/stripe'
-import { prisma } from '@solomonai/prisma'
 import type { User } from '@solomonai/prisma/client'
-import { z } from 'zod'
 import { onSubscriptionUpdated } from './webhook/on-subscription-updated'
+import { prisma } from '@solomonai/prisma/server'
+import { stripe } from '@solomonai/lib/server-only/stripe'
+import { z } from 'zod'
 
 /**
  * Schema for validating email parameter

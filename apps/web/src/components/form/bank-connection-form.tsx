@@ -9,14 +9,20 @@ import {
 
 import { Button } from '@/registry/default/potion-ui/button';
 import { ConnectTransactionsButton } from '../bank-connection/connect-transactions-button';
-import { ConnectTransactionsModal } from '@/components/modals/connect-transactions-modal';
 import { cn } from '@/lib/utils';
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { routes } from '@/lib/navigation/routes';
 import { skipBankConnection } from '@/actions/bank/skip-bank-connection';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+
+// Dynamically import the modal with SSR disabled to prevent Node.js modules from being included in client bundle
+const ConnectTransactionsModal = dynamic(
+  () => import('@/components/modals/connect-transactions-modal').then(mod => ({ default: mod.ConnectTransactionsModal })),
+  { ssr: false }
+);
 
 interface BankConnectionFormProps {
   userId: string;

@@ -1,8 +1,8 @@
-import { Prisma, prisma } from '@solomonai/prisma'
-
+import { Prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { bulkUpdateTagsSchema } from '../schema'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Updates tags for multiple transactions in bulk.

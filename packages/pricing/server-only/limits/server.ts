@@ -21,7 +21,7 @@ import { SubscriptionStatus } from '@solomonai/prisma/kysely/types.js'
 import type { TLimitsResponseSchema } from './schema.js'
 import { ZLimitsSchema } from './schema.js'
 import { getDocumentRelatedPrices } from '../stripe/get-document-related-prices.ts.js'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { z } from 'zod'
 
 /**

@@ -2,7 +2,7 @@ import { MAX_COMMENT_LENGTH, createCommentSchema } from '../schema'
 
 import { NodeApi } from '@udecode/plate'
 import { TRPCError } from '@trpc/server'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { ratelimitMiddleware } from '../../../middlewares/ratelimitMiddleware'
 

@@ -1,14 +1,14 @@
 import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
 
-import QRCodeUtil from 'qrcode'
-import type { TemplateProps } from '../types'
 import { EditorContent } from './components/editor-content'
 import { LineItems } from './components/line-items'
 import { Meta } from './components/meta'
 import { Note } from './components/note'
 import { PaymentDetails } from './components/payment-details'
 import { QRCode } from './components/qr-code'
+import QRCodeUtil from 'qrcode'
 import { Summary } from './components/summary'
+import type { TemplateProps } from '../types'
 
 export async function PdfTemplate({
   title,
@@ -32,14 +32,13 @@ export async function PdfTemplate({
   size = 'a4',
   token,
 }: TemplateProps) {
-  let qrCode = null
+  let qrCode: string | null = null
 
   if (template.include_qr) {
     qrCode = await QRCodeUtil.toDataURL(
       `https://smb.solomonai.dev/i/${token}`,
       {
-        width: 40 * 3,
-        height: 40 * 3,
+        scale: 3,
         margin: 0,
       },
     )

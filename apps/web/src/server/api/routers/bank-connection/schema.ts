@@ -1,3 +1,4 @@
+import { BankConnectionProvider } from '@solomonai/prisma';
 import { z } from 'zod';
 
 const AccountSchema = z.object({
@@ -25,6 +26,6 @@ export const CreateBankConnectionSchema = z.object({
   itemId: z.string(),
   userId: z.string(),
   teamId: z.string(),
-  provider: z.enum(['plaid', 'teller', 'stripe', 'gocardless']),
+  provider: z.nativeEnum(BankConnectionProvider),
   accounts: z.array(AccountSchema),
 });

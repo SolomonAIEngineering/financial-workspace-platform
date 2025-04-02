@@ -1,9 +1,9 @@
 import { IS_BILLING_ENABLED } from '@solomonai/lib/constants/app'
-import { subscriptionsContainsActivePlan } from '@solomonai/lib/utils/billing'
-import { prisma } from '@solomonai/prisma'
 import type { Subscription } from '@solomonai/prisma/client'
-import { z } from 'zod'
 import { getEnterprisePlanPriceIds } from '../stripe/get-enterprise-plan-prices'
+import { prisma } from '@solomonai/prisma/server'
+import { subscriptionsContainsActivePlan } from '@solomonai/lib/utils/billing'
+import { z } from 'zod'
 
 /**
  * Zod schema for validating enterprise plan check options

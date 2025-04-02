@@ -627,8 +627,8 @@ export function ConnectTransactionsModal({
                 results={results}
                 openPlaid={handleOpenPlaid}
                 onSetStepToNull={resetStep}
-                onImport={() => {}}
-                onContactUs={() => {}}
+                onImport={() => { }}
+                onContactUs={() => { }}
               />
             </>
           )}

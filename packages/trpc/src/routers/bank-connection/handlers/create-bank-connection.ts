@@ -2,7 +2,6 @@ import {
   AccountType,
   BankConnectionStatus,
   Prisma,
-  prisma,
 } from '@solomonai/prisma'
 import {
   CreateBankConnectionResponseSchema,
@@ -10,6 +9,7 @@ import {
 } from '../schema'
 
 import { TRPCError } from '@trpc/server'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
@@ -118,7 +118,7 @@ async function upsertBankConnection(
 ): Promise<{ id: string }> {
   const updateData: Prisma.BankConnectionUpdateInput = {
     accessToken: accessToken || '',
-    provider: provider,
+    provider: provider as any,
     institutionName: account.bank_name,
     logo: account.logo_url || null,
     expiresAt: account.expires_at || null,
@@ -129,7 +129,7 @@ async function upsertBankConnection(
     institutionId: institutionId || '',
     institutionName: account.bank_name,
     logo: account.logo_url || null,
-    provider: provider,
+    provider: provider as any,
     accessToken: accessToken || '',
     itemId: itemId || '',
     status: BankConnectionStatus.ACTIVE,

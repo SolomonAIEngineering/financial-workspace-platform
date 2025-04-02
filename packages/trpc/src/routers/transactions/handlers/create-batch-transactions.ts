@@ -1,7 +1,7 @@
 import { batchResultSchema, createBatchTransactionsSchema } from '../schema'
 
-import { prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
@@ -77,7 +77,7 @@ export const createBatchTransactionsHandler = protectedProcedure
         )
 
         createdTransactions.push(...batchResults)
-        console.log(
+        console.info(
           `Successfully processed batch ${batchIndex + 1} (${batchResults.length} transactions)`,
         )
       } catch (error) {

@@ -169,7 +169,7 @@ export interface BankConnection {
   lastExpiryNotifiedAt: Date| null;
   expiryNotificationCount: number;
   expiresAt: Date| null;
-  provider: string;
+  provider: BankConnectionProvider;
   enrollmentId: string| null;
 }
 
@@ -323,8 +323,10 @@ export interface Transaction {
   needsAttention: boolean;
   reviewStatus: string| null;
   userNotes: string| null;
+  isUserNotesReadOnly: boolean;
   tags: string[];
   notes: string| null;
+  isNotesReadOnly: boolean;
   customFields: Record<string, unknown>| null;
   labels: string[];
   parentTransactionId: string| null;
@@ -377,6 +379,7 @@ export interface RecurringTransaction {
   categorySlug: string| null;
   tags: string[];
   notes: string| null;
+  isNotesReadOnly: boolean;
   customFields: Record<string, unknown>| null;
   targetAccountId: string| null;
   affectAvailableBalance: boolean;
@@ -488,6 +491,7 @@ export interface Team {
   createdAt: Date;
   isDefault: boolean| null;
   stripeCustomerId: string| null;
+  scheduleId: string| null;
 }
 
 export interface UsersOnTeam {
@@ -1006,12 +1010,23 @@ export declare const TransactionFrequency: {
   readonly UNKNOWN: "UNKNOWN";
 };
 
-export type SubscriptionStatus = "ACTIVE" | "PAST_DUE" | "INACTIVE";
+export type SubscriptionStatus = "ACTIVE" | "PAST_DUE" | "INACTIVE" | "CANCELLED" | "TRIAL";
 
 export declare const SubscriptionStatus: {
   readonly ACTIVE: "ACTIVE";
   readonly PAST_DUE: "PAST_DUE";
   readonly INACTIVE: "INACTIVE";
+  readonly CANCELLED: "CANCELLED";
+  readonly TRIAL: "TRIAL";
+};
+
+export type BankConnectionProvider = "PLAID" | "TELLER" | "GOCARDLESS" | "STRIPE";
+
+export declare const BankConnectionProvider: {
+  readonly PLAID: "PLAID";
+  readonly TELLER: "TELLER";
+  readonly GOCARDLESS: "GOCARDLESS";
+  readonly STRIPE: "STRIPE";
 };
 
 declare global {
@@ -1075,5 +1090,6 @@ declare global {
   export type TReportType = ReportType;
   export type TTransactionFrequency = TransactionFrequency;
   export type TSubscriptionStatus = SubscriptionStatus;
+  export type TBankConnectionProvider = BankConnectionProvider;
 }
 

@@ -5,7 +5,7 @@ import {
 
 import { TRPCError } from '@trpc/server'
 import { createRouter } from '../trpc'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../middlewares/procedures'
 import { z } from 'zod'
 

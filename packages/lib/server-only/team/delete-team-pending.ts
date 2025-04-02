@@ -1,4 +1,4 @@
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { z } from 'zod';
 
 /**

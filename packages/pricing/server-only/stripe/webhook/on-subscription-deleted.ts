@@ -1,6 +1,6 @@
 import type { Stripe } from '@solomonai/lib/server-only/stripe'
-import { prisma } from '@solomonai/prisma'
 import { SubscriptionStatus } from '@solomonai/prisma/client'
+import { prisma } from '@solomonai/prisma/server'
 
 export type OnSubscriptionDeletedOptions = {
   subscription: Stripe.Subscription

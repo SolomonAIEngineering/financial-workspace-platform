@@ -1,9 +1,9 @@
-import { prisma } from '@solomonai/prisma'
-import { TeamRole } from '@solomonai/prisma/client'
-import { isTeamOwner } from '@solomonai/trpc/src/middlewares/teamAuthorizationMiddleware'
 import { TRPCError } from '@trpc/server'
-import { protectedProcedure } from '../../../middlewares/procedures'
+import { TeamRole } from '@solomonai/prisma/client'
 import { addUserSchema } from '../schema'
+import { isTeamOwner } from '@solomonai/trpc/src/middlewares/teamAuthorizationMiddleware'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Protected procedure to add a user to a team.

@@ -622,6 +622,8 @@ type SiteConfig = {
   keywords: string[];
   /** Developer configuration */
   developer: DeveloperConfig;
+  /** Cache API secret */
+  cacheApiSecret: string;
 };
 
 type DeveloperConfig = {
