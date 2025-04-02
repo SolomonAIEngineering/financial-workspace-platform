@@ -9,7 +9,7 @@ import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { TZDate } from '@date-fns/tz';
 import { Task } from '@trigger.dev/sdk/v3';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { updateInvoiceStatus } from '../../../utils/update-invoice';
 
 /**

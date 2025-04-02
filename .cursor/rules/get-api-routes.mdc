@@ -12,7 +12,7 @@ Guidelines for implementing GET API routes in the Next.js App Router:
 ```typescript
 import { type NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/server/auth';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 /**
  * Define response type for type safety and client-side usage
@@ -126,7 +126,7 @@ export async function GET(req: NextRequest) {
 ```typescript
 import { type NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/server/auth';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 /**
  * Response type for a single item

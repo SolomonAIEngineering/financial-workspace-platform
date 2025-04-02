@@ -1,6 +1,6 @@
-import { prisma } from '@solomonai/prisma'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { CreateFileSchemaRequest } from '../schema'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Mutations for the file router

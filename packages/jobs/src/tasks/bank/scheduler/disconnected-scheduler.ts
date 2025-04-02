@@ -8,7 +8,7 @@ import { logger, schedules, tasks } from '@trigger.dev/sdk/v3';
 import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@solomonai/prisma/client';
 import { disconnectedNotifications } from '../notifications/disconnected';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { subDays } from 'date-fns';
 
 /**

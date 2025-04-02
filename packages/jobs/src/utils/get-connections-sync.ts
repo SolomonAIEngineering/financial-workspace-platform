@@ -3,7 +3,7 @@ import {
   BankConnectionStatus,
   SyncStatus,
 } from '@solomonai/prisma/client';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 /**
  * Retrieves bank connections that need to be synchronized with financial

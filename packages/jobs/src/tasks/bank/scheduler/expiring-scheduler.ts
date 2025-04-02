@@ -9,7 +9,7 @@ import { logger, schedules, tasks } from '@trigger.dev/sdk/v3';
 import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@solomonai/prisma/client';
 import { expiringNotifications } from '../notifications/expiring';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 // Constants
 const EXPIRING_THRESHOLD_DAYS = 20;

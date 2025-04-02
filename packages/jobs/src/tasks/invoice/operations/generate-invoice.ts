@@ -8,7 +8,7 @@ import { PdfTemplate, renderToBuffer } from '@solomonai/invoice';
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { Task } from '@trigger.dev/sdk/v3';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { utapi } from '@solomonai/lib/clients';
 
 export const generateInvoice: Task<

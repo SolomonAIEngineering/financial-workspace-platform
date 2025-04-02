@@ -10,7 +10,7 @@ import { BANK_JOBS } from '../../constants';
 import { Task } from '@trigger.dev/sdk/v3';
 import { bankSyncScheduler } from '../scheduler/bank-scheduler';
 import { generateCronTag } from '../../../utils/generate-cron-tag';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { syncConnectionJob as syncConnection } from '../sync/connection';
 
 /**

@@ -4,10 +4,10 @@ import {
   teamBankAccountResponseSchema,
 } from '../schema'
 
-import { prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
-import { z } from 'zod'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
+import { z } from 'zod'
 
 /**
  * Protected procedure to retrieve bank accounts associated with a user's team.
@@ -95,13 +95,13 @@ export const getTeamBankAccounts = protectedProcedure
           bank: isManual
             ? null
             : {
-                id: account.bankConnectionId,
-                name: account.bankConnection?.institutionName || 'Unknown Bank',
-                logo: account.bankConnection?.logo || null,
-                provider: account.bankConnection?.provider || 'unknown',
-                status: account.bankConnection?.status || 'ACTIVE',
-                expires_at: account.bankConnection?.consentExpiresAt || null,
-              },
+              id: account.bankConnectionId,
+              name: account.bankConnection?.institutionName || 'Unknown Bank',
+              logo: account.bankConnection?.logo || null,
+              provider: account.bankConnection?.provider || 'unknown',
+              status: account.bankConnection?.status || 'ACTIVE',
+              expires_at: account.bankConnection?.consentExpiresAt || null,
+            },
         }
       })
 

@@ -15,7 +15,7 @@ import { Task, schemaTask } from '@trigger.dev/sdk/v3';
 import { logger, wait } from '@trigger.dev/sdk/v3';
 
 import { DocumentClient } from '@solomonai/documents';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { utapi } from '@solomonai/lib/clients';
 
 // Maximum retry attempts for transient failures

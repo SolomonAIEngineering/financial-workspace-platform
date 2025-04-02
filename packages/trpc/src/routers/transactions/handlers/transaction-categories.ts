@@ -6,7 +6,7 @@ import {
 } from '../schema'
 
 import { TRPCError } from '@trpc/server'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 
 export const updateTransactionCategoryHandler = protectedProcedure
@@ -137,7 +137,7 @@ export const categorizeByMerchantHandler = protectedProcedure
     if (applyToFuture) {
       // TODO: This would ideally create a rule in a MerchantCategoryRule table
       // For this example, we'll just log that this would happen
-      console.log(
+      console.info(
         `Created rule: Categorize all transactions from ${merchantName} as ${category}`,
       )
     }

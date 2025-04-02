@@ -10,7 +10,7 @@ import { Invoice } from '@solomonai/email';
 import { Task } from '@trigger.dev/sdk/v3';
 import { nanoid } from 'nanoid';
 import { BusinessConfig as platformConfig } from '@solomonai/platform-config';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { render } from '@react-email/render';
 import { resend } from '@solomonai/lib/clients';
 

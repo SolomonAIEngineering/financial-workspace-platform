@@ -15,7 +15,7 @@ import { EnrichmentService } from '../../utils/transaction-enrichment';
 import Papa from 'papaparse';
 import { getFileContent } from '@solomonai/lib/clients';
 import { mapTransactions } from '@solomonai/import/mappings';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { processBatch } from '../../utils/process-batch';
 import { revalidateCache } from '../../utils/revalidate-cache';
 import { transform } from '@solomonai/import/transform';

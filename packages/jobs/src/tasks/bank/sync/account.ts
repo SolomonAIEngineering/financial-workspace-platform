@@ -14,7 +14,7 @@ import { AccountType } from '@solomonai/prisma';
 import { Task } from '@trigger.dev/sdk/v3';
 import { engine as client } from '@solomonai/lib/clients';
 import { parseAPIError } from '@solomonai/jobs/src/utils/parse-error';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { upsertTransactionsJob as upsertTransactions } from '../transactions/upsert';
 
 /**

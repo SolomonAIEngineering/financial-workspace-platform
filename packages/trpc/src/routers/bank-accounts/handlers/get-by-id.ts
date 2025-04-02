@@ -1,7 +1,8 @@
 import { bankAccountResponseSchema, getByIdSchema } from '../schema'
 
-import { AccountStatus, prisma } from '@solomonai/prisma'
+import { AccountStatus } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**

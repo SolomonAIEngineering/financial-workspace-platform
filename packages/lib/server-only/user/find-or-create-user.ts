@@ -6,7 +6,7 @@ import { loops, sendEmailViaResend } from '../../../lib/clients';
 import { UserRole } from '@solomonai/prisma/client';
 import { WelcomeEmail } from '../../../email';
 import { nid } from '../../../lib/utils/nid';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 // Initialize the Loops client with API key from environment variables
 const USER_BASE_MAILING_LIST = process.env.USER_BASE_MAILING_LIST;

@@ -1,6 +1,6 @@
 import { type BankConnection, BankAccount, SyncStatus } from '@solomonai/prisma/client';
 
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { engine } from '@solomonai/lib/clients';
 
 import { TRANSACTION_JOBS } from '../constants';

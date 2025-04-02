@@ -1,4 +1,5 @@
-import { SubscriptionStatus, prisma } from "@solomonai/prisma";
+import { SubscriptionStatus } from "@solomonai/prisma";
+import { prisma } from '@solomonai/prisma/server';
 
 /**
  * Determines if email notifications should be sent to a team based on their subscription status

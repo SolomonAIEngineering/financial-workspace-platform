@@ -1,8 +1,8 @@
-import { CookieNames } from '@solomonai/lib/storage/cookies'
-import { prisma } from '@solomonai/prisma'
-import { devMiddleware } from '../../../middlewares/devMiddleware'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import type { AppLayoutResponse } from '../schema'
+import { CookieNames } from '@solomonai/lib/storage/cookies'
+import { devMiddleware } from '../../../middlewares/devMiddleware'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Protected procedure to get application layout data.

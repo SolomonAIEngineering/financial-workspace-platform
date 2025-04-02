@@ -28,7 +28,7 @@ This file contains guidelines for creating new tRPC routes in the SolomonAI fina
 1. **Handler File Structure**:
    ```typescript
    import { protectedProcedure } from '../../../middlewares/procedures'
-   import { prisma } from '@solomonai/prisma'
+   import { prisma } from '@solomonai/prisma/server'
    import { inputSchema } from '../schema'
    
    /**

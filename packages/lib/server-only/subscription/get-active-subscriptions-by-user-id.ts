@@ -1,7 +1,8 @@
 'use server';
 
-import { Subscription, SubscriptionStatus, prisma } from '@solomonai/prisma';
+import { Subscription, SubscriptionStatus } from '@solomonai/prisma';
 
+import { prisma } from '@solomonai/prisma/server';
 import { z } from 'zod';
 
 export const getActiveSubscriptionsByUserIdSchema = z.object({

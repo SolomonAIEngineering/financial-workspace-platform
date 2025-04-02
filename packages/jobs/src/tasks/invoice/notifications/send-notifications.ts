@@ -4,11 +4,12 @@ import {
   sendInvoiceNotificationsInputSchema,
   sendInvoiceNotificationsOutputSchema
 } from '../schema';
-import { TeamRole, prisma } from '@solomonai/prisma';
 import { handleOverdueInvoiceNotifications, handlePaidInvoiceNotifications } from '../../../utils/invoice-notifications';
 import { logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { Task } from '@trigger.dev/sdk/v3';
+import { TeamRole } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 /**
  * Task that sends notifications for invoice status changes

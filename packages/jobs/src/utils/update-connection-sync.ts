@@ -1,6 +1,6 @@
 import { BankConnectionStatus, SyncStatus } from '@solomonai/prisma/client';
 
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 /**
  * Updates the synchronization status of a bank connection.

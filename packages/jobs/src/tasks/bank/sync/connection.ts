@@ -13,7 +13,7 @@ import { BANK_JOBS } from '../../constants';
 import { BankConnectionStatus } from '@solomonai/prisma/client';
 import { Task } from '@trigger.dev/sdk/v3';
 import { getItemDetails } from '@solomonai/jobs/src/utils/plaid';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { syncAccount } from './account';
 
 /**

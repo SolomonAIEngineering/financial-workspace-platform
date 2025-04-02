@@ -2,7 +2,7 @@ import { protectedProcedure, teamOwnerProcedure } from '../../../middlewares/pro
 
 import { TRPCError } from '@trpc/server'
 import { TeamRole } from '@solomonai/prisma/client'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { removeUserSchema } from '../schema'
 
 /**

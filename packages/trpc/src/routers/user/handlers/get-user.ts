@@ -1,5 +1,5 @@
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
-import { prisma } from '@solomonai/prisma'
 import { userIdSchema } from '../schema'
 
 /**

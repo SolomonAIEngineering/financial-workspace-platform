@@ -1,7 +1,7 @@
 import { logger, schedules } from '@trigger.dev/sdk/v3';
 
 import { checkInvoiceStatusForBatch } from '../operations/check-status';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { triggerBatch } from '../../../utils/trigger-batch';
 
 /**

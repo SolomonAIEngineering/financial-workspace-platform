@@ -12,10 +12,10 @@
  * @see procedures.ts for predefined procedure configurations
  */
 
-import { TeamRole, prisma } from '@solomonai/prisma'
-
 import { TRPCError } from '@trpc/server'
+import { TeamRole } from '@solomonai/prisma'
 import type { TrpcContext } from '../context'
+import { prisma } from '@solomonai/prisma/server'
 import { t } from '../trpc'
 import { z } from 'zod'
 
@@ -440,7 +440,7 @@ export const isTeamMember = t.middleware(async ({ ctx, next, input }) => {
  *   .query(async ({ ctx, input }) => {
  *     // ctx.teamMembership contains the team membership info
  *     // and we're guaranteed the user belongs to the team
- *     console.log(`User role: ${ctx.teamMembership.role}`);
+ *     console.info(`User role: ${ctx.teamMembership.role}`);
  *   });
  * ```
  */

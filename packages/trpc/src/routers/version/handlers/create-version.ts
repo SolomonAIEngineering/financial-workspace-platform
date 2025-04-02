@@ -1,8 +1,8 @@
+import { createVersionSchema } from '../schema'
 import { getTemplateDocument } from '@solomonai/lib/utils'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { ratelimitMiddleware } from '../../../middlewares/ratelimitMiddleware'
-import { createVersionSchema } from '../schema'
 
 /**
  * Protected procedure to create a new document version.

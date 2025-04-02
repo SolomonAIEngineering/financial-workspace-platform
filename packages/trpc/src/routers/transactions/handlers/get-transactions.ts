@@ -1,5 +1,5 @@
-import { Prisma, prisma } from '@solomonai/prisma'
-
+import { Prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { transactionFilterSchema } from '../schema'
 

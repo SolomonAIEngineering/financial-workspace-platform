@@ -1,8 +1,8 @@
-import { deleteFiles } from '@solomonai/lib/clients'
-import { prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
-import { protectedProcedure } from '../../../middlewares/procedures'
+import { deleteFiles } from '@solomonai/lib/clients'
 import { deleteTransactionSchema } from '../schema'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 export const deleteTransactionHandler = protectedProcedure
   .input(deleteTransactionSchema)

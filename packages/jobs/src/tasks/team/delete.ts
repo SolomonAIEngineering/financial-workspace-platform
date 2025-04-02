@@ -11,7 +11,7 @@ import { Task, logger, schedules, schemaTask } from '@trigger.dev/sdk/v3';
 import { BANK_JOBS } from '../constants';
 import { bankSyncScheduler } from '../bank/scheduler/bank-scheduler';
 import { engine } from '@solomonai/lib/clients';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 /**
  * Attempt to delete a team's scheduled sync job

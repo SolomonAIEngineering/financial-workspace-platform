@@ -15,7 +15,7 @@ import { Task, logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { TRANSACTION_JOBS } from '../constants';
 import { blobToSerializable } from '../../utils/blob';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { processBatch } from '../../utils/process-batch';
 
 /**

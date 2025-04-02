@@ -1,7 +1,6 @@
-import { getTransactionSchema } from '../schema'
-
-import { prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
+import { getTransactionSchema } from '../schema'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 
 export const getTransactionHandler = protectedProcedure

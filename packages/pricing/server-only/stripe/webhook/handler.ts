@@ -10,7 +10,7 @@ import { TeamRole } from '@solomonai/prisma/client'
 import { buffer } from 'micro'
 import { match } from 'ts-pattern'
 import { onSubscriptionDeleted } from './on-subscription-deleted'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { stripe } from '@solomonai/lib/server-only/stripe'
 
 /**

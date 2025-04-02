@@ -1,7 +1,8 @@
 import { getTransactionsSchema, transactionsResponseSchema } from '../schema'
 
-import { Prisma, prisma } from '@solomonai/prisma'
+import { Prisma } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**

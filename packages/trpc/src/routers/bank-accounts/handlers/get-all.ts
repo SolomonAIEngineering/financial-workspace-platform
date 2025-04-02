@@ -1,9 +1,9 @@
-import { AccountStatus, prisma } from '@solomonai/prisma'
-
+import { AccountStatus } from '@solomonai/prisma'
 import { TRPCError } from '@trpc/server'
-import { z } from 'zod'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { bankAccountResponseSchema } from '../schema'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
+import { z } from 'zod'
 
 /**
  * Protected procedure to retrieve all bank accounts for the authenticated user.

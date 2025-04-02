@@ -3,7 +3,7 @@ import { Task, schemaTask } from '@trigger.dev/sdk/v3';
 import { EnrichmentService } from '../../utils/transaction-enrichment';
 import { Transaction } from '@solomonai/prisma';
 import { logger } from '@trigger.dev/sdk/v3';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { z } from 'zod';
 
 /**

@@ -107,7 +107,7 @@ export const getUser = protectedProcedure
 ```typescript
 // /packages/trpc/src/routers/document/handlers/create-document.ts
 import { resourceProcedure } from '../../../middlewares/procedures'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { createDocumentSchema } from '../schema'
 
 /**

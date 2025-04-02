@@ -1,5 +1,5 @@
-import { prisma } from '@solomonai/prisma'
 import { NodeApi } from '@udecode/plate'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { restoreVersionSchema } from '../schema'
 

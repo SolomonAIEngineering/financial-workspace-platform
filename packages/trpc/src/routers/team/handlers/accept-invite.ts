@@ -1,6 +1,6 @@
 import { TRPCError } from '@trpc/server'
 import { acceptInviteSchema } from '../schema'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**

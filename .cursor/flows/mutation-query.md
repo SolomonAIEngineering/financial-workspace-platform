@@ -48,7 +48,7 @@ Follow these steps in order, using existing files as references:
    ```typescript
    // Example query handler
    import { protectedProcedure } from '../../../middlewares/procedures'
-   import { prisma } from '@solomonai/prisma'
+   import { prisma } from '@solomonai/prisma/server'
    import { getItemSchema } from '../schema'
    
    /**
@@ -96,7 +96,7 @@ Follow these steps in order, using existing files as references:
    ```typescript
    // Example mutation handler
    import { resourceProcedure } from '../../../middlewares/procedures'
-   import { prisma } from '@solomonai/prisma'
+   import { prisma } from '@solomonai/prisma/server'
    import { createItemSchema } from '../schema'
    
    /**

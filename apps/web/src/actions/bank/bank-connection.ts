@@ -3,7 +3,7 @@
 import { authActionClient } from '../safe-action';
 import { bankConnectionSchema } from './schema';
 import { initialSetupJob } from '@/jobs';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { revalidateTag } from 'next/cache';
 import { trpc } from '@/trpc/server';
 

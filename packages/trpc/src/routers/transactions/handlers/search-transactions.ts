@@ -1,5 +1,6 @@
-import { Prisma, TransactionCategory, prisma } from '@solomonai/prisma'
+import { Prisma, TransactionCategory } from '@solomonai/prisma'
 
+import { prisma } from '@solomonai/prisma/server';
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { searchTransactionsSchema } from '../schema'
 

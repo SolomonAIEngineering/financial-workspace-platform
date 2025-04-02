@@ -3,7 +3,7 @@ import type Stripe from 'stripe'
 import { AppError, AppErrorCode } from '@solomonai/lib/errors/app-error'
 import { stripe } from '@solomonai/lib/server-only/stripe'
 import { subscriptionsContainsActivePlan } from '@solomonai/lib/utils/billing'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import {
   type Subscription,
   type Team,

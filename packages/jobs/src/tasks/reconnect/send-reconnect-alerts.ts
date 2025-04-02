@@ -10,7 +10,7 @@ import { logger, schedules } from '@trigger.dev/sdk/v3';
 import { BankConnectionStatus } from '@solomonai/prisma/client';
 import { BankReconnectAlert } from '@solomonai/email';
 import React from 'react';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { render } from '@react-email/render';
 import { subDays } from 'date-fns';
 

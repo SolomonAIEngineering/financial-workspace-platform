@@ -17,7 +17,7 @@ Server actions provide a way to run code on the server from the client. They sho
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { authActionClient } from '@/actions/safe-action';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 /**
  * Schema for validating input data
@@ -106,7 +106,7 @@ For simple form submissions, you can use the built-in form action pattern:
 
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { getOrThrowCurrentUser } from '@/lib/auth';
 
 /**
@@ -226,7 +226,7 @@ redirect('/examples');
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { authActionClient } from '@/actions/safe-action';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 
 const updateProfileSchema = z.object({
   name: z.string().min(2),

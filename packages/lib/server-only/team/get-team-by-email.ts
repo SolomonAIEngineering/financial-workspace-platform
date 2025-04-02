@@ -1,5 +1,6 @@
-import { Team, TeamRole, prisma } from '@solomonai/prisma';
+import { Team, TeamRole } from '@solomonai/prisma';
 
+import { prisma } from '@solomonai/prisma/server';
 import { z } from 'zod';
 
 /**

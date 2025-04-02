@@ -1,5 +1,5 @@
 import { TRPCError } from '@trpc/server'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { teamIdSchema } from '../schema'
 import { teamOwnerProcedure } from '../../../middlewares/procedures'
 

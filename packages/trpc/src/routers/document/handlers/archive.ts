@@ -1,6 +1,6 @@
-import { prisma } from '@solomonai/prisma'
-import { protectedProcedure } from '../../../middlewares/procedures'
 import { archiveDocumentSchema } from '../schema'
+import { prisma } from '@solomonai/prisma/server'
+import { protectedProcedure } from '../../../middlewares/procedures'
 
 /**
  * Protected procedure to archive a document.

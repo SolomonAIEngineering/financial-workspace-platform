@@ -1,7 +1,7 @@
 import { Task, logger, schemaTask } from '@trigger.dev/sdk/v3';
 
 import { engine } from '@solomonai/lib/clients';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { z } from 'zod';
 
 /**

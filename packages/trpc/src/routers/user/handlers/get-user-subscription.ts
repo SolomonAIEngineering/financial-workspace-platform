@@ -1,5 +1,5 @@
 import type Stripe from 'stripe'
-import { prisma } from '@solomonai/prisma'
+import { prisma } from '@solomonai/prisma/server'
 import { protectedProcedure } from '../../../middlewares/procedures'
 import { stripe } from '@solomonai/lib/clients'
 

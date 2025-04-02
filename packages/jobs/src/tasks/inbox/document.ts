@@ -16,7 +16,7 @@ import { logger, wait } from '@trigger.dev/sdk/v3';
 
 import { DocumentClient } from '@solomonai/documents';
 import { InboxType } from '@solomonai/prisma/client';
-import { prisma } from '@solomonai/prisma';
+import { prisma } from '@solomonai/prisma/server';
 import { utapi } from '@solomonai/lib/clients';
 
 // Document processing timeout in ms
