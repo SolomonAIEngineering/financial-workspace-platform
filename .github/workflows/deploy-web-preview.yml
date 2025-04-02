@@ -54,9 +54,8 @@ jobs:
       - name: 🔄 Deploy Background Jobs
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
-          TRIGGER_SECRET_KEY: tr_stg_qzyFvYfneQnSSy1FwNyj
         run: |
-          TRIGGER_PROJECT_ID=${{ secrets.TRIGGER_PROJECT_ID }} TRIGGER_SECRET_KEY=tr_stg_qzyFvYfneQnSSy1FwNyj pnpm dlx trigger.dev@3.3.17 deploy --env staging
+          TRIGGER_PROJECT_ID=${{ secrets.TRIGGER_PROJECT_ID }} pnpm dlx trigger.dev@3.3.17 deploy --env staging
         working-directory: packages/jobs
       - name: 🏗 Build Project Artifacts
         run: pnpm dlx vercel build --target=staging --token=${{ secrets.VERCEL_TOKEN }}

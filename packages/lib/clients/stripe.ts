@@ -16,6 +16,17 @@ import Stripe from 'stripe';
  */
 export const STRIPE_API_VERSION = '2025-02-24.acacia' as const;
 
+export const STRIPE_API_KEY_PRODUCTION =
+  process.env.STRIPE_API_KEY || '';
+
+export const STRIPE_API_KEY_TEST =
+  process.env.STRIPE_API_KEY || '';
+
+export const STRIPE_API_KEY =
+  process.env.NODE_ENV === 'production'
+    ? STRIPE_API_KEY_PRODUCTION
+    : STRIPE_API_KEY_TEST;
+
 /**
  * Singleton Stripe client instance configured with API key from environment
  * variables. Use this instance for all Stripe API calls throughout the
@@ -29,7 +40,7 @@ export const STRIPE_API_VERSION = '2025-02-24.acacia' as const;
  *   const customer = await stripe.customers.retrieve('cus_123');
  *   ```;
  */
-export const stripe = new Stripe(process.env.STRIPE_API_KEY as string, {
+export const stripe = new Stripe(STRIPE_API_KEY, {
   apiVersion: STRIPE_API_VERSION,
   appInfo: {
     name: 'SMB Financial Management Platform',
